@@ -1,0 +1,85 @@
+
+> campusconnectco.in@0.1.0 lint
+> eslint
+
+
+C:\Users\sriram\campusconnectco.in\src\app\api\escrow\route.ts
+  59:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\api\transactions\route.ts
+  41:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\auth\signup\page.tsx
+  58:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\sriram\campusconnectco.in\src\app\dashboard\client\post-gig\page.tsx
+  38:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\dashboard\student\page.tsx
+  3:43  warning  'Search' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\dashboard\student\wallet\page.tsx
+  5:39  warning  'Wallet' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\network\page.tsx
+  3:26  warning  'Briefcase' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\profile\page.tsx
+  4:18  warning  'Calendar' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\components\Analytics\FinancialChart.tsx
+  20:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\sriram\campusconnectco.in\src\components\Analytics\FinancialChart.tsx:20:9
+  18 |
+  19 |     useEffect(() => {
+> 20 |         setIsMounted(true);
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  21 |
+  22 |     }, []);
+  23 |  react-hooks/set-state-in-effect
+
+C:\Users\sriram\campusconnectco.in\src\components\Analytics\MonthlyComparison.tsx
+  15:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\sriram\campusconnectco.in\src\components\Analytics\MonthlyComparison.tsx:15:9
+  13 |
+  14 |     useEffect(() => {
+> 15 |         setIsMounted(true);
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  16 |     }, []);
+  17 |
+  18 |     if (!isMounted) {  react-hooks/set-state-in-effect
+
+C:\Users\sriram\campusconnectco.in\src\components\Feed\PostCreator.tsx
+  17:33  warning  Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+C:\Users\sriram\campusconnectco.in\src\components\Feed\TrendingSidebar.tsx
+  1:22  warning  'Hash' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\components\ToastProvider.tsx
+  3:47  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\components\gigs\ApplyButton.tsx
+  30:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\components\payments\EscrowControl.tsx
+  34:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\lib\auth.ts
+  46:34  warning  'user' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 16 problems (3 errors, 13 warnings)
+

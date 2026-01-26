@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  coverImage    String?
+  password      String?   // For credentials auth
+  role          String    @default("STUDENT")
+  
+  bio           String?
+  skills        String?
+  portfolio     String?
+  
+  gigsPosted    Gig[]     @relation("PostedGigs")
+  applications  Application[]
+  transactions  Transaction[]
+  posts         Post[]
+  likes         PostLike[]
+  
+  // Location for radius matching
+  latitude      Float?
+  longitude     Float?
+  
+  // Bank Details for withdrawal
+  accNumber     String?
+  ifscCode      String?
+  bankName      String?
+  upiId         String?
+  
+  // Messaging
+  conversations Conversation[]
+  messages      Message[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Gig {
+  id               String    @id @default(cuid())
+  title            String
+  description      String
+  budget           Float
+  deadline         DateTime?
+  status           String    @default("OPEN")
+  tags             String?   // For AI matching (comma-separated or JSON)
+  latitude         Float?
+  longitude        Float?
+  
+  // Dual-confirmation fields
+  ownerConfirmed   Boolean   @default(false)
+  studentConfirmed Boolean   @default(false)
+  
+  posterId    String
+  poster      User      @relation("PostedGigs", fields: [posterId], references: [id])
+  
+  applications Application[]
+  transactions Transaction[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Application {
+  id        String            @id @default(cuid())
+  gigId     String
+  gig       Gig               @relation(fields: [gigId], references: [id])
+  applicantId String
+  applicant User              @relation(fields: [applicantId], references: [id])
+  
+  status    String            @default("PENDING")
+  coverLetter String?
+  
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  gigId     String?
+  gig       Gig?     @relation(fields: [gigId], references: [id])
+  amount    Float
+  fee       Float?   @default(0)
+  netAmount Float?
+  type      String   // DEPOSIT, WITHDRAWAL, ESCROW_LOCK, ESCROW_RELEASE, COMMISSION
+  status    String   // PENDING, COMPLETED, FAILED
+  description String?
+  
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id        String     @id @default(cuid())
+  content   String
+  authorId  String
+  author    User       @relation(fields: [authorId], references: [id])
+  likes     PostLike[]
+  
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  users     User[]
+  messages  Message[]
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  text           String
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id])
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime     @default(now())
+}

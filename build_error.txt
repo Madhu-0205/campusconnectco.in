@@ -1,0 +1,26 @@
+
+> campusconnectco.in@0.1.0 build
+> next build
+
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 14.5s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/gigs/GigList.tsx:18:9
+Type error: Type '{ id: string; title: string; description: string; budget: number; deadline: Date | null; status: string; posterId: string; createdAt: Date; updatedAt: Date; }[]' is not assignable to type '({ poster: { name: string | null; image: string | null; }; } & { id: string; title: string; description: string; budget: number; deadline: Date | null; status: string; posterId: string; createdAt: Date; updatedAt: Date; })[]'.
+  Type '{ id: string; title: string; description: string; budget: number; deadline: Date | null; status: string; posterId: string; createdAt: Date; updatedAt: Date; }' is not assignable to type '{ poster: { name: string | null; image: string | null; }; } & { id: string; title: string; description: string; budget: number; deadline: Date | null; status: string; posterId: string; createdAt: Date; updatedAt: Date; }'.
+    Property 'poster' is missing in type '{ id: string; title: string; description: string; budget: number; deadline: Date | null; status: string; posterId: string; createdAt: Date; updatedAt: Date; }' but required in type '{ poster: { name: string | null; image: string | null; }; }'.
+
+[0m [90m 16 |[39m     [36mlet[39m gigs[33m:[39m [33mGigWithPoster[39m[] [33m=[39m [][33m;[39m
+ [90m 17 |[39m     [36mtry[39m {
+[31m[1m>[22m[39m[90m 18 |[39m         gigs [33m=[39m [36mawait[39m prisma[33m.[39mgig[33m.[39mfindMany({
+ [90m    |[39m         [31m[1m^[22m[39m
+ [90m 19 |[39m             where[33m:[39m {
+ [90m 20 |[39m                 status[33m:[39m [32m"OPEN"[39m[33m,[39m
+ [90m 21 |[39m                 title[33m:[39m {[0m
+Next.js build worker exited with code: 1 and signal: null

@@ -1,0 +1,113 @@
+﻿
+> campusconnectco.in@0.1.0 build
+> next build
+
+node.exe : ΓÜá 
+Warning: Next.js 
+inferred your 
+workspace root, but 
+it may not be 
+correct.
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (ΓÜá War   
+ ning: Ne...not b    
+e correct.:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+ We detected 
+multiple lockfiles 
+and selected the 
+directory of C:\Users
+\sriram\package-lock.
+json as the root 
+directory.
+ To silence this 
+warning, set 
+`turbopack.root` in 
+your Next.js config, 
+or consider removing 
+one of the lockfiles 
+if it's not needed.
+   See https://nextjs
+.org/docs/app/api-ref
+erence/config/next-co
+nfig-js/turbopack#roo
+t-directory for more 
+information.
+ Detected additional 
+lockfiles: 
+   * C:\Users\sriram\
+campusconnectco.in\pa
+ckage-lock.json
+
+Γû▓ Next.js 16.1.1 (Turbopack)
+- Environments: .env
+
+ΓÜá The "middleware" 
+file convention is 
+deprecated. Please 
+use "proxy" instead. 
+Learn more: https://n
+extjs.org/docs/messag
+es/middleware-to-prox
+y
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 21.1s
+  Running TypeScript ...
+Failed to compile.
+
+./src/middleware.ts:3
+:22
+Type error: 
+Parameter 'req' 
+implicitly has an 
+'any' type.
+
+[0m [90m 1 |[39m 
+[36mimport[39m { 
+auth } 
+[36mfrom[39m [32m"
+@/lib/auth"[39m
+ [90m 2 |[39m
+[31m[1m>[22m[39m
+[90m 3 |[39m 
+[36mexport[39m 
+[36mdefault[39m 
+auth((req) 
+[33m=>[39m {
+ [90m   |[39m      
+                
+[31m[1m^[22m[39m
+ [90m 4 |[39m     
+[36mconst[39m 
+isLoggedIn 
+[33m=[39m [33m![3
+9m[33m![39mreq[33m
+.[39mauth
+ [90m 5 |[39m     
+[36mconst[39m 
+isOnDashboard 
+[33m=[39m req[33m.
+[39mnextUrl[33m.[3
+9mpathname[33m.[39m
+startsWith([32m"/das
+hboard"[39m)
+ [90m 6 |[39m[0m
+Next.js build worker 
+exited with code: 1 
+and signal: null

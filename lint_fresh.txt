@@ -1,0 +1,62 @@
+
+> campusconnectco.in@0.1.0 lint
+> eslint
+
+
+C:\Users\sriram\campusconnectco.in\src\app\api\escrow\route.ts
+  59:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\api\transactions\route.ts
+  41:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\dashboard\client\post-gig\page.tsx
+  38:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\dashboard\student\page.tsx
+  3:43  warning  'Search' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\dashboard\student\wallet\page.tsx
+  5:39  warning  'Wallet' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\messages\page.tsx
+  3:62  warning  'MoreVertical' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\network\page.tsx
+  3:26  warning  'Briefcase' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\payments\page.tsx
+  7:71  warning  'MoreHorizontal' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\app\profile\page.tsx
+  4:18  warning  'Calendar' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\components\Analytics\FinancialChart.tsx
+   3:10  warning  'LineChart' is defined but never used                                                           @typescript-eslint/no-unused-vars
+   3:21  warning  'Line' is defined but never used                                                                @typescript-eslint/no-unused-vars
+  21:9   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+C:\Users\sriram\campusconnectco.in\src\components\Analytics\MonthlyComparison.tsx
+  16:9  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+C:\Users\sriram\campusconnectco.in\src\components\Feed\PostCreator.tsx
+  17:33  warning  Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+C:\Users\sriram\campusconnectco.in\src\components\Feed\TrendingSidebar.tsx
+  1:22  warning  'Hash' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\components\ToastProvider.tsx
+  3:47  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\components\gigs\ApplyButton.tsx
+  30:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\components\payments\EscrowControl.tsx
+   5:24  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+  34:18  warning  'error' is defined but never used        @typescript-eslint/no-unused-vars
+
+C:\Users\sriram\campusconnectco.in\src\lib\auth.ts
+  46:34  warning  'user' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 20 problems (0 errors, 20 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+

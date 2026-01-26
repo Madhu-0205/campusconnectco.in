@@ -1,0 +1,75 @@
+﻿node_modules/next/dist/build/templates/app-page.d.ts(3,25): error TS2307: Cannot find module 'VAR_MODULE_GLOBAL_ERROR' or its corresponding type declarations.
+node_modules/next/dist/build/webpack-config.d.ts(10,104): error TS2694: Namespace '"C:/Users/sriram/campusconnectco.in/node_modules/next/dist/compiled/webpack/webpack".webpack' has no exported member 'RuleSetUseItem'.
+node_modules/next/dist/build/webpack/loaders/next-app-loader/index.d.ts(1,13): error TS2613: Module '"C:/Users/sriram/campusconnectco.in/node_modules/next/dist/compiled/webpack/webpack"' has no default export. Did you mean to use 'import { webpack } from "C:/Users/sriram/campusconnectco.in/node_modules/next/dist/compiled/webpack/webpack"' instead?
+node_modules/next/dist/client/components/error-boundary.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/http-access-fallback/error-boundary.d.ts(11,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/layout-router.d.ts(2,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/with-router.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/lib/metadata/metadata.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/server/app-render/entry-base.d.ts(1,114): error TS2307: Cannot find module 'react-server-dom-webpack/server' or its corresponding type declarations.
+node_modules/next/dist/server/app-render/entry-base.d.ts(2,27): error TS2307: Cannot find module 'react-server-dom-webpack/static' or its corresponding type declarations.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(39,16): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(40,13): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(41,15): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(42,26): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/shared/lib/app-router-context.shared-runtime.d.ts(4,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/app-router-types.d.ts(7,13): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head-manager-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/image-config-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable.shared-runtime.d.ts(21,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/router-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/utils.d.ts(10,13): error TS1192: Module '"fs"' has no default export.
+node_modules/zod/v4/locales/index.d.cts(1,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ar"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(2,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/az"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(3,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/be"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(4,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/bg"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(5,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ca"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(6,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/cs"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(7,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/da"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(8,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/de"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(9,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/en"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(10,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/eo"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(11,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/es"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(12,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/fa"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(13,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/fi"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(14,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/fr"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(15,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/fr-CA"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(16,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/he"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(17,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/hu"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(18,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/hy"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(19,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/id"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(20,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/is"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(21,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/it"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(22,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ja"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(23,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ka"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(24,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/kh"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(25,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/km"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(26,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ko"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(27,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/lt"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(28,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/mk"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(29,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ms"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(30,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/nl"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(31,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/no"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(32,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ota"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(33,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ps"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(34,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/pl"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(35,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/pt"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(36,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ru"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(37,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/sl"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(38,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/sv"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(39,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ta"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(40,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/th"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(41,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/tr"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(42,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ua"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(43,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/uk"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(44,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/ur"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(45,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/uz"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(46,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/vi"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(47,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/zh-CN"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(48,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/zh-TW"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/zod/v4/locales/index.d.cts(49,21): error TS1259: Module '"C:/Users/sriram/campusconnectco.in/node_modules/zod/v4/locales/yo"' can only be default-imported using the 'esModuleInterop' flag
+src/app/api/escrow/route.ts(1,22): error TS2307: Cannot find module '@/lib/auth' or its corresponding type declarations.
+src/app/api/escrow/route.ts(2,20): error TS2307: Cannot find module '@/lib/prisma' or its corresponding type declarations.

@@ -1,0 +1,1 @@
+﻿src/lib/auth.ts(56,17): error TS2578: Unused '@ts-expect-error' directive.

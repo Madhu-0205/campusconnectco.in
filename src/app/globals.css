@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+:root {
+  /* Standout Branding & Colors */
+  --primary: #1AB69D;
+  /* Teal */
+  --background: #FFFAF0;
+  /* Warm Cream */
+  --standout: #6366F1;
+  /* Sophisticated Deep Indigo */
+  --accent: #FFA673;
+  /* Peach */
+
+  --foreground: #1A202C;
+  /* Darker slate for better contrast */
+
+  --secondary: #E8D5C4;
+  /* Soft beige */
+  --muted: #F7FAFC;
+  --muted-foreground: #4A5568;
+
+  --card: #ffffff;
+  --radius: 1rem;
+
+  /* 3D & Animation Vars */
+  --perspective: 1000px;
+}
+
+@theme {
+  --font-display: "Inter", "sans-serif";
+  --font-body: "Inter", "sans-serif";
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--primary);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-standout: var(--standout);
+  --color-electric: var(--primary);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-scale-in: scaleIn 0.2s ease-out;
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+/* Custom Utilities for 3D */
+@utility perspective-1000 {
+  perspective: 1000px;
+}
+
+@utility preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@utility backface-hidden {
+  backface-visibility: hidden;
+}
+
+@utility rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Brand Highlight Utility */
+.brand-name {
+  color: var(--standout) !important;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+/* Slogan Style - Clean Text */
+.student-badge {
+  @apply text-[9px] uppercase tracking-[0.25em] font-bold;
+  color: var(--muted-foreground);
+  width: fit-content;
+}
+
+/* Rendering Optimizations */
+.fast-render {
+  contain: content;
+  content-visibility: auto;
+}

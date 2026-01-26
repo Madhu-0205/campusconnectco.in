@@ -1,0 +1,115 @@
+﻿
+> campusconnectco.in@0.1.0 build
+> next build
+
+node.exe : ΓÜá 
+Warning: Next.js 
+inferred your 
+workspace root, but 
+it may not be 
+correct.
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (ΓÜá War   
+ ning: Ne...not b    
+e correct.:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+ We detected 
+multiple lockfiles 
+and selected the 
+directory of C:\Users
+\sriram\package-lock.
+json as the root 
+directory.
+ To silence this 
+warning, set 
+`turbopack.root` in 
+your Next.js config, 
+or consider removing 
+one of the lockfiles 
+if it's not needed.
+   See https://nextjs
+.org/docs/app/api-ref
+erence/config/next-co
+nfig-js/turbopack#roo
+t-directory for more 
+information.
+ Detected additional 
+lockfiles: 
+   * C:\Users\sriram\
+campusconnectco.in\pa
+ckage-lock.json
+
+Γû▓ Next.js 16.1.1 (Turbopack)
+- Environments: .env
+
+ΓÜá The "middleware" 
+file convention is 
+deprecated. Please 
+use "proxy" instead. 
+Learn more: https://n
+extjs.org/docs/messag
+es/middleware-to-prox
+y
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 38.2s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/payments/pa
+ge.tsx:189:23
+Type error: Type 
+'number' is not 
+assignable to type 
+'never'.
+
+[0m [90m 187 
+|[39m             [
+33m<[39m[33m/[39m
+[33mdiv[39m[33m>[3
+9m
+ [90m 188 |[39m    
+         [33m<[39m
+[33mdiv[39m classNam
+e[33m=[39m{[32m`p-
+3 rounded-lg 
+bg-slate-800/50 ${col
+or}`[39m}[33m>[39m
+[31m[1m>[22m[39m
+[90m 189 |[39m      
+           [33m<[39
+m[33mIcon[39m size
+[33m=[39m{[35m24[3
+9m} [33m/[39m[33m>
+[39m
+ [90m     |[39m    
+                   
+[31m[1m^[22m[39m
+ [90m 190 |[39m    
+         [33m<[39m
+[33m/[39m[33mdiv[3
+9m[33m>[39m
+ [90m 191 |[39m    
+     [33m<[39m[33m
+/[39m[33mdiv[39m[
+33m>[39m
+ [90m 192 |[39m    
+ )[0m
+Next.js build worker 
+exited with code: 1 
+and signal: null
