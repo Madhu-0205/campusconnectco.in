@@ -1,13 +1,13 @@
 "use client";
 
+import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
 import { Eye, EyeOff, Loader2, ShieldPlus, CheckCircle2, XCircle } from "lucide-react";
 
 export default function SignUpPage() {
     const router = useRouter();
-    const { status } = useSession();
+    const supabase = createClient();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -23,14 +23,19 @@ export default function SignUpPage() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [passwordScore, setPasswordScore] = useState(0);
 
     /* Auto redirect if logged in */
     useEffect(() => {
-        if (status === "authenticated") {
-            router.replace("/dashboard");
-        }
-    }, [status, router]);
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                router.replace("/dashboard");
+            }
+        };
+        checkUser();
+    }, [supabase, router]);
 
     /* Password strength logic */
     useEffect(() => {
@@ -53,6 +58,7 @@ export default function SignUpPage() {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+        setSuccess("");
 
         if (formData.password !== formData.confirmPassword) {
             setError("Passwords do not match");
@@ -61,32 +67,40 @@ export default function SignUpPage() {
         }
 
         try {
-            const res = await fetch("/api/auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: formData.name.trim(),
-                    email: formData.email.toLowerCase().trim(),
-                    password: formData.password,
-                    role: formData.role,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) throw new Error(data.message || "Registration failed");
-
-            const login = await signIn("credentials", {
-                email: formData.email,
+            // Sign up with Supabase Auth
+            const { data, error: signUpError } = await supabase.auth.signUp({
+                email: formData.email.toLowerCase().trim(),
                 password: formData.password,
-                redirect: false,
-                callbackUrl: "/dashboard"
+                options: {
+                    data: {
+                        name: formData.name.trim(),
+                        role: formData.role,
+                    },
+                },
             });
 
-            if (login?.error) {
-                router.push("/auth/signin");
-            } else {
-                router.replace("/dashboard");
+            if (signUpError) {
+                throw new Error(signUpError.message);
+            }
+
+            if (data.user) {
+                // Create user profile in database
+                await fetch("/api/user/profile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: data.user.id,
+                        email: formData.email.toLowerCase().trim(),
+                        name: formData.name.trim(),
+                        role: formData.role,
+                    }),
+                });
+
+                setSuccess("Account created! Redirecting to dashboard...");
+                setTimeout(() => {
+                    router.replace("/dashboard");
+                    router.refresh();
+                }, 1500);
             }
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : "Something went wrong");
@@ -95,12 +109,21 @@ export default function SignUpPage() {
         }
     };
 
-    const handleGoogleSignIn = () => {
-        signIn("google", { callbackUrl: "/dashboard" });
+    const handleGoogleSignIn = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+            },
+        });
+
+        if (error) {
+            setError(error.message);
+        }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-electric via-[#FFE4C4] to-[#FFA673] p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-electric via-[#FFE4C4] to-[#FFA673] p-4">
             <div className="w-full max-w-md">
                 <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/40">
 
@@ -119,6 +142,12 @@ export default function SignUpPage() {
                     {error && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
                             {error}
+                        </div>
+                    )}
+
+                    {success && (
+                        <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-600 rounded-lg text-sm">
+                            {success}
                         </div>
                     )}
 

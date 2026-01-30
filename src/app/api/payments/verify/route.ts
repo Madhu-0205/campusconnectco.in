@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import prisma from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
     try {
-        const session = await auth();
-        if (!session?.user?.email) {
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
@@ -30,15 +32,15 @@ export async function POST(req: Request) {
         if (isAuthentic) {
             // Payment Successful -> Trigger Escrow Lock Logic
 
-            const user = await prisma.user.findUnique({
-                where: { email: session.user.email }
+            const dbUser = await prisma.user.findUnique({
+                where: { id: user.id }
             });
 
-            if (!user) return new NextResponse("User not found", { status: 404 });
+            if (!dbUser) return new NextResponse("User profile not found", { status: 404 });
 
             // Build transaction data dynamically
             const transactionData: any = {
-                userId: user.id,
+                userId: dbUser.id,
                 amount: parseFloat(amount),
                 status: "COMPLETED",
                 description: `Payment via Razorpay: ${razorpay_payment_id}`

@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { createClient } from "@/lib/supabase/server"
 import prisma from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { z } from "zod"
@@ -14,33 +14,34 @@ const withdrawSchema = z.object({
 
 export async function POST(req: Request) {
     try {
-        const session = await auth()
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-        if (!session?.user?.email) {
+        if (authError || !user) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
 
         const json = await req.json()
         const body = withdrawSchema.parse(json)
 
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
+        const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
             include: {
                 transactions: true
             }
         })
 
-        if (!user) {
-            return new NextResponse("User not found", { status: 404 })
+        if (!dbUser) {
+            return new NextResponse("User profile not found", { status: 404 })
         }
 
         // Calculate Balance
         // Sum of COMPLETED (ESCROW_RELEASE, DEPOSIT) - Sum of COMPLETED (ESCROW_LOCK, WITHDRAWAL)
-        const totalCredits = user.transactions
+        const totalCredits = dbUser.transactions
             .filter(t => t.status === "COMPLETED" && ["ESCROW_RELEASE", "DEPOSIT"].includes(t.type))
             .reduce((sum, t) => sum + (t.netAmount || t.amount), 0);
 
-        const totalDebits = user.transactions
+        const totalDebits = dbUser.transactions
             .filter(t => (t.status === "COMPLETED" || t.status === "PENDING") && ["ESCROW_LOCK", "WITHDRAWAL"].includes(t.type))
             .reduce((sum, t) => sum + t.amount, 0);
 
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
         // Update User Bank Details
         if (body.type === "bank" && body.accNumber) {
             await prisma.user.update({
-                where: { id: user.id },
+                where: { id: dbUser.id },
                 data: {
                     accNumber: body.accNumber,
                     ifscCode: body.ifscCode,
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
             })
         } else if (body.type === "upi" && body.upiId) {
             await prisma.user.update({
-                where: { id: user.id },
+                where: { id: dbUser.id },
                 data: { upiId: body.upiId }
             })
         }
@@ -70,7 +71,7 @@ export async function POST(req: Request) {
         // Create Withdrawal Transaction
         await prisma.transaction.create({
             data: {
-                userId: user.id,
+                userId: dbUser.id,
                 amount: body.amount,
                 type: "WITHDRAWAL",
                 status: "PENDING",
@@ -80,6 +81,9 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true })
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return new NextResponse(JSON.stringify(error.issues), { status: 422 })
+        }
         console.error("Withdrawal error:", error)
         return new NextResponse("Internal Server Error", { status: 500 })
     }

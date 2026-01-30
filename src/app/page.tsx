@@ -5,11 +5,21 @@ import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { motion } from "framer-motion"
 import { ArrowRight, CheckCircle2, Globe, ShieldCheck, Zap } from "lucide-react"
-import { useSession } from "next-auth/react"
+import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 export default function LandingPage() {
-  const { status } = useSession()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setIsAuthenticated(!!user)
+    }
+    checkAuth()
+  }, [supabase])
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -50,7 +60,7 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              {status === "authenticated" ? (
+              {isAuthenticated ? (
                 <Link href="/dashboard" className="w-full sm:w-auto">
                   <Button size="lg" className="w-full sm:w-auto text-lg px-8 h-14 bg-electric hover:bg-blue-600">
                     Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
@@ -131,3 +141,4 @@ export default function LandingPage() {
     </div>
   )
 }
+

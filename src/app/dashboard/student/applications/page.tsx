@@ -113,8 +113,8 @@ export default function StudentApplicationsPage() {
                                     onClick={() => handleConfirmCompletion(app.gig.id)}
                                     disabled={app.gig.studentConfirmed || processingId === app.gig.id}
                                     className={`px-6 py-3 rounded-2xl text-sm font-black uppercase tracking-widest transition-all shadow-lg ${app.gig.studentConfirmed
-                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
-                                            : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-95 shadow-slate-900/20'
+                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
+                                        : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-95 shadow-slate-900/20'
                                         }`}
                                 >
                                     {processingId === app.gig.id ? <Loader2 className="animate-spin" size={18} /> :
@@ -132,7 +132,7 @@ export default function StudentApplicationsPage() {
                     </Card>
                 )) : (
                     <div className="py-20 text-center bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
-                        <p className="text-slate-400 font-bold">You haven't applied to any gigs yet.</p>
+                        <p className="text-slate-400 font-bold">You haven&apos;t applied to any gigs yet.</p>
                     </div>
                 )}
             </div>

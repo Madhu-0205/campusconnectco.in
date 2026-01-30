@@ -1,19 +1,27 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation"
+import { createClient } from "@/lib/supabase/server"
+import prisma from "@/lib/prisma"
 
-export default async function DashboardPage() {
-    const session = await auth();
+export default async function StudentDashboardRedirect() {
+    const supabase = await createClient()
+    const {
+        data: { user },
+        error: authError,
+    } = await supabase.auth.getUser()
 
-    if (!session?.user) {
-        redirect("/auth/signin");
+    if (authError || !user) {
+        redirect("/auth/signin")
     }
 
-    // Redirect based on user's role
-    const role = session.user.role || "STUDENT";
+    const profile = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { role: true },
+    })
 
-    if (role === "CLIENT") {
-        redirect("/dashboard/client");
-    }
+    const role = profile?.role || "STUDENT"
 
-    redirect("/dashboard/student");
+    if (role === "CLIENT") redirect("/dashboard/client")
+    if (role === "FOUNDER") redirect("/dashboard/founder")
+
+    redirect("/get-gig")   // ✅ FINAL DESTINATION
 }

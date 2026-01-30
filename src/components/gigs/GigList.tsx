@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma"
 import { MapPin, Sparkles } from "lucide-react"
 import { ApplyButton } from "./ApplyButton"
 import { Prisma } from "@prisma/client"
-import { auth } from "@/lib/auth"
+import { createClient } from "@/lib/supabase/server"
 import { calculateDistance, calculateMatchScore } from "@/lib/matching"
 
 type GigWithPoster = Prisma.GigGetPayload<{
@@ -15,18 +15,19 @@ type GigWithPoster = Prisma.GigGetPayload<{
 }>
 
 export async function GigList({ searchParams }: { searchParams?: { q?: string, lat?: string, lng?: string } }) {
-    const session = await auth();
-    const userEmail = session?.user?.email;
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    let user: any = null;
-    if (userEmail) {
-        user = await prisma.user.findUnique({
-            where: { email: userEmail },
-            select: { skills: true, latitude: true, longitude: true } as any
+    let dbUser: { skills: string | null; latitude: number | null; longitude: number | null } | null = null;
+
+    if (user) {
+        dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { skills: true, latitude: true, longitude: true }
         });
     }
 
-    let gigs: any[] = [];
+    let gigs: GigWithPoster[] = [];
     try {
         gigs = await prisma.gig.findMany({
             where: {
@@ -41,7 +42,7 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string, l
                 }
             },
             orderBy: { createdAt: 'desc' }
-        }) as any;
+        });
     } catch (error) {
         console.error("Failed to fetch gigs:", error);
         return (
@@ -62,21 +63,21 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string, l
         return isNaN(parsed) ? null : parsed;
     };
 
-    const searchLat = parseCoord(searchParams?.lat) ?? user?.latitude;
-    const searchLng = parseCoord(searchParams?.lng) ?? user?.longitude;
+    const searchLat = parseCoord(searchParams?.lat) ?? dbUser?.latitude;
+    const searchLng = parseCoord(searchParams?.lng) ?? dbUser?.longitude;
 
     const ratedGigs = gigs.map(gig => {
         const distance = (searchLat != null && searchLng != null && gig.latitude != null && gig.longitude != null)
             ? calculateDistance(searchLat as number, searchLng as number, gig.latitude as number, gig.longitude as number)
             : null;
 
-        const matchScore = user ? calculateMatchScore(user.skills, gig.tags) : 0;
+        const matchScore = dbUser ? calculateMatchScore(dbUser.skills, gig.tags) : 0;
 
         return { ...gig, distance, matchScore };
     });
 
     // Sort by match score if user is logged in
-    if (user) {
+    if (dbUser) {
         ratedGigs.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
     }
 
@@ -127,4 +128,3 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string, l
         </div>
     )
 }
-

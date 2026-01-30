@@ -1,19 +1,25 @@
 "use client"
 
 import { redirect } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { createClient } from "@/lib/supabase/client"
 import { useEffect } from "react"
 
 export default function RedirectToInternships() {
-    const { status } = useSession()
+    const supabase = createClient()
 
     useEffect(() => {
-        if (status === "unauthenticated") {
-            redirect("/auth/signin")
-        } else if (status === "authenticated") {
-            redirect("/dashboard/student/internships")
+        const checkAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) {
+                redirect("/auth/signin")
+            } else {
+                redirect("/dashboard/student/internships")
+            }
         }
-    }, [status])
+
+        checkAuth()
+    }, [supabase])
 
     return null
 }

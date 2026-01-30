@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { razorpay } from "@/lib/razorpay";
-import { auth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
     try {
-        const session = await auth();
-        if (!session?.user) {
-            return new NextResponse("Unauthorized", { status: 401 });
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return new NextResponse(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { 'Content-Type': 'application/json' } });
         }
 
         const body = await req.json();
@@ -16,7 +18,7 @@ export async function POST(req: Request) {
             return new NextResponse(JSON.stringify({
                 error: "Configuration Error",
                 details: "Razorpay API Keys are missing in server environment."
-            }), { status: 500 });
+            }), { status: 500, headers: { 'Content-Type': 'application/json' } });
         }
 
         const options = {

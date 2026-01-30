@@ -4,14 +4,34 @@ import Link from 'next/link';
 import { Home, Users, Briefcase, MessageSquare, CreditCard, Bell, Search, Menu, LogOut, Settings, User, GraduationCap, Info } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSession, signOut } from 'next-auth/react';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 export default function Navigation() {
-    const { data: session, status } = useSession();
+    const router = useRouter();
+    const supabase = createClient();
+    const [user, setUser] = useState<SupabaseUser | null>(null);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isNotifOpen, setIsNotifOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navRef = useRef<HTMLDivElement>(null);
+
+    // Get user session
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        getUser();
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, [supabase]);
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -26,6 +46,12 @@ export default function Navigation() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push('/');
+        router.refresh();
+    };
+
     const navLinks = [
         { href: "/", icon: <Home size={20} />, label: "Home" },
         { href: "/post-gig", icon: <Briefcase size={20} className="text-amber-500" />, label: "Post Gig" },
@@ -34,6 +60,16 @@ export default function Navigation() {
         { href: "/payments", icon: <CreditCard size={20} />, label: "Payments" },
         { href: "/about", icon: <Info size={20} />, label: "About" },
     ];
+
+    const getUserInitials = () => {
+        if (user?.user_metadata?.name) {
+            return user.user_metadata.name.substring(0, 2).toUpperCase();
+        }
+        if (user?.email) {
+            return user.email.substring(0, 2).toUpperCase();
+        }
+        return "JD";
+    };
 
     return (
         <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-gray-800/50">
@@ -90,7 +126,7 @@ export default function Navigation() {
                                             {[
                                                 { text: "Sarah liked your post", time: "2m ago", read: false },
                                                 { text: "New gig match: React Dev", time: "1h ago", read: false },
-                                                { text: "Payment received: \u20B9450", time: "5h ago", read: true },
+                                                { text: "Payment received: ₹450", time: "5h ago", read: true },
                                             ].map((n, i) => (
                                                 <div key={i} className={`p-3 border-b border-slate-700/50 text-sm hover:bg-slate-800/50 cursor-pointer transition-colors ${!n.read ? 'bg-electric/5' : ''}`}>
                                                     <p className="text-gray-200">{n.text}</p>
@@ -108,10 +144,10 @@ export default function Navigation() {
                         <div className="relative">
                             <button
                                 onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotifOpen(false); setIsMobileMenuOpen(false); }}
-                                className="h-9 w-9 rounded-full bg-linear-to-tr from-electric to-purple-500 p-[2px] active:scale-95 transition-transform"
+                                className="h-9 w-9 rounded-full bg-gradient-to-tr from-electric to-purple-500 p-[2px] active:scale-95 transition-transform"
                             >
                                 <div className="h-full w-full rounded-full bg-slate-900 flex items-center justify-center text-xs font-bold text-white uppercase tabular-nums">
-                                    {session?.user?.name?.substring(0, 2) || "JD"}
+                                    {getUserInitials()}
                                 </div>
                             </button>
 
@@ -124,8 +160,8 @@ export default function Navigation() {
                                         className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-xl overflow-hidden glass-card z-50 origin-top-right"
                                     >
                                         <div className="p-3 border-b border-slate-700/50">
-                                            <p className="font-bold text-white text-sm truncate">{session?.user?.name || "John Doe"}</p>
-                                            <p className="text-xs text-gray-400">{session?.user?.email || "student@university.edu"}</p>
+                                            <p className="font-bold text-white text-sm truncate">{user?.user_metadata?.name || "User"}</p>
+                                            <p className="text-xs text-gray-400">{user?.email || "user@example.com"}</p>
                                         </div>
                                         <div className="p-1">
                                             <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 text-sm text-electric hover:bg-electric/10 rounded-lg transition-colors">
@@ -138,7 +174,7 @@ export default function Navigation() {
                                                 <Settings size={16} /> Settings
                                             </Link>
                                             <button
-                                                onClick={() => signOut({ callbackUrl: '/' })}
+                                                onClick={handleSignOut}
                                                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-left"
                                             >
                                                 <LogOut size={16} /> Sign Out
@@ -183,13 +219,22 @@ export default function Navigation() {
                                 </Link>
                             ))}
                             <div className="pt-4 border-t border-slate-800 mt-4">
-                                <Link
-                                    href="/auth/signup"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block w-full text-center bg-electric hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-electric/20 transition-all active:scale-[0.98]"
-                                >
-                                    Get Started
-                                </Link>
+                                {!user ? (
+                                    <Link
+                                        href="/auth/signup"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="block w-full text-center bg-electric hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-electric/20 transition-all active:scale-[0.98]"
+                                    >
+                                        Get Started
+                                    </Link>
+                                ) : (
+                                    <button
+                                        onClick={handleSignOut}
+                                        className="block w-full text-center bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98]"
+                                    >
+                                        Sign Out
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </motion.div>

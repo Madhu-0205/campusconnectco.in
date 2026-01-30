@@ -41,7 +41,7 @@ export default function ManifestoPage() {
                         className="text-2xl text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed"
                     >
                         We believe the traditional model of corporate trust is broken.
-                        We are building a new foundation where students aren't just participants—they are the arbiters of integrity.
+                        We are building a new foundation where students aren&apos;t just participants—they are the arbiters of integrity.
                     </motion.p>
                 </section>
 
@@ -75,7 +75,7 @@ export default function ManifestoPage() {
                     </div>
                     <div className="relative z-10 space-y-8">
                         <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                            This is more than a marketplace. <br />It's a <span className="text-electric">Trust Factory</span>.
+                            This is more than a marketplace. <br />It&apos;s a <span className="text-electric">Trust Factory</span>.
                         </h2>
                         <div className="space-y-4">
                             <p className="text-slate-400 text-lg font-medium leading-relaxed">
@@ -97,7 +97,7 @@ export default function ManifestoPage() {
     )
 }
 
-function ManifestoSection({ icon, title, content }: { icon: any, title: string, content: string }) {
+function ManifestoSection({ icon, title, content }: { icon: React.ReactNode, title: string, content: string }) {
     return (
         <motion.div
             initial={{ opacity: 0, x: -20 }}

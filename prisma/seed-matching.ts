@@ -1,9 +1,12 @@
 import { PrismaClient } from '@prisma/client'
+import { randomUUID } from 'node:crypto'
 
 const prisma = new PrismaClient()
 
 async function main() {
     console.log('Seeding mock data for AI and Radius Matching...')
+
+    const testUserId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479' // A static UUID for testing consistency
 
     // Upsert a test user if not exists
     const user = await prisma.user.upsert({
@@ -14,6 +17,7 @@ async function main() {
             longitude: 77.5946
         },
         create: {
+            id: testUserId,
             email: 'student@example.com',
             name: 'Test Student',
             role: 'STUDENT',
@@ -55,9 +59,16 @@ async function main() {
     ]
 
     for (const gig of gigs) {
-        await prisma.gig.create({
-            data: gig
+        // Use upsert or find first to avoid duplicates if re-running
+        const existingGig = await prisma.gig.findFirst({
+            where: { title: gig.title, posterId: user.id }
         })
+
+        if (!existingGig) {
+            await prisma.gig.create({
+                data: gig
+            })
+        }
     }
 
     console.log('Seeding complete!')

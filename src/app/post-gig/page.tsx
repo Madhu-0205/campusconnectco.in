@@ -1,19 +1,26 @@
 "use client"
 
 import { redirect } from "next/navigation"
-import { useSession } from "next-auth/react"
-import { useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { useEffect, useState } from "react"
 
 export default function RedirectToPostGig() {
-    const { status } = useSession()
+    const [isChecking, setIsChecking] = useState(true)
+    const supabase = createClient()
 
     useEffect(() => {
-        if (status === "unauthenticated") {
-            redirect("/auth/signin")
-        } else if (status === "authenticated") {
-            redirect("/dashboard/client/post-gig")
+        const checkAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) {
+                redirect("/auth/signin")
+            } else {
+                redirect("/dashboard/client/post-gig")
+            }
         }
-    }, [status])
+
+        checkAuth()
+    }, [supabase])
 
     return null
 }

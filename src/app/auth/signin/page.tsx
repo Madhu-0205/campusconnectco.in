@@ -1,13 +1,13 @@
 "use client";
 
-import { signIn, useSession } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 
 export default function SignInPage() {
     const router = useRouter();
-    const { status } = useSession();
+    const supabase = createClient();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -20,10 +20,14 @@ export default function SignInPage() {
 
     /* Auto redirect if already logged in */
     useEffect(() => {
-        if (status === "authenticated") {
-            router.replace("/dashboard");
-        }
-    }, [status, router]);
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                router.replace("/dashboard");
+            }
+        };
+        checkUser();
+    }, [supabase, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,18 +35,16 @@ export default function SignInPage() {
         setError("");
 
         try {
-            const result = await signIn("credentials", {
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({
                 email,
                 password,
-                remember,
-                redirect: false,
-                callbackUrl: "/dashboard"
             });
 
-            if (result?.error) {
-                setError(result.error || "Invalid credentials");
-            } else {
-                router.replace(result?.url || "/dashboard");
+            if (signInError) {
+                setError(signInError.message);
+            } else if (data.user) {
+                router.replace("/dashboard");
+                router.refresh();
             }
         } catch (err) {
             setError("Server error. Please try again.");
@@ -51,11 +53,17 @@ export default function SignInPage() {
         }
     };
 
-    const handleGoogleSignIn = () => {
-        signIn("google", {
-            callbackUrl: "/dashboard",
-            redirect: true,
+    const handleGoogleSignIn = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+            },
         });
+
+        if (error) {
+            setError(error.message);
+        }
     };
 
     return (

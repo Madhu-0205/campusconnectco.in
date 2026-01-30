@@ -25,8 +25,8 @@ const clientItems = [
 
 const founderItems = [
     { icon: Home, label: "Founder Overview", href: "/dashboard/founder" },
-    { icon: BarChart, label: "Platform Revenue", href: "/dashboard/founder" },
-    { icon: ShieldCheck, label: "Escrow Logic", href: "/dashboard/founder" },
+    { icon: BarChart, label: "Platform Revenue", href: "/dashboard/founder/revenue" },
+    { icon: ShieldCheck, label: "Escrow Logic", href: "/dashboard/founder/escrow" },
 ]
 
 const generalItems = [
@@ -34,7 +34,7 @@ const generalItems = [
     { icon: Settings, label: "Settings", href: "/dashboard/student/settings" },
 ]
 
-function SidebarLink({ href, icon: Icon, label, isActive }: { href: string, icon: any, label: string, isActive: boolean }) {
+function SidebarLink({ href, icon: Icon, label, isActive }: { href: string, icon: React.ComponentType<{ size?: number }>, label: string, isActive: boolean }) {
     return (
         <Link href={href}>
             <div className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive ? 'bg-primary/10 text-primary font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}>
@@ -55,7 +55,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const pathname = usePathname()
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const isClient = pathname.startsWith('/dashboard/client')
-    const sidebarItems = isClient ? clientItems : studentItems
 
     // Close sidebar on navigation
     useEffect(() => {

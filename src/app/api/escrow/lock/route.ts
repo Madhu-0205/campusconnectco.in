@@ -13,11 +13,7 @@ export async function POST(req: Request) {
 
         const { gigId, studentId, amount } = await req.json()
 
-        if (!gigId || !studentId || !amount) {
-            return NextResponse.json({ error: "Missing parameters" }, { status: 400 })
-        }
-
-        // Fetch logged-in DB user
+        // Fetch DB user
         const dbUser = await prisma.user.findUnique({
             where: { id: user.id }
         })
@@ -26,7 +22,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Only clients can lock escrow" }, { status: 403 })
         }
 
-        // Verify gig ownership
+        // Validate gig ownership
         const gig = await prisma.gig.findUnique({
             where: { id: gigId }
         })
@@ -35,13 +31,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid gig access" }, { status: 403 })
         }
 
-        // Create escrow record
+        // Create escrow
         const escrow = await prisma.escrow.create({
             data: {
                 gigId,
-                clientId: dbUser.id,       // ✅ always from session
+                clientId: dbUser.id,
                 workerId: studentId,
-                amount: Number(amount),
+                amount,
                 status: "LOCKED"
             }
         })
@@ -51,17 +47,17 @@ export async function POST(req: Request) {
             data: {
                 userId: dbUser.id,
                 gigId,
-                amount: Number(amount),
+                amount,
                 type: "ESCROW_LOCK",
                 status: "COMPLETED",
                 description: "Escrow locked for gig"
             }
         })
 
-        return NextResponse.json({ success: true, escrow })
+        return NextResponse.json(escrow)
 
-    } catch (err: any) {
-        console.error("ESCROW LOCK ERROR:", err)
-        return NextResponse.json({ error: err.message || "Internal error" }, { status: 500 })
+    } catch (err) {
+        console.error("[ESCROW_LOCK_ERROR]", err)
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 })
     }
 }

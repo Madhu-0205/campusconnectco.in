@@ -1,12 +1,14 @@
-import { auth } from "@/lib/auth"
+import { createClient } from "@/lib/supabase/server"
 import prisma from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { calculateDistance, calculateMatchScore, calculateRadiusScore } from "@/lib/matching"
 
 export async function GET(req: Request) {
     try {
-        const session = await auth()
-        if (!session?.user?.email) {
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+        if (authError || !user) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
 
@@ -21,18 +23,18 @@ export async function GET(req: Request) {
         const lng = parseCoord(searchParams.get("lng"))
         const type = searchParams.get("type") || "gigs" // "gigs" or "talent"
 
-        const user = await prisma.user.findUnique({
-            where: { email: session.user.email },
+        const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
             select: { id: true, skills: true, latitude: true, longitude: true } as any
         }) as any
 
-        if (!user) {
-            return new NextResponse("User not found", { status: 404 })
+        if (!dbUser) {
+            return new NextResponse("User profile not found", { status: 404 })
         }
 
         // Use provided lat/lng or fallback to user's saved location
-        const searchLat = lat ?? user.latitude ?? 0
-        const searchLng = lng ?? user.longitude ?? 0
+        const searchLat = lat ?? dbUser.latitude ?? 0
+        const searchLng = lng ?? dbUser.longitude ?? 0
 
         if (type === "gigs") {
             const gigs = await prisma.gig.findMany({
@@ -49,7 +51,7 @@ export async function GET(req: Request) {
                     ? calculateDistance(searchLat, searchLng, gig.latitude, gig.longitude)
                     : null
 
-                const skillScore = calculateMatchScore(user.skills, gig.tags, gig.description)
+                const skillScore = calculateMatchScore(dbUser.skills, gig.tags, gig.description)
                 const radiusScore = calculateRadiusScore(distance)
 
                 // Hybrid Formula: 70% skill match, 30% proximity
@@ -72,7 +74,7 @@ export async function GET(req: Request) {
             const talent = await prisma.user.findMany({
                 where: {
                     role: "STUDENT",
-                    id: { not: user.id }
+                    id: { not: dbUser.id }
                 },
                 select: {
                     id: true,
