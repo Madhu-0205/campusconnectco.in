@@ -28,10 +28,7 @@ export default function LandingPage() {
         <Hero3D />
       </div>
 
-      {/* Hero Content below */}
-
       <main className="relative z-10 pt-20 pb-32 max-w-7xl mx-auto px-6">
-
         {/* Hero Section */}
         <section className="text-center max-w-3xl mx-auto mb-32">
           <motion.div
@@ -85,16 +82,16 @@ export default function LandingPage() {
         </section>
 
         {/* Stats Grid */}
-        <section className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-4 mb-32">
+        <section className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-6 mb-32">
           {[
             { label: "Active Students", value: "12K+" },
             { label: "Gigs Completed", value: "8.5K" },
             { label: "Student Earnings", value: "₹3.5Cr+" },
             { label: "Indian Campuses", value: "50+" },
           ].map((stat, i) => (
-            <Card key={i} variant="glass" className="text-center py-8 hover-3d px-4">
-              <div className="text-2xl sm:text-3xl font-black brand-name mb-1">{stat.value}</div>
-              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</div>
+            <Card key={i} className="text-center p-8 bg-white/40 backdrop-blur-xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl hover:scale-105 transition-all rounded-[2.5rem]">
+              <div className="text-3xl font-black brand-name mb-1 tracking-tighter">{stat.value}</div>
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{stat.label}</div>
             </Card>
           ))}
         </section>
@@ -108,24 +105,23 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { title: "Create Profile", desc: "Verify your student status and showcase your skills.", icon: Globe },
-              { title: "Browse & Apply", desc: "Filter gigs by pay, location, and skill match.", icon: CheckCircle2 },
-              { title: "Get Paid", desc: "Secure escrow payments released instantly upon approval.", icon: ShieldCheck }
+              { title: "Create Profile", desc: "Verify your student status and showcase your skills.", icon: Globe, color: "bg-blue-500/10 text-blue-600" },
+              { title: "Browse & Apply", desc: "Filter gigs by pay, location, and skill match.", icon: CheckCircle2, color: "bg-emerald-500/10 text-emerald-600" },
+              { title: "Get Paid", desc: "Secure escrow payments released instantly upon approval.", icon: ShieldCheck, color: "bg-amber-500/10 text-amber-600" }
             ].map((step, i) => (
-              <Card key={i} className="relative group overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <step.icon className="h-24 w-24" />
+              <Card key={i} className="p-10 bg-white/60 backdrop-blur-xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] relative group overflow-hidden hover:shadow-2xl transition-all duration-500">
+                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-500">
+                  <step.icon className="h-40 w-40" />
                 </div>
-                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                  <step.icon className="h-6 w-6 text-primary" />
+                <div className={`h-16 w-16 rounded-3xl ${step.color} flex items-center justify-center mb-8 shadow-inner`}>
+                  <step.icon className="h-8 w-8" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{step.desc}</p>
+                <h3 className="text-2xl font-black mb-4 text-slate-900 tracking-tight">{step.title}</h3>
+                <p className="text-slate-500 font-medium leading-relaxed">{step.desc}</p>
               </Card>
             ))}
           </div>
         </section>
-
       </main>
 
       <footer className="border-t border-border mt-20 relative z-10 bg-white/50 backdrop-blur-xl">
@@ -141,4 +137,3 @@ export default function LandingPage() {
     </div>
   )
 }
-

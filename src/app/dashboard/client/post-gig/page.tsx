@@ -49,63 +49,65 @@ export default function PostGigPage() {
                 <p className="text-slate-500">Find the perfect student for your task.</p>
             </div>
 
-            <Card>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Gig Title</label>
-                        <input
-                            required
-                            type="text"
-                            placeholder="e.g. Build a React Landing Page"
-                            className="w-full px-4 py-3 rounded-xl border border-border focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
-                        <textarea
-                            required
-                            rows={6}
-                            placeholder="Describe the deliverables, timeline, and requirements..."
-                            className="w-full px-4 py-3 rounded-xl border border-border focus:ring-2 focus:ring-primary/20 focus:outline-none resize-none"
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Budget ($)</label>
+            <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-[2.5rem] overflow-hidden">
+                <div className="p-10">
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Gig Title</label>
                             <input
                                 required
-                                type="number"
-                                min="5"
-                                placeholder="200"
-                                className="w-full px-4 py-3 rounded-xl border border-border focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                                value={formData.budget}
-                                onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                                type="text"
+                                placeholder="e.g. Build a React Landing Page"
+                                className="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-medium text-slate-900"
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Deadline</label>
-                            <input
-                                type="date"
-                                className="w-full px-4 py-3 rounded-xl border border-border focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                                value={formData.deadline}
-                                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                            />
-                        </div>
-                    </div>
 
-                    <div className="pt-4 flex justify-end gap-4">
-                        <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading ? "Posting..." : "Post Gig"}
-                        </Button>
-                    </div>
-                </form>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Description</label>
+                            <textarea
+                                required
+                                rows={6}
+                                placeholder="Describe the deliverables, timeline, and requirements..."
+                                className="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-medium text-slate-900 resize-none"
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Budget (₹)</label>
+                                <input
+                                    required
+                                    type="number"
+                                    min="5"
+                                    placeholder="200"
+                                    className="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-medium text-slate-900"
+                                    value={formData.budget}
+                                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Deadline</label>
+                                <input
+                                    type="date"
+                                    className="w-full px-6 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-medium text-slate-900"
+                                    value={formData.deadline}
+                                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="pt-6 flex justify-end gap-5">
+                            <Button type="button" variant="ghost" onClick={() => router.back()} className="rounded-xl font-bold px-8">Cancel</Button>
+                            <Button type="submit" disabled={loading} className="rounded-xl font-black px-12 h-14 bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-900/20 active:scale-95 transition-all">
+                                {loading ? "Posting..." : "Post Gig"}
+                            </Button>
+                        </div>
+                    </form>
+                </div>
             </Card>
         </div>
     )

@@ -123,7 +123,7 @@ export default function WalletPage() {
                         <h3 className="font-black text-3xl text-slate-900 tracking-tight">Recent <span className="text-emerald-500">Activity</span></h3>
                         <p className="text-slate-500 font-medium">Your latest financial movements with numeric reliability.</p>
                     </div>
-                    <button className="text-emerald-600 text-sm font-black hover:underline underline-offset-4">View Full Statement</button>
+                    <button className="text-emerald-600 text-sm font-black hover:underline underline-offset-4" suppressHydrationWarning>View Full Statement</button>
                 </div>
                 <div className="grid gap-5">
                     {[

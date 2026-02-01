@@ -137,7 +137,7 @@ export default function Network() {
                         <div className="glass-card rounded-xl p-6 hover:border-electric/30 transition-all duration-300 group h-full flex flex-col">
 
                             <div className="flex justify-between items-start mb-4">
-                                <div className="h-16 w-16 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-600 group-hover:border-electric transition" />
+                                <div className="h-16 w-16 rounded-full bg-linear-to-br from-slate-700 to-slate-800 border-2 border-slate-600 group-hover:border-electric transition" />
 
                                 <button
                                     onClick={() => toggleConnect(user.id, user.name)}

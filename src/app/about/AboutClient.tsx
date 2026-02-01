@@ -114,7 +114,7 @@ export default function AboutClient() {
                                         className="w-full h-full object-cover rounded-[2.5rem]"
                                         alt={storySteps[activeStep].title}
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+                                    <div className="absolute inset-0 bg-linear-to-t from-slate-900/60 to-transparent" />
                                     <div className="absolute bottom-10 left-10 text-white">
                                         <div className="flex items-center gap-2 mb-2">
                                             <span className="h-1 w-8 bg-electric rounded-full" />
@@ -205,12 +205,16 @@ export default function AboutClient() {
                             Join over 50,000 students who are building their future and proving their value every single day.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-                            <Button size="lg" className="bg-electric hover:bg-blue-600 px-12 h-18 text-xl font-black rounded-3xl shadow-glow">
-                                Become a Member
-                            </Button>
-                            <Button variant="glass" size="lg" className="border-white/10 bg-white/5 hover:bg-white/10 px-12 h-18 text-xl font-black rounded-3xl backdrop-blur-md">
-                                Hire Talent
-                            </Button>
+                            <Link href="/auth/signup">
+                                <Button size="lg" className="bg-electric hover:bg-blue-600 px-12 h-18 text-xl font-black rounded-3xl shadow-glow">
+                                    Become a Member
+                                </Button>
+                            </Link>
+                            <Link href="/auth/signup">
+                                <Button variant="glass" size="lg" className="border-white/10 bg-white/5 hover:bg-white/10 px-12 h-18 text-xl font-black rounded-3xl backdrop-blur-md">
+                                    Hire Talent
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </motion.div>

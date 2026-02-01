@@ -67,7 +67,7 @@ export default function SignInPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-electric via-[#FFE4C4] to-[#FFA673] p-4">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-electric via-[#FFE4C4] to-[#FFA673] p-4">
             <div className="w-full max-w-md">
                 <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/40">
 

@@ -86,25 +86,29 @@ export default function StudentApplicationsPage() {
 
             <div className="grid gap-4">
                 {applications.length > 0 ? applications.map((app) => (
-                    <Card key={app.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:shadow-xl hover:border-slate-300 transition-all group border-slate-100 rounded-[2rem]">
-                        <div className="flex items-center gap-6 mb-4 md:mb-0">
-                            <div className={`p-4 rounded-2xl ${app.status === 'ACCEPTED' ? 'bg-emerald-100 text-emerald-600' :
-                                app.status === 'REJECTED' ? 'bg-rose-100 text-rose-600' :
-                                    'bg-amber-100 text-amber-600'
-                                } shadow-sm`}>
-                                {app.status === 'ACCEPTED' ? <CheckCircle2 size={24} /> :
-                                    app.status === 'REJECTED' ? <XCircle size={24} /> :
-                                        <Clock size={24} />}
+                    <Card key={app.id} className="p-8 flex flex-col md:flex-row md:items-center justify-between hover:shadow-2xl transition-all duration-500 group border-none rounded-[2.5rem] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                        <div className="flex items-center gap-6 mb-6 md:mb-0">
+                            <div className={`h-16 w-16 rounded-3xl flex items-center justify-center transition-all group-hover:scale-110 ${app.status === 'ACCEPTED' ? 'bg-emerald-50 text-emerald-600 shadow-emerald-100/50' :
+                                app.status === 'REJECTED' ? 'bg-rose-50 text-rose-600 shadow-rose-100/50' :
+                                    'bg-amber-50 text-amber-600 shadow-amber-100/50'
+                                } shadow-lg`}>
+                                {app.status === 'ACCEPTED' ? <CheckCircle2 size={32} /> :
+                                    app.status === 'REJECTED' ? <XCircle size={32} /> :
+                                        <Clock size={32} />}
                             </div>
                             <div>
-                                <h3 className="font-black text-xl text-slate-900 tracking-tight">{app.gig.title}</h3>
-                                <p className="text-sm text-slate-500 font-bold">{app.gig?.poster?.name || 'Client'} • Applied {new Date(app.createdAt).toLocaleDateString()}</p>
+                                <h3 className="font-black text-2xl text-slate-900 tracking-tight mb-1">{app.gig.title}</h3>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-slate-400 border border-slate-100 px-2 py-0.5 rounded-md uppercase tracking-widest">{app.gig?.poster?.name || 'Client'}</span>
+                                    <span className="text-xs font-bold text-slate-400">•</span>
+                                    <span className="text-xs font-bold text-slate-400">Applied {new Date(app.createdAt).toLocaleDateString()}</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between md:justify-end gap-8">
+                        <div className="flex items-center justify-between md:justify-end gap-10">
                             <div className="text-right">
-                                <p className="font-black text-2xl text-slate-900 tracking-tighter">₹{app.gig.budget.toLocaleString()}</p>
+                                <p className="text-3xl font-black text-slate-900 tracking-tighter">₹{app.gig.budget.toLocaleString()}</p>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fixed Budget</p>
                             </div>
 
@@ -112,6 +116,7 @@ export default function StudentApplicationsPage() {
                                 <button
                                     onClick={() => handleConfirmCompletion(app.gig.id)}
                                     disabled={app.gig.studentConfirmed || processingId === app.gig.id}
+                                    suppressHydrationWarning
                                     className={`px-6 py-3 rounded-2xl text-sm font-black uppercase tracking-widest transition-all shadow-lg ${app.gig.studentConfirmed
                                         ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
                                         : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-95 shadow-slate-900/20'

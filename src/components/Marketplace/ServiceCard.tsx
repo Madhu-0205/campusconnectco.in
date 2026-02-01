@@ -18,7 +18,7 @@ export default function ServiceCard({ title, provider, rating, reviews, price, c
                     {category}
                 </div>
                 {/* Placeholder for service image */}
-                <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-slate-500">
+                <div className="w-full h-full bg-linear-to-br from-slate-700 to-slate-800 flex items-center justify-center text-slate-500">
                     Image
                 </div>
             </div>

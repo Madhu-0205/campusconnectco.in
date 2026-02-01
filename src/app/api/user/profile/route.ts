@@ -12,7 +12,7 @@ export async function GET() {
         }
 
         // Get user profile from database
-        const profile = await prisma.user.findUnique({
+        let profile = await prisma.user.findUnique({
             where: { id: user.id },
             select: {
                 id: true,
@@ -28,7 +28,15 @@ export async function GET() {
         });
 
         if (!profile) {
-            return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+            // Auto-create profile if it doesn't exist
+            profile = await prisma.user.create({
+                data: {
+                    id: user.id,
+                    email: user.email!,
+                    name: user.user_metadata?.name || user.email?.split("@")[0] || "Stellar Student",
+                    role: "STUDENT",
+                },
+            });
         }
 
         return NextResponse.json(profile);

@@ -49,7 +49,7 @@ export default function Marketplace() {
                             className="w-full bg-slate-800/50 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-electric/50 transition-all focus:bg-slate-800"
                         />
                     </div>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white hover:bg-slate-700 transition-colors hover:shadow-lg hover:shadow-electric/10">
+                    <button className="flex items-center gap-2 px-6 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white hover:bg-slate-700 transition-colors hover:shadow-lg hover:shadow-electric/10" suppressHydrationWarning>
                         <SlidersHorizontal size={20} />
                         <span>Filters</span>
                     </button>
@@ -61,6 +61,7 @@ export default function Marketplace() {
                     {["All", "Development", "Design", "Tutoring", "Writing", "Marketing", "Video"].map((cat, i) => (
                         <button
                             key={cat}
+                            suppressHydrationWarning
                             className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${i === 0 ? 'bg-electric text-white shadow-lg shadow-electric/25' : 'bg-slate-800/50 text-gray-300 hover:bg-slate-700 hover:text-white'}`}
                         >
                             {cat}

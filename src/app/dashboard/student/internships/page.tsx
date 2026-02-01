@@ -48,7 +48,7 @@ export default function InternshipsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="relative h-[400px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200"
             >
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/40 to-transparent z-10" />
+                <div className="absolute inset-0 bg-linear-to-r from-slate-900 via-slate-900/40 to-transparent z-10" />
                 <img
                     src="/C:/Users/sriram/.gemini/antigravity/brain/9d02d48f-0699-4a38-ad42-0a688fdc0d1e/internship_success_infographic_1769348548450.png"
                     alt="Internship Success Path"

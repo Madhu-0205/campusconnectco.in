@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/Button"
 import { motion, AnimatePresence } from "framer-motion"
 import { BarChart, Briefcase, CreditCard, Home, LogOut, Settings, User, GraduationCap, Info, Menu, ShieldCheck } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 const studentItems = [
     { icon: Home, label: "Student Overview", href: "/dashboard/student" },
@@ -53,8 +55,41 @@ function SidebarLink({ href, icon: Icon, label, isActive }: { href: string, icon
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
+    const router = useRouter()
+    const supabase = createClient()
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const [userProfile, setUserProfile] = useState<{ name?: string, image?: string } | null>(null)
+    const [isSigningOut, setIsSigningOut] = useState(false)
     const isClient = pathname.startsWith('/dashboard/client')
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                const res = await fetch("/api/user/profile")
+                if (res.ok) {
+                    const data = await res.json()
+                    setUserProfile(data)
+                }
+            }
+        }
+        fetchUser()
+    }, [supabase])
+
+    const handleSignOut = async () => {
+        setIsSigningOut(true)
+        try {
+            const { error: signOutError } = await supabase.auth.signOut()
+            if (signOutError) throw signOutError
+            toast.success("Signed out successfully")
+            router.push("/auth/signin")
+        } catch (err) {
+            toast.error("Error signing out")
+            console.error(err)
+        } finally {
+            setIsSigningOut(false)
+        }
+    }
 
     // Close sidebar on navigation
     useEffect(() => {
@@ -78,19 +113,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Sidebar */}
             <aside className={`
-                w-64 bg-white border-r border-slate-200 fixed h-full z-[70] transition-transform duration-300
+                w-64 bg-white border-r border-slate-200 fixed top-16 h-[calc(100vh-4rem)] z-30 transition-transform duration-300
                 md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
                 <div className="p-6 h-full flex flex-col">
-                    <Link href="/" className="flex flex-col gap-2 mb-10 group">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-xl bg-standout flex items-center justify-center shadow-lg shadow-standout/20 group-hover:scale-105 transition-transform">
-                                <span className="font-black text-white text-xl">C</span>
-                            </div>
-                            <span className="font-heading brand-name text-2xl tracking-tighter">CampusConnect</span>
-                        </div>
-                        <span className="student-badge ml-1">Made by students for students</span>
-                    </Link>
 
                     <nav className="flex-1 space-y-6 overflow-y-auto custom-scrollbar pr-2">
                         <div>
@@ -131,9 +157,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </nav>
 
                     <div className="pt-6 border-t border-slate-100 mt-auto">
-                        <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl">
+                        <Button
+                            variant="ghost"
+                            className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl"
+                            onClick={handleSignOut}
+                            disabled={isSigningOut}
+                        >
                             <LogOut size={20} className="mr-2" />
-                            Sign Out
+                            {isSigningOut ? "Signing Out..." : "Sign Out"}
                         </Button>
                     </div>
                 </div>
@@ -142,7 +173,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Main Content */}
             <main className="flex-1 md:ml-64 w-full">
                 {/* Dashboard Header */}
-                <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 md:px-8 flex items-center justify-between">
+                <header className="h-14 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-20 px-4 md:px-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
@@ -150,12 +181,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         >
                             <Menu size={20} />
                         </button>
-                        <h1 className="font-black text-lg text-slate-900 tracking-tight">
-                            {isClient ? "Client Dashboard" : "Student Dashboard"}
+                        <h1 className="font-black text-sm text-slate-900 tracking-tight flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-electric animate-pulse" />
+                            {isClient ? "Client Control Center" : "Student Command Hub"}
                         </h1>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="h-9 w-9 rounded-full bg-slate-200 border-2 border-white shadow-sm ring-1 ring-slate-100" />
                     </div>
                 </header>
 

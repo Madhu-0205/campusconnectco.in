@@ -10,7 +10,12 @@ const applicants = [
     { id: 3, name: "Maria Garcia", gig: "UI/UX Design for Fintech App", experience: "3 years", rating: 5.0, status: "NEW" },
 ]
 
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+
 export default function ClientApplicantsPage() {
+    const router = useRouter()
+
     return (
         <div className="space-y-6">
             <div>
@@ -39,13 +44,30 @@ export default function ClientApplicantsPage() {
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <Button variant="outline" size="sm" className="gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="gap-2"
+                                    onClick={() => {
+                                        toast.info(`Opening chat with ${applicant.name}...`)
+                                        router.push("/messages")
+                                    }}
+                                >
                                     <MessageSquare size={16} /> Chat
                                 </Button>
-                                <Button variant="outline" size="sm" className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => toast.error(`Application from ${applicant.name} declined.`)}
+                                >
                                     <X size={16} /> Decline
                                 </Button>
-                                <Button size="sm" className="gap-2">
+                                <Button
+                                    size="sm"
+                                    className="gap-2"
+                                    onClick={() => toast.success(`Successfully hired ${applicant.name}!`)}
+                                >
                                     <Check size={16} /> Hire Now
                                 </Button>
                             </div>
