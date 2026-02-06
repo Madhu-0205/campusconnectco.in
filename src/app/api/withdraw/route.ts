@@ -18,37 +18,37 @@ export async function POST(req: Request) {
         const { data: { user }, error: authError } = await supabase.auth.getUser()
 
         if (authError || !user) {
-            return new NextResponse("Unauthorized", { status: 401 })
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const json = await req.json()
-        const body = withdrawSchema.parse(json)
+        const json = await req.json();
+        const body = withdrawSchema.parse(json);
 
         const dbUser = await prisma.user.findUnique({
             where: { id: user.id },
             include: {
                 transactions: true
             }
-        })
+        });
 
         if (!dbUser) {
-            return new NextResponse("User profile not found", { status: 404 })
+            return NextResponse.json({ error: "User profile not found" }, { status: 404 });
         }
 
         // Calculate Balance
         // Sum of COMPLETED (ESCROW_RELEASE, DEPOSIT) - Sum of COMPLETED (ESCROW_LOCK, WITHDRAWAL)
         const totalCredits = dbUser.transactions
             .filter(t => t.status === "COMPLETED" && ["ESCROW_RELEASE", "DEPOSIT"].includes(t.type))
-            .reduce((sum, t) => sum + (t.netAmount || t.amount), 0);
+            .reduce((sum: number, t: any) => sum + (t.netAmount || t.amount), 0);
 
         const totalDebits = dbUser.transactions
             .filter(t => (t.status === "COMPLETED" || t.status === "PENDING") && ["ESCROW_LOCK", "WITHDRAWAL"].includes(t.type))
-            .reduce((sum, t) => sum + t.amount, 0);
+            .reduce((sum: number, t: any) => sum + t.amount, 0);
 
         const availableBalance = totalCredits - totalDebits;
 
         if (body.amount > availableBalance) {
-            return new NextResponse("Insufficient funds", { status: 400 })
+            return NextResponse.json({ error: "Insufficient funds" }, { status: 400 });
         }
 
         // Update User Bank Details
@@ -60,12 +60,12 @@ export async function POST(req: Request) {
                     ifscCode: body.ifscCode,
                     bankName: body.bankName
                 }
-            })
+            });
         } else if (body.type === "upi" && body.upiId) {
             await prisma.user.update({
                 where: { id: dbUser.id },
                 data: { upiId: body.upiId }
-            })
+            });
         }
 
         // Create Withdrawal Transaction
@@ -77,14 +77,14 @@ export async function POST(req: Request) {
                 status: "PENDING",
                 description: `Withdrawal via ${body.type === 'bank' ? 'Bank Account' : 'UPI'}`
             }
-        })
+        });
 
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true });
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return new NextResponse(JSON.stringify(error.issues), { status: 422 })
+            return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 422 });
         }
-        console.error("Withdrawal error:", error)
-        return new NextResponse("Internal Server Error", { status: 500 })
+        console.error("Withdrawal error:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

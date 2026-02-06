@@ -32,6 +32,7 @@ export default function PaymentModal({
     const [paymentAmount, setPaymentAmount] = useState(amount);
     const [step, setStep] = useState<"input" | "processing" | "success">("input");
     const [processing, setProcessing] = useState(false);
+    const [userProfile, setUserProfile] = useState<{ name: string; email: string } | null>(null);
 
     useEffect(() => {
         setPaymentAmount(amount);
@@ -43,6 +44,20 @@ export default function PaymentModal({
         script.src = "https://checkout.razorpay.com/v1/checkout.js";
         script.async = true;
         document.body.appendChild(script);
+
+        // Fetch user profile for prefill
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch("/api/user/profile");
+                if (res.ok) {
+                    const data = await res.json();
+                    setUserProfile(data);
+                }
+            } catch (e) {
+                console.error("Profile fetch error in payment modal:", e);
+            }
+        };
+        fetchProfile();
     }, []);
 
     /* Secure Payment Trigger */
@@ -61,11 +76,14 @@ export default function PaymentModal({
             const orderRes = await fetch("/api/payments/create-order", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount: parseFloat(paymentAmount) })
+                body: JSON.stringify({
+                    amount: parseFloat(paymentAmount),
+                    gigId: gigId
+                })
             });
             const order = await orderRes.json();
 
-            if (!order.id) throw new Error("Order creation failed");
+            if (!order || !order.id) throw new Error(order.error || "Order creation failed");
 
             // 2. Open Razorpay Checkout
             const options = {
@@ -75,7 +93,7 @@ export default function PaymentModal({
                 name: "CampusConnect",
                 description: gigId ? `Escrow Funding for Gig` : `Wallet Deposit`,
                 order_id: order.id,
-                handler: async function (response: any) {
+                handler: async function (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
                     // 3. Verify Payment
                     try {
                         const verifyRes = await fetch("/api/payments/verify", {
@@ -86,7 +104,7 @@ export default function PaymentModal({
                                 razorpay_payment_id: response.razorpay_payment_id,
                                 razorpay_signature: response.razorpay_signature,
                                 gigId,
-                                amount // in standard currency
+                                amount: String(paymentAmount) // ensuring string for consistency
                             })
                         });
 
@@ -94,25 +112,38 @@ export default function PaymentModal({
                             setStep("success");
                             addToast(gigId ? "Payment Verified & Funds Locked!" : "Deposit Successful!", "success");
                         } else {
-                            addToast("Payment Verification Failed", "error");
+                            const errorData = await verifyRes.json().catch(() => ({}));
+                            addToast(errorData.error || "Payment Verification Failed", "error");
                             setStep("input");
                         }
                     } catch (error) {
+                        console.error("Verification error:", error);
                         addToast("Verification Error", "error");
+                        setStep("input");
                     }
                 },
                 prefill: {
-                    name: "CampusConnect User",
-                    email: "student@campusconnect.co.in",
-                    contact: "9999999999"
+                    name: userProfile?.name || "CampusConnect User",
+                    email: userProfile?.email || "",
                 },
                 theme: {
                     color: "#0f172a"
+                },
+                modal: {
+                    ondismiss: function () {
+                        setStep("input");
+                        setProcessing(false);
+                    }
                 }
             };
 
-            const rzp1 = new (window as any).Razorpay(options);
-            rzp1.open();
+            const RazorpayConstructor = (window as any).Razorpay;
+            if (RazorpayConstructor) {
+                const rzp1 = new RazorpayConstructor(options);
+                rzp1.open();
+            } else {
+                addToast("Razorpay SDK not loaded. Please refresh.", "error");
+            }
 
         } catch (error) {
             console.error(error);
@@ -128,7 +159,7 @@ export default function PaymentModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
         >
             <div className="absolute inset-0" onClick={onClose} />
 

@@ -3,12 +3,30 @@ import { calculateGigRankingScore } from "./gigRanking"
 
 const MAX_RADIUS_KM = 5
 
+interface UserProfile {
+    latitude: number | null;
+    longitude: number | null;
+    skills: string | null;
+    rating?: number;
+    completedJobs?: number;
+}
+
+interface Gig {
+    id: string;
+    latitude: number | null;
+    longitude: number | null;
+    tags: string | null;
+    description: string;
+    urgency?: number;
+    [key: string]: any;
+}
+
 export function filterAndRankGigs({
     user,
     gigs,
 }: {
-    user: any
-    gigs: any[]
+    user: UserProfile
+    gigs: Gig[]
 }) {
     if (!user?.latitude || !user?.longitude || !Array.isArray(gigs)) return []
 
@@ -17,8 +35,8 @@ export function filterAndRankGigs({
             if (!gig?.latitude || !gig?.longitude) return null
 
             const distance = calculateDistance(
-                user.latitude,
-                user.longitude,
+                user.latitude as number,
+                user.longitude as number,
                 gig.latitude,
                 gig.longitude
             )
@@ -41,6 +59,6 @@ export function filterAndRankGigs({
                 aiScore,
             }
         })
-        .filter(Boolean)
-        .sort((a: any, b: any) => b.aiScore - a.aiScore)
+        .filter((item): item is (Exclude<typeof item, null>) => item !== null)
+        .sort((a, b) => b.aiScore - a.aiScore)
 }

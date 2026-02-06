@@ -2,6 +2,12 @@ import { createClient } from "@/lib/supabase/server"
 import prisma from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
+interface ChartDataItem {
+    name: string;
+    income: number;
+    expense: number;
+}
+
 export async function GET() {
     try {
         const supabase = await createClient()
@@ -36,7 +42,7 @@ export async function GET() {
             orderBy: { createdAt: "asc" },
         })
 
-        const chartData = transactions.reduce((acc: any[], curr: any) => {
+        const chartData = transactions.reduce((acc: ChartDataItem[], curr) => {
             const dateStr = curr.createdAt.toLocaleDateString("en-IN", {
                 day: "numeric",
                 month: "short",
@@ -45,7 +51,7 @@ export async function GET() {
             const existing = acc.find((d) => d.name === dateStr)
 
             const income = isAdmin
-                ? curr.fee || 0
+                ? (curr.fee || 0)
                 : curr.type === "ESCROW_RELEASE"
                     ? curr.amount
                     : 0

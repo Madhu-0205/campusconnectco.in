@@ -49,8 +49,8 @@ export default function MonthlyComparison() {
     }
 
     return (
-        <div className="w-full h-[200px]">
-            <ResponsiveContainer width="100%" height="100%">
+        <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%" debounce={100} minWidth={1} minHeight={1}>
                 <BarChart data={data} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
                     <XAxis type="number" hide />
 

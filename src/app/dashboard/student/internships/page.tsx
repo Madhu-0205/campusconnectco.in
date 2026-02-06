@@ -50,7 +50,7 @@ export default function InternshipsPage() {
             >
                 <div className="absolute inset-0 bg-linear-to-r from-slate-900 via-slate-900/40 to-transparent z-10" />
                 <img
-                    src="/C:/Users/sriram/.gemini/antigravity/brain/9d02d48f-0699-4a38-ad42-0a688fdc0d1e/internship_success_infographic_1769348548450.png"
+                    src="/internship_hero.png"
                     alt="Internship Success Path"
                     className="absolute inset-0 w-full h-full object-cover"
                 />

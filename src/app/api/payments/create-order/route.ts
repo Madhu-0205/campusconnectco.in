@@ -8,43 +8,39 @@ export async function POST(req: Request) {
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
         if (authError || !user) {
-            return new NextResponse(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         const body = await req.json();
         const { amount, currency = "INR" } = body;
 
         if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-            return new NextResponse(JSON.stringify({
+            return NextResponse.json({
                 error: "Configuration Error",
                 details: "Razorpay API Keys are missing in server environment."
-            }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+            }, { status: 500 });
         }
 
         const options = {
             amount: Math.round(amount * 100), // amount in paisa
             currency,
             receipt: `receipt_${Date.now()}`,
+            notes: {
+                gigId: body.gigId || "general_deposit",
+                userId: user.id
+            }
         };
 
         const order = await razorpay.orders.create(options);
 
-        // Explicitly format as JSON
-        return new NextResponse(JSON.stringify(order), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return NextResponse.json(order);
 
     } catch (error: any) {
         console.error("Razorpay Order Logic Error:", error);
 
-        // Return JSON error so frontend can parse it
-        return new NextResponse(JSON.stringify({
+        return NextResponse.json({
             error: "Order creation failed",
             details: error.message || "Unknown error"
-        }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        }, { status: 500 });
     }
 }

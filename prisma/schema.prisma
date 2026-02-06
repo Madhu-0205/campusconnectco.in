@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated-client"
 }
 
 datasource db {
@@ -19,7 +20,11 @@ model User {
   bio       String?
   skills    String?
   portfolio String?
+  linkedin  String?
+  github    String?
+  instagram String?
 
+  projects     Project[]
   gigsPosted   Gig[]         @relation("PostedGigs")
   applications Application[]
   transactions Transaction[]
@@ -43,6 +48,18 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Project {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  link        String?
+  image       String?
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
 
 model Gig {
   id          String   @id @default(uuid()) @db.Uuid

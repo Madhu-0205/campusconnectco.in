@@ -23,6 +23,10 @@ export async function GET() {
                 bio: true,
                 skills: true,
                 portfolio: true,
+                linkedin: true,
+                github: true,
+                instagram: true,
+                projects: true,
                 createdAt: true,
             },
         });
@@ -82,19 +86,31 @@ export async function PATCH(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const updates = await req.json();
+        const data = await req.json();
+        const allowedFields = ['name', 'bio', 'skills', 'portfolio', 'role', 'image', 'linkedin', 'github', 'instagram', 'latitude', 'longitude'];
+        const updates: any = {};
 
-        // Update user profile
+        allowedFields.forEach(field => {
+            if (data[field] !== undefined) {
+                updates[field] = data[field];
+            }
+        });
+
+        // Special handling for skills if passed as string
+        if (updates.skills && typeof updates.skills === 'string') {
+            updates.skills = updates.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
+
         const updatedUser = await prisma.user.update({
             where: { id: user.id },
             data: updates,
         });
 
         return NextResponse.json(updatedUser);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Profile update error:", error);
         return NextResponse.json(
-            { error: "Failed to update profile" },
+            { error: error.message || "Failed to update profile" },
             { status: 500 }
         );
     }

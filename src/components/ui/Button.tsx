@@ -50,7 +50,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <Comp
-        suppressHydrationWarning
         data-slot="button"
         data-variant={variant}
         data-size={size}

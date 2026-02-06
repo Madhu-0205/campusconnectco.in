@@ -13,7 +13,7 @@ export default async function BrowseGigsPage({ searchParams }: { searchParams: P
             <div className="relative h-64 rounded-3xl overflow-hidden shadow-lg border border-slate-200">
                 <div className="absolute inset-0 bg-linear-to-r from-slate-900/60 to-transparent z-10" />
                 <img
-                    src="/C:/Users/sriram/.gemini/antigravity/brain/9d02d48f-0699-4a38-ad42-0a688fdc0d1e/student_success_infographic_1769348227993.png"
+                    src="/gigs_hero.png"
                     alt="Student Success Journey"
                     className="absolute inset-0 w-full h-full object-cover"
                 />

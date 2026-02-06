@@ -58,9 +58,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const router = useRouter()
     const supabase = createClient()
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-    const [userProfile, setUserProfile] = useState<{ name?: string, image?: string } | null>(null)
+    const [userProfile, setUserProfile] = useState<{ name?: string, image?: string, role?: string } | null>(null)
     const [isSigningOut, setIsSigningOut] = useState(false)
-    const isClient = pathname.startsWith('/dashboard/client')
+    const userRole = userProfile?.role || 'STUDENT'
+    const isFounder = userRole === 'FOUNDER'
+    const isClientRole = userRole === 'CLIENT' || isFounder
+    const isStudentRole = userRole === 'STUDENT' || isFounder
+
+    const headerTitle = isFounder
+        ? "Founder Command Center"
+        : isClientRole
+            ? "Client Control Center"
+            : "Student Command Hub"
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -106,7 +115,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setIsSidebarOpen(false)}
-                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] md:hidden"
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-60 md:hidden"
                     />
                 )}
             </AnimatePresence>
@@ -119,32 +128,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div className="p-6 h-full flex flex-col">
 
                     <nav className="flex-1 space-y-6 overflow-y-auto custom-scrollbar pr-2">
-                        <div>
-                            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Student Hub</p>
-                            <div className="space-y-1">
-                                {studentItems.map((item) => (
-                                    <SidebarLink key={item.href} {...item} isActive={pathname === item.href} />
-                                ))}
+                        {isStudentRole && (
+                            <div>
+                                <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Student Hub</p>
+                                <div className="space-y-1">
+                                    {studentItems.map((item) => (
+                                        <SidebarLink key={item.href} {...item} isActive={pathname === item.href} />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
-                        <div>
-                            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Client Hub</p>
-                            <div className="space-y-1">
-                                {clientItems.map((item) => (
-                                    <SidebarLink key={item.href} {...item} isActive={pathname === item.href} />
-                                ))}
+                        {isClientRole && (
+                            <div>
+                                <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Client Hub</p>
+                                <div className="space-y-1">
+                                    {clientItems.map((item) => (
+                                        <SidebarLink key={item.href} {...item} isActive={pathname === item.href} />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
-                        <div>
-                            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Founder Hub</p>
-                            <div className="space-y-1">
-                                {founderItems.map((item) => (
-                                    <SidebarLink key={item.href} {...item} isActive={pathname === item.href} />
-                                ))}
+                        {isFounder && (
+                            <div>
+                                <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Founder Hub</p>
+                                <div className="space-y-1">
+                                    {founderItems.map((item) => (
+                                        <SidebarLink key={item.href} {...item} isActive={pathname === item.href} />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         <div className="pb-10">
                             <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">General</p>
@@ -183,7 +198,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </button>
                         <h1 className="font-black text-sm text-slate-900 tracking-tight flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-electric animate-pulse" />
-                            {isClient ? "Client Control Center" : "Student Command Hub"}
+                            {headerTitle}
                         </h1>
                     </div>
                 </header>

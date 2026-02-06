@@ -25,8 +25,8 @@ export async function GET(req: Request) {
 
         const dbUser = await prisma.user.findUnique({
             where: { id: user.id },
-            select: { id: true, skills: true, latitude: true, longitude: true } as any
-        }) as any
+            select: { id: true, skills: true, latitude: true, longitude: true }
+        })
 
         if (!dbUser) {
             return new NextResponse("User profile not found", { status: 404 })
@@ -44,18 +44,17 @@ export async function GET(req: Request) {
                         select: { name: true, image: true }
                     }
                 }
-            }) as any[]
+            })
 
             const ratedGigs = gigs.map(gig => {
                 const distance = (gig.latitude != null && gig.longitude != null)
                     ? calculateDistance(searchLat, searchLng, gig.latitude, gig.longitude)
                     : null
 
-                const skillScore = calculateMatchScore(dbUser.skills, gig.tags, gig.description)
+                const skillScore = calculateMatchScore(dbUser.skills || "", gig.tags || "", gig.description)
                 const radiusScore = calculateRadiusScore(distance)
 
                 // Hybrid Formula: 70% skill match, 30% proximity
-                // Radius score is multiplied by 100 to keep scales consistent
                 const finalScore = (skillScore * 0.7) + (radiusScore * 100 * 0.3)
 
                 return {
@@ -65,12 +64,10 @@ export async function GET(req: Request) {
                 }
             })
 
-            // Sort by final hybrid score
             ratedGigs.sort((a, b) => b.matchScore - a.matchScore)
-
             return NextResponse.json(ratedGigs.slice(0, 10))
         } else {
-            // Recommendation for Talent (Hire Talent)
+            // Recommendation for Talent
             const talent = await prisma.user.findMany({
                 where: {
                     role: "STUDENT",
@@ -84,26 +81,22 @@ export async function GET(req: Request) {
                     latitude: true,
                     longitude: true,
                     bio: true
-                } as any
-            }) as any[]
+                }
+            })
 
             const ratedTalent = talent.map(t => {
                 const distance = (t.latitude != null && t.longitude != null)
                     ? calculateDistance(searchLat, searchLng, t.latitude, t.longitude)
                     : null
 
-                // For talent matching, we might want to match against user's own skills 
-                // or just show distance. Here we use distance as primary factor for talent nearby.
                 return {
                     ...t,
                     distance,
-                    matchScore: 0 // Placeholder or custom logic
+                    matchScore: 0
                 }
             })
 
-            // Sort by distance if available
             ratedTalent.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity))
-
             return NextResponse.json(ratedTalent.slice(0, 10))
         }
 

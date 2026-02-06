@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { ArrowUpRight, Clock, DollarSign, Search, Sparkles, ArrowRight, Zap } from "lucide-react"
@@ -7,12 +8,29 @@ import AIRecommendations from "@/components/Feed/AIRecommendations"
 import Link from "next/link"
 
 export default function StudentDashboard() {
+    const [userName, setUserName] = useState("Student")
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch("/api/user/profile")
+                if (res.ok) {
+                    const data = await res.json()
+                    if (data.name) setUserName(data.name.split(" ")[0])
+                }
+            } catch (error) {
+                console.error("Error fetching profile:", error)
+            }
+        }
+        fetchProfile()
+    }, [])
+
     return (
         <div className="space-y-8">
             {/* Welcome Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tight">Welcome back, Alex! 👋</h2>
+                    <h2 className="text-4xl font-black text-slate-900 tracking-tight">Welcome back, {userName}! 👋</h2>
                     <p className="text-slate-500 font-medium">Here&apos;s what&apos;s happening with your gigs today.</p>
                 </div>
                 <div className="flex items-center gap-3">

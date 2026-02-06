@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated-client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id         String  @id @default(uuid()) @db.Uuid
+  name       String?
+  email      String  @unique
+  image      String?
+  coverImage String?
+  role       String  @default("STUDENT")
+
+  bio       String?
+  skills    String?
+  portfolio String?
+  linkedin  String?
+  github    String?
+  instagram String?
+
+  projects     Project[]
+  gigsPosted   Gig[]         @relation("PostedGigs")
+  applications Application[]
+  transactions Transaction[]
+  posts        Post[]
+  likes        PostLike[]
+
+  clientEscrows Escrow[] @relation("ClientEscrow")
+  workerEscrows Escrow[] @relation("WorkerEscrow")
+
+  latitude  Float?
+  longitude Float?
+
+  accNumber String?
+  ifscCode  String?
+  bankName  String?
+  upiId     String?
+
+  conversations Conversation[]
+  messages      Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  link        String?
+  image       String?
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+
+model Gig {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  budget      Float
+  deadline    DateTime?
+  status      String   @default("OPEN")
+  tags        String?
+
+  latitude  Float?
+  longitude Float?
+
+  ownerConfirmed   Boolean @default(false)
+  studentConfirmed Boolean @default(false)
+
+  posterId String  @db.Uuid
+  poster   User    @relation("PostedGigs", fields: [posterId], references: [id])
+
+  applications Application[]
+  transactions Transaction[]
+  escrows      Escrow[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Application {
+  id           String   @id @default(uuid()) @db.Uuid
+  gigId        String   @db.Uuid
+  applicantId String   @db.Uuid
+
+  gig       Gig  @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  applicant User @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  status      String  @default("PENDING")
+  coverLetter String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gigId])
+  @@index([applicantId])
+}
+
+model Escrow {
+  id       String  @id @default(uuid()) @db.Uuid
+  gigId    String  @db.Uuid
+  clientId String  @db.Uuid
+  workerId String  @db.Uuid
+
+  amount Float
+  status String @default("LOCKED")
+
+  gig    Gig  @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  client User @relation("ClientEscrow", fields: [clientId], references: [id])
+  worker User @relation("WorkerEscrow", fields: [workerId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([gigId])
+  @@index([clientId])
+  @@index([workerId])
+}
+
+model Transaction {
+  id     String  @id @default(uuid()) @db.Uuid
+  userId String  @db.Uuid
+  gigId  String? @db.Uuid
+
+  user User @relation(fields: [userId], references: [id])
+  gig  Gig? @relation(fields: [gigId], references: [id])
+
+  amount    Float
+  fee       Float? @default(0)
+  netAmount Float?
+
+  type        String
+  status      String
+  description String?
+
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id       String  @id @default(uuid()) @db.Uuid
+  content  String
+  authorId String  @db.Uuid
+
+  author User       @relation(fields: [authorId], references: [id])
+  likes  PostLike[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PostLike {
+  id     String  @id @default(uuid()) @db.Uuid
+  postId String  @db.Uuid
+  userId String  @db.Uuid
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}
+
+model Conversation {
+  id       String    @id @default(uuid()) @db.Uuid
+  users    User[]
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id             String   @id @default(uuid()) @db.Uuid
+  text           String
+  senderId       String   @db.Uuid
+  conversationId String   @db.Uuid
+
+  sender       User         @relation(fields: [senderId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
