@@ -237,7 +237,7 @@ export default function Profile() {
     return (
         <div className="min-h-screen bg-white text-slate-900 font-display">
             {/* LUXURY HEADER SECTION */}
-            <div className="relative h-[25rem] w-full overflow-hidden">
+            <div className="relative h-100 w-full overflow-hidden">
                 <motion.div
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
@@ -248,7 +248,7 @@ export default function Profile() {
                             : "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
                     }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-white" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/40 to-white" />
 
                 {/* Header Action */}
                 <div className="absolute top-8 right-8 flex gap-3">
@@ -284,7 +284,7 @@ export default function Profile() {
                             className="bg-white rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] p-10 border border-slate-100 flex flex-col items-center text-center relative overflow-hidden"
                         >
                             {/* Accent Decoration */}
-                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-indigo-500 to-purple-600" />
+                            <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-primary via-indigo-500 to-purple-600" />
 
                             {/* Avatar */}
                             <div className="relative group mb-8">
@@ -491,7 +491,7 @@ export default function Profile() {
             {/* PROJECT MODAL */}
             <AnimatePresence>
                 {showProjectModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -607,7 +607,7 @@ function ProjectCard({ project, onRemove }: { project: Project, onRemove: () => 
                 {project.image ? (
                     <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
                         <Code size={40} className="text-slate-200" />
                     </div>
                 )}
