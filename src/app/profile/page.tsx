@@ -235,7 +235,7 @@ export default function Profile() {
     }
 
     return (
-        <div className="min-h-screen bg-white text-slate-900 font-display">
+        <div className="min-h-screen bg-background text-foreground font-display transition-colors duration-300">
             {/* LUXURY HEADER SECTION */}
             <div className="relative h-100 w-full overflow-hidden">
                 <motion.div
@@ -248,10 +248,10 @@ export default function Profile() {
                             : "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
                     }}
                 />
-                <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/40 to-white" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/40 to-background" />
 
                 {/* Header Action */}
-                <div className="absolute top-8 right-8 flex gap-3">
+                <div className="absolute top-8 right-8 flex gap-3 z-20">
                     <Button
                         variant="glass"
                         onClick={() => isEditing ? handleSave() : setIsEditing(true)}
@@ -281,14 +281,14 @@ export default function Profile() {
                             onMouseMove={handleMouseMove}
                             onMouseLeave={handleMouseLeave}
                             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-                            className="bg-white rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] p-10 border border-slate-100 flex flex-col items-center text-center relative overflow-hidden"
+                            className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-10 border border-white/20 dark:border-slate-800 flex flex-col items-center text-center relative overflow-hidden"
                         >
                             {/* Accent Decoration */}
-                            <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-primary via-indigo-500 to-purple-600" />
+                            <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-electric via-indigo-500 to-purple-600" />
 
                             {/* Avatar */}
                             <div className="relative group mb-8">
-                                <div className="h-40 w-40 rounded-[2rem] bg-slate-900 flex items-center justify-center text-6xl font-black text-white shadow-2xl transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 overflow-hidden">
+                                <div className="h-40 w-40 rounded-[2rem] bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-6xl font-black text-white shadow-2xl transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 overflow-hidden border-4 border-white dark:border-slate-700">
                                     {profile.image ? (
                                         <img src={profile.image} alt={profile.name} className="h-full w-full object-cover" />
                                     ) : (
@@ -296,48 +296,48 @@ export default function Profile() {
                                     )}
                                 </div>
                                 {isEditing && (
-                                    <button className="absolute bottom-2 right-2 p-3 bg-white rounded-2xl shadow-xl text-primary hover:scale-110 transition-all">
+                                    <button className="absolute bottom-2 right-2 p-3 bg-white text-slate-900 rounded-2xl shadow-xl hover:scale-110 transition-all z-20">
                                         <Camera size={20} />
                                     </button>
                                 )}
                             </div>
 
                             {/* Info */}
-                            <div className="space-y-4 w-full">
+                            <div className="space-y-4 w-full relative z-10">
                                 {isEditing ? (
                                     <div className="space-y-4">
                                         <input
                                             value={profile.name}
                                             onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                                             placeholder="Display Name"
-                                            className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 font-black text-xl text-center focus:border-primary outline-none transition-all"
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl px-6 py-4 font-black text-xl text-center focus:border-electric outline-none transition-all text-foreground"
                                         />
                                         <input
                                             value={profile.role}
                                             onChange={(e) => setProfile({ ...profile, role: e.target.value })}
                                             placeholder="Professional Role"
-                                            className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-3 font-bold text-slate-500 text-center focus:border-primary outline-none transition-all"
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl px-6 py-3 font-bold text-muted-foreground text-center focus:border-electric outline-none transition-all"
                                         />
                                     </div>
                                 ) : (
                                     <>
                                         <div>
-                                            <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-none mb-2">
+                                            <h1 className="text-4xl font-black text-foreground tracking-tighter leading-none mb-2">
                                                 {profile.name}
                                             </h1>
-                                            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 text-primary rounded-full text-xs font-black uppercase tracking-widest">
+                                            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-electric/10 text-electric rounded-full text-xs font-black uppercase tracking-widest border border-electric/20">
                                                 <Zap size={12} fill="currentColor" /> {profile.role}
                                             </div>
                                         </div>
-                                        <p className="text-slate-500 font-medium flex items-center justify-center gap-2">
-                                            <MapPin size={16} className="text-primary" /> {profile.location}
+                                        <p className="text-muted-foreground font-medium flex items-center justify-center gap-2">
+                                            <MapPin size={16} className="text-electric" /> {profile.location}
                                         </p>
                                     </>
                                 )}
                             </div>
 
                             {/* Social Connectivity */}
-                            <div className="mt-10 pt-10 border-t border-slate-100 w-full">
+                            <div className="mt-10 pt-10 border-t border-slate-100 dark:border-slate-800 w-full relative z-10">
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Digital Presence</p>
                                 <div className="space-y-4">
                                     <SocialLink
@@ -372,13 +372,13 @@ export default function Profile() {
                             </div>
 
                             {/* Stats Quick Look */}
-                            <div className="grid grid-cols-2 gap-4 mt-8 w-full">
-                                <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                                    <p className="text-2xl font-black text-slate-900">{stats.connections}</p>
+                            <div className="grid grid-cols-2 gap-4 mt-8 w-full relative z-10">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-3xl border border-slate-100 dark:border-slate-800">
+                                    <p className="text-2xl font-black text-foreground">{stats.connections}</p>
                                     <p className="text-[10px] font-bold text-slate-400 uppercase">Network</p>
                                 </div>
-                                <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                                    <p className="text-2xl font-black text-slate-900">4.9</p>
+                                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-3xl border border-slate-100 dark:border-slate-800">
+                                    <p className="text-2xl font-black text-foreground">4.9</p>
                                     <p className="text-[10px] font-bold text-slate-400 uppercase">Rating</p>
                                 </div>
                             </div>
@@ -389,10 +389,10 @@ export default function Profile() {
                     <div className="lg:col-span-8 space-y-12">
 
                         {/* THE STORY (ABOUT) */}
-                        <section className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-xl shadow-slate-200/50">
+                        <section className="bg-card/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white/20 dark:border-slate-800 shadow-xl">
                             <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                                    <div className="p-3 bg-slate-900 text-white rounded-2xl shadow-lg">
+                                <h2 className="text-2xl font-black text-foreground tracking-tight flex items-center gap-3">
+                                    <div className="p-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl shadow-lg">
                                         <Award size={20} />
                                     </div>
                                     The Story
@@ -404,10 +404,10 @@ export default function Profile() {
                                     value={profile.bio}
                                     onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
                                     placeholder="Write your professional journey..."
-                                    className="w-full h-48 bg-slate-50 border-2 border-slate-100 rounded-3xl p-6 font-medium text-slate-700 focus:border-primary outline-none transition-all resize-none"
+                                    className="w-full h-48 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-3xl p-6 font-medium text-foreground focus:border-electric outline-none transition-all resize-none"
                                 />
                             ) : (
-                                <p className="text-lg text-slate-600 leading-relaxed font-medium">
+                                <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
                                     {profile.bio || "No biography provided yet. Start telling your story."}
                                 </p>
                             )}
@@ -420,7 +420,7 @@ export default function Profile() {
                                         <motion.span
                                             key={skill}
                                             layout
-                                            className="px-5 py-2.5 rounded-2xl bg-slate-900 text-white text-xs font-black flex items-center gap-2 shadow-lg shadow-slate-900/20"
+                                            className="px-5 py-2.5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-black flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"
                                         >
                                             {skill}
                                             {isEditing && (
@@ -435,7 +435,7 @@ export default function Profile() {
                                     {isEditing && (
                                         <input
                                             placeholder="+ Add skill"
-                                            className="px-5 py-2.5 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-200 text-xs font-black outline-none focus:border-primary transition-all"
+                                            className="px-5 py-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 text-xs font-black outline-none focus:border-electric transition-all text-foreground"
                                             onKeyDown={(e) => {
                                                 if (e.key === "Enter") {
                                                     addSkill(e.currentTarget.value);
@@ -451,15 +451,15 @@ export default function Profile() {
                         {/* WALL OF FAME (PROJECTS) */}
                         <section>
                             <div className="flex items-center justify-between mb-8 px-4">
-                                <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-4">
-                                    <div className="p-3 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-600/20">
+                                <h2 className="text-3xl font-black text-foreground tracking-tight flex items-center gap-4">
+                                    <div className="p-3 bg-electric text-white rounded-2xl shadow-xl shadow-electric/20">
                                         <Code size={24} />
                                     </div>
                                     Wall of Fame
                                 </h2>
                                 <Button
                                     onClick={() => setShowProjectModal(true)}
-                                    className="bg-primary hover:bg-slate-900 text-white rounded-2xl px-6 py-6 shadow-xl active:scale-95 transition-all"
+                                    className="bg-electric hover:bg-blue-600 text-white rounded-2xl px-6 py-6 shadow-xl active:scale-95 transition-all font-bold"
                                 >
                                     <Plus size={20} className="mr-2" /> Showcase Project
                                 </Button>
@@ -476,7 +476,7 @@ export default function Profile() {
                                             />
                                         ))
                                     ) : (
-                                        <div className="md:col-span-2 py-20 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center text-slate-400 gap-4">
+                                        <div className="md:col-span-2 py-20 bg-slate-50 dark:bg-slate-900/30 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2.5rem] flex flex-col items-center justify-center text-slate-400 gap-4">
                                             <Code size={48} className="opacity-20" />
                                             <p className="font-black">Your portfolio is empty. Add your best work!</p>
                                         </div>
@@ -491,23 +491,23 @@ export default function Profile() {
             {/* PROJECT MODAL */}
             <AnimatePresence>
                 {showProjectModal && (
-                    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setShowProjectModal(false)}
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
                         />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 40 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                            className="relative w-full max-w-xl bg-white rounded-[2.5rem] shadow-2xl p-10 flex flex-col gap-6"
+                            className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl p-10 flex flex-col gap-6 border border-slate-100 dark:border-slate-800"
                         >
                             <div className="flex justify-between items-center">
-                                <h3 className="text-3xl font-black text-slate-900 tracking-tight">Showcase Project</h3>
-                                <button onClick={() => setShowProjectModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+                                <h3 className="text-3xl font-black text-foreground tracking-tight">Showcase Project</h3>
+                                <button onClick={() => setShowProjectModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
                                     <X size={24} />
                                 </button>
                             </div>
@@ -530,7 +530,7 @@ export default function Profile() {
                                     <textarea
                                         value={newProject.description}
                                         onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                                        className="w-full h-32 bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-bold outline-none focus:border-primary transition-all resize-none"
+                                        className="w-full h-32 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl p-4 font-bold outline-none focus:border-electric transition-all resize-none text-foreground"
                                         placeholder="What makes this project standout?"
                                     />
                                 </div>
@@ -538,7 +538,7 @@ export default function Profile() {
 
                             <Button
                                 onClick={handleAddProject}
-                                className="w-full bg-slate-900 hover:bg-primary text-white py-6 rounded-2xl font-black text-lg transition-all shadow-xl shadow-slate-900/20"
+                                className="w-full bg-slate-900 dark:bg-white hover:bg-electric dark:hover:bg-electric text-white dark:text-slate-900 py-6 rounded-2xl font-black text-lg transition-all shadow-xl"
                             >
                                 Publish to Wall of Fame
                             </Button>
@@ -554,8 +554,10 @@ export default function Profile() {
    COMPONENTS
 ================================ */
 
+import { LucideIcon } from "lucide-react";
+
 function SocialLink({ icon: Icon, label, value, isEditing, onChange }: {
-    icon: any,
+    icon: LucideIcon,
     label: string,
     value: string,
     isEditing: boolean,
@@ -570,7 +572,7 @@ function SocialLink({ icon: Icon, label, value, isEditing, onChange }: {
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder={`${label} Profile URL`}
-                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl pl-12 pr-6 py-3 text-sm font-bold text-slate-900 focus:border-primary outline-none transition-all"
+                        className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl pl-12 pr-6 py-3 text-sm font-bold text-foreground focus:border-electric outline-none transition-all"
                     />
                 </div>
             ) : (
@@ -578,16 +580,16 @@ function SocialLink({ icon: Icon, label, value, isEditing, onChange }: {
                     href={value}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`flex items-center gap-4 p-4 rounded-2xl border-2 border-slate-50 hover:border-primary/20 hover:bg-primary/5 transition-all duration-300 ${!value ? "opacity-30 pointer-events-none" : ""}`}
+                    className={`flex items-center gap-4 p-4 rounded-2xl border-2 border-transparent hover:border-electric/20 hover:bg-electric/5 transition-all duration-300 ${!value ? "opacity-30 pointer-events-none" : ""}`}
                 >
-                    <div className="h-10 w-10 bg-white shadow-lg border border-slate-100 rounded-xl flex items-center justify-center text-slate-900 group-hover:bg-primary group-hover:text-white transition-all">
+                    <div className="h-10 w-10 bg-white dark:bg-slate-800 shadow-lg border border-slate-100 dark:border-slate-700 rounded-xl flex items-center justify-center text-slate-900 dark:text-white group-hover:bg-electric group-hover:text-white transition-all">
                         <Icon size={18} />
                     </div>
                     <div className="text-left">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</p>
-                        <p className="text-sm font-black text-slate-900 truncate max-w-[150px]">{value ? "Connected" : "Not Connected"}</p>
+                        <p className="text-sm font-black text-foreground truncate max-w-[150px]">{value ? "Connected" : "Not Connected"}</p>
                     </div>
-                    {value && <ExternalLink size={14} className="ml-auto text-slate-300 group-hover:text-primary transition-all" />}
+                    {value && <ExternalLink size={14} className="ml-auto text-slate-300 group-hover:text-electric transition-all" />}
                 </a>
             )}
         </div>
@@ -601,14 +603,15 @@ function ProjectCard({ project, onRemove }: { project: Project, onRemove: () => 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="group bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500"
+            className="group bg-card/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500"
         >
-            <div className="relative h-48 bg-slate-100">
+            <div className="relative h-48 bg-slate-100 dark:bg-slate-800">
                 {project.image ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
-                        <Code size={40} className="text-slate-200" />
+                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
+                        <Code size={40} className="text-slate-200 dark:text-slate-700" />
                     </div>
                 )}
 
@@ -634,8 +637,8 @@ function ProjectCard({ project, onRemove }: { project: Project, onRemove: () => 
             </div>
 
             <div className="p-8">
-                <h3 className="text-xl font-black text-slate-900 mb-2 group-hover:text-primary transition-colors">{project.title}</h3>
-                <p className="text-slate-500 text-sm font-medium line-clamp-2 leading-relaxed">
+                <h3 className="text-xl font-black text-foreground mb-2 group-hover:text-electric transition-colors">{project.title}</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium line-clamp-2 leading-relaxed">
                     {project.description || "No description provided."}
                 </p>
             </div>
@@ -651,7 +654,7 @@ function InputField({ label, value, onChange, placeholder }: { label: string, va
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 font-bold text-slate-900 outline-none focus:border-primary transition-all"
+                className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl px-6 py-4 font-bold text-foreground outline-none focus:border-electric transition-all"
             />
         </div>
     );

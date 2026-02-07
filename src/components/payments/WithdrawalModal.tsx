@@ -78,7 +78,7 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xl"
+            className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
         >
             <div className="absolute inset-0" onClick={onClose} />
 
@@ -86,15 +86,15 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-slate-200"
+                className="relative w-full max-w-lg bg-white dark:bg-slate-950 rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800"
             >
                 {/* Header */}
-                <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
                     <div>
-                        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Withdraw Funds</h2>
-                        <p className="text-slate-500 font-bold text-sm">Securely transfer your earnings.</p>
+                        <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Withdraw Funds</h2>
+                        <p className="text-slate-500 dark:text-slate-400 font-bold text-sm">Securely transfer your earnings.</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors shadow-sm">
+                    <button onClick={onClose} className="p-2 hover:bg-white dark:hover:bg-slate-800 rounded-full transition-colors shadow-sm dark:shadow-none">
                         <X size={20} className="text-slate-400" />
                     </button>
                 </div>
@@ -110,14 +110,14 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
                                 className="space-y-6"
                             >
                                 {/* Balance Info */}
-                                <div className="bg-slate-900 rounded-3xl p-6 text-white shadow-xl shadow-slate-900/20">
+                                <div className="bg-slate-900 dark:bg-black rounded-[2rem] p-6 text-white shadow-xl shadow-slate-900/20 dark:shadow-black/40 border border-slate-800">
                                     <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-1">Available to Withdraw</p>
                                     <h3 className="text-4xl font-black">₹{availableBalance.toLocaleString()}</h3>
                                 </div>
 
                                 {/* Amount Input */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">Amount to Transfer</label>
+                                    <label className="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest px-1">Amount to Transfer</label>
                                     <div className="relative group">
                                         <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-black text-xl">₹</div>
                                         <input
@@ -125,23 +125,23 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
                                             placeholder="0.00"
                                             value={amount}
                                             onChange={(e) => setAmount(e.target.value)}
-                                            className="w-full bg-slate-50 border-2 border-slate-100 focus:border-slate-900 focus:bg-white rounded-2xl py-5 pl-12 pr-6 text-xl font-black transition-all outline-none"
+                                            className="w-full bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-slate-900 dark:focus:border-slate-600 focus:bg-white dark:focus:bg-slate-800 rounded-2xl py-5 pl-12 pr-6 text-xl font-black transition-all outline-none text-slate-900 dark:text-white"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Method Switcher */}
-                                <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl">
+                                <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
                                     <button
                                         onClick={() => setType("bank")}
-                                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black transition-all ${type === "bank" ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-700"}`}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black transition-all ${type === "bank" ? "bg-white dark:bg-slate-800 shadow-sm text-slate-900 dark:text-white" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"}`}
                                     >
                                         <Building2 size={18} />
                                         Bank Account
                                     </button>
                                     <button
                                         onClick={() => setType("upi")}
-                                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black transition-all ${type === "upi" ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-700"}`}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black transition-all ${type === "upi" ? "bg-white dark:bg-slate-800 shadow-sm text-slate-900 dark:text-white" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"}`}
                                     >
                                         <Smartphone size={18} />
                                         UPI ID
@@ -156,20 +156,20 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
                                                 placeholder="Account Number"
                                                 value={accNumber}
                                                 onChange={e => setAccNumber(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold outline-none focus:border-slate-900 transition-all"
+                                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 font-bold outline-none focus:border-slate-900 dark:focus:border-slate-600 transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600"
                                             />
                                             <div className="grid grid-cols-2 gap-4">
                                                 <input
                                                     placeholder="IFSC Code"
                                                     value={ifsc}
                                                     onChange={e => setIfsc(e.target.value.toUpperCase())}
-                                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold outline-none focus:border-slate-900 transition-all"
+                                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 font-bold outline-none focus:border-slate-900 dark:focus:border-slate-600 transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600"
                                                 />
                                                 <input
                                                     placeholder="Bank Name"
                                                     value={bankName}
                                                     onChange={e => setBankName(e.target.value)}
-                                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold outline-none focus:border-slate-900 transition-all"
+                                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 font-bold outline-none focus:border-slate-900 dark:focus:border-slate-600 transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600"
                                                 />
                                             </div>
                                         </>
@@ -178,7 +178,7 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
                                             placeholder="vpa@upi"
                                             value={upiId}
                                             onChange={e => setUpiId(e.target.value)}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold outline-none focus:border-slate-900 transition-all"
+                                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 font-bold outline-none focus:border-slate-900 dark:focus:border-slate-600 transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600"
                                         />
                                     )}
                                 </div>
@@ -186,13 +186,13 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
                                 <button
                                     onClick={handleWithdraw}
                                     disabled={!isValid || processing}
-                                    className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white py-5 rounded-[1.5rem] font-black text-lg transition-all active:scale-[0.98] shadow-xl shadow-slate-900/20 flex items-center justify-center gap-3"
+                                    className="w-full bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed text-white dark:text-slate-900 py-5 rounded-[1.5rem] font-black text-lg transition-all active:scale-[0.98] shadow-xl shadow-slate-900/20 dark:shadow-white/10 flex items-center justify-center gap-3"
                                 >
                                     Confirm Withdrawal
                                     <ArrowRight size={20} />
                                 </button>
 
-                                <div className="flex items-center justify-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest">
+                                <div className="flex items-center justify-center gap-2 text-slate-400 dark:text-slate-500 font-bold text-xs uppercase tracking-widest">
                                     <Lock size={12} />
                                     End-to-End Encrypted Transfer
                                 </div>
@@ -207,17 +207,17 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
                                 className="py-20 flex flex-col items-center text-center space-y-6"
                             >
                                 <div className="relative">
-                                    <div className="h-24 w-24 border-4 border-slate-100 rounded-full" />
+                                    <div className="h-24 w-24 border-4 border-slate-100 dark:border-slate-800 rounded-full" />
                                     <motion.div
                                         animate={{ rotate: 360 }}
                                         transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                                        className="absolute inset-0 h-24 w-24 border-4 border-t-slate-950 rounded-full"
+                                        className="absolute inset-0 h-24 w-24 border-4 border-t-slate-950 dark:border-t-white rounded-full"
                                     />
-                                    <Loader2 className="absolute inset-0 m-auto h-10 w-10 text-slate-950 animate-pulse" />
+                                    <Loader2 className="absolute inset-0 m-auto h-10 w-10 text-slate-950 dark:text-white animate-pulse" />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-black text-slate-900">Verifying Request</h3>
-                                    <p className="text-slate-500 font-bold">Securing your transaction path...</p>
+                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white">Verifying Request</h3>
+                                    <p className="text-slate-500 dark:text-slate-400 font-bold">Securing your transaction path...</p>
                                 </div>
                             </motion.div>
                         )}
@@ -233,22 +233,22 @@ export default function WithdrawalModal({ onClose, availableBalance }: Withdrawa
                                     <CheckCircle size={48} />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">Request Received!</h3>
-                                    <p className="text-slate-500 font-bold">₹{amount} will be credited within 24-48 hours.</p>
+                                    <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Request Received!</h3>
+                                    <p className="text-slate-500 dark:text-slate-400 font-bold">₹{amount} will be credited within 24-48 hours.</p>
                                 </div>
-                                <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 w-full">
+                                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 w-full">
                                     <div className="flex justify-between text-sm mb-2">
-                                        <span className="text-slate-500 font-bold">Reference ID:</span>
-                                        <span className="text-slate-900 font-black">#WD-{Math.floor(Math.random() * 1000000)}</span>
+                                        <span className="text-slate-500 dark:text-slate-400 font-bold">Reference ID:</span>
+                                        <span className="text-slate-900 dark:text-white font-black">#WD-{Math.floor(Math.random() * 1000000)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-slate-500 font-bold">Status:</span>
-                                        <span className="text-emerald-600 font-black uppercase tracking-widest">Processing</span>
+                                        <span className="text-slate-500 dark:text-slate-400 font-bold">Status:</span>
+                                        <span className="text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-widest">Processing</span>
                                     </div>
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black transition-all"
+                                    className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-[1.5rem] font-black transition-all"
                                 >
                                     Back to Dashboard
                                 </button>

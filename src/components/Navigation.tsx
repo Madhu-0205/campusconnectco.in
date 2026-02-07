@@ -17,6 +17,7 @@ import {
 import { useState, useEffect, useRef, memo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -148,6 +149,7 @@ function Navigation() {
 
                 {/* RIGHT */}
                 <div className="flex items-center gap-2">
+                    <ThemeToggle />
                     {/* Notifications */}
                     <button
                         onClick={() => {
@@ -180,10 +182,10 @@ function Navigation() {
                                     exit={{ opacity: 0, y: 8 }}
                                     className="absolute right-0 mt-2 w-48 bg-slate-900 rounded-xl shadow-xl border border-slate-700"
                                 >
-                                    <Link href="/profile" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
+                                    <Link href="/profile" className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
                                         <User size={16} /> Profile
                                     </Link>
-                                    <Link href="/dashboard/student/settings" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
+                                    <Link href="/dashboard/student/settings" className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
                                         <Settings size={16} /> Settings
                                     </Link>
                                     <button

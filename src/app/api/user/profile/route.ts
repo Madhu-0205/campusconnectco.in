@@ -40,10 +40,60 @@ export async function GET() {
                     name: user.user_metadata?.name || user.email?.split("@")[0] || "Stellar Student",
                     role: "STUDENT",
                 },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                    role: true,
+                    bio: true,
+                    skills: true,
+                    portfolio: true,
+                    linkedin: true,
+                    github: true,
+                    instagram: true,
+                    projects: true,
+                    createdAt: true,
+                },
             });
         }
 
-        return NextResponse.json(profile);
+        // Calculate stats
+        const earnings = await prisma.escrow.aggregate({
+            where: {
+                workerId: user.id,
+                status: "RELEASED"
+            },
+            _sum: {
+                amount: true
+            }
+        });
+
+        const activeGigs = await prisma.application.count({
+            where: {
+                applicantId: user.id,
+                status: "ACCEPTED",
+                gig: {
+                    status: "IN_PROGRESS"
+                }
+            }
+        });
+
+        const pendingApplications = await prisma.application.count({
+            where: {
+                applicantId: user.id,
+                status: "PENDING"
+            }
+        });
+
+        return NextResponse.json({
+            ...profile,
+            stats: {
+                earnings: earnings._sum.amount || 0,
+                activeGigs,
+                pendingApplications
+            }
+        });
     } catch (error) {
         console.error("Profile fetch error:", error);
         return NextResponse.json(

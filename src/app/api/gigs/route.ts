@@ -4,35 +4,58 @@ import { createClient } from "@/lib/supabase/server"
 import { filterAndRankGigs } from "@/lib/ai/filterAndRank"
 
 export async function GET(req: Request) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    try {
+        const supabase = await createClient()
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!user) {
-        return NextResponse.json({ gigs: [] })
+        if (authError || !user) {
+            return NextResponse.json({ gigs: [], matched: 0 })
+        }
+
+        const dbUser = await prisma.user.findUnique({
+            where: { id: user.id }
+        })
+
+        if (!dbUser?.latitude || !dbUser?.longitude) {
+            return NextResponse.json({ gigs: [], matched: 0 })
+        }
+
+        const searchParams = new URL(req.url).searchParams
+        const query = searchParams.get("q") || ""
+        const page = parseInt(searchParams.get("page") || "1")
+
+        const gigs = await prisma.gig.findMany({
+            where: {
+                status: "OPEN",
+                OR: query ? [
+                    { title: { contains: query, mode: "insensitive" } },
+                    { description: { contains: query, mode: "insensitive" } },
+                    { tags: { contains: query, mode: "insensitive" } }
+                ] : undefined
+            },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+        })
+
+        const ranked = filterAndRankGigs({
+            user: dbUser,
+            gigs
+        })
+
+        // Pagination logic could be improved here or in DB query
+        const ITEMS_PER_PAGE = 10
+        const start = (page - 1) * ITEMS_PER_PAGE
+        const paginated = ranked.slice(start, start + ITEMS_PER_PAGE)
+
+        return NextResponse.json({
+            gigs: paginated,
+            matched: ranked.length,
+            hasMore: start + ITEMS_PER_PAGE < ranked.length
+        })
+    } catch (error: any) {
+        console.error("[GIGS_GET_ERROR]:", error)
+        return NextResponse.json({ gigs: [], error: error.message }, { status: 500 })
     }
-
-    const dbUser = await prisma.user.findUnique({
-        where: { id: user.id }
-    })
-
-    if (!dbUser?.latitude || !dbUser?.longitude) {
-        return NextResponse.json({ gigs: [] })
-    }
-
-    const gigs = await prisma.gig.findMany({
-        where: { status: "OPEN" },
-        orderBy: { createdAt: "desc" }
-    })
-
-    const ranked = filterAndRankGigs({
-        user: dbUser,
-        gigs
-    })
-
-    return NextResponse.json({
-        gigs: ranked,
-        matched: ranked.length
-    })
 }
 
 export async function POST(req: Request) {

@@ -3,6 +3,7 @@ import { Inter, Montserrat } from "next/font/google";
 import Navigation from "@/components/Navigation";
 import { ToastProvider } from "@/components/ToastProvider";
 import SmoothScroll from "@/components/SmoothScroll";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -30,14 +31,16 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${montserrat.variable} antialiased`}
       >
-        <ToastProvider>
-          <SmoothScroll>
-            <Navigation />
-            <main className="pt-20 min-h-screen pb-10">
-              {children}
-            </main>
-          </SmoothScroll>
-        </ToastProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ToastProvider>
+            <SmoothScroll>
+              <Navigation />
+              <main className="pt-20 min-h-screen pb-10">
+                {children}
+              </main>
+            </SmoothScroll>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

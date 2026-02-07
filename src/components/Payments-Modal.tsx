@@ -167,11 +167,13 @@ export default function PaymentModal({
                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                className="relative w-full max-w-md bg-white border border-secondary rounded-3xl shadow-2xl overflow-hidden fast-render max-h-[95vh] flex flex-col"
+                className="relative w-full max-w-md bg-white dark:bg-slate-950 border border-secondary dark:border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden fast-render max-h-[95vh] flex flex-col"
             >
+                <div className="absolute inset-0 bg-linear-to-br from-white to-slate-50 dark:from-slate-950 dark:to-slate-900 -z-10" />
+
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 md:top-6 md:right-6 text-muted-foreground hover:text-foreground transition-colors z-20"
+                    className="absolute top-4 right-4 md:top-6 md:right-6 text-muted-foreground hover:text-foreground transition-colors z-20 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
                 >
                     <X size={20} />
                 </button>
@@ -187,17 +189,17 @@ export default function PaymentModal({
                                 className="space-y-6"
                             >
                                 <div className="text-center">
-                                    <div className="h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-4 text-primary rotate-3">
+                                    <div className="h-20 w-20 bg-primary/10 dark:bg-primary/20 rounded-3xl flex items-center justify-center mx-auto mb-4 text-primary rotate-3">
                                         <Smartphone size={40} />
                                     </div>
                                     <h2 className="text-2xl font-black text-foreground">Secure Checkout</h2>
-                                    <p className="text-sm text-slate-500 mt-2 font-medium">Pay via UPI, Card, Netbanking, or QR</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 font-medium">Pay via UPI, Card, Netbanking, or QR</p>
                                     <div className="flex items-center justify-center gap-1 text-primary text-[10px] font-bold uppercase tracking-widest mt-1">
                                         <ShieldCheck size={12} /> Razorpay Secured Gateway
                                     </div>
                                 </div>
 
-                                <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden group">
+                                <div className="bg-slate-900 dark:bg-black p-6 rounded-[2rem] border border-slate-800 dark:border-slate-800 shadow-2xl relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
                                         <Zap className="text-emerald-400" size={40} />
                                     </div>
@@ -239,12 +241,12 @@ export default function PaymentModal({
                                 <button
                                     disabled={processing}
                                     onClick={handlePay}
-                                    className="w-full bg-primary hover:bg-teal-600 disabled:opacity-30 text-white font-black py-5 rounded-2xl transition-all active:scale-95 shadow-2xl shadow-primary/30 flex items-center justify-center gap-2"
+                                    className="w-full bg-electric hover:bg-blue-600 disabled:opacity-30 text-white font-black py-5 rounded-2xl transition-all active:scale-95 shadow-lg shadow-electric/20 flex items-center justify-center gap-2"
                                 >
                                     {processing ? <Loader2 className="animate-spin" /> : <>Complete Payment <ChevronRight size={20} /></>}
                                 </button>
 
-                                <p className="text-xs text-center text-slate-400 px-4">
+                                <p className="text-xs text-center text-slate-400 dark:text-slate-500 px-4 leading-relaxed">
                                     Clicking above will open the secure Razorpay payment page. You can choose any UPI app or bank method there.
                                 </p>
                             </motion.div>
@@ -258,11 +260,11 @@ export default function PaymentModal({
                                 className="text-center py-16 space-y-6"
                             >
                                 <div className="relative mx-auto h-24 w-24">
-                                    <div className="absolute inset-0 border-4 border-slate-100 rounded-full" />
+                                    <div className="absolute inset-0 border-4 border-slate-100 dark:border-slate-800 rounded-full" />
                                     <motion.div
                                         animate={{ rotate: 360 }}
                                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                        className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent"
+                                        className="absolute inset-0 border-4 border-electric rounded-full border-t-transparent"
                                     />
                                 </div>
                                 <div>
@@ -279,7 +281,7 @@ export default function PaymentModal({
                                 animate={{ opacity: 1, y: 0 }}
                                 className="text-center py-12 space-y-6"
                             >
-                                <div className="h-24 w-24 bg-green-500 rounded-[2.5rem] flex items-center justify-center mx-auto text-white shadow-2xl shadow-green-500/30">
+                                <div className="h-24 w-24 bg-emerald-500 rounded-[2.5rem] flex items-center justify-center mx-auto text-white shadow-2xl shadow-emerald-500/30">
                                     <CheckCircle size={48} />
                                 </div>
                                 <div>
@@ -288,7 +290,7 @@ export default function PaymentModal({
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="w-full bg-slate-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all"
+                                    className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black py-5 rounded-2xl hover:bg-slate-800 dark:hover:bg-slate-200 transition-all shadow-lg"
                                 >
                                     Return to Dashboard
                                 </button>
@@ -297,7 +299,7 @@ export default function PaymentModal({
                     </AnimatePresence>
                 </div>
 
-                <div className="py-4 text-center border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <div className="py-4 text-center border-t border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest">
                     Secured by Razorpay • CampusConnect
                 </div>
             </motion.div>

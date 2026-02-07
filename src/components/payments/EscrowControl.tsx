@@ -40,28 +40,28 @@ export function EscrowControl({ gigId, status }: { gigId: string, status: string
 
     if (currentStatus === "COMPLETED") {
         return (
-            <Card className="bg-green-50 border-green-200">
-                <div className="flex items-center gap-3 text-green-700">
+            <Card className="bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20">
+                <div className="flex items-center gap-3 text-emerald-700 dark:text-emerald-400">
                     <Unlock size={20} />
                     <span className="font-bold">Payment Released</span>
                 </div>
-                <p className="text-sm text-green-600 mt-1">Funds have been transferred to the student.</p>
+                <p className="text-sm text-emerald-600 dark:text-emerald-300 mt-1 font-medium">Funds have been transferred to the student.</p>
             </Card>
         )
     }
 
     if (currentStatus === "IN_PROGRESS") {
         return (
-            <Card className="border-primary/20 bg-primary/5">
+            <Card className="border-electric/20 bg-blue-50/50 dark:bg-blue-900/10">
                 <div className="flex justify-between items-center">
                     <div>
-                        <div className="flex items-center gap-2 text-primary">
+                        <div className="flex items-center gap-2 text-electric dark:text-blue-400">
                             <Lock size={20} />
                             <span className="font-bold">Funds in Escrow</span>
                         </div>
-                        <p className="text-sm text-slate-500 mt-1">Work is in progress. Release funds when satisfied.</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Work is in progress. Release funds when satisfied.</p>
                     </div>
-                    <Button onClick={() => handleAction("RELEASE")} disabled={loading}>
+                    <Button onClick={() => handleAction("RELEASE")} disabled={loading} className="font-bold bg-emerald-500 hover:bg-emerald-600 text-white">
                         {loading ? "Processing..." : "Release Payment"}
                     </Button>
                 </div>
@@ -70,13 +70,13 @@ export function EscrowControl({ gigId, status }: { gigId: string, status: string
     }
 
     return (
-        <Card className="bg-slate-50">
+        <Card className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <div className="flex justify-between items-center mb-2">
-                <h4 className="font-bold text-slate-800">Escrow Pending</h4>
-                <div className="px-2 py-1 bg-slate-200 rounded text-xs">Waiting for Start</div>
+                <h4 className="font-bold text-slate-800 dark:text-white">Escrow Pending</h4>
+                <div className="px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded text-xs font-bold text-slate-600 dark:text-slate-400">Waiting for Start</div>
             </div>
-            <p className="text-sm text-slate-500 mb-4">Lock the payment to start the project securely.</p>
-            <Button onClick={() => handleAction("LOCK")} disabled={loading} className="w-full">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 font-medium">Lock the payment to start the project securely.</p>
+            <Button onClick={() => handleAction("LOCK")} disabled={loading} className="w-full font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200">
                 {loading ? "Processing..." : "Deposit & Lock Funds"}
             </Button>
         </Card>
