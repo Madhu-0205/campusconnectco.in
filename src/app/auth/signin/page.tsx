@@ -101,6 +101,7 @@ export default function SignInPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 autoComplete="email"
+                                suppressHydrationWarning
                                 className="w-full px-4 py-3 border border-[#E8D5C4] rounded-lg focus:outline-none focus:ring-2 focus:ring-electric bg-[#FFFAF0]"
                                 placeholder="you@example.com"
                             />
@@ -116,9 +117,12 @@ export default function SignInPage() {
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    // Use onKeyDown instead of onKeyUp for better compatibility if needed, but onKeyUp is fine.
+                                    // Added suppressHydrationWarning
                                     onKeyUp={(e) => setCapsLock(e.getModifierState("CapsLock"))}
                                     required
                                     autoComplete="current-password"
+                                    suppressHydrationWarning
                                     className="w-full px-4 py-3 border border-[#E8D5C4] rounded-lg focus:outline-none focus:ring-2 focus:ring-electric bg-[#FFFAF0] pr-12"
                                     placeholder="••••••••"
                                 />
@@ -127,6 +131,7 @@ export default function SignInPage() {
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                                    suppressHydrationWarning
                                 >
                                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                 </button>

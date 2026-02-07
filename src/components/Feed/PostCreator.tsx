@@ -35,7 +35,7 @@ export default function PostCreator() {
 
             <div className="flex gap-4">
 
-                <div className="h-10 w-10 rounded-full bg-slate-700 flex-shrink-0" />
+                <div className="h-10 w-10 rounded-full bg-slate-700 shrink-0" />
 
                 <div className="flex-1">
 

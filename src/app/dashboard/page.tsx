@@ -10,6 +10,7 @@ export default async function StudentDashboardRedirect() {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
+        console.log("Dashboard redirecting to signin. User:", !!user, "Error:", authError?.message)
         redirect("/auth/signin")
     }
 
