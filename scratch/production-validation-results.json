@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-06-25T11:20:47.825Z",
+  "rlsEnforcement": {
+    "totalTables": 0,
+    "violations": [
+      "Failed to query RLS"
+    ],
+    "securedPercentage": null
+  },
+  "storage": {
+    "secured": false,
+    "buckets": []
+  },
+  "performanceDbMs": {},
+  "potentialLeaks": [],
+  "potentialUnprotectedApiRoutes": [
+    "api/ai/chat/route.ts",
+    "api/ai/trending/route.ts",
+    "api/gigs/browse/route.ts",
+    "api/growth/referral/lookup/route.ts",
+    "api/internships/[id]/route.ts",
+    "api/stats/route.ts",
+    "api/tasks/cleanup/route.ts"
+  ]
+}

@@ -1,0 +1,506 @@
+@import "tailwindcss";
+
+@layer utilities {
+    /* ==============================================
+       RESPONSIVE UTILITIES
+       ============================================== */
+
+    /* Mobile-First Responsive Containers */
+    .responsive-container {
+        @apply px-4 sm:px-6 lg:px-8;
+    }
+
+    .responsive-max-width {
+        @apply max-w-7xl mx-auto;
+    }
+
+    /* Responsive Typography */
+    .responsive-heading-1 {
+        @apply text-3xl sm:text-4xl lg:text-5xl xl:text-6xl;
+    }
+
+    .responsive-heading-2 {
+        @apply text-2xl sm:text-3xl lg:text-4xl;
+    }
+
+    .responsive-heading-3 {
+        @apply text-xl sm:text-2xl lg:text-3xl;
+    }
+
+    .responsive-heading-4 {
+        @apply text-lg sm:text-xl lg:text-2xl;
+    }
+
+    .responsive-body {
+        @apply text-sm sm:text-base;
+    }
+
+    .responsive-small {
+        @apply text-xs sm:text-sm;
+    }
+
+    /* Responsive Spacing */
+    .responsive-padding {
+        @apply p-4 sm:p-6 lg:p-8;
+    }
+
+    .responsive-padding-x {
+        @apply px-4 sm:px-6 lg:px-8;
+    }
+
+    .responsive-padding-y {
+        @apply py-4 sm:py-6 lg:py-8;
+    }
+
+    .responsive-gap {
+        @apply gap-4 sm:gap-6 lg:gap-8;
+    }
+
+    .responsive-space-y {
+        @apply space-y-4 sm:space-y-6 lg:space-y-8;
+    }
+
+    /* Responsive Grids */
+    .responsive-grid-2 {
+        @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
+    }
+
+    .responsive-grid-3 {
+        @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+    }
+
+    .responsive-grid-4 {
+        @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+    }
+
+    .responsive-grid-auto {
+        @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+    }
+
+    /* Responsive Flex */
+    .responsive-flex-col {
+        @apply flex flex-col sm:flex-row gap-4 sm:gap-6;
+    }
+
+    .responsive-flex-wrap {
+        @apply flex flex-wrap gap-4 sm:gap-6;
+    }
+
+    /* Responsive Cards */
+    .responsive-card {
+        @apply p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl;
+    }
+
+    .responsive-card-compact {
+        @apply p-3 sm:p-4 lg:p-6 rounded-lg sm:rounded-xl;
+    }
+
+    /* Responsive Buttons */
+    .responsive-button {
+        @apply px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base;
+    }
+
+    .responsive-button-lg {
+        @apply px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg;
+    }
+
+    /* Responsive Tables */
+    .responsive-table-wrapper {
+        @apply overflow-x-auto -mx-4 sm:mx-0;
+    }
+
+    .responsive-table {
+        @apply min-w-full divide-y divide-slate-200 dark:divide-slate-800;
+    }
+
+    .responsive-table th,
+    .responsive-table td {
+        @apply px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4;
+    }
+
+    /* Touch Targets (Minimum 44x44px for mobile) */
+    .touch-target {
+        @apply min-h-[44px] min-w-[44px];
+    }
+
+    .touch-target-sm {
+        @apply min-h-[36px] min-w-[36px];
+    }
+
+    /* Responsive Images */
+    .responsive-image {
+        @apply w-full h-auto object-cover;
+    }
+
+    .responsive-avatar {
+        @apply w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12;
+    }
+
+    /* Responsive Icons */
+    .responsive-icon {
+        @apply w-4 h-4 sm:w-5 sm:h-5;
+    }
+
+    .responsive-icon-lg {
+        @apply w-6 h-6 sm:w-8 sm:h-8;
+    }
+
+    /* Responsive Modals/Dialogs */
+    .responsive-modal {
+        @apply w-full sm:w-auto sm:max-w-lg mx-4 sm:mx-auto;
+    }
+
+    .responsive-modal-lg {
+        @apply w-full sm:w-auto sm:max-w-2xl lg:max-w-4xl mx-4 sm:mx-auto;
+    }
+
+    /* Responsive Forms */
+    .responsive-form-group {
+        @apply space-y-3 sm:space-y-4;
+    }
+
+    .responsive-input {
+        @apply px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base;
+    }
+
+    .responsive-label {
+        @apply text-sm sm:text-base font-medium;
+    }
+
+    /* Responsive Navigation */
+    .responsive-nav {
+        @apply flex flex-col sm:flex-row gap-2 sm:gap-4;
+    }
+
+    .responsive-nav-item {
+        @apply px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base;
+    }
+
+    /* Hide/Show on Different Screens */
+    .mobile-only {
+        @apply block sm:hidden;
+    }
+
+    .tablet-up {
+        @apply hidden sm:block;
+    }
+
+    .desktop-only {
+        @apply hidden lg:block;
+    }
+
+    .mobile-tablet {
+        @apply block lg:hidden;
+    }
+
+    /* Responsive Sidebar */
+    .responsive-sidebar {
+        @apply w-full sm:w-64 lg:w-72;
+    }
+
+    .responsive-main-with-sidebar {
+        @apply w-full sm:ml-64 lg:ml-72;
+    }
+
+    /* Responsive Stats/Metrics */
+    .responsive-stat-card {
+        @apply p-4 sm:p-6 rounded-lg sm:rounded-xl;
+    }
+
+    .responsive-stat-value {
+        @apply text-2xl sm:text-3xl lg:text-4xl;
+    }
+
+    .responsive-stat-label {
+        @apply text-xs sm:text-sm;
+    }
+
+    /* Responsive Search Bar */
+    .responsive-search {
+        @apply w-full sm:w-64 lg:w-96;
+    }
+
+    /* Responsive Badges */
+    .responsive-badge {
+        @apply px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm;
+    }
+
+    /* Responsive Dividers */
+    .responsive-divider {
+        @apply my-4 sm:my-6 lg:my-8;
+    }
+
+    /* Responsive Sections */
+    .responsive-section {
+        @apply py-8 sm:py-12 lg:py-16;
+    }
+
+    .responsive-section-compact {
+        @apply py-6 sm:py-8 lg:py-12;
+    }
+
+    /* Responsive Hero */
+    .responsive-hero {
+        @apply py-12 sm:py-16 lg:py-24;
+    }
+
+    .responsive-hero-title {
+        @apply text-4xl sm:text-5xl lg:text-6xl xl:text-7xl;
+    }
+
+    .responsive-hero-subtitle {
+        @apply text-lg sm:text-xl lg:text-2xl;
+    }
+
+    /* Responsive Footer */
+    .responsive-footer {
+        @apply py-8 sm:py-12 px-4 sm:px-6 lg:px-8;
+    }
+
+    /* Prevent Horizontal Scroll */
+    .no-scroll-x {
+        @apply overflow-x-hidden;
+    }
+
+    /* Responsive Text Alignment */
+    .responsive-text-center {
+        @apply text-center sm:text-left;
+    }
+
+    /* Responsive Aspect Ratios */
+    .responsive-aspect-video {
+        @apply aspect-video;
+    }
+
+    .responsive-aspect-square {
+        @apply aspect-square;
+    }
+
+    /* Responsive Z-Index Management */
+    .z-mobile-nav {
+        @apply z-50;
+    }
+
+    .z-modal {
+        @apply z-50;
+    }
+
+    .z-dropdown {
+        @apply z-40;
+    }
+
+    .z-sticky-header {
+        @apply z-30;
+    }
+
+    /* Responsive Overflow */
+    .responsive-overflow-auto {
+        @apply overflow-auto max-h-[60vh] sm:max-h-[70vh] lg:max-h-[80vh];
+    }
+
+    /* Responsive Rounded Corners */
+    .responsive-rounded {
+        @apply rounded-lg sm:rounded-xl lg:rounded-2xl;
+    }
+
+    .responsive-rounded-full {
+        @apply rounded-full;
+    }
+
+    /* Responsive Shadows */
+    .responsive-shadow {
+        @apply shadow-sm sm:shadow-md lg:shadow-lg;
+    }
+
+    .responsive-shadow-xl {
+        @apply shadow-md sm:shadow-lg lg:shadow-xl;
+    }
+
+    /* Responsive Borders */
+    .responsive-border {
+        @apply border sm:border-2;
+    }
+
+    /* Responsive Backdrop Blur */
+    .responsive-backdrop {
+        @apply backdrop-blur-sm sm:backdrop-blur-md lg:backdrop-blur-lg;
+    }
+
+    /* Mobile Menu Utilities */
+    .mobile-menu-open {
+        @apply overflow-hidden;
+    }
+
+    .mobile-menu-overlay {
+        @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-40;
+    }
+
+    .mobile-menu-panel {
+        @apply fixed inset-y-0 left-0 w-full sm:w-80 bg-white dark:bg-slate-900 z-50 transform transition-transform;
+    }
+
+    /* Responsive Chat Widget */
+    .responsive-chat-widget {
+        @apply w-full sm:w-96 h-[80vh] sm:h-[600px];
+    }
+
+    .responsive-chat-button {
+        @apply w-14 h-14 sm:w-16 sm:h-16;
+    }
+
+    /* Responsive Dashboard Layout */
+    .responsive-dashboard-grid {
+        @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+    }
+
+    .responsive-dashboard-card {
+        @apply p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl;
+    }
+
+    /* Responsive Data Tables */
+    .responsive-data-table {
+        @apply text-xs sm:text-sm;
+    }
+
+    .responsive-data-table th {
+        @apply px-2 py-2 sm:px-4 sm:py-3;
+    }
+
+    .responsive-data-table td {
+        @apply px-2 py-2 sm:px-4 sm:py-3;
+    }
+
+    /* Responsive Action Buttons */
+    .responsive-action-group {
+        @apply flex flex-col sm:flex-row gap-2 sm:gap-3;
+    }
+
+    .responsive-action-button {
+        @apply w-full sm:w-auto px-4 py-2 sm:px-6 sm:py-3;
+    }
+
+    /* Responsive Filters */
+    .responsive-filter-group {
+        @apply flex flex-col sm:flex-row gap-3 sm:gap-4;
+    }
+
+    .responsive-filter-item {
+        @apply w-full sm:w-auto;
+    }
+
+    /* Responsive Pagination */
+    .responsive-pagination {
+        @apply flex flex-wrap justify-center gap-1 sm:gap-2;
+    }
+
+    .responsive-pagination-button {
+        @apply px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm;
+    }
+
+    /* Responsive Breadcrumbs */
+    .responsive-breadcrumbs {
+        @apply flex flex-wrap gap-1 sm:gap-2 text-xs sm:text-sm;
+    }
+
+    /* Responsive Tabs */
+    .responsive-tabs {
+        @apply flex flex-wrap gap-2 sm:gap-4;
+    }
+
+    .responsive-tab {
+        @apply px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base;
+    }
+
+    /* Responsive Alerts/Notifications */
+    .responsive-alert {
+        @apply p-3 sm:p-4 rounded-lg sm:rounded-xl text-sm sm:text-base;
+    }
+
+    /* Responsive Loading States */
+    .responsive-skeleton {
+        @apply h-4 sm:h-6 rounded;
+    }
+
+    .responsive-skeleton-text {
+        @apply h-3 sm:h-4 rounded;
+    }
+
+    /* Responsive Empty States */
+    .responsive-empty-state {
+        @apply py-12 sm:py-16 lg:py-24 px-4 sm:px-6;
+    }
+
+    .responsive-empty-icon {
+        @apply w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20;
+    }
+
+    /* Responsive Progress Bars */
+    .responsive-progress {
+        @apply h-2 sm:h-3 rounded-full;
+    }
+
+    /* Responsive Tooltips */
+    .responsive-tooltip {
+        @apply text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2;
+    }
+
+    /* Responsive Dropdowns */
+    .responsive-dropdown {
+        @apply w-full sm:w-64 max-h-60 sm:max-h-80;
+    }
+
+    /* Responsive Popovers */
+    .responsive-popover {
+        @apply w-screen sm:w-96 max-w-full;
+    }
+
+    /* Responsive Accordions */
+    .responsive-accordion-header {
+        @apply px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base;
+    }
+
+    .responsive-accordion-content {
+        @apply px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base;
+    }
+
+    /* Responsive Carousels */
+    .responsive-carousel-item {
+        @apply min-w-full sm:min-w-[50%] lg:min-w-[33.333%];
+    }
+
+    /* Responsive Video Players */
+    .responsive-video {
+        @apply w-full aspect-video rounded-lg sm:rounded-xl;
+    }
+
+    /* Responsive Code Blocks */
+    .responsive-code {
+        @apply text-xs sm:text-sm p-3 sm:p-4 rounded-lg sm:rounded-xl overflow-x-auto;
+    }
+
+    /* Print Styles */
+    @media print {
+        .no-print {
+            @apply hidden;
+        }
+
+        .print-full-width {
+            @apply w-full;
+        }
+    }
+
+    /* Landscape Mobile Adjustments */
+    @media (max-height: 500px) and (orientation: landscape) {
+        .landscape-compact {
+            @apply py-2 my-2;
+        }
+    }
+
+    /* High DPI Screens */
+    @media (-webkit-min-device-pixel-ratio: 2),
+    (min-resolution: 192dpi) {
+        .retina-border {
+            @apply border-[0.5px];
+        }
+    }
+}

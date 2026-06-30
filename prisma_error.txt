@@ -1,0 +1,38 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": SQLite database "dev.db" at "file:./dev.db"
+Error: P1012
+
+error: Error validating: You defined the enum `Role`. But the current connector does not support enums.
+  -->  schema.prisma:10
+   | 
+ 9 | 
+10 | enum Role {
+11 |   STUDENT
+12 |   CLIENT
+13 |   ADMIN
+14 | }
+   | 
+error: Error validating: You defined the enum `GigStatus`. But the current connector does not support enums.
+  -->  schema.prisma:16
+   | 
+15 | 
+16 | enum GigStatus {
+17 |   OPEN
+18 |   IN_PROGRESS
+19 |   COMPLETED
+20 |   CANCELLED
+21 | }
+   | 
+error: Error validating: You defined the enum `ApplicationStatus`. But the current connector does not support enums.
+  -->  schema.prisma:23
+   | 
+22 | 
+23 | enum ApplicationStatus {
+24 |   PENDING
+25 |   ACCEPTED
+26 |   REJECTED
+27 | }
+   | 
+
+

@@ -1,0 +1,807 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                   String              @id @default(uuid()) @db.Uuid
+  name                 String?
+  email                String              @unique
+  image                String?
+  coverImage           String?
+  role                 String              @default("STUDENT")
+  bio                  String?
+  skills               String?
+  portfolio            String?
+  linkedin             String?
+  github               String?
+  instagram            String?
+  latitude             Float?
+  longitude            Float?
+  accNumber            String?
+  ifscCode             String?
+  bankName             String?
+  upiId                String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  isSuspended          Boolean             @default(false)
+  isVerified           Boolean             @default(false)
+  avatar_url           String?
+  branch               String?
+  careerGoal           String?
+  college              String?
+  company_name         String?
+  full_name            String?
+  last_seen            DateTime?           @default(now())
+  year                 String?
+  username             String?             @unique
+  resumeData           Json?
+  ambassadorProfile    Ambassador?
+  careerRoadmaps       CareerRoadmap[]
+  connectionsReceived  ConnectionRequest[] @relation("ConnectionReceiver")
+  connectionsSent      ConnectionRequest[] @relation("ConnectionSender")
+  conversations1       Conversation[]      @relation("User1Conv")
+  conversations2       Conversation[]      @relation("User2Conv")
+  copilotSessions      CopilotSession[]
+  endorsementsReceived Endorsement[]       @relation("EndorsementsReceived")
+  endorsementsGiven    Endorsement[]       @relation("EndorsementsGiven")
+  clientEscrows        Escrow[]            @relation("ClientEscrow")
+  workerEscrows        Escrow[]            @relation("WorkerEscrow")
+  following            Follows[]           @relation("follower")
+  followedBy           Follows[]           @relation("following")
+  memberships          Member[]
+  mockInterviews       MockInterview[]
+  notifications        Notification[]
+  posts                Post[]
+  likes                PostLike[]
+  projects             Project[]
+  referralsReceived    Referral?           @relation("ReferralReceiver")
+  referralsSent        Referral[]          @relation("ReferralSender")
+  resumeAnalyses       ResumeAnalysis[]
+  reviewsReceived      Review[]            @relation("ReviewsReceived")
+  reviewsGiven         Review[]            @relation("ReviewsGiven")
+  savedInternships     SavedInternship[]
+  shareCards           ShareCard[]
+  startup              Startup?
+  tasks                Task[]
+  buyerTransactions    Transaction[]       @relation("BuyerTransactions")
+  sellerTransactions   Transaction[]       @relation("SellerTransactions")
+  userEmbedding        UserEmbedding?
+  userGamification     UserGamification?
+  userSkills           UserSkill[]
+  applications         Application[]
+  gigsPosted           Gig[]               @relation("PostedGigs")
+  messages             Message[]
+}
+
+model Follows {
+  followerId  String   @db.Uuid
+  followingId String   @db.Uuid
+  createdAt   DateTime @default(now())
+  follower    User     @relation("follower", fields: [followerId], references: [id])
+  following   User     @relation("following", fields: [followingId], references: [id])
+
+  @@id([followerId, followingId])
+}
+
+model ConnectionRequest {
+  id          String    @id @default(uuid()) @db.Uuid
+  senderId    String    @db.Uuid
+  receiverId  String    @db.Uuid
+  status      String    @default("PENDING")
+  message     String?
+  sentAt      DateTime  @default(now())
+  respondedAt DateTime?
+  receiver    User      @relation("ConnectionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender      User      @relation("ConnectionSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+  @@index([receiverId], map: "idx_connection_request_receiver")
+  @@index([senderId], map: "idx_connection_request_sender")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  type      String
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Project {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  link        String?
+  image       String?
+  userId      String   @db.Uuid
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Gig {
+  id               String        @id(map: "Gig_pkey") @default(uuid()) @db.Uuid
+  title            String
+  description      String
+  budget           Float
+  deadline         DateTime?
+  status           String        @default("active")
+  tags             String?
+  latitude         Float?
+  longitude        Float?
+  ownerConfirmed   Boolean       @default(false)
+  studentConfirmed Boolean       @default(false)
+  posted_by        String        @db.Uuid
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  completedAt      DateTime?
+  isPremium        Boolean       @default(false)
+  expires_at       DateTime      @default(now())
+  required_skills  Json?
+  views            Int           @default(0)
+  work_mode        String        @default("remote")
+  escrows          Escrow[]
+  gigEmbedding     GigEmbedding?
+  gigSkills        GigSkill[]
+  reviews          Review[]
+  transactions     Transaction[]
+  applications     Application[]
+  poster           User          @relation("PostedGigs", fields: [posted_by], references: [id], map: "Gig_posted_by_fkey")
+
+  @@index([posted_by], map: "idx_gigs_posted_by")
+  @@map("gigs")
+}
+
+model Application {
+  id          String   @id(map: "Application_pkey") @default(uuid()) @db.Uuid
+  gigId       String   @db.Uuid
+  applicantId String   @db.Uuid
+  status      String   @default("PENDING")
+  coverLetter String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  applicant   User     @relation(fields: [applicantId], references: [id], onDelete: Cascade, map: "Application_applicantId_fkey")
+  gig         Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade, map: "Application_gigId_fkey")
+
+  @@index([applicantId], map: "Application_applicantId_idx")
+  @@index([gigId], map: "Application_gigId_idx")
+  @@index([applicantId], map: "idx_applications_applicantid")
+  @@index([gigId], map: "idx_applications_gigid")
+  @@map("applications")
+}
+
+model Escrow {
+  id             String       @id @default(uuid()) @db.Uuid
+  gigId          String       @db.Uuid
+  clientId       String       @db.Uuid
+  workerId       String       @db.Uuid
+  amount         Float
+  platformFee    Float        @default(0)
+  payout         Float        @default(0)
+  commissionRate Float        @default(0)
+  status         EscrowStatus @default(LOCKED)
+  createdAt      DateTime     @default(now())
+  client         User         @relation("ClientEscrow", fields: [clientId], references: [id])
+  gig            Gig          @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  worker         User         @relation("WorkerEscrow", fields: [workerId], references: [id])
+
+  @@index([gigId])
+  @@index([clientId])
+  @@index([workerId])
+}
+
+model Transaction {
+  id              String             @id @default(uuid()) @db.Uuid
+  gigId           String?            @db.Uuid
+  amount          Decimal            @db.Decimal(10, 2)
+  platformFee     Decimal            @db.Decimal(10, 2)
+  description     String?
+  createdAt       DateTime           @default(now())
+  buyerId         String             @db.Uuid
+  completedAt     DateTime?
+  currency        String             @default("INR")
+  disputedAt      DateTime?
+  metadata        Json?              @default("{}")
+  paidAt          DateTime?
+  paymentId       String?            @unique
+  paymentIntentId String?            @unique
+  paymentProvider String             @default("DodoPayments")
+  postId          String?            @db.Uuid
+  releaseAt       DateTime?
+  releasedAt      DateTime?
+  sellerId        String             @db.Uuid
+  sellerPayout    Decimal            @db.Decimal(10, 2)
+  updatedAt       DateTime           @updatedAt
+  webhookEventId  String?            @unique
+  status          TransactionStatus  @default(PENDING)
+  dispute         Dispute?
+  buyer           User               @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  gig             Gig?               @relation(fields: [gigId], references: [id])
+  post            Post?              @relation(fields: [postId], references: [id])
+  seller          User               @relation("SellerTransactions", fields: [sellerId], references: [id])
+  auditLogs       TransactionAudit[]
+
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+  @@index([releaseAt])
+}
+
+model TransactionAudit {
+  id            String      @id @default(uuid()) @db.Uuid
+  transactionId String      @db.Uuid
+  action        String
+  previousState String?
+  newState      String
+  performedBy   String?
+  ipAddress     String?
+  userAgent     String?
+  metadata      Json?
+  createdAt     DateTime    @default(now())
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+
+  @@index([transactionId])
+}
+
+model Dispute {
+  id            String        @id @default(uuid()) @db.Uuid
+  transactionId String        @unique @db.Uuid
+  reason        String
+  description   String
+  evidence      Json?
+  status        DisputeStatus @default(OPEN)
+  resolution    String?
+  resolvedBy    String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  resolvedAt    DateTime?
+  transaction   Transaction   @relation(fields: [transactionId], references: [id])
+}
+
+model Post {
+  id           String        @id @default(uuid()) @db.Uuid
+  content      String
+  authorId     String        @db.Uuid
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  completedAt  DateTime?
+  status       String        @default("OPEN")
+  author       User          @relation(fields: [authorId], references: [id])
+  likes        PostLike[]
+  transactions Transaction[]
+}
+
+model PostLike {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Conversation {
+  id              String    @id @default(uuid()) @db.Uuid
+  created_at      DateTime  @default(now())
+  last_message    String?
+  last_message_at DateTime?
+  participant_1   String    @db.Uuid
+  participant_2   String    @db.Uuid
+  user1           User      @relation("User1Conv", fields: [participant_1], references: [id], onDelete: Cascade)
+  user2           User      @relation("User2Conv", fields: [participant_2], references: [id], onDelete: Cascade)
+  messages        Message[]
+
+  @@unique([participant_1, participant_2])
+  @@index([participant_1])
+  @@index([participant_2])
+}
+
+model Message {
+  id              String       @id(map: "Message_pkey") @default(uuid()) @db.Uuid
+  content         String
+  sender_id       String       @db.Uuid
+  conversation_id String       @db.Uuid
+  attachment_type String?
+  attachment_url  String?
+  created_at      DateTime     @default(now())
+  read_at         DateTime?
+  conversation    Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade, map: "Message_conversation_id_fkey")
+  sender          User         @relation(fields: [sender_id], references: [id], onDelete: Cascade, map: "Message_sender_id_fkey")
+
+  @@index([conversation_id, created_at], map: "Message_conversation_id_created_at_idx")
+  @@index([sender_id], map: "Message_sender_id_idx")
+  @@index([conversation_id], map: "idx_messages_conversation_id")
+  @@map("messages")
+}
+
+model Skill {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String        @unique
+  category     String        @default("General")
+  icon         String        @default("🔧")
+  color        String        @default("#6366F1")
+  keywords     String[]      @default([])
+  endorsements Endorsement[] @relation("SkillEndorsements")
+  gigs         GigSkill[]
+  users        UserSkill[]
+
+  @@index([name])
+  @@index([category])
+  @@index([name, category])
+}
+
+model UserSkill {
+  userId  String @db.Uuid
+  skillId String @db.Uuid
+  skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, skillId])
+}
+
+model GigSkill {
+  gigId   String @db.Uuid
+  skillId String @db.Uuid
+  gig     Gig    @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([gigId, skillId])
+}
+
+model Internship {
+  id              String            @id @default(uuid()) @db.Uuid
+  title           String
+  description     String
+  company         String
+  skills          String?
+  stipend         Float?
+  duration        String?
+  location        String?
+  deadline        DateTime?
+  status          String            @default("OPEN")
+  isFeatured      Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  applicationLink String?
+  applyCount      Int               @default(0)
+  tags            String?
+  views           Int               @default(0)
+  savedBy         SavedInternship[]
+}
+
+model SavedInternship {
+  id           String     @id @default(uuid()) @db.Uuid
+  userId       String     @db.Uuid
+  internshipId String     @db.Uuid
+  liked        Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, internshipId])
+  @@index([userId])
+  @@index([internshipId])
+}
+
+model Announcement {
+  id        String   @id @default(uuid()) @db.Uuid
+  title     String
+  body      String
+  priority  String   @default("NORMAL")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PlatformSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Review {
+  id         String   @id @default(uuid()) @db.Uuid
+  gigId      String   @db.Uuid
+  reviewerId String   @db.Uuid
+  revieweeId String   @db.Uuid
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  gig        Gig      @relation(fields: [gigId], references: [id])
+  reviewee   User     @relation("ReviewsReceived", fields: [revieweeId], references: [id])
+  reviewer   User     @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+}
+
+model Endorsement {
+  id         String   @id @default(uuid()) @db.Uuid
+  endorserId String   @db.Uuid
+  endorseeId String   @db.Uuid
+  skillId    String   @db.Uuid
+  createdAt  DateTime @default(now())
+  endorsee   User     @relation("EndorsementsReceived", fields: [endorseeId], references: [id])
+  endorser   User     @relation("EndorsementsGiven", fields: [endorserId], references: [id])
+  skill      Skill    @relation("SkillEndorsements", fields: [skillId], references: [id])
+
+  @@unique([endorserId, endorseeId, skillId])
+}
+
+model Task {
+  id          String    @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  status      String    @default("OPEN")
+  completedAt DateTime?
+  userId      String    @db.Uuid
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Startup {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  founderId   String   @unique @db.Uuid
+  logo        String?
+  website     String?
+  industry    String?
+  createdAt   DateTime @default(now())
+  founder     User     @relation(fields: [founderId], references: [id])
+}
+
+model ResumeAnalysis {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  score     Int
+  feedback  Json?
+  fileName  String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Analytics {
+  id        String   @id @default(uuid()) @db.Uuid
+  event     String
+  data      Json?
+  createdAt DateTime @default(now())
+}
+
+model CareerRoadmap {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  targetCareer  String
+  currentSkills String
+  roadmapData   Json
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserEmbedding {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid
+  hash      String
+  vector    Float[]
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model GigEmbedding {
+  id        String   @id @default(uuid()) @db.Uuid
+  gigId     String   @unique @db.Uuid
+  hash      String
+  vector    Float[]
+  updatedAt DateTime @updatedAt
+  gig       Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)
+}
+
+model Organization {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String
+  slug         String        @unique
+  logo         String?
+  coverImage   String?
+  website      String?
+  industry     String?
+  size         String?
+  bio          String?
+  techStack    String[]      @default([])
+  socialLinks  Json?
+  isPremium    Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  campusDrives CampusDrive[]
+  members      Member[]
+  subscription Subscription?
+}
+
+model Member {
+  id             String       @id @default(uuid()) @db.Uuid
+  userId         String       @db.Uuid
+  organizationId String       @db.Uuid
+  role           MemberRole   @default(COLLABORATOR)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+}
+
+model Subscription {
+  id                 String             @id @default(uuid()) @db.Uuid
+  organizationId     String             @unique @db.Uuid
+  plan               SubscriptionTier   @default(FREE)
+  status             SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean            @default(false)
+  organization       Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model CampusDrive {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  title          String
+  description    String
+  targetColleges String[]
+  startDate      DateTime
+  endDate        DateTime
+  status         DriveStatus  @default(DRAFT)
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model MockInterview {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  roleTitle   String
+  difficulty  String
+  score       Int?
+  feedback    Json?
+  chatHistory Json
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CopilotSession {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  title     String?
+  messages  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserGamification {
+  id               String      @id @default(uuid()) @db.Uuid
+  userId           String      @unique @db.Uuid
+  totalXp          Int         @default(0)
+  level            Int         @default(1)
+  levelTitle       String      @default("Newcomer")
+  currentStreak    Int         @default(0)
+  longestStreak    Int         @default(0)
+  lastActivityDate DateTime?
+  reliabilityScore Int         @default(0)
+  executionScore   Int         @default(0)
+  learningScore    Int         @default(0)
+  communityScore   Int         @default(0)
+  smartScore       Int         @default(0)
+  gigsCompleted    Int         @default(0)
+  totalEarned      Float       @default(0)
+  firstGigAt       DateTime?
+  firstEarningAt   DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  userBadges       UserBadge[]
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  xpEvents         XpEvent[]
+}
+
+model XpEvent {
+  id             String           @id @default(uuid()) @db.Uuid
+  gamificationId String           @db.Uuid
+  type           String
+  xpAwarded      Int
+  multiplier     Float            @default(1.0)
+  description    String
+  metadata       Json?
+  createdAt      DateTime         @default(now())
+  gamification   UserGamification @relation(fields: [gamificationId], references: [id], onDelete: Cascade)
+}
+
+model Badge {
+  id          String      @id @default(uuid()) @db.Uuid
+  slug        String      @unique
+  name        String
+  description String
+  icon        String
+  color       String
+  tier        String
+  xpReward    Int         @default(0)
+  rarity      String      @default("COMMON")
+  requirement Json
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  userBadges  UserBadge[]
+}
+
+model UserBadge {
+  id             String           @id @default(uuid()) @db.Uuid
+  userId         String           @db.Uuid
+  badgeId        String           @db.Uuid
+  gamificationId String           @db.Uuid
+  earnedAt       DateTime         @default(now())
+  isShowcased    Boolean          @default(true)
+  badge          Badge            @relation(fields: [badgeId], references: [id])
+  gamification   UserGamification @relation(fields: [gamificationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+model CampusLeaderboard {
+  id          String   @id @default(uuid()) @db.Uuid
+  college     String
+  userId      String   @db.Uuid
+  userName    String
+  userAvatar  String?
+  rank        Int
+  smartScore  Int
+  totalXp     Int
+  gigsCount   Int
+  totalEarned Float
+  period      String
+  week        String?
+  month       String?
+  snapshotAt  DateTime @default(now())
+
+  @@index([college, period])
+  @@index([period, smartScore])
+}
+
+model Referral {
+  id             String    @id @default(uuid()) @db.Uuid
+  referrerId     String    @db.Uuid
+  refereeId      String?   @unique @db.Uuid
+  referralCode   String
+  referralLink   String
+  status         String    @default("PENDING")
+  referrerBonus  Int       @default(100)
+  refereeBonus   Int       @default(100)
+  referrerCash   Float     @default(0)
+  refereeCash    Float     @default(0)
+  rewarded       Boolean   @default(false)
+  channel        String?
+  landingVariant String?
+  signedUpAt     DateTime?
+  convertedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  referee        User?     @relation("ReferralReceiver", fields: [refereeId], references: [id])
+  referrer       User      @relation("ReferralSender", fields: [referrerId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId])
+  @@index([referralCode])
+  @@index([status])
+}
+
+model Ambassador {
+  id                      String   @id @default(uuid()) @db.Uuid
+  userId                  String   @unique @db.Uuid
+  college                 String
+  tier                    String   @default("STARTER")
+  status                  String   @default("ACTIVE")
+  studentsOnboarded       Int      @default(0)
+  monthlyTarget           Int      @default(5)
+  totalEarningsShare      Float    @default(0)
+  eventsHosted            Int      @default(0)
+  hasPlacementCellContact Boolean  @default(false)
+  placementCellEmail      String?
+  formalMouSigned         Boolean  @default(false)
+  joinedAt                DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([college])
+  @@index([tier])
+}
+
+model ShareCard {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  type        String
+  metadata    Json
+  imageUrl    String?
+  shareCount  Int      @default(0)
+  clicks      Int      @default(0)
+  generatedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+}
+
+model GrowthEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  type      String
+  channel   String?
+  college   String?
+  city      String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([type, createdAt])
+  @@index([college, createdAt])
+}
+
+enum TransactionStatus {
+  PENDING
+  PAID
+  IN_PROGRESS
+  COMPLETED
+  RELEASED
+  DISPUTED
+  REFUNDED
+  CANCELLED
+  FAILED
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED_BUYER
+  RESOLVED_SELLER
+  CLOSED
+}
+
+enum EscrowStatus {
+  LOCKED
+  RELEASED
+  REFUNDED
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  ESCROW_LOCK
+  ESCROW_RELEASE
+  COMMISSION
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  COLLABORATOR
+}
+
+enum SubscriptionTier {
+  FREE
+  LAUNCHPAD
+  GROWTH
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum DriveStatus {
+  DRAFT
+  UPCOMING
+  LIVE
+  COMPLETED
+}

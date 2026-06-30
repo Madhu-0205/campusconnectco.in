@@ -1,0 +1,10 @@
+{
+    "css.lint.unknownAtRules": "ignore",
+    "tailwindcss.includeLanguages": {
+        "css": "tailwindcss"
+    },
+    "tailwindcss.experimental.configFile": "src/app/globals.css",
+    "files.associations": {
+        "*.css": "tailwindcss"
+    }
+}
