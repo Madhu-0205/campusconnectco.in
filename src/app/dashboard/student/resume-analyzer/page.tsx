@@ -30,9 +30,18 @@ type AnalysisResult = {
     section_scores?: SectionScores;
     word_count?: number;
     processing_time_ms?: number;
-    // Derived display fields
     strengths?: string[];
     weaknesses?: string[];
+};
+
+type HistoryEntry = {
+    id: string;
+    score: number;
+    grade: string;
+    resumeSnippet: string | null;
+    wordCount: number;
+    result: AnalysisResult | null;
+    createdAt: string;
 };
 
 const RESUME_ANALYZE_ENDPOINT = "/api/ai/resume-analyzer";
@@ -44,15 +53,36 @@ export default function ResumeAnalyzerPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [isLoading, setIsLoading] = useState(false);
-    const [isParsing, setIsParsing] = useState(false); // Added for file reading
+    const [isParsing, setIsParsing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<AnalysisResult | null>(null);
+
+    // ── History ──────────────────────────────────────────────────────────────
+    const [history, setHistory] = useState<HistoryEntry[]>([]);
+    const [loadingHistory, setLoadingHistory] = useState(true);
 
     useEffect(() => {
         if (error) {
             toast.error(error || "Analysis failed. Backend might be busy.");
         }
     }, [error]);
+
+    // Load analysis history on mount
+    useEffect(() => {
+        fetch("/api/ai/resume-analyze")
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(d => setHistory(d.data ?? []))
+            .catch(() => setHistory([]))
+            .finally(() => setLoadingHistory(false));
+    }, []);
+
+    // Restore a previous result from history
+    const restoreFromHistory = (entry: HistoryEntry) => {
+        if (entry.result) {
+            setResult({ ...entry.result, resume_id: entry.id });
+            toast.success(`Restored analysis from ${new Date(entry.createdAt).toLocaleDateString()}`);
+        }
+    };
 
     const processFile = async (selectedFile: File) => {
         setFile(selectedFile);
@@ -110,7 +140,6 @@ export default function ResumeAnalyzerPage() {
     };
 
     const handleAnalyze = async () => {
-      // Guard: must have text before calling API
       if (!resumeText || resumeText.trim().length === 0) {
         setError("Please upload your resume or paste its text first.");
         return;
@@ -120,30 +149,33 @@ export default function ResumeAnalyzerPage() {
         setIsLoading(true);
         setError(null);
 
-        // Required debug logs as per Step 2
-        console.log("resumeText value:", resumeText);
-        console.log("resumeText length:", resumeText?.length);
-        console.log("Sending resumeText, length:", resumeText.length);
-
         const response = await fetch("/api/ai/resume-analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            resumeText: resumeText.slice(0, 10000) 
-          }),
+          body: JSON.stringify({ resumeText: resumeText.slice(0, 10000) }),
         });
 
-        // Handle non-OK responses properly
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          const message = errData?.error ?? 
-            `Server error: ${response.status}`;
-          throw new Error(message);
+          throw new Error(errData?.error ?? `Server error: ${response.status}`);
         }
 
-        const result = await response.json();
-        setResult(result.data); // NOTE: Modified from setAnalysisResult to match the existing state variable
+        const json = await response.json();
+        setResult(json.data);
 
+        // Prepend to local history so users see it immediately without a reload
+        if (json.resume_id) {
+          const newEntry: HistoryEntry = {
+            id: json.resume_id,
+            score: json.data?.score ?? 0,
+            grade: json.data?.grade ?? "N/A",
+            resumeSnippet: resumeText.slice(0, 200),
+            wordCount: json.data?.word_count ?? 0,
+            result: json.data,
+            createdAt: new Date().toISOString(),
+          };
+          setHistory(prev => [newEntry, ...prev].slice(0, 10));
+        }
       } catch (err: any) {
         console.error("handleAnalyze error:", err);
         
@@ -591,6 +623,53 @@ export default function ResumeAnalyzerPage() {
                     </AnimatePresence>
                 </div>
             </div>
+            {/* ── Analysis History Panel ──────────────────────────────────────── */}
+            {(loadingHistory || history.length > 0) && (
+                <section className="mt-8">
+                    <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <FileText size={18} className="text-orange-400" />
+                        Previous Analyses
+                    </h2>
+                    {loadingHistory ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="h-24 rounded-2xl bg-white/5 animate-pulse" />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {history.slice(0, 5).map(entry => (
+                                <motion.div
+                                    key={entry.id}
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="group relative p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-orange-500/40 hover:bg-white/8 transition-all cursor-pointer"
+                                    onClick={() => restoreFromHistory(entry)}
+                                    role="button"
+                                    aria-label={`Restore analysis from ${new Date(entry.createdAt).toLocaleDateString()} — Score ${entry.score}`}
+                                >
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs text-slate-400">{new Date(entry.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                        <span className={`text-sm font-black px-2 py-0.5 rounded-full ${
+                                            entry.score >= 80 ? 'bg-emerald-500/20 text-emerald-400' :
+                                            entry.score >= 60 ? 'bg-yellow-500/20 text-yellow-400' :
+                                            'bg-red-500/20 text-red-400'
+                                        }`}>{entry.grade}</span>
+                                    </div>
+                                    <div className="flex items-baseline gap-1 mb-1">
+                                        <span className="text-3xl font-black text-white">{entry.score}</span>
+                                        <span className="text-xs text-slate-400">/100</span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 truncate">{entry.resumeSnippet ?? 'Resume analysis'}</p>
+                                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="text-xs text-orange-400 font-semibold">Restore →</span>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            )}
         </div>
     );
 }

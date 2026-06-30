@@ -82,13 +82,30 @@ async function getTalentData(query?: string) {
         100,
         Math.round(gigsCompleted * 15 + endorsements * 5 + avgRating * 10)
       )
+      /**
+       * Match score: deterministic skill-overlap between query terms and candidate profile.
+       * Formula: (matched_terms / total_query_terms) * 34 + 65  → always in [65, 99].
+       * No random values — same query + candidate always yields the same score.
+       */
       const matchScore = query
-        ? Math.floor(Math.random() * 25 + 70) // Simulated – replace with real cosine similarity
-        : null
+        ? (() => {
+            const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+            if (terms.length === 0) return null;
+            const haystack = [
+              c.skills ?? '',
+              c.bio ?? '',
+              c.branch ?? '',
+              c.careerGoal ?? '',
+              c.userSkills.map((us: { skill: { name: string } }) => us.skill.name).join(' '),
+            ].join(' ').toLowerCase();
+            const hits = terms.filter(t => haystack.includes(t)).length;
+            return Math.round((hits / terms.length) * 34 + 65);
+          })()
+        : null;
       return { ...c, reputationScore, avgRating, matchScore }
     })
 
-    return ranked.sort((a: any, b: any) => b.reputationScore - a.reputationScore)
+    return ranked.sort((a: (typeof ranked)[number], b: (typeof ranked)[number]) => b.reputationScore - a.reputationScore)
   } catch {
     return []
   }

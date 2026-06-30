@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { protectApi } from '@/lib/auth-checks';
 import { aiLimiter } from '@/lib/rate-limit';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import { AIService } from '@/lib/ai';
 
 export const dynamic = 'force-dynamic';

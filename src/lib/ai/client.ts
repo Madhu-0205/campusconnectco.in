@@ -1,5 +1,36 @@
 import OpenAI from "openai";
 
+/**
+ * Produces a numeric seed from a string using DJB2 hash.
+ * Same input → always same seed. Used by the embedding fallback.
+ */
+function deterministicSeed(text: string): number {
+  let hash = 5381;
+  for (let i = 0; i < text.length; i++) {
+    hash = ((hash << 5) + hash) ^ text.charCodeAt(i);
+    hash = hash >>> 0; // keep unsigned 32-bit
+  }
+  return hash;
+}
+
+/**
+ * Generates a stable float32 vector of the given dimension using an
+ * XOR-shift PRNG seeded from `seed`. Values are normalized to [-1, 1].
+ * This is deterministic: same seed + dimension → same vector.
+ */
+function deterministicVector(seed: number, dimensions: number): number[] {
+  let state = seed === 0 ? 1 : seed;
+  return Array.from({ length: dimensions }, () => {
+    // XOR-shift 32-bit
+    state ^= state << 13;
+    state ^= state >> 17;
+    state ^= state << 5;
+    state = state >>> 0;
+    // Map [0, 2^32] → [-1, 1]
+    return (state / 0xffffffff) * 2 - 1;
+  });
+}
+
 let _client: OpenAI | null = null;
 
 export function getChatModel(): string {
@@ -24,15 +55,14 @@ export function getOpenAI(): OpenAI {
         if (prop === 'chat') {
           return {
             completions: {
-              create: async (params: any) => {
+              create: async (params: { stream?: boolean; messages?: Array<{ role: string; content: string }> }) => {
                 if (params.stream) {
                   return (async function* () {
-                    yield { choices: [{ delta: { content: "This is a placeholder AI response. Please configure a valid API key in your settings." } }] };
+                    yield { choices: [{ delta: { content: "AI service unavailable: configure OPENAI_API_KEY or GROQ_API_KEY." } }] };
                   })();
                 }
-                // Return a mock payload that is parseable by different callers
-                const systemPrompt = params.messages?.find((m: any) => m.role === 'system')?.content || '';
-                let contentObj: any = { tips: ["Configure API key", "Run tests", "Check RLS"] };
+                const systemPrompt = params.messages?.find((m) => m.role === 'system')?.content || '';
+                let contentObj: Record<string, unknown> = { tips: ["Configure AI API key"] };
                 if (systemPrompt.includes("score") || systemPrompt.includes("strengths")) {
                   contentObj = {
                     score: 85,
@@ -70,9 +100,13 @@ export function getOpenAI(): OpenAI {
         }
         if (prop === 'embeddings') {
           return {
-            create: async (params: any) => {
+            create: async (params: { model?: string; input?: string }) => {
               const dimensions = params.model?.includes('nomic') ? 768 : 1536;
-              const vector = new Array(dimensions).fill(0).map(() => Math.random());
+              // Deterministic hash-based embedding: same text always yields same vector.
+              // Uses a seeded XOR-shift PRNG so the vector is stable and spans [-1, 1].
+              // This is a fallback only — configure a real API key for production embeddings.
+              const seed = deterministicSeed(String(params.input ?? ''));
+              const vector = deterministicVector(seed, dimensions);
               return { data: [{ embedding: vector }] };
             }
           };

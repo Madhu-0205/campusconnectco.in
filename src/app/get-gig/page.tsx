@@ -53,11 +53,14 @@ export default function GetGigPage() {
             const res = await fetch(`/api/recommendations?type=gigs`)
             if (res.ok) {
                 const data = await res.json()
-                const matches = data.map((gig: Gig) => ({
+                const matches = data
+                  .filter((gig: Gig & { matchScore?: number }) => (gig.matchScore ?? 0) > 0)
+                  .map((gig: Gig & { matchScore?: number }) => ({
                     ...gig,
-                    matchPercentage: (gig as unknown as { matchScore?: number }).matchScore || Math.floor(Math.random() * (99 - 85 + 1) + 85),
+                    // Use real hybrid score from the recommendations engine (skill overlap + proximity)
+                    matchPercentage: gig.matchScore ?? null,
                     matchReason: "Matches your skill profile and location"
-                }))
+                  }))
                 setSmartMatches(matches.slice(0, 3)) // top 3 for sidebar
             }
         } catch (err) {

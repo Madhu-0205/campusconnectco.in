@@ -464,13 +464,19 @@ model Startup {
 }
 
 model ResumeAnalysis {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
-  score     Int
-  feedback  Json?
-  fileName  String?
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @db.Uuid
+  score          Int
+  grade          String   @default("N/A")
+  resumeSnippet  String?  // First 200 chars of resume text for history preview
+  wordCount      Int      @default(0)
+  result         Json?    // Full structured AI output (score, strengths, suggestions, etc.)
+  feedback       Json?    // Legacy field — kept for backward compatibility
+  fileName       String?
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model Analytics {
