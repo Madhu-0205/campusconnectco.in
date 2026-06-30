@@ -12,6 +12,7 @@ vi.mock("@/lib/prisma", () => {
   const mockTransactionFindMany = vi.fn();
   const mockTransactionCreate = vi.fn();
   const mockTransactionUpdate = vi.fn();
+  const mockTransactionUpdateMany = vi.fn().mockResolvedValue({ count: 1 });
   
   const mockGigFindUnique = vi.fn();
   const mockGigUpdate = vi.fn();
@@ -29,6 +30,7 @@ vi.mock("@/lib/prisma", () => {
     transaction: {
       findUnique: mockTransactionFindUnique,
       update: mockTransactionUpdate,
+      updateMany: mockTransactionUpdateMany,
       create: mockTransactionCreate,
     },
     escrow: { create: mockEscrowCreate },
@@ -55,6 +57,7 @@ vi.mock("@/lib/prisma", () => {
         findMany: mockTransactionFindMany,
         create: mockTransactionCreate,
         update: mockTransactionUpdate,
+        updateMany: mockTransactionUpdateMany,
       },
       gig: {
         findUnique: mockGigFindUnique,
