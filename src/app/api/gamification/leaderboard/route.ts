@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+
 import { getSession } from "@/lib/auth-checks"
 import { computeSmartScore } from "@/lib/gamification"
+import prisma from "@/lib/prisma"
 
 // GET /api/gamification/leaderboard?period=WEEKLY&college=IIT+Delhi&limit=50
 export async function GET(req: Request) {
@@ -14,7 +15,7 @@ export async function GET(req: Request) {
     const user = await getSession()
 
     // Fetch top gamification records + user info
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const records: any[] = await (prisma as any).userGamification.findMany({
       orderBy: { smartScore: "desc" },
       take: limit,
@@ -62,10 +63,10 @@ export async function GET(req: Request) {
     // Find current user's rank if not in top N
     let myRank = null
     if (user && !leaderboard.find((l: any) => l.userId === user.id)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const myGamif = await (prisma as any).userGamification.findUnique({ where: { userId: user.id } })
       if (myGamif) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const above = await (prisma as any).userGamification.count({
           where: { smartScore: { gt: myGamif.smartScore } },
         })

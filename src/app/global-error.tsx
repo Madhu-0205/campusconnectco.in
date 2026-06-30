@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { AlertTriangle, RefreshCcw } from "lucide-react"
+import { useEffect } from 'react'
 
 export default function GlobalError({
     error,

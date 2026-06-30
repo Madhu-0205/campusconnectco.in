@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
     GraduationCap, Plus, Search, Star, StarOff, CheckCircle, XCircle,
     Trash2, Edit3, Calendar, MapPin, DollarSign, Clock, Building2,
     Loader2, X, Save, ExternalLink,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 interface Internship {
@@ -89,9 +89,9 @@ export default function InternshipManagementPage() {
             deadline: internship.deadline ? internship.deadline.slice(0, 10) : "",
             status: internship.status,
             isFeatured: internship.isFeatured,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             applicationLink: (internship as any).applicationLink || "",
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             tags: (internship as any).tags || "",
         });
         setEditingId(internship.id);
@@ -424,15 +424,15 @@ export default function InternshipManagementPage() {
                                         <label className="font-black uppercase tracking-wider text-slate-500">Tags (work mode)</label>
                                         <div className="flex gap-2 flex-wrap">
                                             {["Remote", "Hybrid", "Onsite"].map((t) => {
-                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                 
                                                 const selected = (form as any).tags?.includes(t);
                                                 return (
                                                     <button key={t} type="button"
                                                         onClick={() => {
-                                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                             
                                                             const current = ((form as any).tags || "").split(",").map((x: string) => x.trim()).filter(Boolean);
                                                             const next = selected ? current.filter((x: string) => x !== t) : [...current, t];
-                                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                             
                                                             setForm({ ...form, tags: next.join(",") } as any);
                                                         }}
                                                         className={`px-4 py-2 rounded-xl font-bold border transition-all ${selected ? "bg-(--primary)/10" : "bg-white/5 border-white/10 text-slate-500" }`}

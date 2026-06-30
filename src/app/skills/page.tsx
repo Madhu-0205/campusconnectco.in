@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+
 import SkillsExplorer from "./SkillsExplorer";
 
 export const metadata: Metadata = {

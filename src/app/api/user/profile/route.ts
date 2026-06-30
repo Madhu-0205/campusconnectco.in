@@ -1,7 +1,8 @@
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
+
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
 import { isValidUUID } from "@/lib/uuid-utils";
 
 export const dynamic = "force-dynamic";
@@ -296,7 +297,7 @@ export async function PATCH(req: Request) {
         
         const {
             username, name, full_name, bio, portfolio, linkedin, github, instagram, image, avatar_url,
-            coverImage, skills, college, branch, year, careerGoal, company_name
+            coverImage, skills, college, branch, year, careerGoal, company_name, resumeData
         } = body;
 
         const updatedProfile = await prisma.user.update({
@@ -310,6 +311,7 @@ export async function PATCH(req: Request) {
                 avatar_url: avatar_url || image,
                 coverImage,
                 college, branch, year, careerGoal, company_name,
+                ...(resumeData !== undefined && { resumeData }),
                 ...(skills !== undefined && { 
                     skills: Array.isArray(skills) ? skills.join(',') : skills 
                 }),

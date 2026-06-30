@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
-import Link from "next/link"
 import { ArrowRight, CheckCircle2 } from "lucide-react"
+import Link from "next/link"
+import { useRef } from "react"
 
 const WEEKS = [
     { week: "Week 01", title: "HTML & CSS Mastery",    status: "completed" },

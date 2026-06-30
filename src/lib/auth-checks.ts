@@ -1,7 +1,8 @@
-import { createClient } from "@/lib/supabase/server"
-import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+
+import { prisma } from "@/lib/prisma"
 import { logSecurityEvent } from "@/lib/security/audit"
+import { createClient } from "@/lib/supabase/server"
 
 /**
  * Server-side utility to get the current session user

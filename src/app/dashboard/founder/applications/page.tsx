@@ -1,9 +1,12 @@
+import { FileText } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+import { Card } from "@/components/ui/Card";
 import { protectPage } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
-import { FileText } from "lucide-react";
-import { redirect } from "next/navigation";
-import { Card } from "@/components/ui/Card";
-import Link from "next/link";
+
+
 
 export default async function ApplicationsOverviewPage() {
     const { authorized } = await protectPage(["FOUNDER"]);

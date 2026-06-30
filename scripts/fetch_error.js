@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 const http = require('http');
 
 http.get('http://localhost:3000/dashboard/student', (res) => {

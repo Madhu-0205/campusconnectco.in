@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { UserPlus, Check, Clock, X, MessageCircle, Loader2, Ban } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
 type ConnectionStatus =

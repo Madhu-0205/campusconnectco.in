@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import prisma from "@/lib/prisma";
 
 // This route can be called periodically by Vercel Cron, GitHub Actions, or a simple interval.

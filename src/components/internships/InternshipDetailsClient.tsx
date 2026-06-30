@@ -1,8 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Building2, MapPin, Clock, DollarSign, Calendar, 
@@ -10,6 +7,10 @@ import {
   TrendingUp, ExternalLink, Briefcase
 } from "lucide-react";
 import Link from "next/link";
+
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 
 interface InternshipRecord {
   company?: string | null;
@@ -19,7 +20,7 @@ interface InternshipRecord {
   duration?: string | null;
   stipend?: number | null;
   description?: string | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   skills?: any;
   applicationLink?: string | null;
 }

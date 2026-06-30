@@ -1,7 +1,8 @@
-import { Suspense } from "react";
-import SignInForm from "@/components/auth/SignInForm";
 import type { Metadata } from 'next';
 import Link from "next/link";
+import { Suspense } from "react";
+
+import SignInForm from "@/components/auth/SignInForm";
 
 export const metadata: Metadata = {
     title: "Sign In — CampusConnect",

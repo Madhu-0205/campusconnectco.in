@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
 import { Search, Phone, Video, MoreVertical, Paperclip, Send, Mic, Check, CheckCheck, Smile, Image as ImageIcon, Lock } from "lucide-react"
+import { useState, type FormEvent } from "react"
+
 import { Button } from "@/components/ui/Button"
 
 // Types

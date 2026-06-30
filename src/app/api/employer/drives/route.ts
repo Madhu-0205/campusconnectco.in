@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+
 import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
 
 // POST /api/employer/drives — Create a new campus drive
 export async function POST(req: NextRequest) {
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify user is a member of the organization
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const membership = await (prisma as any).member.findFirst({
       where: { userId: user.id, organizationId },
     })
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden: Not a member of this organization" }, { status: 403 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const drive = await (prisma as any).campusDrive.create({
       data: {
         organizationId,
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
     const user = await getSession()
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const membership = await (prisma as any).member.findFirst({
       where: { userId: user.id },
       include: { organization: true },
@@ -60,7 +61,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json([])
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const drives = await (prisma as any).campusDrive.findMany({
       where: { organizationId: membership.organizationId },
       orderBy: { createdAt: "desc" },

@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
 import {
   Star, Zap, Trophy, Users, TrendingUp, CheckCircle2,
   ArrowRight, Crown, Rocket, Target, Gift, Shield,
   GraduationCap, MessageCircle, ChevronDown, ChevronUp
 } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
 
 const BENEFITS = [
   { icon: TrendingUp, color: "#10B981", title: "Earn from every student you onboard", desc: "Get 5% of the platform fee on every gig your students complete. This compounds every month." },

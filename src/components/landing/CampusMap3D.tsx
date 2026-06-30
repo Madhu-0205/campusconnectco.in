@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/refs */
 "use client"
 
-import { useRef, useState, useEffect } from "react"
-import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Html, Grid, Float } from "@react-three/drei"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
+import { useRef, useState, useEffect } from "react"
 import * as THREE from "three"
+
 import { checkWebGL } from "@/lib/webgl"
 
 const STUDENT_CARDS = [

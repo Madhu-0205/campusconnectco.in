@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useEffect, useState } from "react"
 
 const BOOT_LOGS = [
     { text: "$ init --cluster=india --verbose", type: "cmd" },

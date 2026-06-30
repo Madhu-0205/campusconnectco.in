@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
 
 const AICoverLetterModal = dynamic(
   () => import('@/components/ai/AICoverLetterModal').then(mod => mod.AICoverLetterModal),

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { useState } from "react";
 
 export default function ContactForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);

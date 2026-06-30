@@ -1,7 +1,9 @@
-import { GigList } from "@/components/gigs/GigList"
-import { GigsFilters } from "./GigsFilters"
 import { Suspense } from "react"
+
 import { AIChatWidget } from "@/components/ai/AIChatWidget"
+import { GigList } from "@/components/gigs/GigList"
+
+import { GigsFilters } from "./GigsFilters"
 
 export const dynamic = "force-dynamic"
 

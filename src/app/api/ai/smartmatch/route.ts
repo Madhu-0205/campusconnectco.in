@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { protectApi } from '@/lib/auth-checks';
-import { aiLimiter } from '@/lib/rate-limit';
-import prisma from '@/lib/prisma';
+
 import { AIService } from '@/lib/ai';
+import { protectApi } from '@/lib/auth-checks';
+import prisma from '@/lib/prisma';
+import { aiLimiter } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; 

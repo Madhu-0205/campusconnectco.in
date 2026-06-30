@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Briefcase, Search, Star, Sparkles, MapPin, Clock, Filter, IndianRupee, Activity, Users, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+
 import { Button } from "@/components/ui/Button"
 
 interface Gig {

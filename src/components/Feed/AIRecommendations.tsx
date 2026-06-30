@@ -1,9 +1,9 @@
 "use client";
 
-import { Sparkles, Briefcase, User, Users, ArrowRight, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
+import { Sparkles, Briefcase, User, Users, ArrowRight, Zap } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect, useCallback } from "react";
 
 interface RecommendationItem {
     id: string;

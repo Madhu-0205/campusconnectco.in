@@ -1,4 +1,5 @@
 import { calculateDistance } from "../matching"
+
 import { calculateGigRankingScore } from "./gigRanking"
 
 const MAX_RADIUS_KM = 5

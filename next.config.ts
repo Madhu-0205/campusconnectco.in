@@ -37,12 +37,6 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  outputFileTracingIncludes: {
-    "/**/*": [
-      "./node_modules/.prisma/client/**/*",
-      "./node_modules/@prisma/engines/**/*",
-    ],
-  },
 
   webpack(config: import("webpack").Configuration) {
     // pdf-parse ships a test helper that breaks in webpack bundled envs.

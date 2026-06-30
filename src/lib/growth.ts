@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma"
 import { computeLevel, computeSmartScore } from "@/lib/gamification"
+import prisma from "@/lib/prisma"
 
 /**
  * Handles referral conversion and payouts when a referee completes their first gig (escrow released).

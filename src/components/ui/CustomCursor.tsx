@@ -1,8 +1,8 @@
 "use client"
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useEffect, useRef, useState } from "react"
+ 
 import { motion, useMotionValue, useSpring } from "framer-motion"
+import { useEffect, useRef, useState } from "react"
 
 export default function CustomCursor() {
     const [mounted, setMounted] = useState(false)

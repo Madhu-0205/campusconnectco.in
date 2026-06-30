@@ -1,11 +1,12 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
-import { useState } from "react";
-import { Mail, ArrowLeft, Loader2, CheckCircle, Sparkles } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { Mail, ArrowLeft, Loader2, CheckCircle, Sparkles } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+
+import { createClient } from "@/lib/supabase/client";
 
 export default function ForgotPasswordPage() {
     const supabase = createClient();

@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
-import { toast } from "sonner";
-import { Brain, Sparkles, Navigation, Map, ListChecks, Code, Rocket, BookOpen, MessageSquare, Loader2, Sparkle, History, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Brain, Sparkles, Navigation, Map, ListChecks, Code, Rocket, BookOpen, MessageSquare, Loader2, Sparkle, History, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+
 
 interface CopilotResult {
     roadmapSteps: string[];

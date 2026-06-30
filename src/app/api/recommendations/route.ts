@@ -1,7 +1,8 @@
-import { createClient } from "@/lib/supabase/server"
-import prisma from "@/lib/prisma"
 import { NextResponse } from "next/server"
+
 import { calculateDistance, calculateMatchScore, calculateRadiusScore } from "@/lib/matching"
+import prisma from "@/lib/prisma"
+import { createClient } from "@/lib/supabase/server"
 
 export async function GET(req: Request) {
     try {

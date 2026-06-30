@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
+
+import { AIService } from "@/lib/ai";
 import { protectApi } from "@/lib/auth-checks";
 import { aiLimiter } from "@/lib/rate-limit";
-import { AIService } from "@/lib/ai";
-import { z } from "zod";
 
 const aiRequestSchema = z.object({
     type: z.enum(["resume", "smartmatch", "career"]),
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid request data format." }, { status: 400 });
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const { type, data } = parsed.data as { type: string, data: any };
 
         // 4. AIService Routing

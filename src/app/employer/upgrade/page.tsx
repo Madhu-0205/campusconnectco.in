@@ -1,10 +1,11 @@
-import { Metadata } from "next"
-import Link from "next/link"
 import {
   Zap, Building2, Rocket, Crown, Check, ArrowRight,
   ShieldCheck, Brain, Target, Users, BarChart3, MessageSquare,
   Star, Sparkles, Lock
 } from "lucide-react"
+import { Metadata } from "next"
+import Link from "next/link"
+
 import { Card } from "@/components/ui/Card"
 
 export const metadata: Metadata = {

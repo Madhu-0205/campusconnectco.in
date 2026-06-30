@@ -1,9 +1,11 @@
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
-import PublicProfileClient from "./PublicProfileClient"
 import { headers } from "next/headers"
+import { notFound } from "next/navigation"
+
 import { StudentPersonSchema } from "@/components/seo/JsonLd"
 import prisma from "@/lib/prisma"
+
+import PublicProfileClient from "./PublicProfileClient"
 
 export async function generateMetadata({
   params,

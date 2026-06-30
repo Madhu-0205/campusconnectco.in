@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Briefcase,
@@ -26,10 +24,13 @@ import {
     FileText,
 } from "lucide-react";
 import Link from "next/link";
-import { Card } from "@/components/ui/Card";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/Button";
-import { createClient } from "@/lib/supabase/client";
+import { Card } from "@/components/ui/Card";
 import { VerificationBadge } from "@/components/ui/VerificationBadge";
+import { createClient } from "@/lib/supabase/client";
 
 interface GigDetailProps {
     gig: {

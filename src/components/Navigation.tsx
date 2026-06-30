@@ -1,6 +1,7 @@
 "use client"
 
-import Link from "next/link"
+import type { User as SupabaseUser } from "@supabase/supabase-js"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Home, Briefcase, GraduationCap, CreditCard, Info, Menu,
@@ -8,13 +9,14 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Users, Shield, FileText, Sparkles, Map, LayoutDashboard, Building2
 } from "lucide-react"
-import { useState, useEffect, useRef, memo } from "react"
+import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
-import { ThemeToggle } from "@/components/ThemeToggle"
+import { useState, useEffect, useRef, memo } from "react"
+
 import NotificationsPopover from "@/components/NotificationsPopover"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { createClient } from "@/lib/supabase/client"
-import type { User as SupabaseUser } from "@supabase/supabase-js"
+
 
 /* ===============================
    SEARCH MODAL

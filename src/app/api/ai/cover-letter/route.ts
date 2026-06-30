@@ -1,9 +1,11 @@
-import { NextResponse } from 'next/server';
-import { generateCoverLetter, improveCoverLetter } from '@/lib/ai/coverLetter';
-import { aiLimiter } from '@/lib/rate-limit';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+
+import { generateCoverLetter, improveCoverLetter } from '@/lib/ai/coverLetter';
 import prisma from '@/lib/prisma';
+import { aiLimiter } from '@/lib/rate-limit';
+
 
 export async function POST(req: Request) {
   try {

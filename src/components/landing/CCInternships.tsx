@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
 import { motion } from "framer-motion"
-import Link from "next/link"
 import { Sparkles, ArrowRight } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
 
 const INTERNSHIPS = [
     {
@@ -33,29 +33,29 @@ const INTERNSHIPS = [
         price: "₹6,000/mo",
         matchHue: "var(--primary-light)",
     },
-]
+];
 
-/* Particle cloud — client-only (Math.random) */
+// Deterministic pseudo-random number generator
+const pseudoRandom = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+};
+
+const STATIC_PARTICLES = Array.from({ length: 28 }, (_, i) => ({
+    id: i,
+    top:   pseudoRandom(i * 1.1) * 100,
+    left:  pseudoRandom(i * 2.2) * 100,
+    size:  pseudoRandom(i * 3.3) * 2.5 + 1,
+    dur:   pseudoRandom(i * 4.4) * 18 + 10,
+    delay: pseudoRandom(i * 5.5) * 8,
+    right: pseudoRandom(i * 6.6) > 0.5,
+}));
+
+/* Particle cloud — static deterministic */
 function ParticleCloud() {
-    const [mounted, setMounted] = useState(false)
-    const particles = useMemo(() => {
-        if (typeof window === "undefined") return []
-        return Array.from({ length: 28 }, (_, i) => ({
-            id: i,
-            top:   Math.random() * 100,
-            left:  Math.random() * 100,
-            size:  Math.random() * 2.5 + 1,
-            dur:   Math.random() * 18 + 10,
-            delay: Math.random() * 8,
-            right: Math.random() > 0.5,
-        }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mounted])
-    useEffect(() => { setMounted(true) }, [])
-    if (!mounted) return null
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {particles.map((p) => (
+            {STATIC_PARTICLES.map((p) => (
                 <motion.div
                     key={p.id}
                     className="absolute rounded-full"

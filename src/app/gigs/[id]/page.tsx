@@ -1,8 +1,10 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import prisma from "@/lib/prisma";
-import GigDetailClient from "@/components/gigs/GigDetailClient";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+
+import GigDetailClient from "@/components/gigs/GigDetailClient";
+import prisma from "@/lib/prisma";
+
 
 interface PageProps {
     params: Promise<{

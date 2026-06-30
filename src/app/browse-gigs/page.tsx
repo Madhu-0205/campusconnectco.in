@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+
 import BrowseGigsContent from "@/components/gigs/BrowseGigsContent";
 
 export default function BrowseGigsPage() {

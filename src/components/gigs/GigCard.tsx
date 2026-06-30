@@ -1,12 +1,13 @@
 "use client"
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useState, useEffect, useMemo } from 'react'
-import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Shield, Clock, MapPin, Zap, Bookmark, BookmarkCheck } from 'lucide-react'
+import Image from 'next/image'
+import { useState, useEffect, useMemo } from 'react'
+
+import { fadeUp } from '@/lib/animations'
 import { createClient } from '@/lib/supabase/client'
 import { notify } from '@/lib/toast'
-import { fadeUp } from '@/lib/animations'
 // import { QuickApplyModal } from './QuickApplyModal' // I'll build this later or use existing
 
 interface GigCardProps {

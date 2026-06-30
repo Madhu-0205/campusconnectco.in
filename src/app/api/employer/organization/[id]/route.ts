@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+
 import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
 
 // PATCH /api/employer/organization/[id] — Update org profile
 export async function PATCH(
@@ -14,7 +15,7 @@ export async function PATCH(
     const { id } = await params
 
     // Verify membership
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const membership = await (prisma as any).member.findFirst({
       where: { userId: user.id, organizationId: id },
     })
@@ -25,7 +26,7 @@ export async function PATCH(
     const body = await req.json()
     const { name, website, industry, size, bio, techStack, socialLinks, logo, coverImage } = body
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const updated = await (prisma as any).organization.update({
       where: { id },
       data: {

@@ -1,7 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import {
     Briefcase,
     Search,
@@ -15,7 +13,9 @@ import {
     Grid3x3,
     List,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect, useCallback } from "react";
 
 interface Gig {
     id: string;

@@ -1,18 +1,19 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
   GraduationCap, Sparkles, User, Link2, ArrowLeft, ArrowRight, 
   CheckCircle2, ShieldCheck, Mail, Github, Linkedin, Globe, 
   Loader2, Search, ChevronDown, Award, Compass
 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import SkillSelector from "@/components/SkillSelector"
-import { Skill, SKILLS_DATASET } from "@/lib/skills-dataset"
-import { VerificationBadge } from "@/components/ui/VerificationBadge"
+
 import { ReferralTracker } from "@/components/growth/ReferralTracker"
+import SkillSelector from "@/components/SkillSelector"
+import { VerificationBadge } from "@/components/ui/VerificationBadge"
+import { Skill, SKILLS_DATASET } from "@/lib/skills-dataset"
 
 // ── Indian colleges list ─────────────────────────────────────────────────────
 const COLLEGES = [

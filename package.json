@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/predev.js",
+    "check-casing": "node scripts/check-casing.js",
+    "predev": "node scripts/check-casing.js && node scripts/predev.js",
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "node scripts/check-casing.js && prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "type-check": "tsc --noEmit",
+    "type-check": "node scripts/check-casing.js && tsc --noEmit",
     "test": "vitest run",
     "postinstall": "prisma generate"
   },

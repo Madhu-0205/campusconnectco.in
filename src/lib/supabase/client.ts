@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
+
 import { fetchWithBackoff } from './fetch'
 
 let client: ReturnType<typeof createBrowserClient> | null = null;

@@ -1,7 +1,8 @@
-import { aiLimiter } from '@/lib/rate-limit';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+
 import { streamChatResponse, ChatContext } from '@/lib/ai/chatAssistant';
+import { aiLimiter } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 

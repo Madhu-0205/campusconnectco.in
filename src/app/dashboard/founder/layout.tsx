@@ -1,5 +1,6 @@
-import { protectPage } from "@/lib/auth-checks";
 import { redirect } from "next/navigation";
+
+import { protectPage } from "@/lib/auth-checks";
 
 /**
  * Server-side RBAC protection for all /dashboard/founder/* routes.

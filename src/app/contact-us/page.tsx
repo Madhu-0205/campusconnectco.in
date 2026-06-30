@@ -1,5 +1,6 @@
 import { Mail, Phone, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+
 import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {

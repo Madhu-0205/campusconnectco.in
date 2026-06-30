@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useMemo, useTransition } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
 import {
   Search, Filter, GraduationCap, Star, ShieldCheck,
   Github, Linkedin, Globe, MessageSquare, Eye,
   ChevronDown, X, Zap, Lock, BookOpen, MapPin, Award
 } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useState, useMemo, useTransition } from "react"
+
 import { Card } from "@/components/ui/Card"
 
 type Candidate = {

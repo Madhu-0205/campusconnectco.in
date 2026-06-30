@@ -1,10 +1,11 @@
 "use client"
-import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Clock, Bookmark, Zap } from "lucide-react"
 import Link from "next/link"
-import Image from "@/components/ui/ResilientImage"
+import { useState, useEffect } from "react"
+
 import MatchRing from "@/components/ui/MatchRing"
+import Image from "@/components/ui/ResilientImage"
 import { cardHover, cardTap } from "@/lib/animations"
 
 export interface GigCardData {

@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { generateEmbedding, cosineSimilarity, findTopN, Candidate } from "../lib/ai/embeddings";
 
 describe("AI Embeddings and Matching", () => {

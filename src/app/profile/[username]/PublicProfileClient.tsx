@@ -5,14 +5,15 @@ import {
   MapPin, ExternalLink, Linkedin, Github, Calendar,
   ShieldCheck, Star, TrendingUp, Briefcase, Award, CheckCircle2, Mail
 } from "lucide-react"
+import Link from "next/link"
+
 import MatchRing from "@/components/ui/MatchRing"
 import { VerificationBadge } from "@/components/ui/VerificationBadge"
 import { fadeUp, staggerContainer, cardHover, viewportOnce } from "@/lib/animations"
-import Link from "next/link"
 
 interface PublicProfileClientProps {
   username: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   profile: any
 }
 

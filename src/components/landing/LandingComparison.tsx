@@ -1,7 +1,7 @@
 "use client"
-import { useState, useCallback } from "react"
 import { motion } from "framer-motion"
 import { CheckCircle2, X, Minus } from "lucide-react"
+import { useState, useCallback } from "react"
 
 const rows = [
   "AI Career Roadmap",

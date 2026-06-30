@@ -1,5 +1,6 @@
-import FraudEngineClient from "./FraudEngineClient"
 import type { Metadata } from "next"
+
+import FraudEngineClient from "./FraudEngineClient"
 
 export const metadata: Metadata = {
     title: "Fraud Engine | Sentinel",

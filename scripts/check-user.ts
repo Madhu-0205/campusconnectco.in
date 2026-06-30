@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
+
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -10,7 +11,7 @@ async function main() {
         where: { email }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     let authUsers: any[] = [];
     try {
         authUsers = await prisma.$queryRaw`SELECT id, email FROM auth.users WHERE email = ${email}`;

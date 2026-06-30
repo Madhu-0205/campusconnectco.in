@@ -1,22 +1,27 @@
-import { Card } from "@/components/ui/Card"
-import { Button } from "@/components/ui/Button"
 import {
     Sparkles, ArrowRight,
     CircleDot, Activity, CheckCircle2, Trophy, TrendingUp,
     Star, Zap, Brain, Briefcase, Users, MessageCircle, Map as TargetIcon,
     Rocket, FileText, Gift, Crown
 } from "lucide-react"
+import Link from "next/link"
+import { redirect } from "next/navigation"
+
 import { AIPersonalizedFeed } from "@/components/ai/AIPersonalizedFeed"
 import { TrendingSidebar } from "@/components/ai/TrendingSidebar"
-import { ReputationLedgerCard } from "@/components/profile/ReputationLedgerCard"
 import { GamificationDashboard } from "@/components/gamification/GamificationDashboard"
 import { ReferralTracker } from "@/components/growth/ReferralTracker"
-import Link from "next/link"
+import { ReputationLedgerCard } from "@/components/profile/ReputationLedgerCard"
+import { Button } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
+import { protectPage } from "@/lib/auth-checks"
 import prisma from "@/lib/prisma"
-import { getSession } from "@/lib/auth-checks"
 
 export default async function StudentDashboard() {
-    const user = await getSession();
+    const { authorized, user } = await protectPage(["STUDENT", "FOUNDER"]) // Founder can view student dashboard for testing
+    if (!authorized) {
+        redirect("/auth/sign-in")
+    }
 
     let dbUser = null;
     let recentApps: any[] = [];

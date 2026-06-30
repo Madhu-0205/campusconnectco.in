@@ -1,7 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import {
+    motion,
+    AnimatePresence,
+    useMotionValue,
+    useSpring,
+    useTransform,
+} from "framer-motion";
 import {
     MapPin,
     X,
@@ -23,14 +28,10 @@ import {
     CheckCircle2,
     LucideIcon
 } from "lucide-react";
-import {
-    motion,
-    AnimatePresence,
-    useMotionValue,
-    useSpring,
-    useTransform,
-} from "framer-motion";
+import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -64,6 +65,7 @@ export default function Profile() {
         image: "",
         coverImage: "",
         projects: [] as Project[],
+        resumeData: null as any,
     });
 
     const [newProject, setNewProject] = useState({
@@ -191,6 +193,7 @@ export default function Profile() {
                     coverImage: data.coverImage ?? "",
                     status: data.status ?? "Available for Gigs",
                     projects: data.projects ?? [],
+                    resumeData: data.resumeData ?? null,
                 });
 
 
@@ -210,6 +213,40 @@ export default function Profile() {
 
         fetchProfile();
     }, []);
+
+    /* ===============================
+       AUTO-FILL FROM RESUME
+    =============================== */
+    const handleAutoFill = () => {
+        if (!profile.resumeData) return;
+        
+        try {
+            const parsed = profile.resumeData;
+            
+            // Generate or set Bio
+            const newBio = parsed.summary || profile.bio;
+            
+            // Merge Skills
+            const currentSkills = new Set(profile.skills.map((s: string) => s.toLowerCase()));
+            const newSkills = [...profile.skills];
+            (parsed.skills || []).forEach((skill: string) => {
+                if (!currentSkills.has(skill.toLowerCase())) {
+                    newSkills.push(skill);
+                }
+            });
+            
+            // Projects will be handled later, for now let's set bio and skills
+            setProfile(prev => ({
+                ...prev,
+                bio: newBio,
+                skills: newSkills
+            }));
+            
+            toast.success("Profile Auto-Filled! Don't forget to Publish Changes.", { icon: "✨" });
+        } catch (e) {
+            toast.error("Failed to auto-fill from resume.");
+        }
+    };
 
     /* ===============================
        SAVE PROFILE
@@ -319,6 +356,15 @@ export default function Profile() {
 
                 {/* Header Action */}
                 <div className="absolute top-8 right-8 flex gap-3 z-20">
+                    {isEditing && profile.resumeData && (
+                        <Button
+                            variant="glass"
+                            onClick={handleAutoFill}
+                            className="bg-orange-500/20 backdrop-blur-xl border-orange-500/30 text-orange-400 hover:bg-orange-500 hover:text-white transition-all duration-500 rounded-full px-6 py-3 font-black text-sm uppercase tracking-widest shadow-2xl flex items-center gap-2"
+                        >
+                            <Sparkles size={16} /> Auto-Fill
+                        </Button>
+                    )}
                     <Button
                         variant="glass"
                         onClick={() => isEditing ? handleSave() : setIsEditing(true)}

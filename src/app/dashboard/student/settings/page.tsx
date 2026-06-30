@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/Card"
-import { Button } from "@/components/ui/Button"
 import { User, Bell, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
 import { toast } from "sonner"
+
+import { Button } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
 
 export default function SettingsPage() {
     const [loading, setLoading] = useState(true)

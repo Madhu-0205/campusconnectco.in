@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { Scale } from "lucide-react"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Terms & Conditions — CampusConnect",

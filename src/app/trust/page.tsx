@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import Link from "next/link"
 import {
   Shield, CheckCircle, Lock, Eye, AlertTriangle,
   BadgeCheck, Scale, Users, Star, Zap, ArrowRight,
   CreditCard, FileText, Globe, HeartHandshake
 } from "lucide-react"
+import type { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Trust & Safety | CampusConnect — How We Protect Students and Employers",

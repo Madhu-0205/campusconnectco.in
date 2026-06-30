@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+
 import { protectPage } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
+
 import ReportsClientComponent from "./ReportsClientComponent";
-import Link from "next/link";
 
 export default async function ReportsPage() {
     const { authorized } = await protectPage(["FOUNDER"]);

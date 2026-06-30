@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+
 import CheckoutClient from "./CheckoutClient";
 
 export default async function CheckoutPage() {

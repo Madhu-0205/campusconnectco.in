@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import Link from "next/link"
-import Image from "next/image"
 import {
   Trophy, Star, Flame, Target, TrendingUp,
   Search, Crown, Zap, GraduationCap, BadgeCheck
 } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useState, useEffect, useCallback } from "react"
 
 interface LeaderboardEntry {
   rank: number

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { FeedPost, FeedGig } from '@/lib/ai/feedAssembler';
 import { Heart, Sparkles, Briefcase, MapPin, Clock, MessageCircle, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+import { FeedPost, FeedGig } from '@/lib/ai/feedAssembler';
 
 interface FeedResponse {
   posts: FeedPost[];

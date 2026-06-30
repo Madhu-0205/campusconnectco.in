@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence, useInView, useSpring } from "framer-motion"
 import {
   ArrowRight, Star, Shield, Rocket, Users, Target, Trophy, CheckCircle2,
@@ -8,6 +7,8 @@ import {
   type LucideIcon
 } from "lucide-react"
 import Link from "next/link"
+import { useEffect, useRef, useState } from "react"
+
 import { fadeUp, staggerContainer, viewportOnce } from "@/lib/animations"
 
 /* ─── Animated Counter ─────────────────────────────────────────────────────── */

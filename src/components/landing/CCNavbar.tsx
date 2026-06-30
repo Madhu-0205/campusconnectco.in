@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import Link from "next/link"
-import Image from "next/image"
 import { Menu, X, LayoutDashboard } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useEffect, useRef, useState, useCallback } from "react"
+
 import { createClient } from "@/lib/supabase/client"
 
 const NAV_LINKS = [

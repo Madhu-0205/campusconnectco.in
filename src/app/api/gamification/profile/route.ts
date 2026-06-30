@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+
 import { getSession } from "@/lib/auth-checks"
 import {
   XP_REWARDS, computeLevel, computeSmartScore, getStreakMultiplier, BADGES
 } from "@/lib/gamification"
+import prisma from "@/lib/prisma"
 
 // ── GET /api/gamification/profile ─────────────────────────────────────────────
 export async function GET() {
@@ -11,7 +12,7 @@ export async function GET() {
     const user = await getSession()
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     let gamif = await (prisma as any).userGamification.findUnique({
       where: { userId: user.id },
       include: {
@@ -26,7 +27,7 @@ export async function GET() {
 
     // Auto-create on first access
     if (!gamif) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       gamif = await (prisma as any).userGamification.create({
         data: { userId: user.id },
         include: {
@@ -84,10 +85,10 @@ export async function POST(req: NextRequest) {
     const baseXp = XP_REWARDS[type as keyof typeof XP_REWARDS]
 
     // Get or create gamification record
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     let gamif = await (prisma as any).userGamification.findUnique({ where: { userId: user.id } })
     if (!gamif) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       gamif = await (prisma as any).userGamification.create({ data: { userId: user.id } })
     }
 
@@ -110,9 +111,9 @@ export async function POST(req: NextRequest) {
     const levelData = computeLevel(newTotal)
 
     // Update gamification record + log XP event
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const [updated] = await (prisma as any).$transaction([
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       (prisma as any).userGamification.update({
         where: { userId: user.id },
         data: {
@@ -132,7 +133,7 @@ export async function POST(req: NextRequest) {
           ...(type === "GIG_COMPLETED" && !gamif.firstGigAt && { firstGigAt: now }),
         },
       }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       (prisma as any).xpEvent.create({
         data: {
           gamificationId: gamif.id,
@@ -190,11 +191,11 @@ async function checkAndAwardBadges(gamifId: string, userId: string, state: {
     if (!earned) continue
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const badgeRecord = await (prisma as any).badge.findUnique({ where: { slug: badge.slug } })
       if (!badgeRecord) continue
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       await (prisma as any).userBadge.upsert({
         where: { userId_badgeId: { userId, badgeId: badgeRecord.id } },
         update: {},

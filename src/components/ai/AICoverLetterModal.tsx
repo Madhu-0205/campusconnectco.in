@@ -1,8 +1,8 @@
 'use client';
 
+import { Sparkles, RefreshCw, Copy, Check, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Sparkles, RefreshCw, Copy, Check, ChevronDown, ChevronUp, X } from 'lucide-react';
 
 interface CoverLetterModalProps {
   gigId: string;

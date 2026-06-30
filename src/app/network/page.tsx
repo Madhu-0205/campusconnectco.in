@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, Users, UserPlus, Inbox, Sparkles, RotateCcw,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import UserCard from "@/components/networking/UserCard";
-import { UserCardSkeleton } from "@/components/ui/Skeletons";
-import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import { safeArray } from "@/lib/utils/safe";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+
+import UserCard from "@/components/networking/UserCard";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { UserCardSkeleton } from "@/components/ui/Skeletons";
+import { safeArray } from "@/lib/utils/safe";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

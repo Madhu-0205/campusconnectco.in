@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { rankGigsForUser } from '@/lib/ai/rankGigs';
 
 export async function GET(req: Request) {

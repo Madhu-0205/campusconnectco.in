@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import StartupProfileEditor from "@/components/profile/StartupProfileEditor"
 import { ShieldCheck, Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
+
+import StartupProfileEditor from "@/components/profile/StartupProfileEditor"
 
 export default function ClientSettingsPage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 

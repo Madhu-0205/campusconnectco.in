@@ -1,6 +1,6 @@
 "use client"
-import { useState, useCallback } from "react"
 import { motion } from "framer-motion"
+import { useState, useCallback } from "react"
 
 interface FeeCalculatorProps {
   defaultValue?: number

@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { useProfileField } from "@/hooks/useProfileField"
 import { X, Plus, Loader2, Check } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+
+import { useProfileField } from "@/hooks/useProfileField"
 
 interface SkillsEditorProps {
   initialSkills: string[]

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     X, Send, Sparkles, Loader2, Minimize2, Maximize2,
     Briefcase, FileText, Users, CreditCard, Brain,
     ChevronRight, RotateCcw, History, Trash2, Plus, ChevronLeft, type LucideIcon,
 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

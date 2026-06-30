@@ -1,6 +1,7 @@
-import React from "react";
-import Link from "next/link";
 import { ArrowLeft, Lock, ShieldCheck, RefreshCw, AlertTriangle, Activity } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function EscrowPage() {
                 worker: { select: { name: true, email: true } },
                 gig: { select: { title: true } }
             },
+            take: 100,
             orderBy: { createdAt: "desc" }
         });
 

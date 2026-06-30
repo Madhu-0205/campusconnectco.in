@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Check, X, ShieldAlert } from "lucide-react";
-import { toast } from "sonner";
-import { Card } from "@/components/ui/Card";
 import { motion, AnimatePresence } from "framer-motion";
+import { Check, X, ShieldAlert } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import { Card } from "@/components/ui/Card";
+
 
 interface Gig {
     id: string;

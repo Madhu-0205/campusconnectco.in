@@ -1,13 +1,22 @@
 import { Card } from "@/components/ui/Card"
+
 import dynamic from "next/dynamic"
 const FinancialChart = dynamic(() => import("@/components/Analytics/FinancialChart"), {
     loading: () => <div className="h-full w-full animate-pulse bg-slate-800/50 rounded-xl"></div>
 })
 import { TrendingUp, Users, Briefcase, Activity, FileText, MessageSquare, Plus, Smartphone, Monitor, ShieldAlert, GraduationCap, Lock, CheckCircle, Clock, Brain } from "lucide-react"
 import Link from "next/link"
+import { redirect } from "next/navigation"
+
+import { protectPage } from "@/lib/auth-checks"
 import prisma from "@/lib/prisma"
 
 export default async function FounderDashboard() {
+    const { authorized } = await protectPage(["FOUNDER"])
+    if (!authorized) {
+        redirect("/auth/sign-in")
+    }
+
     // 1. Fetch Real-time Data with Trend Calculation
     const now = new Date();
     const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -371,7 +380,7 @@ export default async function FounderDashboard() {
 interface MetricCardProps {
     label: string;
     value: string | number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     icon: any;
     trend?: string;
     bgClass: string;
@@ -400,7 +409,7 @@ function MetricCard({ label, value, icon: Icon, trend, bgClass }: MetricCardProp
 
 interface QuickActionTileProps {
     href: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     icon: any;
     label: string;
 }

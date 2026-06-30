@@ -1,6 +1,7 @@
+import mammoth from "mammoth";
 import { NextRequest, NextResponse } from "next/server";
 import { PDFParse } from "pdf-parse";
-import mammoth from "mammoth";
+
 import { protectApi } from "@/lib/auth-checks";
 
 /**

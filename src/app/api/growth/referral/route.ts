@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+
 import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
 
 // ── Referral code generator ───────────────────────────────────────────────────
 function generateReferralCode(name: string, userId: string): string {
@@ -15,14 +16,14 @@ export async function GET() {
     const user = await getSession()
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const existing = await (prisma as any).referral.findFirst({
       where: { referrerId: user.id },
       orderBy: { createdAt: "asc" },
     })
 
     if (existing) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const allReferrals: any[] = await (prisma as any).referral.findMany({
         where: { referrerId: user.id },
         orderBy: { createdAt: "desc" },
@@ -53,7 +54,7 @@ export async function GET() {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://campusconnectco.in"
     const link = `${baseUrl}/join?ref=${code}&utm_source=referral&utm_medium=share&utm_campaign=student_referral`
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const created = await (prisma as any).referral.create({
       data: {
         referrerId: user.id,
@@ -83,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     const { channel } = await req.json()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     await (prisma as any).growthEvent.create({
       data: {
         userId: user.id,

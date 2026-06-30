@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+
 import { getUserRoleFromDb } from '@/lib/auth-checks'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
     // Security check: Only allow if authenticated as FOUNDER or SUPER_ADMIN in session

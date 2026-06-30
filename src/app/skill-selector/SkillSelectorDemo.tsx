@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import SkillSelector, { SkillBadge, type Skill } from "@/components/SkillSelector";
 
 // ─── Demo Container ───────────────────────────────────────────────────────────

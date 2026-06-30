@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import { toast } from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
     FileText, Search, Star, AlertCircle, CheckCircle2, 
     Loader2, UploadCloud, BrainCircuit, X, Sparkles, TrendingUp,
     ChevronRight, Zap
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { toast } from "react-hot-toast";
+
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
 type SectionScores = {

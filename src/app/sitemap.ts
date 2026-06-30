@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+
 import prisma from '@/lib/prisma';
 import { SKILLS_DATASET } from '@/lib/skills-dataset';
 

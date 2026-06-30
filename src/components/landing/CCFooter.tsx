@@ -1,9 +1,9 @@
 "use client"
 
-import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { ArrowUpRight, Github, Twitter, Linkedin, Instagram } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
 
 const FOOTER_LINKS = {
     Product: [

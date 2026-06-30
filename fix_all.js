@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 const fs = require('fs');
 
 const summary = fs.readFileSync('lint_summary.txt', 'utf8');

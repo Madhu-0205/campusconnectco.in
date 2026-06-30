@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+
 import prisma from '@/lib/prisma'
 
 // Cache for 1 hour — no DB hit per visit

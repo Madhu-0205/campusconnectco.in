@@ -1,15 +1,18 @@
-import { Metadata } from "next"
-import Link from "next/link"
-import prisma from "@/lib/prisma"
-import { getSession } from "@/lib/auth-checks"
-// Employer-specific component for campus recruitment drives
-import { CampusDriveClient } from "../../../components/employer/CampusDriveClient"
 import {
   Building2, Plus, MapPin, CalendarDays,
   Users, Target, Trophy, Clock, Zap,
   ChevronRight, GraduationCap, PlayCircle
 } from "lucide-react"
+import { Metadata } from "next"
+import Link from "next/link"
+
 import { Card } from "@/components/ui/Card"
+import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
+
+// Employer-specific component for campus recruitment drives
+import { CampusDriveClient } from "../../../components/employer/CampusDriveClient"
+
 
 export const metadata: Metadata = {
   title: "Campus Drives | CampusConnect Employers",
@@ -40,7 +43,7 @@ type DriveItem = {
 async function getDrives(orgId?: string) {
   if (!orgId) return []
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     return await (prisma as any).campusDrive.findMany({
       where: { organizationId: orgId },
       include: { organization: { select: { name: true, logo: true } } },
@@ -54,7 +57,7 @@ async function getDrives(orgId?: string) {
 async function getOrganization(userId?: string) {
   if (!userId) return null
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     return await (prisma as any).member.findFirst({
       where: { userId },
       include: { organization: { include: { subscription: true } } },

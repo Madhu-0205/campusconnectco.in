@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { TrendingUp, Zap, Hash, ArrowUpRight, Flame } from 'lucide-react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 interface TrendingGig {
   id: string;

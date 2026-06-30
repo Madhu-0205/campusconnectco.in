@@ -1,7 +1,8 @@
 "use client"
-import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
+import { useState, useEffect } from "react"
+
 import Image from "@/components/ui/ResilientImage"
 import { getLocalAvatar } from "@/lib/avatar"
 

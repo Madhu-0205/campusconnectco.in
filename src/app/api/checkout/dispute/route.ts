@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import prisma from "@/lib/prisma";
-import { z } from "zod";
 import { TransactionStatus, DisputeStatus } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 const DisputeSchema = z.object({
   transactionId: z.string().uuid(),
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Process dispute in a Prisma transaction block
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const dispute = await prisma.$transaction(async (tx: any) => {
       // Create Dispute record
       const newDispute = await tx.dispute.create({

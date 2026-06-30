@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { Shield, Check, X, Flag, RefreshCw, AlertTriangle, Eye } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 
 interface ModerationEvent {

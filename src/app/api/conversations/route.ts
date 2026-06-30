@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+
 import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { validateSessionUserId } from "@/lib/uuid-utils";
 
 // GET - Fetch all conversations for the current user

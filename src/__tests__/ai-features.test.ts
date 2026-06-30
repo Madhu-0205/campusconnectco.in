@@ -1,7 +1,8 @@
+import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { POST as parseResumeHandler, GET as parseResumeJobHandler } from "../app/api/ai/parse-resume/route";
 import { streamChatResponse } from "../lib/ai/chatAssistant";
-import { NextRequest } from "next/server";
 
 // Mock cookies helper
 vi.mock("next/headers", () => {

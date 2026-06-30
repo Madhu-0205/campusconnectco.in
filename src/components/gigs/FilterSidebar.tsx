@@ -1,10 +1,10 @@
 'use client'
+import { Filter, X, ChevronRight, Briefcase, Zap, Globe, Clock, IndianRupee } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
  
  
  
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Filter, X, ChevronRight, Briefcase, Zap, Globe, Clock, IndianRupee } from 'lucide-react'
+ 
 import { cn } from '@/lib/utils'
 
 export function FilterSidebar({ currentFilters, className }: { currentFilters: Record<string, unknown>, className?: string }) {

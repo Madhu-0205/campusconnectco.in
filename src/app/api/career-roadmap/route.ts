@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+
+import { AIService } from '@/lib/ai';
 import { protectApi } from '@/lib/auth-checks';
 import prisma from '@/lib/prisma';
-import { AIService } from '@/lib/ai';
 
 export const dynamic = 'force-dynamic';
 

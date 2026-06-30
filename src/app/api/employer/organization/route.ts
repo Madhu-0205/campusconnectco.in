@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+
 import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
 
 // POST /api/employer/organization — Create a new organization
 export async function POST(req: NextRequest) {
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
     if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 })
 
     // Check if user already has an org
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const existing = await (prisma as any).member.findFirst({ where: { userId: user.id } })
     if (existing) return NextResponse.json({ error: "Already in an organization" }, { status: 409 })
 
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const org = await (prisma as any).organization.create({
       data: {
         name: name.trim(),

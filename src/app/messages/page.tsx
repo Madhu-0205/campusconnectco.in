@@ -1,7 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
-import { MessagesLayout } from '@/components/messages/MessagesLayout'
 import { redirect } from 'next/navigation'
+
+import { MessagesLayout } from '@/components/messages/MessagesLayout'
 import prisma, { withRetry } from '@/lib/prisma'
+import { createClient } from '@/lib/supabase/server'
 
 interface PageProps {
   searchParams: Promise<{ with?: string }>
@@ -15,7 +16,7 @@ export default async function MessagesPage({ searchParams }: PageProps) {
   if (!user) redirect('/auth/sign-in')
 
   // Fetch all conversations where user is a participant using Prisma (more stable)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   let conversations: any[] = []
   try {
     conversations = await withRetry(async () => {
@@ -78,7 +79,7 @@ export default async function MessagesPage({ searchParams }: PageProps) {
     <div className="min-h-screen bg-background pt-24 pb-12 px-6">
       <div className="max-w-7xl mx-auto">
         <MessagesLayout 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           initialConversations={(conversations || []) as any[]}
           currentUserId={user.id}
           initialActiveId={initialActiveId}

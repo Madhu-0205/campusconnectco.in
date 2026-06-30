@@ -1,6 +1,6 @@
 "use client"
-import Link from 'next/link'
 import { Briefcase, Search, Plus, SlidersHorizontal } from 'lucide-react'
+import Link from 'next/link'
 
 export function GigEmptyState({ hasFilters }: { hasFilters: boolean }) {
   return (

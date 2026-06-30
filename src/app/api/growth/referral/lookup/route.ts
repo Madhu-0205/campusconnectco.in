@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+
 import prisma from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Code is required" }, { status: 400 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const referral = await (prisma as any).referral.findFirst({
       where: { referralCode: code.toUpperCase() },
       include: {

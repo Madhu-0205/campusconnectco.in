@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+
 import InternshipsClient from "./InternshipsClient";
 
 export default async function Page() {
@@ -30,11 +31,11 @@ export default async function Page() {
 
     return (
         <InternshipsClient 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             initialInternships={serialize(all) as any} 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             initialTrending={serialize(trending) as any} 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             initialRecommended={serialize(recommended) as any} 
         />
     );

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+
 import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 interface ModelDelegate { create: (args: unknown) => Promise<unknown>; deleteMany: (args: unknown) => Promise<unknown>; }
 const getFollows = () => (prisma as unknown as { follows: ModelDelegate }).follows;

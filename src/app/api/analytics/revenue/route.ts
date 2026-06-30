@@ -1,6 +1,7 @@
-import { createClient } from "@/lib/supabase/server"
-import prisma from "@/lib/prisma"
 import { NextResponse } from "next/server"
+
+import prisma from "@/lib/prisma"
+import { createClient } from "@/lib/supabase/server"
 
 interface ChartDataItem {
     name: string;

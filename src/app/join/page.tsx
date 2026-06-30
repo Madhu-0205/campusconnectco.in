@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState, Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import Link from "next/link"
 import { Sparkles, Gift, ShieldCheck, Users, ArrowRight, Loader2 } from "lucide-react"
+import Link from "next/link"
+import { useSearchParams, useRouter } from "next/navigation"
+import { useEffect, useState, Suspense } from "react"
 
 function JoinPageClient() {
   const searchParams = useSearchParams()

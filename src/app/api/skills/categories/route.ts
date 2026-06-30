@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import prisma from "@/lib/prisma";
 import type { SkillCategoriesResponse, ApiErrorResponse } from "@/types/skills";
 

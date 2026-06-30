@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+
+import { moderatePost } from "@/lib/ai/moderator";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
-import { moderatePost } from "@/lib/ai/moderator";
 
 export const dynamic = "force-dynamic";
 

@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import { ReactLenis } from "lenis/react"
-import type { LenisRef } from "lenis/react"
-import type Lenis from "lenis"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import type Lenis from "lenis"
+import { ReactLenis } from "lenis/react"
+import type { LenisRef } from "lenis/react"
+import { useEffect, useRef } from "react"
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger)

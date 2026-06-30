@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
-import { assembleHomeFeed } from '@/lib/ai/feedAssembler';
-import { aiLimiter } from '@/lib/rate-limit';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+
+import { assembleHomeFeed } from '@/lib/ai/feedAssembler';
+import { aiLimiter } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 

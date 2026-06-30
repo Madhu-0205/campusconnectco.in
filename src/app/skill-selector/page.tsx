@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+
 import SkillSelectorDemo from "./SkillSelectorDemo";
 
 export const metadata: Metadata = {

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 const fs = require('fs');
 try {
     const data = JSON.parse(fs.readFileSync('lint.json', 'utf8'));

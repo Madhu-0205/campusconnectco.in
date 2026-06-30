@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Wifi, WifiOff, RefreshCw } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
 export default function NetworkStatusIndicator() {
   const mountedRef = useRef(false)

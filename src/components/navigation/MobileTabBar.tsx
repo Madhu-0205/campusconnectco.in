@@ -1,10 +1,10 @@
 'use client'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import {
   Home, Briefcase, GraduationCap, Building2,
   MessageSquare, Users, Sparkles, UserCircle, LucideIcon
 } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 interface TabItem {
   label: string

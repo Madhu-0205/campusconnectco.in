@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import { toast } from "sonner";
-import { Sparkles, Target, GraduationCap, Zap, TrendingUp, ArrowRight, Loader2, Compass } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Target, GraduationCap, Zap, TrendingUp, ArrowRight, Loader2, Compass } from "lucide-react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
+
 
 interface Recommendation {
     id: string;

@@ -1,6 +1,7 @@
-import React from "react";
-import Link from "next/link";
 import { ArrowLeft, TrendingUp, DollarSign, Percent, ShieldCheck, Activity } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ export default async function RevenuePage() {
                 worker: { select: { name: true, email: true } },
                 gig: { select: { title: true } }
             },
+            take: 100,
             orderBy: { createdAt: "desc" }
         });
 
@@ -27,6 +29,7 @@ export default async function RevenuePage() {
             include: {
                 buyer: { select: { name: true, email: true } }
             },
+            take: 100,
             orderBy: { createdAt: "desc" }
         });
 

@@ -1,9 +1,11 @@
+import { ArrowLeft, Crown } from "lucide-react"
 import type { Metadata } from "next"
+import Link from "next/link"
+import { redirect } from "next/navigation"
+
 import { ReferralDashboard } from "@/components/growth/ReferralDashboard"
 import { getSession } from "@/lib/auth-checks"
-import { redirect } from "next/navigation"
-import Link from "next/link"
-import { ArrowLeft, Crown } from "lucide-react"
+
 
 export const metadata: Metadata = {
   title: "Refer & Earn | CampusConnect",

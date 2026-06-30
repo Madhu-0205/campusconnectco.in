@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
     BarChart2, Users, TrendingUp, Briefcase, MessageCircle,
     DollarSign, CheckCircle2, Star, Zap, RefreshCw, Crown
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
 const FinancialChart = dynamic(() => import("@/components/Analytics/FinancialChart"), {
   ssr: false,
@@ -34,7 +34,7 @@ const cardVariants = {
     show: { opacity: 1, y: 0 }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 function StatCard({ icon: Icon, label, value, sub, color, bgColor }: any) {
     return (
         <motion.div variants={cardVariants}

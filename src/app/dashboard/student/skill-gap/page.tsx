@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
-import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Brain, Sparkles, Loader2, CheckCircle, AlertTriangle, BookOpen,
     ArrowRight, Target, Shield, Compass, Award, ExternalLink
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+
 
 const PRESETS = [
     "Full Stack Web Developer",

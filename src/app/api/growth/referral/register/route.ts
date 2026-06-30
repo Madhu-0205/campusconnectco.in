@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+
 import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
 
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
     const cleanCode = code.trim().toUpperCase()
 
     // 1. Check if the user has already been referred (refereeId is unique in Referral)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const alreadyReferred = await (prisma as any).referral.findFirst({
       where: { refereeId: user.id },
     })
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Find the referrer's master referral link
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const referrerRecord = await (prisma as any).referral.findFirst({
       where: { referralCode: cleanCode },
     })
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Create a new referral record for this relation
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const newReferral = await (prisma as any).referral.create({
       data: {
         referrerId: referrerRecord.referrerId,
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
     })
 
     // 4. Log a Growth Event
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     await (prisma as any).growthEvent.create({
       data: {
         userId: user.id,

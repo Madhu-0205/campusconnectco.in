@@ -1,18 +1,18 @@
 "use client"
 
-import Image from "next/image"
-
-import { useEffect, useState } from "react"
-import { Card } from "@/components/ui/Card"
-import { Button } from "@/components/ui/Button"
-import { User, MessageSquare, Check, X, Clock, Sparkles, Loader2 } from "lucide-react"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
+import { User, MessageSquare, Check, X, Clock, Sparkles, Loader2 } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
+
+import { Button } from "@/components/ui/Button"
+import { Card } from "@/components/ui/Card"
 
 export default function ClientApplicantsPage() {
     const router = useRouter()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const [applications, setApplications] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 

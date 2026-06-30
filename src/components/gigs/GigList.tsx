@@ -1,15 +1,17 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Card } from "@/components/ui/Card"
-import prisma from "@/lib/prisma"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { MapPin, Sparkles, Clock, Users, IndianRupee, ArrowUpRight, Star } from "lucide-react"
+ 
 import { Prisma } from "@prisma/client"
-import { ApplyButton } from "./ApplyButton"
-import { AICoverLetterButton } from "./AICoverLetterButton"
-import { createClient } from "@/lib/supabase/server"
-import { calculateDistance, calculateMatchScore } from "@/lib/matching"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { MapPin, Sparkles, Clock, Users, IndianRupee, ArrowUpRight, Star } from "lucide-react"
 import Link from "next/link"
+
+import { Card } from "@/components/ui/Card"
+import { calculateDistance, calculateMatchScore } from "@/lib/matching"
+import prisma from "@/lib/prisma"
+import { createClient } from "@/lib/supabase/server"
+
+import { AICoverLetterButton } from "./AICoverLetterButton"
+import { ApplyButton } from "./ApplyButton"
+
+ 
 
 type GigWithPoster = Prisma.GigGetPayload<{
     include: {

@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     X, Star, MapPin, Clock, MessageSquare, Heart, CheckCircle2,
     Share2, User, ChevronRight, ShieldCheck, Zap
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import Image from "next/image";
+
+import { Button } from "@/components/ui/Button";
 
 export interface GigPackage {
     id: string;

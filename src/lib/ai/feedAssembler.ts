@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+
 import { computeUserEmbedding, cosineSimilarity } from './embeddings';
 
 export interface FeedPost {

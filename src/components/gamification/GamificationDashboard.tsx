@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
-import Link from "next/link"
 import {
   Flame, Zap, Trophy, Star, TrendingUp, Target,
   Shield, Brain, Users, ArrowRight, Sparkles,
   BadgeCheck, ChevronRight, Award, Rocket
 } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState, useCallback } from "react"
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

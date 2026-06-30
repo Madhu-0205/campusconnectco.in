@@ -1,11 +1,12 @@
 "use client"
-import { useState } from "react"
 import { motion } from "framer-motion"
-import Link from "next/link"
 import {
   CheckCircle2, ChevronDown, ShieldCheck,
   MessageSquare
 } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
+
 import FeeCalculator from "@/components/ui/FeeCalculator"
 import { fadeUp, staggerContainer, viewportOnce } from "@/lib/animations"
 

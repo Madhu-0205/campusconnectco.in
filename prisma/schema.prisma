@@ -200,6 +200,7 @@ model Escrow {
   @@index([gigId])
   @@index([clientId])
   @@index([workerId])
+  @@index([clientId, status])
 }
 
 model Transaction {

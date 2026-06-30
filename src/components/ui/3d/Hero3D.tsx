@@ -1,9 +1,10 @@
 "use client"
 
-import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Float, Environment } from "@react-three/drei"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { useRef, useEffect, useState } from "react"
 import type { Mesh } from "three"
+
 import { checkWebGL } from "@/lib/webgl"
 
 function FloatingShape({ position, color }: { position: [number, number, number], color: string }) {

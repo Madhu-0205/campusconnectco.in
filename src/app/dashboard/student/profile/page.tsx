@@ -1,12 +1,13 @@
 "use client"
 
+import { ShieldCheck } from "lucide-react"
 import { useEffect, useState } from "react"
+
 import ProfileEditor from "@/components/profile/ProfileEditor"
 import { Skeleton } from "@/components/ui/Skeleton"
-import { ShieldCheck } from "lucide-react"
 
 export default function StudentProfilePage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 

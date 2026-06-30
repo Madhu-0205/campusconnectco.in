@@ -1,7 +1,5 @@
 "use client"
 
-import { EditableField } from "./EditableField"
-import { AvatarUpload } from "./AvatarUpload"
 import { 
    
    
@@ -12,6 +10,9 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MapPin, Calendar, LayoutDashboard, Briefcase 
 } from "lucide-react"
+
+import { AvatarUpload } from "./AvatarUpload"
+import { EditableField } from "./EditableField"
 
 interface StartupProfileEditorProps {
   profile: {

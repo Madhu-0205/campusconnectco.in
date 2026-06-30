@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
 import {
     CheckCircle, XCircle, GraduationCap, Briefcase,
     AlertTriangle, Users, ChevronDown, ChevronUp,
     UserCheck, Shield
 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
 

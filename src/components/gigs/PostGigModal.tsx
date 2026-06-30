@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, X, Briefcase, IndianRupee, Calendar, FileText, Loader2, Zap } from "lucide-react"
-import { Button } from "@/components/ui/Button"
-import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { toast } from "sonner"
+
+import { Button } from "@/components/ui/Button"
 
 export default function PostGigModal() {
     const [isOpen, setIsOpen] = useState(false)

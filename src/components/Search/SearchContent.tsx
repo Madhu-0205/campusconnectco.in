@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { Search, Loader2, Briefcase, User, Code, ArrowRight, DollarSign, Clock } from "lucide-react";
 import Link from "next/link";
-import { Card } from "@/components/ui/Card";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 interface SearchResults {
     query: string;

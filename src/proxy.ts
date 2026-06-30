@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { updateSession } from '@/lib/supabase/middleware';
+
 import { generalApiLimiter } from '@/lib/rate-limit';
+import { updateSession } from '@/lib/supabase/middleware';
 
 export async function proxy(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -79,3 +80,5 @@ export const config = {
         '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 };
+
+export default proxy;

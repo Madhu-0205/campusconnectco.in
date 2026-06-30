@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 const fs = require('fs');
 const content = fs.readFileSync('components_lint.json', 'utf16le');
 // Strip BOM

@@ -1,14 +1,15 @@
-import { Metadata } from "next"
-import Link from "next/link"
-import prisma from "@/lib/prisma"
-import { getSession } from "@/lib/auth-checks"
-import { TalentSearchClient } from "@/components/employer/TalentSearchClient"
 import {
   Search, Sparkles, Filter, Users, Brain,
   GraduationCap, MapPin, Star, ShieldCheck,
   Lock, ArrowRight, Zap
 } from "lucide-react"
+import { Metadata } from "next"
+import Link from "next/link"
+
+import { TalentSearchClient } from "@/components/employer/TalentSearchClient"
 import { Card } from "@/components/ui/Card"
+import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
 
 export const metadata: Metadata = {
   title: "AI Talent Search | CampusConnect Employers",

@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import dynamic from "next/dynamic";
-import { mockInternships } from "@/lib/mock-data";
+import { notFound } from "next/navigation";
+
+import { prisma } from "@/lib/prisma";
 
 const InternshipDetailsClient = dynamic(
   () => import("@/components/internships/InternshipDetailsClient"), 
@@ -15,21 +15,12 @@ export default async function InternshipPage({
 }) {
   const { id } = await params;
 
-  // 1. Direct Prisma DB Query for fastest execution (no HTTP overhead)
   let data = null;
   
   try {
-    if (id && id.length > 10) { // UUID check
-      data = await prisma.internship.findUnique({
-        where: { id }
-      });
-    }
-
-    // 2. Fallback to mock data if not in DB
-    if (!data) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data = mockInternships.find((i: any) => i.id === id) || null;
-    }
+    data = await prisma.internship.findUnique({
+      where: { id }
+    });
   } catch (error) {
     console.error("Failed to fetch internship:", error);
     // Let the error boundary handle database outages

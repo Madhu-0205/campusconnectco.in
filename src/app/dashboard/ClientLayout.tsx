@@ -1,14 +1,15 @@
 "use client"
-import { useState } from "react"
-import { Button } from "@/components/ui/Button"
 import { motion, AnimatePresence } from "framer-motion"
 import { BarChart, Briefcase, Home, LogOut, Settings, User, GraduationCap, Info, Menu, MessageCircle, Users, FileText, Zap, ShieldAlert, Brain, Bell, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { useState } from "react"
 import { toast } from "sonner"
-import NotificationsPopover from "@/components/NotificationsPopover"
+
 import PostGigModal from "@/components/gigs/PostGigModal"
+import NotificationsPopover from "@/components/NotificationsPopover"
+import { Button } from "@/components/ui/Button"
+import { createClient } from "@/lib/supabase/client"
 
 const studentItems = [
     { icon: Home, label: "Overview", href: "/dashboard/student" },
@@ -267,7 +268,7 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
     )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 function SidebarLink({ href, icon: Icon, label, isActive }: { href: string, icon: any, label: string, isActive: boolean }) {
     return (
         <Link href={href}>

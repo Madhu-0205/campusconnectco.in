@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { triggerReferralConversion } from "../lib/growth";
+
 import prisma from "@/lib/prisma";
+
+import { triggerReferralConversion } from "../lib/growth";
 
 // Mock the dependencies using path alias matching source files
 vi.mock("@/lib/prisma", () => {

@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+
 import prisma from '@/lib/prisma';
 
 export const runtime = 'nodejs';

@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
 import {
   Star, Quote, TrendingUp, Award, Users, ArrowRight,
   CheckCircle, Briefcase, GraduationCap, Building2, MapPin,
   Play, ChevronRight, Sparkles, BadgeCheck, Heart
 } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 

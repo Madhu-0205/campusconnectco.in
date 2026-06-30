@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
 import crypto from "crypto";
+
+import { describe, it, expect } from "vitest";
 
 // Mock helper mimicking our parameters query parameter formatting
 function buildSearchQuery(input: string): string {

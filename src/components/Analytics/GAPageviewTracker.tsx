@@ -19,8 +19,8 @@
  *   No double-firing on initial render.
  */
 
-import { useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 interface GAPageviewTrackerProps {
   measurementId: string;

@@ -1,6 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
+
+import { PrismaClient } from "@prisma/client";
 
 // Use DIRECT_URL since DDL statements should run on a direct connection bypassing pgbouncer transaction pooler
 const prisma = new PrismaClient({

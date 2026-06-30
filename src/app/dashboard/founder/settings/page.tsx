@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/Button"
-import { Info, Save, DollarSign, Bell, Shield, Palette, Globe, Trash2, Plus, Loader2 } from "lucide-react"
 import { motion } from "framer-motion"
+import { Info, Save, DollarSign, Bell, Shield, Palette, Globe, Trash2, Plus, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
 import { toast } from "sonner"
+
+import { Button } from "@/components/ui/Button"
 
 interface Settings {
     platformName: string;

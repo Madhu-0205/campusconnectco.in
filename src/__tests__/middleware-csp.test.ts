@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { proxy } from "../proxy";
 import { NextRequest } from "next/server";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+import { proxy as middleware } from "../proxy";
 
 // Mock Supabase Middleware
 vi.mock("../lib/supabase/middleware", () => {
@@ -36,7 +37,7 @@ describe("Root Security Proxy (src/proxy.ts)", () => {
       method: "GET",
     });
 
-    const response = await proxy(req);
+    const response = await middleware(req);
     expect(response.status).toBe(200);
 
     // Verify cryptographic nonce is set in response headers

@@ -1,10 +1,5 @@
 "use client"
 
-import { useState } from "react"
-import { EditableField } from "./EditableField"
-import { SkillsEditor } from "./SkillsEditor"
-import { AvatarUpload } from "./AvatarUpload"
-import { VerificationBadge } from "@/components/ui/VerificationBadge"
 import { 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   User, Briefcase, GraduationCap, Link2, 
@@ -18,6 +13,13 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ShieldCheck, ArrowLeft, MoreHorizontal, Sparkles
 } from "lucide-react"
+import { useState } from "react"
+
+import { VerificationBadge } from "@/components/ui/VerificationBadge"
+
+import { AvatarUpload } from "./AvatarUpload"
+import { EditableField } from "./EditableField"
+import { SkillsEditor } from "./SkillsEditor"
 
 interface ProfileEditorProps {
   profile: {

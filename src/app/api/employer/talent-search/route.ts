@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+
 import { protectApi } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
 
 // GET /api/employer/talent-search?q=react&tier=1&year=3
 export async function GET(req: NextRequest) {

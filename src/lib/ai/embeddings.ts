@@ -1,6 +1,8 @@
-import { getOpenAI } from './client';
-import prisma from '@/lib/prisma';
 import crypto from 'crypto';
+
+import prisma from '@/lib/prisma';
+
+import { getOpenAI } from './client';
 
 export async function generateEmbedding(text: string): Promise<number[]> {
     const apiKey = process.env.OPENAI_API_KEY || "";

@@ -1,9 +1,9 @@
-import type { Metadata } from "next"
-import Link from "next/link"
 import {
   FileText, Shield, Users, CheckCircle, AlertCircle,
   BookOpen, Edit3, Eye, Clock, ArrowRight, Scale, Star
 } from "lucide-react"
+import type { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Editorial Standards | CampusConnect — Our Content Principles",

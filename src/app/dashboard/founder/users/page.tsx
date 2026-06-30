@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
     Users, Briefcase, Shield, Search, UserCheck, Mail, Ban,
     CheckCircle, ShieldOff, RefreshCw,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 interface User {

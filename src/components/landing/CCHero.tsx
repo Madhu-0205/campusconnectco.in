@@ -1,10 +1,10 @@
 "use client"
 
-import { useRef, useState, useEffect, Suspense } from "react"
 import { motion, useMotionValue, useSpring } from "framer-motion"
+import { ArrowRight, MapPin } from "lucide-react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import { ArrowRight, MapPin } from "lucide-react"
+import { useRef, useState, useEffect, Suspense } from "react"
 
 // Lazy-load 3D map
 const CampusMap3D = dynamic(() => import("./CampusMap3D"), {

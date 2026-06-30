@@ -1,7 +1,7 @@
 "use client"
 import { motion } from "framer-motion"
-import { useState } from "react"
 import { FileText, Crosshair, Briefcase, AlertCircle } from "lucide-react"
+import { useState } from "react"
 
 const problems = [
   {

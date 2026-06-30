@@ -1,117 +1,43 @@
 "use client"
-import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Bell, CheckCheck, Briefcase, CreditCard, Settings2, Zap,
   ShieldCheck, Star, TrendingUp, MessageSquare, X
 } from "lucide-react"
+import { useState } from "react"
+
 import { fadeUp, staggerContainer, listItem } from "@/lib/animations"
 
-type NotifType = "gig" | "payment" | "system" | "match" | "message"
-
-interface Notification {
+export interface NotificationItem {
   id: string
-  type: NotifType
+  type: string
   title: string
   description: string
   time: string
   read: boolean
-  icon: React.ReactNode
-  color: string
 }
 
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    type: "payment",
-    title: "Payment Released! 🎉",
-    description: "₹2,400 from Acme AI Studio has been released to your bank account. Great work on the React Frontend gig!",
-    time: "2 minutes ago",
-    read: false,
-    icon: <CreditCard size={18} />,
-    color: "text-emerald-500 bg-[#10B981]/15 border-[#10B981]/30",
-  },
-  {
-    id: "2",
-    type: "match",
-    title: "New 94% AI Match Found",
-    description: "CampusConnect AI found a new Razorpay internship that matches your React + Node.js skills. ₹8,000/month, remote.",
-    time: "18 minutes ago",
-    read: false,
-    icon: <Zap size={18} />,
-    color: "text-[#7C3AED] bg-(--primary)/15 border-[#7C3AED]/30",
-  },
-  {
-    id: "3",
-    type: "gig",
-    title: "Application Accepted ✅",
-    description: "IndieTech Studios accepted your application for 'UI/UX Design for Mobile App'. Escrow funds have been locked.",
-    time: "1 hour ago",
-    read: false,
-    icon: <ShieldCheck size={18} />,
-    color: "text-[#0EA5E9] bg-[#0EA5E9]/15 border-[#0EA5E9]/30",
-  },
-  {
-    id: "4",
-    type: "gig",
-    title: "New Gig Posted — 89% Match",
-    description: "A new 'Python Data Pipeline' gig has been posted by a YC-backed startup. Budget: ₹3,500. Deadline: 2 weeks.",
-    time: "3 hours ago",
-    read: false,
-    icon: <Briefcase size={18} />,
-    color: "text-[#F59E0B] bg-[#F59E0B]/15 border-[#F59E0B]/30",
-  },
-  {
-    id: "5",
-    type: "message",
-    title: "Message from Founders Nest",
-    description: "\"Hi! We loved your profile. Would you be available for a 30-min call this week about our internship opening?\"",
-    time: "5 hours ago",
-    read: true,
-    icon: <MessageSquare size={18} />,
-    color: "text-(--primary-light) bg-[#A78BFA]/15 border-[#A78BFA]/30",
-  },
-  {
-    id: "6",
-    type: "gig",
-    title: "Gig Completed & Reviewed ⭐",
-    description: "Acme AI Studio left a 5-star review on your 'React Dashboard' gig. Your portfolio has been updated automatically.",
-    time: "1 day ago",
-    read: true,
-    icon: <Star size={18} />,
-    color: "text-[#F59E0B] bg-[#F59E0B]/15 border-[#F59E0B]/30",
-  },
-  {
-    id: "7",
-    type: "system",
-    title: "Profile Strength: 78%",
-    description: "Add your LinkedIn profile and 2 more skills to reach 90% and unlock premium gig recommendations.",
-    time: "2 days ago",
-    read: true,
-    icon: <TrendingUp size={18} />,
-    color: "text-slate-400 bg-white/8 border-white/10",
-  },
-  {
-    id: "8",
-    type: "payment",
-    title: "Escrow Locked — ₹1,800",
-    description: "Payment for 'Content Writing — Batch 3' has been locked in escrow. You can start work now.",
-    time: "3 days ago",
-    read: true,
-    icon: <ShieldCheck size={18} />,
-    color: "text-emerald-500 bg-[#10B981]/15 border-[#10B981]/30",
-  },
-  {
-    id: "9",
-    type: "system",
-    title: "Welcome to CampusConnect 2.0 🚀",
-    description: "We've upgraded the platform! New AI career roadmap, SmartMatch v2, and faster escrow. Explore what's new.",
-    time: "5 days ago",
-    read: true,
-    icon: <Settings2 size={18} />,
-    color: "text-slate-400 bg-white/8 border-white/10",
-  },
-]
+const getIconForType = (type: string) => {
+  switch (type) {
+    case "payment": return <CreditCard size={18} />;
+    case "match": return <Zap size={18} />;
+    case "gig": return <Briefcase size={18} />;
+    case "system": return <Settings2 size={18} />;
+    case "message": return <MessageSquare size={18} />;
+    default: return <Bell size={18} />;
+  }
+}
+
+const getColorForType = (type: string) => {
+  switch (type) {
+    case "payment": return "text-emerald-500 bg-[#10B981]/15 border-[#10B981]/30";
+    case "match": return "text-[#7C3AED] bg-(--primary)/15 border-[#7C3AED]/30";
+    case "gig": return "text-[#0EA5E9] bg-[#0EA5E9]/15 border-[#0EA5E9]/30";
+    case "system": return "text-[#F59E0B] bg-[#F59E0B]/15 border-[#F59E0B]/30";
+    case "message": return "text-[#EC4899] bg-[#EC4899]/15 border-[#EC4899]/30";
+    default: return "text-gray-400 bg-gray-500/15 border-gray-500/30";
+  }
+}
 
 const tabs = [
   { label: "All", key: "all", icon: Bell },
@@ -121,9 +47,9 @@ const tabs = [
   { label: "System", key: "system", icon: Settings2 },
 ]
 
-export default function NotificationsClient() {
+export default function NotificationsClient({ initialNotifications = [] }: { initialNotifications?: NotificationItem[] }) {
   const [activeTab, setActiveTab] = useState<string>("all")
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
+  const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications)
 
   const filtered = activeTab === "all"
     ? notifications
@@ -252,8 +178,8 @@ export default function NotificationsClient() {
                   )}
 
                   {/* Icon */}
-                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 ${notif.color}`}>
-                    {notif.icon}
+                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 ${getColorForType(notif.type)}`}>
+                    {getIconForType(notif.type)}
                   </div>
 
                   {/* Content */}

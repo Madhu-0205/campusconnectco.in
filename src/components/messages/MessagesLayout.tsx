@@ -1,8 +1,6 @@
 'use client'
-import { useState, useEffect, useRef, useMemo } from 'react'
-import NextImage from 'next/image'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { motion, AnimatePresence } from 'framer-motion'
+import { format } from 'date-fns'
+import { motion } from 'framer-motion'
 import { 
   Search, Send, Plus, MoreVertical, 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -12,11 +10,13 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ArrowLeft, Users, ShieldCheck, Sparkles, UserCircle, MessageSquare
 } from 'lucide-react'
+import NextImage from 'next/image'
+import { useState, useEffect, useRef, useMemo } from 'react'
+ 
 
 import { createClient } from '@/lib/supabase/client'
-import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
 import { notify } from '@/lib/toast'
+import { cn } from '@/lib/utils'
 
 interface ConversationUser {
   id: string;
@@ -115,7 +115,7 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
 
     const channel = supabase
       .channel(`conv:${activeId}`)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       .on('postgres_changes' as any, { 
         event: 'INSERT', 
         schema: 'public', 
@@ -129,7 +129,7 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
       })
       
     const subscribeWithRetry = () => {
-      channel.subscribe((status, err) => {
+      channel.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           msgRetryCount.current = 0;
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
@@ -215,20 +215,22 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
     }
     setMessages(prev => [...prev, optimisticMsg])
 
-    const { data, error } = await supabase
-      .from('messages')
-      .insert({
-        conversation_id: activeId,
-        sender_id: currentUserId,
-        content
+    try {
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          conversationId: activeId,
+          content
+        })
       })
-      .select()
-      .single()
 
-    if (error) {
-      notify.error('Failed to send message')
-      setMessages(prev => prev.filter(m => m.id !== tempId))
-    } else {
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
+      const data = await response.json()
+
       setMessages(prev => prev.map(m => m.id === tempId ? (data as Message) : m))
       // Update last message and re-sort list
       setConversations(prev => {
@@ -239,6 +241,9 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
           new Date(b.last_message_at || 0).getTime() - new Date(a.last_message_at || 0).getTime()
         );
       });
+    } catch {
+      notify.error('Failed to send message')
+      setMessages(prev => prev.filter(m => m.id !== tempId))
     }
   }
 

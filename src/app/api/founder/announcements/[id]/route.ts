@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 

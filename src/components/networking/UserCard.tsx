@@ -1,15 +1,17 @@
 "use client";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Star, MapPin, Briefcase, CheckCircle2, Circle } from "lucide-react";
+
+import Image from "@/components/ui/ResilientImage";
 import { safeArray, safeNumber, getInitials, truncate } from "@/lib/utils/safe";
+
 import ConnectionButton from "./ConnectionButton";
  
  
  
  
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Star, MapPin, Briefcase, CheckCircle2, Circle } from "lucide-react";
-import Image from "@/components/ui/ResilientImage";
+ 
 
 type ConnectionStatus =
   | "none"

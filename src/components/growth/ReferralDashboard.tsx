@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
 import {
   Copy, Share2, Gift, Users, TrendingUp, CheckCircle2,
   ChevronRight, Zap, Trophy, MessageCircle, Linkedin,
   Twitter, Instagram, ExternalLink, Star
 } from "lucide-react"
+import { useEffect, useState, useCallback } from "react"
 
 interface ReferralStats {
   totalSent: number

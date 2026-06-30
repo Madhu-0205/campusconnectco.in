@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/Card"
 import {
     PlusCircle, Users, CheckCircle, Briefcase, ArrowRight,
     TrendingUp, Zap, Brain,
@@ -6,12 +5,18 @@ import {
     Star, ChevronRight, Award, MessageSquare
 } from "lucide-react"
 import Link from "next/link"
-import prisma from "@/lib/prisma"
-import { getSession } from "@/lib/auth-checks"
+import { redirect } from "next/navigation"
+
 import { KanbanBoard, TopApplicants } from "@/components/client-hub/ClientDashboardClient"
+import { Card } from "@/components/ui/Card"
+import { protectPage } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
 
 export default async function ClientDashboard() {
-    const user = await getSession();
+    const { authorized, user } = await protectPage(["CLIENT", "STARTUP"])
+    if (!authorized) {
+        redirect("/auth/sign-in")
+    }
 
     let activeGigsCount = 0;
     let applicationsCount = 0;

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+
+import { getOpenAI, getChatModel } from "@/lib/ai/client";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
-import { getOpenAI, getChatModel } from "@/lib/ai/client";
 
 export const dynamic = "force-dynamic";
 

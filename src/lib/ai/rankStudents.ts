@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+
 import { computeUserEmbedding, findTopN, Candidate } from './embeddings';
 
 export async function rankStudentsForUser(queryUserId: string) {

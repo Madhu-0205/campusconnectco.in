@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -18,6 +17,7 @@ import {
     ChevronDown,
     XOctagon
 } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 
 gsap.registerPlugin(ScrollTrigger)
 

@@ -1,6 +1,8 @@
-import { getSession, getUserRoleFromDb } from "@/lib/auth-checks";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+import { getSession, getUserRoleFromDb } from "@/lib/auth-checks";
+
 import ClientLayout from "./ClientLayout";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {

@@ -15,7 +15,7 @@ export async function extractTextFromPdf(file: File): Promise<string> {
     const textContent = await page.getTextContent();
     const pageText = textContent.items
              .filter((item) => 'str' in item)
-             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              
              .map((item) => (item as any).str)
       .join(' ');
     fullText += pageText + '\n';

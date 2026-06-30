@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { AmbassadorClient } from "./AmbassadorClient"
 
 export const metadata: Metadata = {

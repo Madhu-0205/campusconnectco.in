@@ -1,14 +1,16 @@
-import { Metadata } from "next"
-import prisma from "@/lib/prisma"
-import { getSession } from "@/lib/auth-checks"
-import { OrgProfileClient } from "@/components/employer/OrgProfileClient"
 import {
   Building2, Globe, Users, Briefcase,
   Twitter, Linkedin, Github, Shield,
   Sparkles, Star
 } from "lucide-react"
-import { Card } from "@/components/ui/Card"
+import { Metadata } from "next"
 import Image from "next/image"
+
+import { OrgProfileClient } from "@/components/employer/OrgProfileClient"
+import { Card } from "@/components/ui/Card"
+import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
+
 
 export const metadata: Metadata = {
   title: "Company Profile | CampusConnect Employers",
@@ -20,7 +22,7 @@ export const dynamic = "force-dynamic"
 async function getOrgProfile(userId?: string) {
   if (!userId) return null
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     return await (prisma as any).member.findFirst({
       where: { userId },
       include: {

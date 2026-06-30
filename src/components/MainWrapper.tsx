@@ -1,6 +1,6 @@
 "use client"
-import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
+import { usePathname } from "next/navigation"
 
 export default function MainWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()

@@ -1,12 +1,13 @@
 "use client"
 
-import { createClient } from "@/lib/supabase/client"
-import { useState, useRef, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Loader2, UserPlus, AlertCircle, Sparkles, CheckCircle2, ChevronDown, Search, Eye, EyeOff, GraduationCap, Building2, ArrowRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { Loader2, UserPlus, AlertCircle, Sparkles, CheckCircle2, ChevronDown, Search, Eye, EyeOff, GraduationCap, Building2, ArrowRight } from "lucide-react"
+import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useState, useRef, useEffect } from "react"
+
+import { createClient } from "@/lib/supabase/client"
+ 
 
 function GoogleIcon() {
   return (

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+
 import { getSession, getUserRoleFromDb } from "@/lib/auth-checks";
 
 export default async function DashboardRedirect() {

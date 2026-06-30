@@ -1,20 +1,23 @@
 import type { Metadata } from "next"
 import { Bricolage_Grotesque, DM_Sans, JetBrains_Mono } from "next/font/google"
-import Navbar from "@/components/navigation/Navbar"
-import { ToastProvider } from "@/components/ToastProvider"
+import { headers } from "next/headers"
 import { Toaster } from "react-hot-toast"
-import { ThemeProvider } from "@/components/providers/ThemeProvider"
+
 import AIServiceAgent from "@/components/AIServiceAgent"
+import { GAScripts } from "@/components/Analytics/GoogleAnalytics"
 import { GlobalBackground } from "@/components/GlobalBackground"
 import MainWrapper from "@/components/MainWrapper"
-import SmoothScrollProvider from "@/components/ui/SmoothScroll"
+import Navbar from "@/components/navigation/Navbar"
+import NetworkStatusIndicator from "@/components/NetworkStatusIndicator"
+import { ThemeProvider } from "@/components/providers/ThemeProvider"
+import { ToastProvider } from "@/components/ToastProvider"
 import CustomCursor from "@/components/ui/CustomCursor"
 import FooterWrapper from "@/components/ui/FooterWrapper"
+import SmoothScrollProvider from "@/components/ui/SmoothScroll"
+
 import "./globals.css"
-import { headers } from "next/headers"
+
 import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/seo/JsonLd"
-import NetworkStatusIndicator from "@/components/NetworkStatusIndicator"
-import { GAScripts } from "@/components/Analytics/GoogleAnalytics"
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",

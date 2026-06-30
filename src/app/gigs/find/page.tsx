@@ -1,11 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { Sparkles } from 'lucide-react'
 import { Suspense } from 'react'
+
+import { FilterSidebar } from '@/components/gigs/FilterSidebar'
+import { GigEmptyState } from '@/components/gigs/GigEmptyState'
 import { GigGrid } from '@/components/gigs/GigGrid'
 import { GigGridSkeleton } from '@/components/gigs/GigGridSkeleton'
-import { FilterSidebar } from '@/components/gigs/FilterSidebar'
 import { GigSearchBar } from '@/components/gigs/GigSearchBar'
-import { GigEmptyState } from '@/components/gigs/GigEmptyState'
-import { Sparkles } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
+
 
 interface PageProps {
   searchParams: Promise<{

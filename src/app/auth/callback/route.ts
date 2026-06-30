@@ -1,6 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+
 import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { isValidUUID } from "@/lib/uuid-utils";
 
 export async function GET(request: Request) {

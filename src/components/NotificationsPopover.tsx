@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { Bell, CheckCheck, Trash2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/Button"
-import { toast } from "sonner"
+import { Bell, CheckCheck, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useState, useRef, useEffect } from "react"
+import { toast } from "sonner"
+
+import { Button } from "@/components/ui/Button"
 import { createClient } from "@/lib/supabase/client"
 
 interface NotificationsPopoverProps {

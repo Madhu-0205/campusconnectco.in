@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import Link from "next/link"
-import Image from "@/components/ui/ResilientImage"
 import { MapPin, ArrowRight } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
+
+import Image from "@/components/ui/ResilientImage"
 import { getLocalAvatar } from "@/lib/avatar"
 
 const CATEGORIES = ["All", "Design", "Coding", "Notes", "Events", "Content"]

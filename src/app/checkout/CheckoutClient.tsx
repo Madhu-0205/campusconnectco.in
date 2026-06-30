@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { toast } from "sonner";
+
 import { createClient } from "@/lib/supabase/client";
 
 interface GigDetails {

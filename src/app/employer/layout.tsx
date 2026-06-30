@@ -1,11 +1,13 @@
-import type { ReactNode } from "react"
-import Link from "next/link"
-import { getSession } from "@/lib/auth-checks"
-import prisma from "@/lib/prisma"
 import {
   Search, Target, Building2, Zap, ChevronRight,
   LayoutDashboard, Crown
 } from "lucide-react"
+import Link from "next/link"
+import type { ReactNode } from "react"
+
+import { getSession } from "@/lib/auth-checks"
+import prisma from "@/lib/prisma"
+
 
 const NAV_ITEMS = [
   {
@@ -54,7 +56,7 @@ const NAV_ITEMS = [
 async function getSubscriptionBadge(userId?: string) {
   if (!userId) return null
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const membership = await (prisma as any).member.findFirst({
       where: { userId },
       include: { organization: { include: { subscription: true } } },

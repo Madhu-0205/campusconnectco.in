@@ -1,9 +1,10 @@
 "use client";
 
-import ServiceCard from "@/components/Marketplace/ServiceCard";
-import FadeIn from "@/components/FadeIn";
-import { Search, SlidersHorizontal } from "lucide-react";
 import { motion } from "framer-motion";
+import { Search, SlidersHorizontal } from "lucide-react";
+
+import FadeIn from "@/components/FadeIn";
+import ServiceCard from "@/components/Marketplace/ServiceCard";
 
 export default function Marketplace() {
     const services = [

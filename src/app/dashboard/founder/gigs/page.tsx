@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { motion } from "framer-motion";
 import {
     Briefcase,
     Search,
@@ -13,7 +12,8 @@ import {
     DollarSign,
     Calendar,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 interface Gig {
     id: string;
@@ -296,7 +296,7 @@ function StatCard({
     value,
     color,
 }: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     icon: any;
     label: string;
     value: number;

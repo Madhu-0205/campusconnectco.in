@@ -1,19 +1,21 @@
-import CCPageLoader from "@/components/landing/CCPageLoader"
-import CCNavbar from "@/components/landing/CCNavbar"
-import CCHero from "@/components/landing/CCHero"
-import CCMarquee from "@/components/landing/CCMarquee"
-import LandingProblem from "@/components/landing/LandingProblem"
-import CCFeatures from "@/components/landing/CCFeatures"
-import LandingComparison from "@/components/landing/LandingComparison"
-import CCHowItWorks from "@/components/landing/CCHowItWorks"
-import CCCampusGigs from "@/components/landing/CCCampusGigs"
-import CCInternships from "@/components/landing/CCInternships"
+import { headers } from "next/headers"
+
 import CCAIRoadmap from "@/components/landing/CCAIRoadmap"
-import LandingTestimonials from "@/components/landing/LandingTestimonials"
+import CCCampusGigs from "@/components/landing/CCCampusGigs"
+import CCFeatures from "@/components/landing/CCFeatures"
 import CCFinalCTA from "@/components/landing/CCFinalCTA"
 import CCFooter from "@/components/landing/CCFooter"
+import CCHero from "@/components/landing/CCHero"
+import CCHowItWorks from "@/components/landing/CCHowItWorks"
+import CCMarquee from "@/components/landing/CCMarquee"
+import CCNavbar from "@/components/landing/CCNavbar"
+import CCPageLoader from "@/components/landing/CCPageLoader"
+import LandingComparison from "@/components/landing/LandingComparison"
+import LandingProblem from "@/components/landing/LandingProblem"
+import CCInternships from "@/components/landing/CCInternships"
+import LandingTestimonials from "@/components/landing/LandingTestimonials"
 import { WebsiteSchema, FAQSchema } from "@/components/seo/JsonLd"
-import { headers } from "next/headers"
+
 
 export default async function CampusConnectLandingPage() {
   const nonce = (await headers()).get("x-nonce") || undefined

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { computeGigEmbedding } from '@/lib/ai/embeddings';
 import { protectApi } from '@/lib/auth-checks';
 

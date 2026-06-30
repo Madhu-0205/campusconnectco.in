@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { RefreshCcw } from "lucide-react"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Refund Policy — CampusConnect",

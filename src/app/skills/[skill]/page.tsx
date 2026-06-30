@@ -1,12 +1,14 @@
-import React from "react"
+import { Award, Briefcase, Users, ArrowRight, ShieldCheck, ExternalLink } from "lucide-react"
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { headers } from "next/headers"
 import Link from "next/link"
+import { notFound } from "next/navigation"
+import React from "react"
+
+import { BreadcrumbSchema, FAQSchema, getWikidataURI } from "@/components/seo/JsonLd"
 import prisma from "@/lib/prisma"
 import { SKILLS_DATASET } from "@/lib/skills-dataset"
-import { Award, Briefcase, Users, ArrowRight, ShieldCheck, ExternalLink } from "lucide-react"
-import { BreadcrumbSchema, FAQSchema, getWikidataURI } from "@/components/seo/JsonLd"
-import { headers } from "next/headers"
+
 
 interface Props {
   params: Promise<{ skill: string }>

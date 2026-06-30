@@ -14,10 +14,6 @@
  *   matches the initial client render before JS hydrates.
  */
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
-import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Briefcase, Sparkles,
@@ -25,15 +21,20 @@ import {
   MessageSquare, Users, Bell, Search, ChevronDown, Building2,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   LogOut, Settings, UserCircle, Plus, GraduationCap,
-  ArrowUp,
+  ArrowUp, Trophy, Rocket, Gift, Target,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Shield, CreditCard, Info, Menu, X, LucideIcon
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
+
 import NotificationsPopover from '@/components/NotificationsPopover'
-import { createClient } from '@/lib/supabase/client'
 import { SignOutButton } from '@/components/SignOutButton'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { createClient } from '@/lib/supabase/client'
+import { cn } from '@/lib/utils'
 
 interface NavbarClientProps {
   userRole: string | null
@@ -67,6 +68,8 @@ const getNavLinks = (role: string | null): NavLink[] => {
       { label: 'Find Gigs', href: '/gigs/find', icon: Briefcase },
       { label: 'Internships', href: '/dashboard/student/internships', icon: GraduationCap },
       { label: 'SmartMatch', href: '/dashboard/student/smartmatch', icon: Sparkles, highlight: true },
+      { label: 'Leaderboard', href: '/leaderboard', icon: Trophy },
+      { label: 'Refer & Earn', href: '/refer', icon: Gift },
       ...common,
     ]
   }
@@ -74,7 +77,9 @@ const getNavLinks = (role: string | null): NavLink[] => {
   if (role === 'CLIENT' || role === 'STARTUP') {
     return [
       { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-      { label: 'Browse Talent', href: '/gigs/find', icon: Briefcase },
+      { label: 'Talent Search', href: '/employer/talent-search', icon: Search },
+      { label: 'Campus Drives', href: '/employer/drives', icon: Target },
+      { label: 'Company Profile', href: '/employer/profile', icon: Building2 },
       ...common,
     ]
   }

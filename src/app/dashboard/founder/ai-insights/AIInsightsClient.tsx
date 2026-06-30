@@ -1,9 +1,10 @@
 "use client";
 
 import { Brain, ShieldAlert, Sparkles, AlertOctagon, TrendingUp } from "lucide-react";
+
 import { Card } from "@/components/ui/Card";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export default function AIInsightsClient({ stats }: { stats: any }) {
     // Basic heuristics to simulate AI insights over the provided fetched data
     const totalGigs = stats.gigs.length;

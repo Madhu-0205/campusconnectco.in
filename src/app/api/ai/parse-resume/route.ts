@@ -1,9 +1,11 @@
-import { NextResponse } from 'next/server';
-import { parseResume } from '@/lib/ai/resumeParser';
-import { resumeParseLimiter } from '@/lib/rate-limit';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+
+import { parseResume } from '@/lib/ai/resumeParser';
 import prisma from '@/lib/prisma'; // Assuming standard prisma import
+import { resumeParseLimiter } from '@/lib/rate-limit';
+
 
 // In-memory job queue for MVP (deployments should use Upstash/Redis/Qstash)
 const globalJobs = new Map<string, { status: string, result?: any, error?: string }>();

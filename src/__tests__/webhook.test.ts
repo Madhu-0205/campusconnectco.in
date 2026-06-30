@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
 import crypto from "crypto";
+
+import { describe, it, expect } from "vitest";
 
 // Extract signature check logic for testing
 function verifySignature(bodyText: string, signature: string, secret: string): boolean {

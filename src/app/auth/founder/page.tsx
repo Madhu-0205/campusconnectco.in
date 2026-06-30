@@ -1,11 +1,12 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Eye, EyeOff, Loader2, ShieldCheck, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { Eye, EyeOff, Loader2, ShieldCheck, Lock } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
+import { createClient } from "@/lib/supabase/client";
 
 export default function FounderSignInPage() {
     const router = useRouter();

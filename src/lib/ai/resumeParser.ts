@@ -1,6 +1,8 @@
-import { getOpenAI } from './client';
-const pdfParse = require('pdf-parse');
 import * as mammoth from 'mammoth';
+
+import { getOpenAI } from './client';
+
+const pdfParse = require('pdf-parse');
 
 export interface ResumeData {
   skills: string[];

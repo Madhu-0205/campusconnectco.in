@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
 import {
     Search, MapPin, Clock, DollarSign, Calendar, Heart, Bookmark,
     Share2, ArrowUpRight, TrendingUp, Sparkles,
     ChevronRight, Users, Eye,
     GraduationCap, Star, Flame
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 
 interface Internship {
     id: string;

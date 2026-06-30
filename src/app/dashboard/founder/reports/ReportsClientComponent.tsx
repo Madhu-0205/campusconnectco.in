@@ -2,12 +2,13 @@
 
 // Force IDE re-parse
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
     BarChart2, Users, Briefcase, FileText, GraduationCap,
     TrendingUp, Download, Calendar, ArrowUpRight, ArrowDownRight
 } from "lucide-react";
+import { useState } from "react";
+
 import { Card } from "@/components/ui/Card"; // Force TS cache update
 
 interface ChartDataPoint {

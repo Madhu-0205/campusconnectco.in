@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useRef } from "react"
-import Image from "next/image"
-import { createClient } from "@/lib/supabase/client"
-import { useProfileField } from "@/hooks/useProfileField"
-import { toast } from "sonner"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { User, Camera, Loader2, Check, UploadCloud } from "lucide-react"
+import Image from "next/image"
+import { useState, useRef } from "react"
+import { toast } from "sonner"
+
+import { useProfileField } from "@/hooks/useProfileField"
+import { createClient } from "@/lib/supabase/client"
+
+ 
 
 interface AvatarUploadProps {
   initialImage: string | null

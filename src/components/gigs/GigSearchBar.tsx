@@ -1,7 +1,7 @@
 'use client'
+import { Search, Zap, Loader2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-import { Search, Zap, Loader2 } from 'lucide-react'
 
 export function GigSearchBar({ defaultValue }: { defaultValue: string }) {
   const router = useRouter()

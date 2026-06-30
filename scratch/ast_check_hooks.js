@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+
 const ts = require('typescript');
 
 function getFiles(dir) {

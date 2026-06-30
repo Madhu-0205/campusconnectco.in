@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
-import Link from "next/link"
 import { ArrowRight, Sparkles } from "lucide-react"
+import Link from "next/link"
+import { useRef } from "react"
 
 export default function CCFinalCTA() {
     const ref = useRef(null)

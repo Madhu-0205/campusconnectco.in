@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+
 import prisma from "@/lib/prisma"
 
 // ── GET /api/growth/share-card — generate shareable card metadata ─────────────
@@ -19,10 +20,10 @@ export async function GET(req: NextRequest) {
 
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     let gamif: any = null
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       gamif = await (prisma as any).userGamification.findUnique({ where: { userId } })
     } catch { /* optional */ }
 
@@ -47,10 +48,10 @@ export async function GET(req: NextRequest) {
     const template = CARD_TEMPLATES[type] || CARD_TEMPLATES["first_gig"]
 
     // Referral link embedded in the card
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     let referralCode: string | null = null
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const ref = await (prisma as any).referral.findFirst({ where: { referrerId: userId }, orderBy: { createdAt: "asc" } })
       referralCode = ref?.referralCode || null
     } catch { /* optional */ }
@@ -64,7 +65,7 @@ export async function GET(req: NextRequest) {
 
     // Track the card generation
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       await (prisma as any).shareCard.create({
         data: {
           userId,
@@ -72,7 +73,7 @@ export async function GET(req: NextRequest) {
           metadata: { headline: template.headline, subtext: template.subtext, college, smartScore: gamif?.smartScore },
         },
       })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       await (prisma as any).growthEvent.create({
         data: { userId, type: "share_card_generated", metadata: { cardType: type, college } },
       })

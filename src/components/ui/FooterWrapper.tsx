@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation"
+
 import CCFooter from "@/components/landing/CCFooter"
 import AppFooter from "@/components/ui/AppFooter"
 

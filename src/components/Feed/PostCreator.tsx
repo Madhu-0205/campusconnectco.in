@@ -2,6 +2,7 @@
 
 import { Image, Video, FileText, Send, Smile, X } from "lucide-react";
 import { useState, useRef } from "react";
+
 import { useToast } from "@/components/ToastProvider";
 
 export default function PostCreator() {

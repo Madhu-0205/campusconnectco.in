@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/Card"
 import { Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
+
 import { useToast } from "@/components/ToastProvider"
+import { Card } from "@/components/ui/Card"
 
 interface Application {
     id: string;

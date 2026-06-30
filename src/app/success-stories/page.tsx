@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { SuccessStoriesClient } from "./SuccessStoriesClient"
 
 export const metadata: Metadata = {

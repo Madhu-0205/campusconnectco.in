@@ -1,9 +1,10 @@
+import { TransactionStatus, EscrowStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import prisma from "@/lib/prisma";
 import Razorpay from "razorpay";
 import { z } from "zod";
-import { TransactionStatus, EscrowStatus } from "@prisma/client";
+
+import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 const RefundSchema = z.object({
   transactionId: z.string().uuid(),
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Process refund in a Prisma transaction block
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     await prisma.$transaction(async (tx: any) => {
       // Update transaction status
       await tx.transaction.update({

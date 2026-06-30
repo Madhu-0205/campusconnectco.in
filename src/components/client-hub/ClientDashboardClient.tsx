@@ -20,9 +20,9 @@ interface GigRecord {
 
 interface ApplicantRecord {
     id: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     applicant?: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     gig?: any;
 }
 

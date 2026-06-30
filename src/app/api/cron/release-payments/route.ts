@@ -1,8 +1,9 @@
+import { TransactionStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
+
+import { triggerReferralConversion } from "@/lib/growth";
 import prisma from "@/lib/prisma";
 
-import { TransactionStatus } from "@prisma/client";
-import { triggerReferralConversion } from "@/lib/growth";
 
 export const dynamic = 'force-dynamic';
 

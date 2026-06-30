@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { getTrendingGigs, getTrendingSkills, getTrendingTopics } from '@/lib/ai/trendingEngine';
 import { generalApiLimiter } from '@/lib/rate-limit';
 

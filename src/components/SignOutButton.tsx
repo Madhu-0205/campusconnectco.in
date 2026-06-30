@@ -1,7 +1,8 @@
 'use client'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
+import { createClient } from '@/lib/supabase/client'
 
 export function SignOutButton() {
   const supabase = createClient()
