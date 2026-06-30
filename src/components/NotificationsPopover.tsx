@@ -66,6 +66,9 @@ export default function NotificationsPopover({
                 setUserId(user.id);
                 fetchNotifications();
 
+                let retryCount = 0;
+                const MAX_RETRIES = 5;
+
                 // Listen for REAL-TIME database changes (Requirement 5)
                 const channel = supabase
                     .channel(`user-notifications-${user.id}`)
@@ -82,12 +85,30 @@ export default function NotificationsPopover({
                             setNotifications(prev => [payload.new as Notification, ...prev]);
                         }
                     )
-                    .subscribe();
+                
+                const subscribeWithRetry = () => {
+                    channel.subscribe((status, err) => {
+                        if (status === 'SUBSCRIBED') {
+                            retryCount = 0;
+                        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                            if (retryCount < MAX_RETRIES) {
+                                retryCount++;
+                                setTimeout(() => {
+                                    supabase.removeChannel(channel);
+                                    subscribeWithRetry();
+                                }, Math.min(1000 * Math.pow(2, retryCount), 10000));
+                            }
+                        }
+                    });
+                };
+                
+                subscribeWithRetry();
 
                 return () => {
                     supabase.removeChannel(channel);
                 }
             }
+
         }
 
         setup();

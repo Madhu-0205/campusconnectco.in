@@ -62,6 +62,10 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
   // For presence mapping
   const [presence, setPresence] = useState<Record<string, unknown>>({})
   
+  const msgRetryCount = useRef(0)
+  const presenceRetryCount = useRef(0)
+  const MAX_RETRIES = 5
+  
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -123,7 +127,26 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
             supabase.from('messages').update({ read_at: new Date().toISOString() }).eq('id', payload.new.id)
         }
       })
-      .subscribe()
+      
+    const subscribeWithRetry = () => {
+      channel.subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          msgRetryCount.current = 0;
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          if (msgRetryCount.current < MAX_RETRIES) {
+            msgRetryCount.current++;
+            setTimeout(() => {
+              supabase.removeChannel(channel);
+              subscribeWithRetry();
+            }, Math.min(1000 * Math.pow(2, msgRetryCount.current), 10000));
+          } else {
+            notify.error("Chat connection lost. Please refresh the page.");
+          }
+        }
+      });
+    }
+    
+    subscribeWithRetry();
 
     return () => { supabase.removeChannel(channel) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,21 +155,42 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
   // Presence Subscription
   useEffect(() => {
     if (!currentUserId) return // Block anonymous presence connections — prevents Supabase Realtime reconnect loop
-    const presenceChannel = supabase.channel('presence-sync')
+    
+    const presenceChannel = supabase.channel('presence-sync', {
+      config: {
+        presence: {
+          key: currentUserId,
+        },
+      },
+    })
     
     presenceChannel
       .on('presence', { event: 'sync' }, () => {
         const state = presenceChannel.presenceState()
         setPresence(state)
       })
-      .subscribe(async (status) => {
+      
+    const subscribePresenceWithRetry = () => {
+      presenceChannel.subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
+          presenceRetryCount.current = 0;
           await presenceChannel.track({
             userId: currentUserId,
             online_at: new Date().toISOString(),
           })
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          if (presenceRetryCount.current < MAX_RETRIES) {
+            presenceRetryCount.current++;
+            setTimeout(() => {
+              supabase.removeChannel(presenceChannel);
+              subscribePresenceWithRetry();
+            }, Math.min(1000 * Math.pow(2, presenceRetryCount.current), 10000));
+          }
         }
       })
+    }
+    
+    subscribePresenceWithRetry();
 
     return () => { supabase.removeChannel(presenceChannel) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
