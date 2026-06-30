@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export interface GigPackage {
     id: string;
@@ -187,9 +188,9 @@ export function FloatingGigCard({ isOpen, onClose, gig }: FloatingGigCardProps) 
                                 {/* Seller Profile Summary */}
                                 <motion.div layout="position" className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-full bg-electric/20 flex items-center justify-center overflow-hidden shrink-0 border-white dark:border-slate-700 shadow-sm">
+                                        <div className="w-12 h-12 relative rounded-full bg-electric/20 flex items-center justify-center overflow-hidden shrink-0 border-white dark:border-slate-700 shadow-sm">
                                             {gig.seller.image ? (
-                                                <img src={gig.seller.image} alt={gig.seller.name} className="w-full h-full object-cover" />
+                                                <Image src={gig.seller.image} alt={gig.seller.name} fill className="object-cover" />
                                             ) : (
                                                 <User size={20} className="text-electric" />
                                             )}
@@ -238,8 +239,8 @@ export function FloatingGigCard({ isOpen, onClose, gig }: FloatingGigCardProps) 
                                             {gig.images && gig.images.length > 0 && (
                                                 <div className="grid grid-cols-2 gap-3 pb-4">
                                                     {gig.images.map((img, i) => (
-                                                        <div key={i} className="rounded-2xl overflow-hidden aspect-video bg-slate-100 dark:bg-slate-800">
-                                                            <img src={img} alt="Gig preview" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                                                        <div key={i} className="rounded-2xl overflow-hidden aspect-video bg-slate-100 dark:bg-slate-800 relative">
+                                                            <Image src={img} alt="Gig preview" fill className="object-cover hover:scale-105 transition-transform duration-500" />
                                                         </div>
                                                     ))}
                                                 </div>

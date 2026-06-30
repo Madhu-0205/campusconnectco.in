@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
-import { AICoverLetterModal } from '@/components/ai/AICoverLetterModal';
+import dynamic from 'next/dynamic';
+
+const AICoverLetterModal = dynamic(
+  () => import('@/components/ai/AICoverLetterModal').then(mod => mod.AICoverLetterModal),
+  { ssr: false }
+);
 
 interface AICoverLetterButtonProps {
   gigId: string;

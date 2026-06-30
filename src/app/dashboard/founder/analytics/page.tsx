@@ -6,7 +6,12 @@ import {
     BarChart2, Users, TrendingUp, Briefcase, MessageCircle,
     DollarSign, CheckCircle2, Star, Zap, RefreshCw, Crown
 } from "lucide-react";
-import FinancialChart from "@/components/Analytics/FinancialChart";
+import dynamic from "next/dynamic";
+
+const FinancialChart = dynamic(() => import("@/components/Analytics/FinancialChart"), {
+  ssr: false,
+  loading: () => <div className="h-full w-full animate-pulse bg-slate-800/50 rounded-xl"></div>
+});
 
 interface AnalyticsData {
     growth: { totalUsers: number; newUsers30d: number; growthRate: number };

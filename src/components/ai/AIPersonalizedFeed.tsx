@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FeedPost, FeedGig } from '@/lib/ai/feedAssembler';
 import { Heart, Sparkles, Briefcase, MapPin, Clock, MessageCircle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface FeedResponse {
   posts: FeedPost[];
@@ -62,8 +63,8 @@ export function AIPersonalizedFeed() {
               
               <div className="flex items-start justify-between mb-4 relative z-10">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-slate-300">
-                     {post.author.image ? <img src={post.author.image} alt="" className="w-full h-full rounded-full object-cover" /> : post.author.name?.[0] || 'U'}
+                  <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-slate-300 relative overflow-hidden">
+                     {post.author.image ? <Image src={post.author.image} alt="" fill className="object-cover" /> : post.author.name?.[0] || 'U'}
                   </div>
                   <div>
                     <p className="font-bold text-white group-hover:text-emerald-400 transition-colors">{post.author.name || 'Anonymous User'}</p>

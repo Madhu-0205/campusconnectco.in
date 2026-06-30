@@ -28,6 +28,7 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   display: "swap",
+  preload: false,
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -35,6 +36,7 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "600"],
   display: "swap",
+  preload: false,
 })
 
 export const viewport = {

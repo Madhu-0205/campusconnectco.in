@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import {
   Trophy, Star, Flame, Target, TrendingUp,
   Search, Crown, Zap, GraduationCap, BadgeCheck
@@ -202,8 +203,8 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                     style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
                   >
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 border text-sm font-black ${RANK_BG[1]} ${RANK_COLORS[1]}`}>2</div>
-                    <div className="w-12 h-12 rounded-xl bg-slate-500/20 flex items-center justify-center mx-auto mb-2 text-lg font-black text-slate-300">
-                      {top3[1].avatar ? <img src={top3[1].avatar} alt={top3[1].name} className="w-full h-full rounded-xl object-cover" /> : top3[1].name.charAt(0)}
+                    <div className="w-12 h-12 rounded-xl bg-slate-500/20 flex items-center justify-center mx-auto mb-2 text-lg font-black text-slate-300 relative overflow-hidden">
+                      {top3[1].avatar ? <Image src={top3[1].avatar} alt={top3[1].name} fill className="object-cover" /> : top3[1].name.charAt(0)}
                     </div>
                     <p className="font-black text-white text-xs truncate">{top3[1].name}</p>
                     <p className="text-[10px] text-slate-500 truncate">{top3[1].college}</p>
@@ -220,8 +221,8 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                   >
                     <Crown size={16} className="text-[#F59E0B] mx-auto mb-1" />
                     <div className={`w-9 h-9 rounded-full flex items-center justify-center mx-auto mb-2 border text-sm font-black ${RANK_BG[0]} ${RANK_COLORS[0]}`}>1</div>
-                    <div className="w-14 h-14 rounded-xl bg-[#F59E0B]/20 flex items-center justify-center mx-auto mb-2 text-xl font-black text-[#FCD34D]">
-                      {top3[0].avatar ? <img src={top3[0].avatar} alt={top3[0].name} className="w-full h-full rounded-xl object-cover" /> : top3[0].name.charAt(0)}
+                    <div className="w-14 h-14 rounded-xl bg-[#F59E0B]/20 flex items-center justify-center mx-auto mb-2 text-xl font-black text-[#FCD34D] relative overflow-hidden">
+                      {top3[0].avatar ? <Image src={top3[0].avatar} alt={top3[0].name} fill className="object-cover" /> : top3[0].name.charAt(0)}
                     </div>
                     <p className="font-black text-white text-sm truncate">{top3[0].name}</p>
                     <p className="text-[10px] text-slate-400 truncate">{top3[0].college}</p>
@@ -242,8 +243,8 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                     style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
                   >
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 border text-sm font-black ${RANK_BG[2]} ${RANK_COLORS[2]}`}>3</div>
-                    <div className="w-12 h-12 rounded-xl bg-[#CD7F32]/20 flex items-center justify-center mx-auto mb-2 text-lg font-black text-[#CD7F32]">
-                      {top3[2].avatar ? <img src={top3[2].avatar} alt={top3[2].name} className="w-full h-full rounded-xl object-cover" /> : top3[2].name.charAt(0)}
+                    <div className="w-12 h-12 rounded-xl bg-[#CD7F32]/20 flex items-center justify-center mx-auto mb-2 text-lg font-black text-[#CD7F32] relative overflow-hidden">
+                      {top3[2].avatar ? <Image src={top3[2].avatar} alt={top3[2].name} fill className="object-cover" /> : top3[2].name.charAt(0)}
                     </div>
                     <p className="font-black text-white text-xs truncate">{top3[2].name}</p>
                     <p className="text-[10px] text-slate-500 truncate">{top3[2].college}</p>
@@ -264,9 +265,9 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                 >
                   <span className="text-sm font-black text-slate-500 w-7 text-center shrink-0">#{entry.rank}</span>
 
-                  <div className="w-9 h-9 rounded-xl bg-[#7C3AED]/15 flex items-center justify-center text-sm font-black text-[#A78BFA] shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-[#7C3AED]/15 flex items-center justify-center text-sm font-black text-[#A78BFA] shrink-0 relative overflow-hidden">
                     {entry.avatar
-                      ? <img src={entry.avatar} alt={entry.name} className="w-full h-full rounded-xl object-cover" />
+                      ? <Image src={entry.avatar} alt={entry.name} fill className="object-cover" />
                       : entry.name.charAt(0)}
                   </div>
 

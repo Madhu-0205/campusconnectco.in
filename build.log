@@ -1,0 +1,210 @@
+
+> campusconnectco.in@0.1.0 build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.19.3) to ./node_modules/@prisma/client in 168ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+▲ Next.js 16.2.9 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 11.4s
+  Running TypeScript ...
+  Finished TypeScript in 8.4s ...
+  Collecting page data using 5 workers ...
+  Generating static pages using 5 workers (0/239) ...
+  Generating static pages using 5 workers (59/239) 
+  Generating static pages using 5 workers (119/239) 
+  Generating static pages using 5 workers (179/239) 
+✓ Generating static pages using 5 workers (239/239) in 6.5s
+  Finalizing page optimization ...
+
+Route (app)                                 Revalidate  Expire
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /about
+├ ƒ /ambassador
+├ ƒ /api/admin/audit-logs
+├ ƒ /api/admin/feature-flags
+├ ƒ /api/admin/moderation-events
+├ ƒ /api/ai
+├ ƒ /api/ai/chat
+├ ƒ /api/ai/copilot/sessions
+├ ƒ /api/ai/cover-letter
+├ ƒ /api/ai/embed/gig
+├ ƒ /api/ai/embed/user
+├ ƒ /api/ai/feed
+├ ƒ /api/ai/match/gigs
+├ ƒ /api/ai/match/students
+├ ƒ /api/ai/mock-interview
+├ ƒ /api/ai/moderate
+├ ƒ /api/ai/parse-file
+├ ƒ /api/ai/parse-resume
+├ ƒ /api/ai/resume-analyze
+├ ƒ /api/ai/skill-gap
+├ ƒ /api/ai/smartmatch
+├ ƒ /api/ai/trending
+├ ƒ /api/analytics/platform
+├ ƒ /api/analytics/revenue
+├ ƒ /api/application/pending-count
+├ ƒ /api/applications
+├ ƒ /api/applications/[id]
+├ ƒ /api/applications/apply
+├ ƒ /api/career-roadmap
+├ ƒ /api/checkout/create-order
+├ ƒ /api/checkout/webhook
+├ ƒ /api/client-hub/applicants
+├ ƒ /api/conversations
+├ ƒ /api/conversations/[id]
+├ ƒ /api/cron/release-payments
+├ ƒ /api/employer/drives
+├ ƒ /api/employer/organization
+├ ƒ /api/employer/organization/[id]
+├ ƒ /api/employer/talent-search
+├ ƒ /api/endorsement
+├ ƒ /api/founder/announcements
+├ ƒ /api/founder/announcements/[id]
+├ ƒ /api/founder/approvals
+├ ƒ /api/founder/audit
+├ ƒ /api/founder/disputes
+├ ƒ /api/founder/escrow
+├ ƒ /api/founder/gigs
+├ ƒ /api/founder/gigs/[id]
+├ ƒ /api/founder/internships
+├ ƒ /api/founder/internships/[id]
+├ ƒ /api/founder/monetize
+├ ƒ /api/founder/preview
+├ ƒ /api/founder/settings
+├ ƒ /api/founder/users
+├ ƒ /api/founder/users/[id]
+├ ƒ /api/founder/verify-role
+├ ƒ /api/founder/volume
+├ ƒ /api/gamification/leaderboard
+├ ƒ /api/gamification/profile
+├ ƒ /api/gigs
+├ ƒ /api/gigs/browse
+├ ƒ /api/growth/referral
+├ ƒ /api/growth/referral/lookup
+├ ƒ /api/growth/referral/register
+├ ƒ /api/growth/share-card
+├ ƒ /api/health
+├ ƒ /api/internal/import-internship
+├ ƒ /api/internships
+├ ƒ /api/internships/[id]
+├ ƒ /api/internships/[id]/engage
+├ ƒ /api/live
+├ ƒ /api/network/connections
+├ ƒ /api/network/status
+├ ƒ /api/network/users
+├ ƒ /api/notifications
+├ ƒ /api/posts
+├ ƒ /api/public/gigs/trending
+├ ƒ /api/ready
+├ ƒ /api/recommendations
+├ ƒ /api/review
+├ ƒ /api/search
+├ ƒ /api/skills/categories
+├ ƒ /api/skills/suggestions
+├ ○ /api/stats                                      1h      1y
+├ ƒ /api/tasks/cleanup
+├ ƒ /api/user/follow
+├ ƒ /api/user/profile
+├ ƒ /api/user/projects
+├ ƒ /auth/callback
+├ ƒ /auth/forgot-password
+├ ƒ /auth/founder
+├ ƒ /auth/reset-password
+├ ƒ /auth/sign-in
+├ ƒ /auth/sign-up
+├ ƒ /browse-gigs
+├ ƒ /checkout
+├ ƒ /client-hub
+├ ƒ /client-hub/applicants
+├ ƒ /client-hub/post-gig
+├ ƒ /client-hub/settings
+├ ƒ /colleges/[slug]
+├ ƒ /contact-us
+├ ƒ /dashboard
+├ ƒ /dashboard/founder
+├ ƒ /dashboard/founder/ai-insights
+├ ƒ /dashboard/founder/analytics
+├ ƒ /dashboard/founder/applications
+├ ƒ /dashboard/founder/approvals
+├ ƒ /dashboard/founder/content
+├ ƒ /dashboard/founder/escrow
+├ ƒ /dashboard/founder/fraud-engine
+├ ƒ /dashboard/founder/gigs
+├ ƒ /dashboard/founder/gigs/new
+├ ƒ /dashboard/founder/internships
+├ ƒ /dashboard/founder/metrics
+├ ƒ /dashboard/founder/moderation
+├ ƒ /dashboard/founder/notifications
+├ ƒ /dashboard/founder/reports
+├ ƒ /dashboard/founder/revenue
+├ ƒ /dashboard/founder/settings
+├ ƒ /dashboard/founder/users
+├ ƒ /dashboard/student
+├ ƒ /dashboard/student/applications
+├ ƒ /dashboard/student/career-copilot
+├ ƒ /dashboard/student/gigs
+├ ƒ /dashboard/student/internships
+├ ƒ /dashboard/student/internships/[id]
+├ ƒ /dashboard/student/interview-simulator
+├ ƒ /dashboard/student/messages
+├ ƒ /dashboard/student/profile
+├ ƒ /dashboard/student/resume-analyzer
+├ ƒ /dashboard/student/settings
+├ ƒ /dashboard/student/skill-gap
+├ ƒ /dashboard/student/smartmatch
+├ ƒ /editorial
+├ ƒ /employer/drives
+├ ƒ /employer/profile
+├ ƒ /employer/talent-search
+├ ƒ /employer/upgrade
+├ ƒ /get-gig
+├ ƒ /gigs/[id]
+├ ƒ /gigs/-/opengraph-image
+├ ƒ /gigs/city/[city]
+├ ƒ /gigs/find
+├ ƒ /internships/[city]
+├ ƒ /join
+├ ƒ /leaderboard
+├ ƒ /manifesto
+├ ƒ /marketplace
+├ ƒ /messages
+├ ƒ /network
+├ ƒ /notifications
+├ ƒ /onboarding
+├ ƒ /post-gig
+├ ƒ /pricing
+├ ƒ /privacy-policy
+├ ƒ /profile
+├ ƒ /profile/[username]
+├ ƒ /profile/-/opengraph-image
+├ ƒ /refer
+├ ƒ /refund-policy
+├ ○ /robots.txt
+├ ƒ /search
+├ ƒ /settings
+├ ○ /sitemap.xml
+├ ƒ /skill-selector
+├ ƒ /skills
+├ ƒ /skills/[skill]
+├ ƒ /skills/-/opengraph-image
+├ ƒ /success-stories
+├ ƒ /terms-and-conditions
+└ ƒ /trust
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
