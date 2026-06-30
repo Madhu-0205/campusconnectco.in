@@ -59,16 +59,24 @@ export async function POST(req: NextRequest) {
       if (transaction.status === TransactionStatus.PENDING) {
         // Process transaction capture in a Prisma transaction block
         await prisma.$transaction(async (tx: any) => {
-          // 1. Update Transaction to PAID / IN_PROGRESS
-          await tx.transaction.update({
-            where: { id: transaction.id },
+          // 1. Atomic update to prevent race conditions if multiple webhooks fire
+          const updateResult = await tx.transaction.updateMany({
+            where: { 
+              id: transaction.id, 
+              status: TransactionStatus.PENDING 
+            },
             data: {
               status: TransactionStatus.PAID,
               paidAt: new Date(),
               paymentId: paymentEntity?.id || `pay_mock_${Math.random().toString(36).substring(2, 9)}`,
             },
           });
-
+          
+          if (updateResult.count === 0) {
+            // Another thread already processed it
+            console.log(`[Razorpay Webhook] Transaction ${transaction.id} already processed or no longer PENDING by concurrent webhook.`);
+            return;
+          }
           // 2. Create Escrow record (LOCKED status)
           await tx.escrow.create({
             data: {
