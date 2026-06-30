@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import GigDetailClient from "@/components/gigs/GigDetailClient";
 import { headers } from "next/headers";
@@ -140,18 +141,38 @@ export default async function GigDetailPage(props: PageProps) {
 }
 
 // Generate metadata for SEO
-export async function generateMetadata(props: PageProps) {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
     const params = await props.params;
     const gig = await getGigDetails(params.id);
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in';
 
     if (!gig) {
-        return {
-            title: "Gig Not Found",
-        };
+        return { title: "Gig Not Found | CampusConnect" };
     }
 
+    const description = gig.description.substring(0, 160);
+    const tags = gig.tags ? gig.tags.split(',').map((t: string) => t.trim()) : [];
+    const pageUrl = `${baseUrl}/gigs/${params.id}`;
+
     return {
-        title: `${gig.title} | Campus Connect`,
-        description: gig.description.substring(0, 160),
+        title: `${gig.title} | CampusConnect`,
+        description,
+        keywords: ['campus gig', 'student freelance', 'earn money college', ...tags],
+        alternates: { canonical: pageUrl },
+        openGraph: {
+            title: gig.title,
+            description,
+            url: pageUrl,
+            siteName: 'CampusConnect',
+            type: 'article',
+            publishedTime: gig.createdAt.toISOString(),
+            // opengraph-image.tsx in the same segment is automatically picked up by Next.js
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: gig.title,
+            description,
+            site: '@campusconnect_in',
+        },
     };
 }

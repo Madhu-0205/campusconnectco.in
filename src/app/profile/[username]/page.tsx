@@ -1,7 +1,9 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import PublicProfileClient from "./PublicProfileClient"
 import { headers } from "next/headers"
 import { StudentPersonSchema } from "@/components/seo/JsonLd"
+import prisma from "@/lib/prisma"
 
 export async function generateMetadata({
   params,
@@ -9,19 +11,57 @@ export async function generateMetadata({
   params: Promise<{ username: string }>
 }): Promise<Metadata> {
   const { username } = await params
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+  const pageUrl = `${baseUrl}/profile/${username}`
+
+  // Fetch minimal profile data for rich metadata
+  let displayName = username
+  let description = `View ${username}'s verified skills, completed gigs, and career portfolio on CampusConnect.`
+  let keywords: string[] = ['student freelancer india', 'campus talent', 'hire student']
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+      select: { name: true, full_name: true, bio: true, college: true, skills: true, isVerified: true },
+    })
+    if (user) {
+      displayName = user.full_name ?? user.name ?? username
+      const college = user.college ? ` from ${user.college}` : ''
+      const verifiedBadge = user.isVerified ? 'Verified ' : ''
+      description = user.bio
+        ? `${user.bio.slice(0, 140)}...`
+        : `${verifiedBadge}student developer${college}. Available for gigs and internships on CampusConnect.`
+      if (user.skills) {
+        keywords = [...keywords, ...user.skills.split(',').map((s: string) => s.trim()).slice(0, 8)]
+      }
+    }
+  } catch {
+    // Fall back to username-based defaults
+  }
+
   return {
-    title: `${username} — Student Profile | CampusConnect`,
-    description: `View ${username}'s verified skills, completed gigs, and career portfolio on CampusConnect.`,
+    title: `${displayName} — Student Profile | CampusConnect`,
+    description,
+    keywords,
+    alternates: { canonical: pageUrl },
     openGraph: {
-      title: `${username} — CampusConnect Profile`,
-      description: `Hire ${username} for your next gig or internship.`,
-      images: [{ url: "/logo-v2.jpg" }],
+      title: `${displayName} | CampusConnect`,
+      description,
+      url: pageUrl,
+      siteName: 'CampusConnect',
+      type: 'profile',
+      // opengraph-image.tsx in this segment is auto-served by Next.js
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${displayName} | CampusConnect`,
+      description,
+      site: '@campusconnect_in',
     },
   }
 }
 
-import { notFound } from "next/navigation"
-import prisma from "@/lib/prisma"
+
 
 export default async function PublicProfilePage({
   params,

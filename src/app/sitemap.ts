@@ -113,5 +113,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticUrls, ...gigUrls, ...skillUrls, ...collegeUrls, ...cityGigUrls, ...cityInternshipUrls];
+  // 7. Public Student Profile Pages (verified students with a username)
+  let profileUrls: MetadataRoute.Sitemap = [];
+  try {
+    const profiles = await prisma.user.findMany({
+      where: {
+        role: 'STUDENT',
+        isVerified: true,
+        username: { not: null },
+      },
+      select: { username: true, updatedAt: true },
+      take: 500, // cap to keep sitemap under 50k URLs
+      orderBy: { updatedAt: 'desc' },
+    });
+    const typedProfiles: Array<{ username: string | null; updatedAt: Date }> = profiles;
+    profileUrls = typedProfiles
+      .filter((p): p is { username: string; updatedAt: Date } => Boolean(p.username))
+      .map(p => ({
+        url: `${baseUrl}/profile/${p.username}`,
+        lastModified: p.updatedAt,
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }));
+  } catch (error) {
+    console.error('Failed to query profiles for sitemap:', error);
+  }
+
+  return [...staticUrls, ...gigUrls, ...profileUrls, ...skillUrls, ...collegeUrls, ...cityGigUrls, ...cityInternshipUrls];
 }
