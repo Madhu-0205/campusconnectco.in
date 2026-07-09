@@ -5,6 +5,7 @@ import {
 } from "lucide-react"
 import { Metadata } from "next"
 import Image from "next/image"
+import Link from "next/link"
 
 import { OrgProfileClient } from "@/components/employer/OrgProfileClient"
 import { Card } from "@/components/ui/Card"
@@ -279,9 +280,9 @@ export default async function EmployerProfilePage() {
                   </p>
                 )}
               </div>
-              <a href="/employer/upgrade" className="block text-center text-xs font-black text-[#A78BFA] hover:text-white transition-colors py-2">
+              <Link href="/employer/upgrade" className="block text-center text-xs font-black text-[#A78BFA] hover:text-white transition-colors py-2">
                 Upgrade Plan →
-              </a>
+              </Link>
             </Card>
           </div>
         </div>

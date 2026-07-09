@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import withBundleAnalyzer from "@next/bundle-analyzer";
+
+const withAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -53,7 +58,7 @@ const nextConfig: NextConfig = {
 
 import { withSentryConfig } from '@sentry/nextjs';
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withAnalyzer(nextConfig), {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
 

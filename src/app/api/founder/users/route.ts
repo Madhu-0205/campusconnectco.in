@@ -14,7 +14,7 @@ export async function GET(req: Request) {
         const pageSize = Math.min(Math.max(parseInt(searchParams.get("limit") || "20"), 20), 100);
         const skip = (page - 1) * pageSize;
 
-        const [users, total] = await Promise.all([
+        const [users, total, roleCounts] = await Promise.all([
             prisma.user.findMany({
                 select: {
                     id: true,
@@ -36,13 +36,19 @@ export async function GET(req: Request) {
                 take: pageSize,
             }),
             prisma.user.count(),
+            prisma.user.groupBy({
+                by: ["role"],
+                _count: {
+                    id: true,
+                },
+            }),
         ]);
 
         const stats = {
             total,
-            students: users.filter((u: any) => u.role === "STUDENT").length,
-            clients: users.filter((u: any) => u.role === "CLIENT").length,
-            founders: users.filter((u: any) => u.role === "FOUNDER").length,
+            students: roleCounts.find((r: any) => r.role === "STUDENT")?._count.id || 0,
+            clients: roleCounts.find((r: any) => r.role === "CLIENT")?._count.id || 0,
+            founders: roleCounts.find((r: any) => r.role === "FOUNDER")?._count.id || 0,
         };
 
         return NextResponse.json({

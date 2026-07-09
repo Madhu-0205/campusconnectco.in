@@ -70,7 +70,15 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json({ connections: enriched });
+    return NextResponse.json({
+      connections: enriched,
+      page,
+      pageSize,
+      totalItems: total,
+      totalPages: Math.ceil(total / pageSize),
+      hasNextPage: skip + connections.length < total,
+      hasPreviousPage: page > 1,
+    });
   } catch (error) {
     console.error("[connections GET]", error);
     return NextResponse.json({ error: "Failed to fetch connections" }, { status: 500 });

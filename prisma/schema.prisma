@@ -129,6 +129,8 @@ model Project {
   userId      String   @db.Uuid
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Gig {
@@ -282,6 +284,8 @@ model Post {
   author       User          @relation(fields: [authorId], references: [id])
   likes        PostLike[]
   transactions Transaction[]
+
+  @@index([authorId])
 }
 
 model PostLike {
@@ -425,6 +429,10 @@ model Review {
   gig        Gig      @relation(fields: [gigId], references: [id])
   reviewee   User     @relation("ReviewsReceived", fields: [revieweeId], references: [id])
   reviewer   User     @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+
+  @@index([gigId])
+  @@index([reviewerId])
+  @@index([revieweeId])
 }
 
 model Endorsement {
@@ -450,6 +458,8 @@ model Task {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model Startup {
@@ -495,6 +505,8 @@ model CareerRoadmap {
   roadmapData   Json
   createdAt     DateTime @default(now())
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model UserEmbedding {
@@ -580,6 +592,8 @@ model MockInterview {
   chatHistory Json
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model CopilotSession {
@@ -590,6 +604,8 @@ model CopilotSession {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model UserGamification {

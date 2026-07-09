@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client"
+
 import { computeLevel, computeSmartScore } from "@/lib/gamification"
 import prisma from "@/lib/prisma"
 
@@ -37,7 +39,7 @@ export async function triggerReferralConversion(refereeId: string, transactionId
 
     console.log(`[GrowthEngine] Found referral link: ${referral.referralCode}. Triggering conversion rewards.`)
 
-    await prisma.$transaction(async (tx: any) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 2. Mark referral as converted/rewarded
       await tx.referral.update({
         where: { id: referral.id },
