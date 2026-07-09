@@ -1,10 +1,9 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { parseResume } from '@/lib/ai/resumeParser';
 import prisma from '@/lib/prisma'; // Assuming standard prisma import
 import { resumeParseLimiter } from '@/lib/rate-limit';
+import { createClient } from '@/lib/supabase/server';
 
 
 // In-memory job queue for MVP (deployments should use Upstash/Redis/Qstash)
@@ -17,12 +16,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Rate limit exceeded. Max 3 parses per day.' }, { status: 429 });
         }
 
-        const cookieStore = await cookies();
-        const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            { cookies: { getAll() { return cookieStore.getAll(); } } }
-        );
+        const supabase = await createClient();
 
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {

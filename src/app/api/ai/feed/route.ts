@@ -1,9 +1,8 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { assembleHomeFeed } from '@/lib/ai/feedAssembler';
 import { aiLimiter } from '@/lib/rate-limit';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,12 +13,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Rate limit exceeded.' }, { status: 429 });
     }
 
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { getAll() { return cookieStore.getAll(); } } }
-    );
+    const supabase = await createClient();
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {

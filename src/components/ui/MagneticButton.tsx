@@ -24,7 +24,6 @@ export default function MagneticButton({
     onClick,
     type = "button",
     disabled,
-    ...props
 }: MagneticButtonProps) {
     const anchorRef  = useRef<HTMLAnchorElement>(null)
     const buttonRef  = useRef<HTMLButtonElement>(null)

@@ -2,7 +2,7 @@
 
  
 import { motion, useMotionValue, useSpring } from "framer-motion"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function CustomCursor() {
     const [mounted, setMounted] = useState(false)

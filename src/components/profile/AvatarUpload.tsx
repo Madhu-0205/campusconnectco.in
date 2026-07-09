@@ -1,6 +1,6 @@
 "use client"
 
-import { User, Camera, Loader2, Check, UploadCloud } from "lucide-react"
+import { User, Camera, Loader2, Check } from "lucide-react"
 import Image from "next/image"
 import { useState, useRef } from "react"
 import { toast } from "sonner"

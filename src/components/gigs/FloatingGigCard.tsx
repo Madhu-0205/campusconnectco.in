@@ -6,7 +6,6 @@ import {
     Share2, User, ChevronRight, ShieldCheck, Zap
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
