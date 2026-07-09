@@ -1,0 +1,17 @@
+{
+  "name": "CampusConnect",
+  "short_name": "CampusConnect",
+  "description": "Find internships, campus gigs, freelance jobs, and AI career roadmaps for students across India.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ]
+}

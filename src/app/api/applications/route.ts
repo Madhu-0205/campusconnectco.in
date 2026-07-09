@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 
 // GET - Fetch current user's applications
-export async function GET() {
+export async function GET(req: Request) {
     try {
         const supabase = await createClient()
         const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -13,25 +13,44 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const applications = await prisma.application.findMany({
-            where: { applicantId: user.id },
-            include: {
-                gig: {
-                    select: {
-                        id: true,
-                        title: true,
-                        budget: true,
-                        status: true,
-                        ownerConfirmed: true,
-                        studentConfirmed: true,
-                        poster: { select: { name: true } },
+        const searchParams = new URL(req.url).searchParams
+        const page = Math.max(parseInt(searchParams.get("page") || "1"), 1)
+        const pageSize = Math.min(Math.max(parseInt(searchParams.get("limit") || "20"), 20), 100)
+        const skip = (page - 1) * pageSize
+
+        const [applications, total] = await Promise.all([
+            prisma.application.findMany({
+                where: { applicantId: user.id },
+                include: {
+                    gig: {
+                        select: {
+                            id: true,
+                            title: true,
+                            budget: true,
+                            status: true,
+                            ownerConfirmed: true,
+                            studentConfirmed: true,
+                            posted_by: true,
+                            poster: { select: { name: true } },
+                        },
                     },
                 },
-            },
-            orderBy: { createdAt: "desc" },
-        })
+                orderBy: { createdAt: "desc" },
+                skip,
+                take: pageSize,
+            }),
+            prisma.application.count({ where: { applicantId: user.id } }),
+        ])
 
-        return NextResponse.json(applications)
+        return NextResponse.json({
+            items: applications,
+            page,
+            pageSize,
+            totalItems: total,
+            totalPages: Math.ceil(total / pageSize),
+            hasNextPage: skip + applications.length < total,
+            hasPreviousPage: page > 1,
+        })
     } catch (err: unknown) {
         console.error("APPLICATION_GET_ERROR:", err)
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })

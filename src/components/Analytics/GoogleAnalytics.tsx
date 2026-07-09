@@ -1,3 +1,6 @@
+
+
+
 /**
  * GoogleAnalytics — CSP-compliant GA4 integration for Next.js 16 App Router
  *
@@ -22,7 +25,6 @@
  */
 
 import Script from "next/script";
-
 import { GAPageviewTracker } from "./GAPageviewTracker";
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -64,8 +66,9 @@ export function GAScripts({ nonce }: GoogleAnalyticsProps) {
        *    page_view is NOT sent automatically here; GAPageviewTracker handles
        *    it for both initial loads and subsequent navigations.
        */}
-      <script
+      <Script
         id="ga4-init"
+        strategy="afterInteractive"
         nonce={nonce}
         dangerouslySetInnerHTML={{
           __html: `

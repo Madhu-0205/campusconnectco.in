@@ -153,7 +153,7 @@ export default function CCHero() {
         <section
             ref={containerRef}
             className="relative min-h-screen flex items-center overflow-hidden"
-            style={{ background: "var(--bg)", paddingTop: "5rem" }}
+            style={{ background: "var(--bg)", paddingTop: "5rem", position: "relative" }}
             id="home"
         >
             {/* Mesh grid */}

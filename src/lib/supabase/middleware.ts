@@ -82,7 +82,24 @@ export async function updateSession(request: NextRequest) {
         path === '/marketplace' ||
         path === '/terms-and-conditions' ||
         path === '/privacy-policy' ||
-        path === '/refund-policy';
+        path === '/refund-policy' ||
+        path.startsWith('/_next/') ||
+        path.startsWith('/images/') ||
+        path.startsWith('/icons/') ||
+        path.startsWith('/logos/') ||
+        path.startsWith('/fonts/') ||
+        path.startsWith('/assets/') ||
+        path.startsWith('/static/') ||
+        path === '/favicon.ico' ||
+        path === '/favicon.svg' ||
+        path === '/apple-touch-icon.png' ||
+        path === '/site.webmanifest' ||
+        path === '/manifest.webmanifest' ||
+        path === '/robots.txt' ||
+        path === '/sitemap.xml' ||
+        path === '/sitemap-index.xml' ||
+        path === '/opensearch.xml' ||
+        path === '/sw.js';
 
     // 2. REDIRECT IF NOT LOGGED IN AND NOT PUBLIC
     if (!user && !isPublicRoute) {

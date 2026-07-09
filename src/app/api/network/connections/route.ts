@@ -13,33 +13,48 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status") || "ACCEPTED";
+  const page = Math.max(parseInt(searchParams.get("page") || "1"), 1);
+  const pageSize = Math.min(Math.max(parseInt(searchParams.get("limit") || "20"), 20), 100);
+  const skip = (page - 1) * pageSize;
 
   try {
-    const connections = await prisma.connectionRequest.findMany({
-      where: {
-        OR: [
-          { senderId: user.id, status },
-          { receiverId: user.id, status },
-        ],
-      },
-      include: {
-        sender: {
-          select: {
-            id: true, name: true, email: true, image: true, bio: true,
-            skills: true, role: true,
-            userSkills: { include: { skill: true }, take: 6 },
+    const [connections, total] = await Promise.all([
+      prisma.connectionRequest.findMany({
+        where: {
+          OR: [
+            { senderId: user.id, status },
+            { receiverId: user.id, status },
+          ],
+        },
+        include: {
+          sender: {
+            select: {
+              id: true, name: true, email: true, image: true, bio: true,
+              skills: true, role: true,
+              userSkills: { include: { skill: true }, take: 6 },
+            },
+          },
+          receiver: {
+            select: {
+              id: true, name: true, email: true, image: true, bio: true,
+              skills: true, role: true,
+              userSkills: { include: { skill: true }, take: 6 },
+            },
           },
         },
-        receiver: {
-          select: {
-            id: true, name: true, email: true, image: true, bio: true,
-            skills: true, role: true,
-            userSkills: { include: { skill: true }, take: 6 },
-          },
+        orderBy: { sentAt: "desc" },
+        skip,
+        take: pageSize,
+      }),
+      prisma.connectionRequest.count({
+        where: {
+          OR: [
+            { senderId: user.id, status },
+            { receiverId: user.id, status },
+          ],
         },
-      },
-      orderBy: { sentAt: "desc" },
-    });
+      }),
+    ]);
 
     // Map to just get the "other" user for convenience
     const enriched = connections.map((conn: any) => {

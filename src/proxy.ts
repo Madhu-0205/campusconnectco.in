@@ -41,6 +41,7 @@ export async function proxy(request: NextRequest) {
 
     const csp = [
         "default-src 'none'",
+        "manifest-src 'self'",
         `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: https://www.googletagmanager.com https://www.google-analytics.com https://va.vercel-scripts.com https://accounts.google.com https://apis.google.com ${isDev ? "'unsafe-eval'" : ""}`,
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://i.pravatar.cc https://ui-avatars.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.amazonaws.com https://images.unsplash.com",
@@ -75,9 +76,10 @@ export async function proxy(request: NextRequest) {
 export const config = {
     matcher: [
         /*
-         * Match all request paths except for static files.
+         * Match all request paths except for public assets, metadata files, and health endpoints.
+         * This avoids redirecting browser metadata and PWA resources to /auth/sign-in.
          */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!_next/.*|favicon.ico|favicon.svg|apple-touch-icon.png|site.webmanifest|manifest.webmanifest|robots.txt|sitemap.xml|sitemap-index.xml|opensearch.xml|sw.js|images/.*|icons/.*|fonts/.*|logos/.*|assets/.*|static/.*|.*\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|xml|txt|webmanifest)$|api/health|api/ready|api/live).*)',
     ],
 };
 

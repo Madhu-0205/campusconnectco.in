@@ -18,7 +18,7 @@ export default async function GigOGImage({
     title: string;
     budget: number;
     tags: string | null;
-    location: string | null;
+    work_mode: string;
     poster: { name: string | null } | null;
   } | null = null;
 
@@ -29,7 +29,7 @@ export default async function GigOGImage({
         title: true,
         budget: true,
         tags: true,
-        location: true,
+        work_mode: true,
         poster: { select: { name: true } },
       },
     });
@@ -39,7 +39,7 @@ export default async function GigOGImage({
 
   const title = gig?.title ?? 'Campus Gig Opportunity';
   const budget = gig?.budget ? `₹${gig.budget.toLocaleString('en-IN')}` : '';
-  const location = gig?.location ?? 'Remote / India';
+  const location = gig?.work_mode ? (gig.work_mode.charAt(0).toUpperCase() + gig.work_mode.slice(1)) : 'Remote / India';
   const poster = gig?.poster?.name ?? 'CampusConnect';
   const tags = gig?.tags
     ? gig.tags.split(',').map(t => t.trim()).slice(0, 4)

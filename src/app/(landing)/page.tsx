@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { headers } from "next/headers"
 
 import CCAIRoadmap from "@/components/landing/CCAIRoadmap"
@@ -15,6 +16,48 @@ import LandingProblem from "@/components/landing/LandingProblem"
 import CCInternships from "@/components/landing/CCInternships"
 import LandingTestimonials from "@/components/landing/LandingTestimonials"
 import { WebsiteSchema, FAQSchema } from "@/components/seo/JsonLd"
+
+export const metadata: Metadata = {
+  title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnect",
+  description:
+    "CampusConnect helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
+  keywords: [
+    "student internships",
+    "college internships",
+    "campus gigs",
+    "freelance jobs",
+    "AI career roadmap",
+    "student networking",
+    "career guidance",
+    "internships for students",
+    "verified internships",
+    "remote internships",
+  ],
+  alternates: {
+    canonical: "https://www.campusconnectco.in/",
+    languages: { "en-IN": "https://www.campusconnectco.in/" },
+  },
+  openGraph: {
+    title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnect",
+    description:
+      "CampusConnect helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
+    url: "https://www.campusconnectco.in/",
+    type: "website",
+    images: [{ url: "/logo-v2.jpg", width: 1200, height: 630, alt: "CampusConnect homepage" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnect",
+    description:
+      "CampusConnect helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
+    images: ["/logo-v2.jpg"],
+    site: "@campusconnectin",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 
 export default async function CampusConnectLandingPage() {

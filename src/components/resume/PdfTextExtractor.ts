@@ -1,25 +1,54 @@
-// Run this in the browser — never on the server
+import * as pdfjsLib from "pdfjs-dist";
+import type { TextItem } from "pdfjs-dist/types/src/display/api";
+
+// Configure worker (prefer a local worker in production)
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 export async function extractTextFromPdf(file: File): Promise<string> {
-  const pdfjsLib = await import('pdfjs-dist');
+  try {
+    const arrayBuffer = await file.arrayBuffer();
 
-  // Set worker source — required for pdfjs-dist
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    const loadingTask = pdfjsLib.getDocument({
+      data: arrayBuffer,
+      useSystemFonts: true,
+      isEvalSupported: false,
+    });
 
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pdf = await loadingTask.promise;
 
-  let fullText = '';
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const textContent = await page.getTextContent();
-    const pageText = textContent.items
-             .filter((item) => 'str' in item)
-              
-             .map((item) => (item as any).str)
-      .join(' ');
-    fullText += pageText + '\n';
+    const pages: string[] = [];
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+
+      const textContent = await page.getTextContent();
+
+      const pageText = textContent.items
+        .filter(
+          (item): item is TextItem =>
+            "str" in item && item.str.trim().length > 0
+        )
+        .map((item) => item.str)
+        .join(" ");
+
+      pages.push(pageText);
+    }
+
+    const extracted = pages
+      .join("\n")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\n{2,}/g, "\n")
+      .trim();
+
+    if (extracted.length < 20) {
+      throw new Error(
+        "Very little text was extracted. This PDF is likely scanned or image-based and requires OCR."
+      );
+    }
+
+    return extracted;
+  } catch (error) {
+    console.error("PDF extraction failed:", error);
+    throw error;
   }
-
-  return fullText.trim();
 }

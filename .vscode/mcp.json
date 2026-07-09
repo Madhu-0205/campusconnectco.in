@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "trigger": {
+      "args": [
+        "trigger.dev@4.5.1",
+        "mcp",
+        "--dev-only"
+      ],
+      "command": "npx"
+    }
+  }
+}

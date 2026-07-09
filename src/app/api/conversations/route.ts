@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { validateSessionUserId } from "@/lib/uuid-utils";
 
 // GET - Fetch all conversations for the current user
-export async function GET() {
+export async function GET(req: Request) {
     try {
         const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -23,35 +23,52 @@ export async function GET() {
             return NextResponse.json({ error: "Invalid session." }, { status: 400 });
         }
 
+        const searchParams = new URL(req.url).searchParams;
+        const page = Math.max(parseInt(searchParams.get("page") || "1"), 1);
+        const pageSize = Math.min(Math.max(parseInt(searchParams.get("limit") || "20"), 20), 100);
+        const skip = (page - 1) * pageSize;
+
         // Fetch conversations where user is participant_1 or participant_2
-        const conversations = await prisma.conversation.findMany({
-            where: {
-                OR: [
-                    { participant_1: userId },
-                    { participant_2: userId },
-                ],
-            },
-            include: {
-                user1: {
-                    select: { id: true, name: true, full_name: true, email: true, image: true, avatar_url: true },
+        const [conversations, total] = await Promise.all([
+            prisma.conversation.findMany({
+                where: {
+                    OR: [
+                        { participant_1: userId },
+                        { participant_2: userId },
+                    ],
                 },
-                user2: {
-                    select: { id: true, name: true, full_name: true, email: true, image: true, avatar_url: true },
-                },
-                messages: {
-                    orderBy: { created_at: "desc" },
-                    take: 1,
-                    select: {
-                        id: true,
-                        content: true,
-                        created_at: true,
-                        sender_id: true,
-                        read_at: true,
+                include: {
+                    user1: {
+                        select: { id: true, name: true, full_name: true, email: true, image: true, avatar_url: true },
+                    },
+                    user2: {
+                        select: { id: true, name: true, full_name: true, email: true, image: true, avatar_url: true },
+                    },
+                    messages: {
+                        orderBy: { created_at: "desc" },
+                        take: 1,
+                        select: {
+                            id: true,
+                            content: true,
+                            created_at: true,
+                            sender_id: true,
+                            read_at: true,
+                        },
                     },
                 },
-            },
-            orderBy: { last_message_at: "desc" },
-        });
+                orderBy: { last_message_at: "desc" },
+                skip,
+                take: pageSize,
+            }),
+            prisma.conversation.count({
+                where: {
+                    OR: [
+                        { participant_1: userId },
+                        { participant_2: userId },
+                    ],
+                },
+            }),
+        ]);
 
         const formattedConversations = conversations.map((conv: any) => {
             const otherUser = conv.participant_1 === userId ? conv.user2 : conv.user1;

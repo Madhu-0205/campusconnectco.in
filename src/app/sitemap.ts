@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import prisma from '@/lib/prisma';
 import { SKILLS_DATASET } from '@/lib/skills-dataset';
+import { SEO_LANDING_PAGE_SLUGS } from '@/lib/seoLandingPages';
 
 const COLLEGES = [
   "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kanpur", "IIT Kharagpur",
@@ -114,7 +115,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // 7. Public Student Profile Pages (verified students with a username)
+  // 7. SEO landing pages for high-value, informational entry points
+  const seoLandingUrls = SEO_LANDING_PAGE_SLUGS.map((slug) => ({
+    url: `${baseUrl}/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
+
+  // 8. Public Student Profile Pages (verified students with a username)
   let profileUrls: MetadataRoute.Sitemap = [];
   try {
     const profiles = await prisma.user.findMany({

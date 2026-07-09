@@ -48,6 +48,7 @@ describe("Root Security Proxy (src/proxy.ts)", () => {
     // Verify CSP policies
     const csp = response.headers.get("Content-Security-Policy");
     expect(csp).toContain("default-src 'none'");
+    expect(csp).toContain("manifest-src 'self'");
     expect(csp).toContain(`script-src 'self' 'nonce-${nonce}'`);
     expect(csp).toContain("frame-src 'self' https://checkout.razorpay.com");
     expect(csp).toContain("form-action 'self'");

@@ -39,8 +39,8 @@ export default function AIRecommendations() {
             if (!res.ok) throw new Error("Fallback API Error");
             const data: APIGigItem[] = await res.json();
             setRecommendations(
-                data.map((item) => ({
-                    id: item.id || Math.random().toString(),
+                data.map((item, index) => ({
+                    id: item.id || `recommendation-${tab}-${index}`,
                     title: item.title || item.name || "Unnamed",
                     matchScore: item.matchScore || 0,
                     company:

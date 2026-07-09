@@ -15,16 +15,34 @@ export async function GET(req: Request) {
     }
 
     try {
-        const posts = await prisma.post.findMany({
-            where: { status: "OPEN" },
-            include: {
-                author: { select: { name: true, image: true, role: true } },
-                _count: { select: { likes: true } }
-            },
-            orderBy: { createdAt: "desc" }
-        });
+        const searchParams = new URL(req.url).searchParams;
+        const page = Math.max(parseInt(searchParams.get("page") || "1"), 1);
+        const pageSize = Math.min(Math.max(parseInt(searchParams.get("limit") || "20"), 20), 100);
+        const skip = (page - 1) * pageSize;
 
-        return NextResponse.json(posts);
+        const [posts, total] = await Promise.all([
+            prisma.post.findMany({
+                where: { status: "OPEN" },
+                include: {
+                    author: { select: { name: true, image: true, role: true } },
+                    _count: { select: { likes: true } }
+                },
+                orderBy: { createdAt: "desc" },
+                skip,
+                take: pageSize,
+            }),
+            prisma.post.count({ where: { status: "OPEN" } }),
+        ]);
+
+        return NextResponse.json({
+            items: posts,
+            page,
+            pageSize,
+            totalItems: total,
+            totalPages: Math.ceil(total / pageSize),
+            hasNextPage: skip + posts.length < total,
+            hasPreviousPage: page > 1,
+        });
     } catch (error) {
         console.error("[POSTS_GET]", error);
         return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });

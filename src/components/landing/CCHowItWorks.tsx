@@ -42,7 +42,7 @@ export default function CCHowItWorks() {
         <section
             id="how-it-works"
             className="py-32 px-6 relative overflow-hidden"
-            style={{ background: "var(--bg)" }}
+            style={{ background: "var(--bg)", position: "relative" }}
         >
             {/* Top divider */}
             <div

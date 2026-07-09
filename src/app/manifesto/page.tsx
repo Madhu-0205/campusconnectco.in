@@ -63,16 +63,16 @@ function Reveal({ children, delay = 0, className = "" }: { children: React.React
 }
 
 export default function ManifestoPage() {
-  useRef(null)
   const { scrollYProgress } = useScroll()
   
   return (
     <div
-      className="min-h-screen overflow-hidden"
+      className="min-h-screen overflow-hidden relative"
       style={{
         background:  "var(--color-background)",
         color:       "var(--color-text)",
         fontFamily:  "var(--font-body)",
+        position:    "relative",
       }}
     >
       {/* Scroll progress — orange */}

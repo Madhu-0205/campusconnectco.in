@@ -41,15 +41,28 @@ const pseudoRandom = (seed: number) => {
     return x - Math.floor(x);
 };
 
-const STATIC_PARTICLES = Array.from({ length: 28 }, (_, i) => ({
-    id: i,
-    top:   pseudoRandom(i * 1.1) * 100,
-    left:  pseudoRandom(i * 2.2) * 100,
-    size:  pseudoRandom(i * 3.3) * 2.5 + 1,
-    dur:   pseudoRandom(i * 4.4) * 18 + 10,
-    delay: pseudoRandom(i * 5.5) * 8,
-    right: pseudoRandom(i * 6.6) > 0.5,
-}));
+const lcg = (seed: number) => {
+    let state = seed >>> 0
+    return {
+        next: () => {
+            state = (state * 1664525 + 1013904223) >>> 0
+            return state / 0x100000000
+        },
+    }
+}
+
+const STATIC_PARTICLES = Array.from({ length: 28 }, (_, i) => {
+    const rng = lcg(i + 1)
+    return {
+        id: i,
+        top: +(rng.next() * 100).toFixed(4),
+        left: +(rng.next() * 100).toFixed(4),
+        size: +(rng.next() * 2.5 + 1).toFixed(4),
+        dur: +(rng.next() * 18 + 10).toFixed(4),
+        delay: +(rng.next() * 8).toFixed(4),
+        right: rng.next() > 0.5,
+    }
+})
 
 /* Particle cloud — static deterministic */
 function ParticleCloud() {
@@ -64,7 +77,7 @@ function ParticleCloud() {
                         left: `${p.left}%`,
                         width: `${p.size}px`,
                         height: `${p.size}px`,
-                        background: "rgba(139,92,246,0.6)",
+                        backgroundColor: "rgba(139,92,246,0.6)",
                     }}
                     animate={{ y: [0, -90], x: p.right ? [0, 24] : [0, -24], opacity: [0, 0.5, 0] }}
                     transition={{ duration: p.dur, repeat: Infinity, delay: p.delay, ease: "linear" }}
@@ -79,7 +92,7 @@ export default function CCInternships() {
         <section
             id="internships"
             className="py-32 px-6 relative overflow-hidden"
-            style={{ background: "var(--bg-subtle)" }}
+            style={{ backgroundColor: "var(--bg-subtle)" }}
         >
             {/* Top divider */}
             <div

@@ -97,55 +97,78 @@ export async function GET(req: Request) {
         else if (sort === "deadline") orderByClause = { deadline: "asc" };
         else if (sort === "newest") orderByClause = { createdAt: "desc" };
 
-        const gigs = await prisma.gig.findMany({
-            where: {
-                status: "OPEN",
-                budget: {
-                    gte: minBudget,
-                    lte: maxBudget,
-                },
-                ...(category && category !== "All" && category.toLowerCase() !== "general" ? {
-                    tags: {
-                        contains: category,
-                        mode: "insensitive"
-                    }
-                } : {}),
-                ...(query ? {
-                    OR: [
-                        { title: { contains: query, mode: "insensitive" } },
-                        { description: { contains: query, mode: "insensitive" } },
-                        { tags: { contains: query, mode: "insensitive" } },
-                        { poster: { name: { contains: query, mode: "insensitive" } } }
-                    ]
-                } : {})
-            },
-            include: {
-                poster: { select: { id: true, name: true, image: true } },
-                _count: { select: { applications: true } }
-            },
-            orderBy: orderByClause,
-        });
+        const pageSize = Math.min(Math.max(parseInt(searchParams.get("limit") || "12"), 20), 100);
+        const skip = (page - 1) * pageSize;
+        const SEARCH_LIMIT = 500;
 
-        const ITEMS_PER_PAGE = 12;
-        const start = (page - 1) * ITEMS_PER_PAGE;
+        const baseWhere = {
+            status: "OPEN",
+            budget: {
+                gte: minBudget,
+                lte: maxBudget,
+            },
+            ...(category && category !== "All" && category.toLowerCase() !== "general" ? {
+                tags: {
+                    contains: category,
+                    mode: "insensitive" as const
+                }
+            } : {}),
+            ...(query ? {
+                OR: [
+                    { title: { contains: query, mode: "insensitive" as const } },
+                    { description: { contains: query, mode: "insensitive" as const } },
+                    { tags: { contains: query, mode: "insensitive" as const } },
+                    { poster: { name: { contains: query, mode: "insensitive" as const } } }
+                ]
+            } : {})
+        };
 
-        let finalGigs = gigs;
-        // If sort is 'relevant', pass through filterAndRankGigs
+        const include = {
+            poster: { select: { id: true, name: true, image: true } },
+            _count: { select: { applications: true } }
+        };
+
+        let gigs: any[] = [];
+        let total = 0;
+
         if (sort === "relevant") {
-            finalGigs = filterAndRankGigs({
-                user: dbUser,
-                gigs,
+            const rawGigs = await prisma.gig.findMany({
+                where: baseWhere,
+                include,
+                orderBy: orderByClause,
+                take: SEARCH_LIMIT,
             });
+
+            const ranked = filterAndRankGigs({
+                user: dbUser,
+                gigs: rawGigs,
+            });
+
+            total = ranked.length;
+            gigs = ranked.slice(skip, skip + pageSize);
+        } else {
+            const [items, count] = await Promise.all([
+                prisma.gig.findMany({
+                    where: baseWhere,
+                    include,
+                    orderBy: orderByClause,
+                    skip,
+                    take: pageSize,
+                }),
+                prisma.gig.count({ where: baseWhere }),
+            ]);
+            gigs = items;
+            total = count;
         }
 
         return NextResponse.json({
-            gigs: finalGigs.slice(
-                start,
-                start + ITEMS_PER_PAGE
-            ),
-            matched: finalGigs.length,
-            hasMore:
-                start + ITEMS_PER_PAGE < finalGigs.length,
+            gigs,
+            page,
+            pageSize,
+            totalItems: total,
+            totalPages: Math.ceil(total / pageSize),
+            hasNextPage: skip + gigs.length < total,
+            hasPreviousPage: page > 1,
         });
     } catch (error: unknown) {
         const msg = error instanceof Error ? error.message : "Internal server error";

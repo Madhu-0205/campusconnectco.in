@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /settings/
+Disallow: /messages/
+Disallow: /auth/
+Disallow: /checkout/
+Sitemap: https://www.campusconnectco.in/sitemap.xml
+Host: https://www.campusconnectco.in

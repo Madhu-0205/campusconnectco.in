@@ -3,17 +3,17 @@ import { Bricolage_Grotesque, DM_Sans, JetBrains_Mono } from "next/font/google"
 import { headers } from "next/headers"
 import { Toaster } from "react-hot-toast"
 
-import AIServiceAgent from "@/components/AIServiceAgent"
 import { GAScripts } from "@/components/Analytics/GoogleAnalytics"
 import { GlobalBackground } from "@/components/GlobalBackground"
 import MainWrapper from "@/components/MainWrapper"
 import Navbar from "@/components/navigation/Navbar"
-import NetworkStatusIndicator from "@/components/NetworkStatusIndicator"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import { ToastProvider } from "@/components/ToastProvider"
 import CustomCursor from "@/components/ui/CustomCursor"
 import FooterWrapper from "@/components/ui/FooterWrapper"
+import NetworkStatusIndicator from "@/components/NetworkStatusIndicator"
 import SmoothScrollProvider from "@/components/ui/SmoothScroll"
+import AIServiceAgent from "@/components/AIServiceAgent"
 
 import "./globals.css"
 
@@ -54,25 +54,32 @@ export const metadata: Metadata = {
     template: "%s | CampusConnect",
   },
   description:
-    "Find students near you for campus gigs, startup internships, and AI career roadmap. Any college, any city across India. Secure escrow payments, no hidden fees.",
+    "Find student internships, campus gigs, freelance work, and AI career roadmaps in India. Trusted student opportunities with verified employer hiring.",
   keywords: [
-    "student gigs india",
-    "campus internships",
-    "hire student near me",
-    "student marketplace india",
-    "campus connect",
-    "earn money college student india",
-    "hyperlocal student platform",
-    "student freelance india",
-    "startup internship india",
-    "ai career roadmap student",
+    "student internships",
+    "college internships",
+    "campus jobs",
+    "freelance jobs",
+    "AI career roadmap",
+    "student networking",
+    "career guidance",
+    "internships for students",
+    "student marketplace",
+    "verified student gigs",
   ],
   authors: [{ name: "CampusConnect Team" }],
   creator: "CampusConnect",
+  publisher: "CampusConnect",
+  alternates: {
+    canonical: "https://www.campusconnectco.in/",
+    languages: {
+      "en-IN": "https://www.campusconnectco.in/",
+    },
+  },
   openGraph: {
     type: "website",
-    locale: "en_IN",
-    url: "https://campusconnectco.in",
+    locale: "en-IN",
+    url: "https://www.campusconnectco.in",
     siteName: "CampusConnect",
     title: "CampusConnect — India's Student Super-App",
     description:
@@ -85,9 +92,20 @@ export const metadata: Metadata = {
     description:
       "Find students near you for campus gigs, startup internships, and AI career roadmap. Launching across India.",
     images: ["/logo-v2.jpg"],
+    site: "@campusconnectin",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
+  manifest: "/site.webmanifest",
+  verification: {
+    google: "google-site-verification=YOUR_GOOGLE_VERIFICATION_CODE",
+    yandex: "yandex=YOUR_YANDEX_VERIFICATION_CODE",
+    other: {
+      "msvalidate.01": "bing-site-verification=YOUR_BING_VERIFICATION_CODE",
+    },
   },
   robots: {
     index: true,
@@ -104,7 +122,7 @@ export default async function RootLayout({
   const nonce = (await headers()).get("x-nonce") || undefined
 
   return (
-    <html lang="en" suppressHydrationWarning nonce={nonce} data-scroll-behavior="smooth">
+    <html lang="en" nonce={nonce} data-scroll-behavior="smooth">
       <body
         className={`${bricolage.variable} ${dmSans.variable} ${jetbrainsMono.variable} antialiased relative`}
         style={{ fontFamily: "var(--font-body)" }}
