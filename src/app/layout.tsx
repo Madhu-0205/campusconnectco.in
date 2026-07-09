@@ -4,16 +4,12 @@ import { headers } from "next/headers"
 import { Toaster } from "react-hot-toast"
 
 import { GAScripts } from "@/components/Analytics/GoogleAnalytics"
-import { GlobalBackground } from "@/components/GlobalBackground"
 import MainWrapper from "@/components/MainWrapper"
 import Navbar from "@/components/navigation/Navbar"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import { ToastProvider } from "@/components/ToastProvider"
-import CustomCursor from "@/components/ui/CustomCursor"
 import FooterWrapper from "@/components/ui/FooterWrapper"
-import NetworkStatusIndicator from "@/components/NetworkStatusIndicator"
-import SmoothScrollProvider from "@/components/ui/SmoothScroll"
-import AIServiceAgent from "@/components/AIServiceAgent"
+import { ClientOnlyProviders } from "@/components/providers/ClientOnlyProviders"
 
 import "./globals.css"
 
@@ -31,7 +27,6 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   display: "swap",
-  preload: false,
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -39,7 +34,6 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "600"],
   display: "swap",
-  preload: false,
 })
 
 export const viewport = {
@@ -131,19 +125,15 @@ export default async function RootLayout({
         <OrganizationSchema nonce={nonce} />
         <WebSiteSchema nonce={nonce} />
         <AggregateRatingSchema nonce={nonce} />
-        <CustomCursor />
-        <GlobalBackground />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem nonce={nonce}>
           <Toaster position="top-right" reverseOrder={false} />
           <ToastProvider>
-            <SmoothScrollProvider>
+            <ClientOnlyProviders>
               <Navbar />
               <MainWrapper>{children}</MainWrapper>
               <FooterWrapper />
-            </SmoothScrollProvider>
+            </ClientOnlyProviders>
           </ToastProvider>
-          <AIServiceAgent />
-          <NetworkStatusIndicator />
         </ThemeProvider>
       </body>
     </html>

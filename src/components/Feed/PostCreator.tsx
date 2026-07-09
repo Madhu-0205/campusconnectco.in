@@ -1,6 +1,6 @@
 "use client";
 
-import { Image, Video, FileText, Send, Smile, X } from "lucide-react";
+import { Image as ImageIcon, Video, FileText, Send, Smile, X } from "lucide-react";
 import { useState, useRef } from "react";
 
 import { useToast } from "@/components/ToastProvider";
@@ -79,7 +79,7 @@ export default function PostCreator() {
                                 onClick={() => fileRef.current?.click()}
                                 className="flex items-center gap-2 hover:text-electric transition text-sm"
                             >
-                                <Image size={18} />
+                                <ImageIcon size={18} />
                                 <span className="hidden sm:inline">Photo</span>
                             </button>
 

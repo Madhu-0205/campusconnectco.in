@@ -91,12 +91,6 @@ export async function GET(request: NextRequest) {
                             }
                         },
                         {
-                            email: {
-                                contains: searchTerm,
-                                mode: "insensitive"
-                            }
-                        },
-                        {
                             skills: {
                                 contains: searchTerm,
                                 mode: "insensitive"
