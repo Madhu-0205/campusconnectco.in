@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 import { authLimiter, generalApiLimiter, aiLimiter, resumeParseLimiter, searchLimiter, uploadLimiter } from '@/lib/rate-limit';
-import { updateSession } from '@/lib/supabase/middleware';
 import { validateEnv } from '@/lib/security/env-validator';
+import { updateSession } from '@/lib/supabase/middleware';
 
 validateEnv(true);
 

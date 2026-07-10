@@ -1,4 +1,5 @@
 import { headers } from 'next/headers'
+
 import { createClient } from '@/lib/supabase/server'
 
 import { MobileTabBar } from './MobileTabBar'

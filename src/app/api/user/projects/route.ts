@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
 import prisma from "@/lib/prisma";
-import { createClient } from "@/lib/supabase/server";
 import { sanitizeInput } from "@/lib/security/sanitization";
+import { createClient } from "@/lib/supabase/server";
 
 const ProjectCreateSchema = z.object({
     title: z.string().min(2, "Title must be at least 2 characters").max(100, "Title is too long").trim(),

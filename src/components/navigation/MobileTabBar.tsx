@@ -1,7 +1,7 @@
 'use client'
 import {
-  Home, Briefcase, GraduationCap, Building2,
-  MessageSquare, Users, Sparkles, UserCircle, LucideIcon
+  Home, Briefcase, Building2,
+  MessageSquare, Users, Sparkles, LucideIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

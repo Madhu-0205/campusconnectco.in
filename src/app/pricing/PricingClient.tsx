@@ -30,15 +30,6 @@ const startupFreeTier = [
   "Basic applicant ranking",
 ]
 
-const startupStarterTier = [
-  "Post up to 10 gigs/month",
-  "8% platform fee per gig",
-  "Escrow protection on all payments",
-  "Priority applicant ranking",
-  "Email support",
-  "Analytics dashboard",
-]
-
 const startupGrowthTier = [
   "Unlimited gig postings",
   "Only 5% platform fee",

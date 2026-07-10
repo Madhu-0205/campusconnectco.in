@@ -1,7 +1,7 @@
-import { createClient } from '@/lib/supabase/server';
 
 import { streamChatResponse, ChatContext } from '@/lib/ai/chatAssistant';
 import { aiLimiter } from '@/lib/rate-limit';
+import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
 

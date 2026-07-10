@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import { headers } from "next/headers"
-import { notFound } from "next/navigation"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 
-import { SEO_LANDING_PAGES, SEO_LANDING_PAGE_SLUGS } from "@/lib/seoLandingPages"
 import { FAQSchema, BreadcrumbSchema, WebsiteSchema } from "@/components/seo/JsonLd"
+import { SEO_LANDING_PAGES, SEO_LANDING_PAGE_SLUGS } from "@/lib/seoLandingPages"
 
 export const dynamic = "force-static"
 

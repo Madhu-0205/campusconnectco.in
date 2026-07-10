@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+
 import { validateEnv } from "./security/env-validator";
 
 validateEnv(false);
@@ -18,7 +19,7 @@ function assertDatabaseUrl(value?: string): string {
             throw new Error("DATABASE_URL must start with postgres:// or postgresql://");
         }
         return value;
-    } catch (err) {
+    } catch {
         throw new Error("Invalid DATABASE_URL format. Ensure the value is a valid PostgreSQL connection string.");
     }
 }

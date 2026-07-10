@@ -1,8 +1,8 @@
 import type { MetadataRoute } from 'next';
 
 import prisma from '@/lib/prisma';
-import { SKILLS_DATASET } from '@/lib/skills-dataset';
 import { SEO_LANDING_PAGE_SLUGS } from '@/lib/seoLandingPages';
+import { SKILLS_DATASET } from '@/lib/skills-dataset';
 
 const COLLEGES = [
   "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kanpur", "IIT Kharagpur",
@@ -149,5 +149,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Failed to query profiles for sitemap:', error);
   }
 
-  return [...staticUrls, ...gigUrls, ...profileUrls, ...skillUrls, ...collegeUrls, ...cityGigUrls, ...cityInternshipUrls];
+  return [...staticUrls, ...gigUrls, ...profileUrls, ...skillUrls, ...collegeUrls, ...cityGigUrls, ...cityInternshipUrls, ...seoLandingUrls];
 }

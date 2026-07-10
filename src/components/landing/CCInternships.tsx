@@ -1,9 +1,6 @@
-"use client"
-
 import { motion } from "framer-motion"
 import { Sparkles, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
 
 const INTERNSHIPS = [
     {
@@ -34,12 +31,6 @@ const INTERNSHIPS = [
         matchHue: "var(--primary-light)",
     },
 ];
-
-// Deterministic pseudo-random number generator
-const pseudoRandom = (seed: number) => {
-    const x = Math.sin(seed) * 10000;
-    return x - Math.floor(x);
-};
 
 const lcg = (seed: number) => {
     let state = seed >>> 0

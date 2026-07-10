@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import prisma from "@/lib/prisma";
-import { createClient } from "@/lib/supabase/server";
 import { sanitizeInput } from "@/lib/security/sanitization";
+import { createClient } from "@/lib/supabase/server";
 
 const DisputeSchema = z.object({
   transactionId: z.string().uuid(),

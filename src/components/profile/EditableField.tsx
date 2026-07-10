@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, Edit2, Loader2, X } from "lucide-react"
+import { Check, Edit2, Loader2 } from "lucide-react"
 import { useState } from "react"
 
 import { useProfileField } from "@/hooks/useProfileField"

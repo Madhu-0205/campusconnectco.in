@@ -66,14 +66,6 @@ export async function assemblePersonalizedFeed(userId: string, limit = 20): Prom
     take: 100
   });
 
-  // Try to get user embedding for semantic scoring
-  let userVector: number[] | null = null;
-  try {
-    userVector = await computeUserEmbedding(userId);
-  } catch {
-    // Fallback: no semantic signal
-  }
-
   // Score each post
   const scored = posts.map((post: any) => {
     const recency = recencyScore(post.createdAt);

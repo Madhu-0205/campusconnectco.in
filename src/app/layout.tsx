@@ -6,14 +6,14 @@ import { Toaster } from "react-hot-toast"
 import { GAScripts } from "@/components/Analytics/GoogleAnalytics"
 import MainWrapper from "@/components/MainWrapper"
 import Navbar from "@/components/navigation/Navbar"
+import { ClientOnlyProviders } from "@/components/providers/ClientOnlyProviders"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
+import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/seo/JsonLd"
 import { ToastProvider } from "@/components/ToastProvider"
 import FooterWrapper from "@/components/ui/FooterWrapper"
-import { ClientOnlyProviders } from "@/components/providers/ClientOnlyProviders"
 
 import "./globals.css"
 
-import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/seo/JsonLd"
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",

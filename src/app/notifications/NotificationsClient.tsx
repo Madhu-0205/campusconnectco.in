@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Bell, CheckCheck, Briefcase, CreditCard, Settings2, Zap,
-  ShieldCheck, Star, TrendingUp, MessageSquare, X
+  MessageSquare, X
 } from "lucide-react"
 import { useState } from "react"
 

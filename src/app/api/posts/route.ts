@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { moderatePost } from "@/lib/ai/moderator";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
 import { sanitizeInput } from "@/lib/security/sanitization";
-import { z } from "zod";
 
 const PostCreateSchema = z.object({
     content: z.string().min(1, "Content cannot be empty").max(2000, "Content must be under 2000 characters"),

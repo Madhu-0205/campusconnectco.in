@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
 import { sanitizeInput } from "@/lib/security/sanitization";
-import { z } from "zod";
 
 const InternshipCreateSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title is too long").trim(),

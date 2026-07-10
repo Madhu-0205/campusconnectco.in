@@ -1,9 +1,8 @@
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll } from "framer-motion"
 import { Shield, Users, Zap, Heart, Star, CheckCircle2, ArrowLeft, ArrowRight, Rocket } from "lucide-react"
 import Link from "next/link"
-import { useRef } from "react"
 
 const PILLARS = [
   {

@@ -26,7 +26,7 @@ export async function rankStudentsForUser(queryUserId: string) {
         vector: userEmbMap.get(u.id) as number[]
     })).filter((u: any) => u.vector);
 
-    const boostFn = (student: Candidate, baseScore: number): number => {
+    const boostFn = (student: Candidate): number => {
         let boost = 0;
         // +0.20 -> same college
         if (student.college && queryUser.college && student.college === queryUser.college) boost += 0.20;

@@ -29,7 +29,7 @@ export async function rankGigsForUser(userId: string) {
         hasApplied: appliedGigIds.has(g.id)
     })).filter((g: any) => g.vector); // only rank gigs that have vectors
 
-    const boostFn = (gig: Candidate, baseScore: number): number => {
+    const boostFn = (gig: Candidate): number => {
         let boost = 0;
         const gigSkills = (gig.tags || '').toLowerCase();
         const userSkills = (user.skills || '').toLowerCase();
