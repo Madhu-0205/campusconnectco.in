@@ -4,6 +4,17 @@ import { moderatePost } from "@/lib/ai/moderator";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
+import { sanitizeInput } from "@/lib/security/sanitization";
+import { z } from "zod";
+
+const PostCreateSchema = z.object({
+    content: z.string().min(1, "Content cannot be empty").max(2000, "Content must be under 2000 characters"),
+});
+
+const PostPatchSchema = z.object({
+    id: z.string().uuid("Invalid Post ID format"),
+    status: z.enum(["OPEN", "COMPLETED", "PENDING_REVIEW"]),
+});
 
 export const dynamic = "force-dynamic";
 
@@ -55,8 +66,22 @@ export async function POST(req: Request) {
     if (auth.errorResponse) return auth.errorResponse;
 
     try {
-        const { content } = await req.json();
-        if (!content) return NextResponse.json({ error: "Content is required" }, { status: 400 });
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
+
+        const parseResult = PostCreateSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const content = sanitizeInput(parseResult.data.content);
 
         // AI Content Moderation
         const modResult = await moderatePost(content, auth.user!.id);
@@ -96,6 +121,11 @@ export async function DELETE(req: Request) {
 
         if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(id).success) {
+            return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+        }
+
         const post = await prisma.post.findUnique({
             where: { id }
         });
@@ -124,8 +154,22 @@ export async function PATCH(req: Request) {
     if (auth.errorResponse) return auth.errorResponse;
 
     try {
-        const { id, status } = await req.json();
-        if (!id || !status) return NextResponse.json({ error: "ID and status are required" }, { status: 400 });
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
+
+        const parseResult = PostPatchSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const { id, status } = parseResult.data;
 
         const post = await prisma.post.findUnique({ where: { id } });
         if (!post) return NextResponse.json({ error: "Post not found" }, { status: 404 });

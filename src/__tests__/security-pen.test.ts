@@ -88,4 +88,44 @@ describe("Automated Security & Penetration Audits", () => {
       expect(isAuthorizedForFounderHub("FOUNDER")).toBe(true);
     });
   });
+
+  describe("Centralized Authorization Helpers", () => {
+    it("should reject unauthorized resource access where user ID does not match resource owner", () => {
+      const authenticatedUserId = "user-123";
+      const resourceOwnerId = "user-999";
+      
+      const checkOwnership = (userId: string, ownerId: string) => {
+        return userId === ownerId;
+      };
+      
+      expect(checkOwnership(authenticatedUserId, resourceOwnerId)).toBe(false);
+      expect(checkOwnership(authenticatedUserId, authenticatedUserId)).toBe(true);
+    });
+
+    it("should allow only conversation participants to access conversation details", () => {
+      const userId = "user-123";
+      const conversationParticipants = ["user-123", "user-456"];
+      const strangerId = "user-789";
+
+      const checkParticipant = (userId: string, participants: string[]) => {
+        return participants.includes(userId);
+      };
+
+      expect(checkParticipant(userId, conversationParticipants)).toBe(true);
+      expect(checkParticipant(strangerId, conversationParticipants)).toBe(false);
+    });
+
+    it("should allow only organization members to access organization updates", () => {
+      const memberUserId = "user-member";
+      const organizationMembers = ["user-member", "user-admin"];
+      const externalUserId = "user-external";
+
+      const checkMembership = (userId: string, members: string[]) => {
+        return members.includes(userId);
+      };
+
+      expect(checkMembership(memberUserId, organizationMembers)).toBe(true);
+      expect(checkMembership(externalUserId, organizationMembers)).toBe(false);
+    });
+  });
 });

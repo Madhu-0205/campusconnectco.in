@@ -42,7 +42,10 @@ export async function protectApi(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP
         return { errorResponse: new NextResponse("Unauthorized", { status: 401 }), user: null };
     }
 
-    const role = await getUserRoleFromDb(user.id);
+    let role = await getUserRoleFromDb(user.id);
+    if (!role && user.user_metadata?.role) {
+        role = user.user_metadata.role;
+    }
 
     if (!allowedRoles.includes(role as (typeof allowedRoles)[number])) {
         console.warn(`[AUTH] Unauthorized access attempt by ${user.email} (Role: ${role}) to restricted API`);
@@ -71,7 +74,10 @@ export async function protectPage(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTU
         return { authorized: false, user: null };
     }
 
-    const role = await getUserRoleFromDb(user.id);
+    let role = await getUserRoleFromDb(user.id);
+    if (!role && user.user_metadata?.role) {
+        role = user.user_metadata.role;
+    }
 
     if (!allowedRoles.includes(role as (typeof allowedRoles)[number])) {
         logSecurityEvent("AUTH_LOGIN_FAILED", {
@@ -88,4 +94,107 @@ export async function protectPage(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTU
 
 
     return { authorized: true, user, role };
+}
+
+/**
+ * Ensures user is authenticated, returning the Supabase User or an error Response
+ */
+export async function requireUser() {
+    const user = await getSession();
+    if (!user) {
+        return { errorResponse: NextResponse.json({ error: "Unauthorized" }, { status: 401 }), user: null };
+    }
+    return { errorResponse: null, user };
+}
+
+/**
+ * Ensures user has a specific role, returning the user and role or an error Response
+ */
+export async function requireRole(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT")[]) {
+    const { errorResponse, user } = await requireUser();
+    if (errorResponse) return { errorResponse, user: null, role: null };
+
+    let role = await getUserRoleFromDb(user!.id);
+    if (!role && user!.user_metadata?.role) {
+        role = user!.user_metadata.role;
+    }
+
+    if (!allowedRoles.includes(role as any)) {
+        console.warn(`[AUTH] Unauthorized access attempt by ${user!.email} (Role: ${role}) to restricted API`);
+        logSecurityEvent("AUTH_LOGIN_FAILED", {
+            userId: user!.id,
+            metadata: {
+                email: user!.email,
+                attemptedRole: role || "unknown",
+                allowedRoles,
+                context: "api"
+            }
+        }).catch(() => {});
+        return { errorResponse: NextResponse.json({ error: "Forbidden" }, { status: 403 }), user, role: null };
+    }
+
+    return { errorResponse: null, user, role };
+}
+
+/**
+ * Ensures user is a Founder
+ */
+export async function requireFounder() {
+    return requireRole(["FOUNDER"]);
+}
+
+/**
+ * Ensures user is an Administrator (Founder in CampusConnect)
+ */
+export async function requireAdmin() {
+    return requireRole(["FOUNDER"]);
+}
+
+/**
+ * Ensures user is an Employer
+ */
+export async function requireEmployer() {
+    return requireRole(["STARTUP", "CLIENT", "FOUNDER"]);
+}
+
+/**
+ * Verifies user ownership of a resource
+ */
+export async function requireOwnership(userId: string, resourceOwnerId: string) {
+    if (userId !== resourceOwnerId) {
+        return { errorResponse: NextResponse.json({ error: "Forbidden: Ownership required" }, { status: 403 }) };
+    }
+    return { errorResponse: null };
+}
+
+/**
+ * Verifies user belongs to an organization
+ */
+export async function requireOrganizationMember(userId: string, organizationId: string) {
+    const membership = await (prisma as any).member.findFirst({
+        where: { userId, organizationId },
+    });
+    if (!membership) {
+        return { errorResponse: NextResponse.json({ error: "Forbidden: Member access required" }, { status: 403 }), membership: null };
+    }
+    return { errorResponse: null, membership };
+}
+
+/**
+ * Verifies user is a participant of a conversation
+ */
+export async function requireConversationParticipant(userId: string, conversationId: string) {
+    const conversation = await prisma.conversation.findFirst({
+        where: {
+            id: conversationId,
+            OR: [
+                { participant_1: userId },
+                { participant_2: userId },
+            ],
+        },
+    });
+    if (!conversation) {
+        return { errorResponse: NextResponse.json({ error: "Forbidden: Participant access required" }, { status: 403 }), conversation: null };
+    }
+    return { errorResponse: null, conversation };
 }

@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
+
+const GigActionSchema = z.object({
+    action: z.enum(["approve", "reject", "flag", "close"]),
+});
 
 // PATCH - Perform action on gig (approve, reject, flag, close)
 export async function PATCH(
@@ -34,7 +39,28 @@ export async function PATCH(
         }
 
         const gigId = params.id;
-        const { action } = await request.json();
+        
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(gigId).success) {
+            return NextResponse.json({ error: "Invalid gig ID format" }, { status: 400 });
+        }
+
+        let body;
+        try {
+            body = await request.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
+
+        const parseResult = GigActionSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const { action } = parseResult.data;
 
         // Get gig
         const gig = await prisma.gig.findUnique({
@@ -128,6 +154,11 @@ export async function DELETE(
         }
 
         const gigId = params.id;
+
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(gigId).success) {
+            return NextResponse.json({ error: "Invalid gig ID format" }, { status: 400 });
+        }
 
         // Delete gig (cascade will handle related records)
         await prisma.gig.delete({

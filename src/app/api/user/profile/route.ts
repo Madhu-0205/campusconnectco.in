@@ -3,18 +3,53 @@ import { NextResponse } from "next/server";
 
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
+import { sanitizeInput } from "@/lib/security/sanitization";
 import { isValidUUID } from "@/lib/uuid-utils";
+import { z } from "zod";
+
+const ProfileUpdateSchema = z.object({
+    username: z.string().regex(/^[a-zA-Z0-9_-]*$/, "Invalid username format").max(30).optional().nullable(),
+    name: z.string().max(100).optional().nullable(),
+    full_name: z.string().max(100).optional().nullable(),
+    bio: z.string().max(300).optional().nullable(),
+    portfolio: z.string().url("Invalid portfolio URL").or(z.literal("")).optional().nullable(),
+    linkedin: z.string().url("Invalid LinkedIn URL").or(z.literal("")).optional().nullable(),
+    github: z.string().url("Invalid GitHub URL").or(z.literal("")).optional().nullable(),
+    instagram: z.string().url("Invalid Instagram URL").or(z.literal("")).optional().nullable(),
+    image: z.string().max(1000).optional().nullable(),
+    avatar_url: z.string().max(1000).optional().nullable(),
+    coverImage: z.string().max(1000).optional().nullable(),
+    skills: z.union([z.string(), z.array(z.string())]).optional(),
+    college: z.string().max(200).optional().nullable(),
+    branch: z.string().max(100).optional().nullable(),
+    year: z.string().max(20).optional().nullable(),
+    careerGoal: z.string().max(200).optional().nullable(),
+    company_name: z.string().max(100).optional().nullable(),
+});
 
 export const dynamic = "force-dynamic";
 
 // POST - Called by SignUpForm immediately after supabase.auth.signUp() to create the DB record
 export async function POST(req: Request) {
     try {
+        const supabase = await createClient();
+        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !authUser) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const body = await req.json();
         const { id, email, name, role } = body;
 
         if (!id || !email) {
             return NextResponse.json({ error: "id and email are required" }, { status: 400 });
+        }
+
+        // Enforce that the user can only create/update their own profile
+        if (id !== authUser.id) {
+            return NextResponse.json({ error: "Forbidden: Cannot modify another user's profile" }, { status: 403 });
         }
 
         // 🛡️ UUID Guard: prevent P2023 from SignUpForm passing a non-UUID id
@@ -26,12 +61,12 @@ export async function POST(req: Request) {
             );
         }
 
-        const isFounder = email === "madhuvalurouthu52@gmail.com";
-        const finalRole = isFounder ? "FOUNDER" : (role || "STUDENT");
-        const isAcademicEmail = typeof email === "string" && (
-            email.endsWith(".edu") || 
-            email.endsWith(".edu.in") || 
-            email.endsWith(".res.in")
+        const isFounder = authUser.email === "madhuvalurouthu52@gmail.com";
+        const finalRole = isFounder ? "FOUNDER" : (authUser.user_metadata?.role || role || "STUDENT");
+        const isAcademicEmail = typeof authUser.email === "string" && (
+            authUser.email.endsWith(".edu") || 
+            authUser.email.endsWith(".edu.in") || 
+            authUser.email.endsWith(".res.in")
         );
         const autoVerify = finalRole === "STUDENT" && isAcademicEmail;
 
@@ -39,16 +74,17 @@ export async function POST(req: Request) {
         const user = await prisma.user.upsert({
             where: { id },
             update: {
-                name: name || null,
+                name: name || authUser.user_metadata?.name || null,
                 ...(isFounder && { role: "FOUNDER" }),
                 ...(autoVerify && { isVerified: true })
             },
             create: {
                 id,
-                email,
-                name: name || null,
+                email: authUser.email || email,
+                name: name || authUser.user_metadata?.name || null,
                 role: finalRole,
                 isVerified: autoVerify || isFounder,
+                college: authUser.user_metadata?.college || body.college || null,
             },
         });
 
@@ -146,6 +182,8 @@ export async function GET() {
         );
 
         if (!profile) {
+            const userMetadataRole = user.user_metadata?.role || "STUDENT";
+            const finalRole = isFounder ? "FOUNDER" : userMetadataRole;
             const autoVerify = isAcademicEmail || isFounder;
             profile = await prisma.user.create({
                 data: {
@@ -153,8 +191,9 @@ export async function GET() {
                     email: user.email || "",
                     name: user.user_metadata?.name || null,
                     full_name: user.user_metadata?.name || null,
-                    role: isFounder ? "FOUNDER" : "STUDENT",
-                    isVerified: autoVerify
+                    role: finalRole,
+                    isVerified: autoVerify,
+                    college: user.user_metadata?.college || null,
                 },
                 include: {
                     projects: true,
@@ -293,30 +332,83 @@ export async function PATCH(req: Request) {
         if (auth.errorResponse) return auth.errorResponse;
 
         const { user } = auth;
-        const body = await req.json();
-        
-        const {
-            username, name, full_name, bio, portfolio, linkedin, github, instagram, image, avatar_url,
-            coverImage, skills, college, branch, year, careerGoal, company_name, resumeData
-        } = body;
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
+
+        const parseResult = ProfileUpdateSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const data = parseResult.data;
+
+        // Sanitize string inputs
+        const username = data.username !== undefined ? (data.username ? sanitizeInput(data.username) : null) : undefined;
+        const name = data.name !== undefined ? (data.name ? sanitizeInput(data.name) : null) : undefined;
+        const full_name = data.full_name !== undefined ? (data.full_name ? sanitizeInput(data.full_name) : null) : undefined;
+        const bio = data.bio !== undefined ? (data.bio ? sanitizeInput(data.bio) : null) : undefined;
+        const portfolio = data.portfolio !== undefined ? (data.portfolio ? sanitizeInput(data.portfolio) : null) : undefined;
+        const linkedin = data.linkedin !== undefined ? (data.linkedin ? sanitizeInput(data.linkedin) : null) : undefined;
+        const github = data.github !== undefined ? (data.github ? sanitizeInput(data.github) : null) : undefined;
+        const instagram = data.instagram !== undefined ? (data.instagram ? sanitizeInput(data.instagram) : null) : undefined;
+        const image = data.image !== undefined ? (data.image ? sanitizeInput(data.image) : null) : undefined;
+        const avatar_url = data.avatar_url !== undefined ? (data.avatar_url ? sanitizeInput(data.avatar_url) : null) : undefined;
+        const coverImage = data.coverImage !== undefined ? (data.coverImage ? sanitizeInput(data.coverImage) : null) : undefined;
+        const college = data.college !== undefined ? (data.college ? sanitizeInput(data.college) : null) : undefined;
+        const branch = data.branch !== undefined ? (data.branch ? sanitizeInput(data.branch) : null) : undefined;
+        const year = data.year !== undefined ? (data.year ? sanitizeInput(data.year) : null) : undefined;
+        const careerGoal = data.careerGoal !== undefined ? (data.careerGoal ? sanitizeInput(data.careerGoal) : null) : undefined;
+        const company_name = data.company_name !== undefined ? (data.company_name ? sanitizeInput(data.company_name) : null) : undefined;
+
+        let formattedSkills: string | null | undefined = undefined;
+        if (data.skills !== undefined) {
+            if (data.skills === null) {
+                formattedSkills = null;
+            } else {
+                const skillsArr = Array.isArray(data.skills) ? data.skills : data.skills.split(",");
+                formattedSkills = skillsArr.map(s => sanitizeInput(s)).join(",");
+            }
+        }
+
+        const updateData: any = {
+            last_seen: new Date()
+        };
+
+        if (username !== undefined) updateData.username = username;
+        if (full_name !== undefined || name !== undefined) {
+            const finalName = full_name || name;
+            updateData.name = finalName;
+            updateData.full_name = finalName;
+        }
+        if (bio !== undefined) updateData.bio = bio;
+        if (portfolio !== undefined) updateData.portfolio = portfolio;
+        if (linkedin !== undefined) updateData.linkedin = linkedin;
+        if (github !== undefined) updateData.github = github;
+        if (instagram !== undefined) updateData.instagram = instagram;
+        if (image !== undefined || avatar_url !== undefined) {
+            const finalImg = avatar_url || image;
+            updateData.image = finalImg;
+            updateData.avatar_url = finalImg;
+        }
+        if (coverImage !== undefined) updateData.coverImage = coverImage;
+        if (college !== undefined) updateData.college = college;
+        if (branch !== undefined) updateData.branch = branch;
+        if (year !== undefined) updateData.year = year;
+        if (careerGoal !== undefined) updateData.careerGoal = careerGoal;
+        if (company_name !== undefined) updateData.company_name = company_name;
+        if (body.resumeData !== undefined) updateData.resumeData = body.resumeData;
+        if (formattedSkills !== undefined) updateData.skills = formattedSkills;
 
         const updatedProfile = await prisma.user.update({
             where: { id: user.id },
-            data: {
-                username,
-                name: full_name || name,
-                full_name: full_name || name,
-                bio, portfolio, linkedin, github, instagram, 
-                image: avatar_url || image,
-                avatar_url: avatar_url || image,
-                coverImage,
-                college, branch, year, careerGoal, company_name,
-                ...(resumeData !== undefined && { resumeData }),
-                ...(skills !== undefined && { 
-                    skills: Array.isArray(skills) ? skills.join(',') : skills 
-                }),
-                last_seen: new Date()
-            },
+            data: updateData,
         });
 
         // B2B SaaS: Update owner organization record if mapping parameters match
@@ -352,7 +444,7 @@ export async function PATCH(req: Request) {
         }
 
         // Pre-compute user vector embedding asynchronously in the background (fire-and-forget)
-        if (skills !== undefined || bio !== undefined || careerGoal !== undefined || college !== undefined) {
+        if (data.skills !== undefined || bio !== undefined || careerGoal !== undefined || college !== undefined) {
             import("@/lib/ai/embeddings").then(({ computeUserEmbedding }) => {
                 computeUserEmbedding(user.id).catch(err => {
                     console.error("[PROFILE_PATCH] Asynchronous embedding update failed:", err);

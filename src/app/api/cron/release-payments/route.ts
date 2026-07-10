@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { triggerReferralConversion } from "@/lib/growth";
 import prisma from "@/lib/prisma";
+import { safeCompare } from "@/lib/security/crypto";
 
 
 export const dynamic = 'force-dynamic';
@@ -14,7 +15,7 @@ export async function GET(req: Request) {
 
     // 1. Basic auth for Cron (using CRON_SECRET or Vercel-provided check)
     // If running on Vercel, we can check for vercel-cron-signature
-    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret || !authHeader || !safeCompare(authHeader, `Bearer ${cronSecret}`)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

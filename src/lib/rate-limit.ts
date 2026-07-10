@@ -83,4 +83,6 @@ export const authLimiter = new RateLimiter(60 * 1000, 10, "auth");
 export const generalApiLimiter = new RateLimiter(15 * 60 * 1000, 100, "general");
 export const aiLimiter = new RateLimiter(10 * 60 * 1000, 20, "ai");
 export const resumeParseLimiter = new RateLimiter(24 * 60 * 60 * 1000, 3, "resume");
+export const searchLimiter = new RateLimiter(5 * 60 * 1000, 30, "search");
+export const uploadLimiter = new RateLimiter(60 * 1000, 5, "upload");
 

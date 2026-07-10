@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
+import { sanitizeInput } from "@/lib/security/sanitization";
 
 export async function GET(request: NextRequest) {
     try {
@@ -14,7 +15,13 @@ export async function GET(request: NextRequest) {
         const searchParams = request.nextUrl.searchParams;
         const query = searchParams.get("q");
         const type = searchParams.get("type"); // 'gigs', 'users', 'all'
-        const limit = parseInt(searchParams.get("limit") || "20");
+        
+        let limit = parseInt(searchParams.get("limit") || "20");
+        if (isNaN(limit) || limit < 1) {
+            limit = 20;
+        } else if (limit > 100) {
+            limit = 100;
+        }
 
         if (!query || query.trim().length < 2) {
             return NextResponse.json({
@@ -22,7 +29,7 @@ export async function GET(request: NextRequest) {
             }, { status: 400 });
         }
 
-        const searchTerm = query.trim().toLowerCase();
+        const searchTerm = sanitizeInput(query).toLowerCase();
 
         const results: {
             gigs?: unknown[];

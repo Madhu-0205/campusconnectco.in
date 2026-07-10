@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
+import { safeCompare } from "@/lib/security/crypto";
 
 export async function POST(request: NextRequest) {
     try {
         const apiKey = request.headers.get("x-internal-key");
 
-        if (!process.env.OPPORTUNITIES_AUTO_KEY || apiKey !== process.env.OPPORTUNITIES_AUTO_KEY) {
+        if (!process.env.OPPORTUNITIES_AUTO_KEY || !apiKey || !safeCompare(apiKey, process.env.OPPORTUNITIES_AUTO_KEY)) {
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 }

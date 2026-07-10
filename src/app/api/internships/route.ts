@@ -3,6 +3,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
+import { sanitizeInput } from "@/lib/security/sanitization";
+import { z } from "zod";
+
+const InternshipCreateSchema = z.object({
+    title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title is too long").trim(),
+    description: z.string().min(10, "Description must be at least 10 characters").max(5000, "Description is too long").trim(),
+    company: z.string().min(2, "Company name must be at least 2 characters").max(100, "Company name is too long").trim(),
+    skills: z.string().max(500).optional().nullable(),
+    stipend: z.coerce.number().nonnegative().optional().nullable(),
+    duration: z.string().max(50).optional().nullable(),
+    location: z.string().max(100).optional().nullable(),
+    deadline: z.string().nullish().transform(val => {
+        if (!val || val.trim() === "") return null;
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? null : d;
+    }),
+    isFeatured: z.boolean().optional(),
+    applicationLink: z.string().url("Invalid application URL").or(z.literal("")).optional().nullable(),
+    tags: z.string().max(500).optional().nullable(),
+});
+
+const InternshipPatchSchema = InternshipCreateSchema.partial().extend({
+    id: z.string().uuid("Invalid Internship ID format"),
+    status: z.enum(["OPEN", "CLOSED", "ARCHIVED"]).optional(),
+});
 
 export const dynamic = "force-dynamic";
 
@@ -106,10 +131,46 @@ export async function POST(req: Request) {
     if (auth.errorResponse) return auth.errorResponse;
 
     try {
-        const body = await req.json();
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
+
+        const parseResult = InternshipCreateSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const data = parseResult.data;
+
+        // Sanitize string inputs
+        const title = sanitizeInput(data.title);
+        const description = sanitizeInput(data.description);
+        const company = sanitizeInput(data.company);
+        const skills = data.skills ? sanitizeInput(data.skills) : null;
+        const duration = data.duration ? sanitizeInput(data.duration) : null;
+        const location = data.location ? sanitizeInput(data.location) : null;
+        const applicationLink = data.applicationLink ? sanitizeInput(data.applicationLink) : null;
+        const tags = data.tags ? sanitizeInput(data.tags) : null;
+
         const internship = await prisma.internship.create({
             data: {
-                ...body,
+                title,
+                description,
+                company,
+                skills,
+                stipend: data.stipend,
+                duration,
+                location,
+                deadline: data.deadline,
+                isFeatured: data.isFeatured || false,
+                applicationLink,
+                tags,
                 status: "OPEN"
             }
         });
@@ -126,12 +187,41 @@ export async function PATCH(req: Request) {
     if (auth.errorResponse) return auth.errorResponse;
 
     try {
-        const { id, ...data } = await req.json();
-        if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
+
+        const parseResult = InternshipPatchSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const { id, ...data } = parseResult.data;
+
+        // Construct update record with sanitization
+        const updateData: any = {};
+        if (data.title !== undefined) updateData.title = sanitizeInput(data.title);
+        if (data.description !== undefined) updateData.description = sanitizeInput(data.description);
+        if (data.company !== undefined) updateData.company = sanitizeInput(data.company);
+        if (data.skills !== undefined) updateData.skills = data.skills ? sanitizeInput(data.skills) : null;
+        if (data.stipend !== undefined) updateData.stipend = data.stipend;
+        if (data.duration !== undefined) updateData.duration = data.duration ? sanitizeInput(data.duration) : null;
+        if (data.location !== undefined) updateData.location = data.location ? sanitizeInput(data.location) : null;
+        if (data.deadline !== undefined) updateData.deadline = data.deadline;
+        if (data.isFeatured !== undefined) updateData.isFeatured = data.isFeatured;
+        if (data.applicationLink !== undefined) updateData.applicationLink = data.applicationLink ? sanitizeInput(data.applicationLink) : null;
+        if (data.tags !== undefined) updateData.tags = data.tags ? sanitizeInput(data.tags) : null;
+        if (data.status !== undefined) updateData.status = data.status;
 
         const updated = await prisma.internship.update({
             where: { id },
-            data
+            data: updateData
         });
         return NextResponse.json(updated);
     } catch (error) {
@@ -149,6 +239,11 @@ export async function DELETE(req: Request) {
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
         if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(id).success) {
+            return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+        }
 
         await prisma.internship.delete({ where: { id } });
         return NextResponse.json({ success: true });

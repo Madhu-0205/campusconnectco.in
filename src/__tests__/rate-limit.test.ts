@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { RateLimiter } from "../lib/rate-limit";
+import { RateLimiter, searchLimiter, uploadLimiter } from "../lib/rate-limit";
 
 describe("Rate Limiter", () => {
   beforeEach(() => {
@@ -54,5 +54,22 @@ describe("Rate Limiter", () => {
 
     expect(await limiter.check(ipA)).toBe(false);
     expect(await limiter.check(ipB)).toBe(false);
+  });
+
+  it("should verify imported search and upload limiters enforce sliding window limits", async () => {
+    const ip = "3.3.3.3";
+    
+    // Check search limiter instance (limit 30)
+    for (let i = 0; i < 30; i++) {
+      expect(await searchLimiter.check(ip)).toBe(true);
+    }
+    expect(await searchLimiter.check(ip)).toBe(false);
+
+    // Check upload limiter instance (limit 5)
+    const ip2 = "4.4.4.4";
+    for (let i = 0; i < 5; i++) {
+      expect(await uploadLimiter.check(ip2)).toBe(true);
+    }
+    expect(await uploadLimiter.check(ip2)).toBe(false);
   });
 });

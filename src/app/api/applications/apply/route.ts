@@ -1,10 +1,16 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import prisma from "@/lib/prisma";
+import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
 import { validateSessionUserId, isValidUUID } from "@/lib/uuid-utils";
 
+const ApplySchema = z.object({
+    gigId: z.string().uuid("Invalid Gig ID format"),
+    coverLetter: z.string().max(5000, "Cover letter must be under 5000 characters").optional().nullable(),
+});
 
 export const dynamic = "force-dynamic";
 
@@ -37,24 +43,24 @@ export async function POST(req: Request) {
             console.error("[P2023 Guard]", uuidErr);
             return NextResponse.json({ error: "Invalid session. Please sign out and sign in again." }, { status: 400 });
         }
-
         // Parse request body
-        const body = await req.json();
-        const { gigId, coverLetter } = body;
-
-        if (!gigId) {
-            return NextResponse.json({ error: "Gig ID is required" }, { status: 400 });
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
         }
 
-        // Validate UUID format to prevent DB casting crashes
-        if (!isValidUUID(gigId)) {
-            return NextResponse.json({ error: "Invalid Gig ID format" }, { status: 400 });
+        const parseResult = ApplySchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
         }
 
-        // Sanitize and limit cover letter input length
-        if (coverLetter && typeof coverLetter === 'string' && coverLetter.length > 5000) {
-            return NextResponse.json({ error: "Cover letter must be under 5000 characters" }, { status: 400 });
-        }
+        const { gigId } = parseResult.data;
+        const coverLetter = parseResult.data.coverLetter ? sanitizeInput(parseResult.data.coverLetter) : null;
 
         // Check if gig exists and is open
         const gig = await prisma.gig.findUnique({

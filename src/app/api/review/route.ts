@@ -4,6 +4,16 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 
+import { z } from "zod";
+import { sanitizeInput } from "@/lib/security/sanitization";
+
+const ReviewSchema = z.object({
+    gigId: z.string().uuid("Invalid Gig ID format"),
+    revieweeId: z.string().uuid("Invalid Reviewee ID format"),
+    rating: z.number().min(1, "Minimum rating is 1").max(5, "Maximum rating is 5"),
+    comment: z.string().max(1000, "Comment must be under 1000 characters").optional().nullable(),
+});
+
 export async function POST(req: NextRequest) {
     try {
         const supabase = await createClient();
@@ -13,11 +23,23 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { gigId, revieweeId, rating, comment } = await req.json();
-
-        if (!gigId || !revieweeId || rating === undefined) {
-            return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+        let body;
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
         }
+
+        const parseResult = ReviewSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const { gigId, revieweeId, rating } = parseResult.data;
+        const comment = parseResult.data.comment ? sanitizeInput(parseResult.data.comment) : null;
 
         if (user.id === revieweeId) {
             return NextResponse.json({ error: "Cannot review yourself" }, { status: 400 });

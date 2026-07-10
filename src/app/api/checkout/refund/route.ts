@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
+import { sanitizeInput } from "@/lib/security/sanitization";
 
 const RefundSchema = z.object({
   transactionId: z.string().uuid(),
@@ -26,7 +27,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid parameters", details: parseResult.error.format() }, { status: 400 });
     }
 
-    const { transactionId, reason } = parseResult.data;
+    const transactionId = parseResult.data.transactionId;
+    const reason = parseResult.data.reason ? sanitizeInput(parseResult.data.reason) : null;
 
     // Fetch the transaction
     const transaction = await prisma.transaction.findUnique({

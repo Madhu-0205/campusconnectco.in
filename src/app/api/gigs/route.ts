@@ -6,6 +6,7 @@ import { filterAndRankGigs } from "@/lib/ai/filterAndRank";
 import { moderateGig } from "@/lib/ai/moderator";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
+import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
 import { validateSessionUserId } from "@/lib/uuid-utils";
 
@@ -229,11 +230,12 @@ export async function POST(req: Request) {
         }
 
         const {
-            title,
-            description,
             budget,
             deadline,
         } = parseResult.data;
+
+        const title = sanitizeInput(parseResult.data.title);
+        const description = sanitizeInput(parseResult.data.description);
 
         //////////////////////////////////////////////////////
         // AUTO CREATE PROFILE IF MISSING â­ FIX

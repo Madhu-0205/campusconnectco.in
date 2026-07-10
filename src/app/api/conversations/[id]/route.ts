@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
@@ -151,6 +152,26 @@ export async function PATCH(
 
         const userId = user.id;
         const conversation_id = params.id;
+
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(conversation_id).success) {
+            return NextResponse.json({ error: "Invalid conversation ID format" }, { status: 400 });
+        }
+
+        // Verify user is part of this conversation
+        const conversation = await prisma.conversation.findFirst({
+            where: {
+                id: conversation_id,
+                OR: [
+                    { participant_1: userId },
+                    { participant_2: userId },
+                ],
+            },
+        });
+
+        if (!conversation) {
+            return NextResponse.json({ error: "Conversation not found or access denied" }, { status: 404 });
+        }
 
         const result = await prisma.message.updateMany({
             where: {

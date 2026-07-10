@@ -95,7 +95,10 @@ export async function GET(request: Request) {
                     email: user.email!,
                     name: user.user_metadata?.full_name || user.user_metadata?.name || null,
                     image: user.user_metadata?.avatar_url || null,
-                    role: user.email === "madhuvalurouthu52@gmail.com" ? "FOUNDER" : (roleParam || "STUDENT"),
+                    role: user.email === "madhuvalurouthu52@gmail.com" 
+                        ? "FOUNDER" 
+                        : (user.user_metadata?.role || roleParam || "STUDENT"),
+                    college: user.user_metadata?.college || null,
                 },
                 select: {
                     role: true,

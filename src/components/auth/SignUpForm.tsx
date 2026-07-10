@@ -233,21 +233,21 @@ export default function SignUpForm() {
       if (signUpError) throw signUpError
       if (!data.user) throw new Error("No user created")
 
-      const res = await fetch("/api/user/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: data.user.id,
-          email: form.email,
-          name: form.name,
-          role: form.role,
-          college: form.college,
-        }),
-      })
-
-      if (!res.ok) throw new Error("Failed to create profile")
-
       if (data.session) {
+        const res = await fetch("/api/user/profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: data.user.id,
+            email: form.email,
+            name: form.name,
+            role: form.role,
+            college: form.college,
+          }),
+        })
+
+        if (!res.ok) throw new Error("Failed to create profile")
+
         router.replace(form.role === "CLIENT" ? "/dashboard" : "/dashboard/student")
         router.refresh()
       } else {

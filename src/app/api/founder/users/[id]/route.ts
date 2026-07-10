@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
+
+const UserActionSchema = z.object({
+    action: z.enum(["verify", "unverify", "ban", "unban", "email"]),
+});
 
 export async function PATCH(
     request: NextRequest,
@@ -12,7 +17,28 @@ export async function PATCH(
 
     try {
         const { id: userId } = await params;
-        const { action } = await request.json();
+
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(userId).success) {
+            return NextResponse.json({ error: "Invalid user ID format" }, { status: 400 });
+        }
+
+        let body;
+        try {
+            body = await request.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
+
+        const parseResult = UserActionSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const { action } = parseResult.data;
 
         const targetUser = await prisma.user.findUnique({ where: { id: userId } });
         if (!targetUser) {
@@ -71,6 +97,11 @@ export async function DELETE(
 
     try {
         const { id: userId } = await params;
+
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(userId).success) {
+            return NextResponse.json({ error: "Invalid user ID format" }, { status: 400 });
+        }
 
         // Prevent self-deletion
         if (userId === user?.id) {

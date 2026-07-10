@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 
 import { getSession } from "@/lib/auth-checks"
 import prisma from "@/lib/prisma"
+import { sanitizeInput } from "@/lib/security/sanitization"
+
+const DriveCreateSchema = z.object({
+  organizationId: z.string().uuid("Invalid Organization ID format"),
+  title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title is too long").trim(),
+  description: z.string().min(10, "Description must be at least 10 characters").max(5000, "Description is too long").trim(),
+  startDate: z.string().refine(val => !isNaN(Date.parse(val)), "Invalid start date").transform(val => new Date(val)),
+  endDate: z.string().refine(val => !isNaN(Date.parse(val)), "Invalid end date").transform(val => new Date(val)),
+  colleges: z.array(z.string().max(100)).optional(),
+});
 
 // POST /api/employer/drives — Create a new campus drive
 export async function POST(req: NextRequest) {
@@ -9,12 +20,24 @@ export async function POST(req: NextRequest) {
     const user = await getSession()
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const body = await req.json()
-    const { organizationId, title, description, startDate, endDate, colleges } = body
-
-    if (!organizationId || !title || !description || !startDate || !endDate) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    let body;
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
     }
+
+    const parseResult = DriveCreateSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const { organizationId, startDate, endDate, colleges } = parseResult.data
+    const title = sanitizeInput(parseResult.data.title)
+    const description = sanitizeInput(parseResult.data.description)
 
     // Verify user is a member of the organization
      
@@ -29,11 +52,11 @@ export async function POST(req: NextRequest) {
     const drive = await (prisma as any).campusDrive.create({
       data: {
         organizationId,
-        title: title.trim(),
-        description: description.trim(),
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-        targetColleges: Array.isArray(colleges) ? colleges : [],
+        title,
+        description,
+        startDate,
+        endDate,
+        targetColleges: colleges || [],
         status: "UPCOMING",
       },
     })

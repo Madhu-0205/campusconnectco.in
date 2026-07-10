@@ -4,6 +4,7 @@ import { TransactionStatus, EscrowStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
+import { safeCompare } from "@/lib/security/crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,18 +15,25 @@ export async function POST(req: NextRequest) {
     let event: any = null;
     let isMock = false;
 
+    const isProduction = process.env.NODE_ENV === "production";
+
     // Signature verification
     if (signature && webhookSecret && webhookSecret !== "placeholder_webhook_secret") {
       const shasum = crypto.createHmac("sha256", webhookSecret);
       shasum.update(bodyText);
       const digest = shasum.digest("hex");
 
-      if (digest !== signature) {
+      if (!safeCompare(digest, signature)) {
         console.error("[Razorpay Webhook] Signature verification failed.");
         return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
       }
       event = JSON.parse(bodyText);
     } else {
+      if (isProduction) {
+        console.error("[Razorpay Webhook] Signature verification bypassed or secret missing in production!");
+        return NextResponse.json({ error: "Unauthorized - Signature validation required in production" }, { status: 401 });
+      }
+      
       // In development/test mode without production webhook secret, accept unsigned JSON body for local triggers
       console.warn("[Razorpay Webhook] Verification bypassed. Operating in local test mode.");
       try {

@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
+import { sanitizeInput } from "@/lib/security/sanitization";
+
+const ConversationCreateSchema = z.object({
+    otherUserId: z.string().uuid("Invalid user ID format"),
+    initialMessage: z.string().max(2000, "Message must be under 2000 characters").optional().nullable(),
+});
 import { validateSessionUserId } from "@/lib/uuid-utils";
 
 // GET - Fetch all conversations for the current user
@@ -111,10 +118,26 @@ export async function POST(request: NextRequest) {
         }
 
         const userId = user.id;
-        const { otherUserId, initialMessage } = await request.json();
+        let body;
+        try {
+            body = await request.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
 
-        if (!otherUserId) {
-            return NextResponse.json({ error: "Other user ID is required" }, { status: 400 });
+        const parseResult = ConversationCreateSchema.safeParse(body);
+        if (!parseResult.success) {
+            return NextResponse.json(
+                { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+                { status: 400 }
+            );
+        }
+
+        const { otherUserId } = parseResult.data;
+        const initialMessage = parseResult.data.initialMessage ? sanitizeInput(parseResult.data.initialMessage) : undefined;
+
+        if (otherUserId === userId) {
+            return NextResponse.json({ error: "Cannot start a conversation with yourself" }, { status: 400 });
         }
 
         // Ensure deterministic ordering (smaller UUID first)

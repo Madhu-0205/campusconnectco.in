@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
@@ -12,6 +13,10 @@ interface SavedInternshipDelegate {
 const getSaved = () => (prisma as unknown as { savedInternship: SavedInternshipDelegate }).savedInternship;
 const getIntern = () => (prisma as unknown as { internship: { update: (args: unknown) => Promise<unknown> } }).internship;
 
+const EngageSchema = z.object({
+    action: z.enum(["view", "apply-click", "save", "unsave", "like", "unlike"]),
+});
+
 // PATCH /api/internships/[id]/engage — student engagement (view, save, like, apply-click)
 export async function PATCH(
     req: NextRequest,
@@ -21,7 +26,28 @@ export async function PATCH(
     if (errorResponse) return errorResponse;
 
     const { id } = await params;
-    const { action } = await req.json();
+
+    // Validate UUID format to prevent DB casting crashes
+    if (!z.string().uuid().safeParse(id).success) {
+        return NextResponse.json({ error: "Invalid internship ID format" }, { status: 400 });
+    }
+
+    let body;
+    try {
+        body = await req.json();
+    } catch {
+        return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const parseResult = EngageSchema.safeParse(body);
+    if (!parseResult.success) {
+        return NextResponse.json(
+            { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+            { status: 400 }
+        );
+    }
+
+    const { action } = parseResult.data;
 
     try {
         if (action === "view") {
@@ -89,6 +115,11 @@ export async function GET(
     if (errorResponse) return errorResponse;
 
     const { id } = await params;
+
+    // Validate UUID format to prevent DB casting crashes
+    if (!z.string().uuid().safeParse(id).success) {
+        return NextResponse.json({ error: "Invalid internship ID format" }, { status: 400 });
+    }
 
     try {
         const [internship, engagement] = await Promise.all([

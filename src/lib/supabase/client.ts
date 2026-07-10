@@ -5,10 +5,13 @@ import { fetchWithBackoff } from './fetch'
 let client: ReturnType<typeof createBrowserClient> | null = null;
 
 export function createClient() {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
+
     if (typeof window === 'undefined') {
         return createBrowserClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            supabaseUrl,
+            supabaseAnonKey,
             {
                 global: {
                     fetch: fetchWithBackoff,
@@ -20,8 +23,8 @@ export function createClient() {
     if (client) return client;
 
     client = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        supabaseUrl,
+        supabaseAnonKey,
         {
             global: {
                 fetch: fetchWithBackoff,
