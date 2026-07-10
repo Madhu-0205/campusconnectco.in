@@ -1,9 +1,29 @@
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 
 import { MobileTabBar } from './MobileTabBar'
 import { NavbarClient } from './NavbarClient'
 
 export default async function Navbar() {
+  const headersList = await headers()
+  const isPrerender = !headersList.has('x-request-id')
+
+  if (isPrerender) {
+    return (
+      <>
+        <NavbarClient 
+          userRole={null} 
+          userId={null} 
+          userName={null} 
+          userAvatar={null} 
+          unreadMessages={0} 
+          pendingApplications={0} 
+        />
+        <MobileTabBar userRole={null} />
+      </>
+    )
+  }
+
   const supabase = await createClient()
 
   // Get current user session
