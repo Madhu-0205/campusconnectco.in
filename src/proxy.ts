@@ -5,9 +5,8 @@ import { authLimiter, generalApiLimiter, aiLimiter, resumeParseLimiter, searchLi
 import { validateEnv } from '@/lib/security/env-validator';
 import { updateSession } from '@/lib/supabase/middleware';
 
-validateEnv(true);
-
 export async function proxy(request: NextRequest) {
+    validateEnv(true);
     const path = request.nextUrl.pathname;
 
     // Generate Request ID and Correlation ID for observability
@@ -151,24 +150,31 @@ export async function proxy(request: NextRequest) {
     // 3. Construct Content-Security-Policy (CSP)
     const isDev = process.env.NODE_ENV === 'development';
 
-    const csp = [
+    const cspElements = [
         "default-src 'none'",
         "manifest-src 'self'",
         `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: https://www.googletagmanager.com https://www.google-analytics.com https://va.vercel-scripts.com https://accounts.google.com https://apis.google.com ${isDev ? "'unsafe-eval'" : ""}`,
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://i.pravatar.cc https://ui-avatars.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.amazonaws.com https://images.unsplash.com",
-        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.supabase.in https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://va.vercel-scripts.com https://vitals.vercel-insights.com https://accounts.google.com https://oauth2.googleapis.com",
+        `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.supabase.in https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://va.vercel-scripts.com https://vitals.vercel-insights.com https://accounts.google.com https://oauth2.googleapis.com${isDev ? " ws://localhost:* ws://127.0.0.1:*" : ""}`,
         "font-src 'self' https://fonts.gstatic.com data:",
         "frame-src 'self' https://checkout.razorpay.com https://accounts.google.com",
         "object-src 'none'",
         "base-uri 'none'",
-        "form-action 'self'",
-        "upgrade-insecure-requests"
-    ].join('; ');
+        "form-action 'self'"
+    ];
+
+    if (!isDev) {
+        cspElements.push("upgrade-insecure-requests");
+    }
+
+    const csp = cspElements.join('; ');
 
     // 4. Apply Security Headers to Response
     response.headers.set('Content-Security-Policy', csp);
-    response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    if (!isDev) {
+        response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    }
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-XSS-Protection', '1; mode=block');

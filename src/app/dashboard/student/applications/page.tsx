@@ -33,7 +33,10 @@ export default function StudentApplicationsPage() {
         try {
             const res = await fetch("/api/applications");
             const data = await res.json();
-            setApplications(data);
+            const items = Array.isArray(data?.items)
+                ? data.items
+                : [];
+            setApplications(items);
         } catch {
             console.error("Failed to fetch applications");
         } finally {
