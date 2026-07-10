@@ -1,21 +1,24 @@
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 
-import CCAIRoadmap from "@/components/landing/CCAIRoadmap"
-import CCCampusGigs from "@/components/landing/CCCampusGigs"
-import CCFeatures from "@/components/landing/CCFeatures"
-import CCFinalCTA from "@/components/landing/CCFinalCTA"
-import CCFooter from "@/components/landing/CCFooter"
+import dynamic from "next/dynamic"
+
 import CCHero from "@/components/landing/CCHero"
-import CCHowItWorks from "@/components/landing/CCHowItWorks"
-import CCInternships from "@/components/landing/CCInternships"
-import CCMarquee from "@/components/landing/CCMarquee"
 import CCNavbar from "@/components/landing/CCNavbar"
 import CCPageLoader from "@/components/landing/CCPageLoader"
-import LandingComparison from "@/components/landing/LandingComparison"
-import LandingProblem from "@/components/landing/LandingProblem"
-import LandingTestimonials from "@/components/landing/LandingTestimonials"
 import { WebsiteSchema, FAQSchema } from "@/components/seo/JsonLd"
+
+const CCMarquee = dynamic(() => import("@/components/landing/CCMarquee"))
+const LandingProblem = dynamic(() => import("@/components/landing/LandingProblem"))
+const CCFeatures = dynamic(() => import("@/components/landing/CCFeatures"))
+const LandingComparison = dynamic(() => import("@/components/landing/LandingComparison"))
+const CCHowItWorks = dynamic(() => import("@/components/landing/CCHowItWorks"))
+const CCCampusGigs = dynamic(() => import("@/components/landing/CCCampusGigs"))
+const CCInternships = dynamic(() => import("@/components/landing/CCInternships"))
+const CCAIRoadmap = dynamic(() => import("@/components/landing/CCAIRoadmap"))
+const LandingTestimonials = dynamic(() => import("@/components/landing/LandingTestimonials"))
+const CCFinalCTA = dynamic(() => import("@/components/landing/CCFinalCTA"))
+const CCFooter = dynamic(() => import("@/components/landing/CCFooter"))
 
 export const metadata: Metadata = {
   title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnect",

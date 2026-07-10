@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 
 export default function CustomCursor() {
     const [mounted, setMounted] = useState(false)
+    const [isTouch, setIsTouch] = useState(false)
     const [hovering, setHovering] = useState(false)
     const [onCard, setOnCard] = useState(false)
 
@@ -22,6 +23,13 @@ export default function CustomCursor() {
     const ringY = useSpring(mouseY, { stiffness: 200, damping: 28, mass: 0.5 })
 
     useEffect(() => {
+        // Detect touch screen device to prevent mouse listeners
+        const isTouchScreen = window.matchMedia("(pointer: coarse)").matches
+        if (isTouchScreen) {
+            setIsTouch(true)
+            return
+        }
+
         setMounted(true)
 
         const onMove = (e: MouseEvent) => {
@@ -56,8 +64,8 @@ export default function CustomCursor() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // Only render on desktop
-    if (!mounted) return null
+    // Only render on desktop/mouse pointer devices
+    if (isTouch || !mounted) return null
 
     return (
         <>
