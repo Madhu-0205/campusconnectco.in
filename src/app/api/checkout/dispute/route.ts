@@ -124,6 +124,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, dispute, message: "Dispute opened successfully. Escrow frozen." });
   } catch (error) {
     console.error("[DISPUTE_API_ERROR]", error);
-    return NextResponse.json({ error: "Internal Server Error", details: String(error) }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

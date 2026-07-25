@@ -121,6 +121,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error("[CREATE_PAYMENT_ORDER_ERROR]", error);
-    return NextResponse.json({ error: "Internal Server Error", details: String(error) }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
