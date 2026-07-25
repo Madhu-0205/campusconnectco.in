@@ -5,7 +5,9 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import React from "react"
 
+import { BreadcrumbsUI } from "@/components/seo/BreadcrumbsUI"
 import { BreadcrumbSchema, FAQSchema, getWikidataURI } from "@/components/seo/JsonLd"
+import { RelatedContentClusters } from "@/components/seo/RelatedContentClusters"
 import prisma from "@/lib/prisma"
 import { SKILLS_DATASET } from "@/lib/skills-dataset"
 
@@ -178,6 +180,7 @@ export default async function SkillSEOPage({ params }: Props) {
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/8 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-12 relative z-10">
+        <BreadcrumbsUI items={breadcrumbItems} />
         {dbError && (
           <div className="p-4 rounded-2xl border border-red-500/20 bg-red-500/10 text-red-200 flex flex-col md:flex-row justify-between items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
             <div>
@@ -300,6 +303,9 @@ export default async function SkillSEOPage({ params }: Props) {
           </div>
 
         </div>
+
+        {/* Cross-Linking Clusters */}
+        <RelatedContentClusters currentType="skill" currentSlug={skill} />
 
       </div>
     </div>

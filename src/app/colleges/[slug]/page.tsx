@@ -5,7 +5,9 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import React from "react"
 
+import { BreadcrumbsUI } from "@/components/seo/BreadcrumbsUI"
 import { BreadcrumbSchema, FAQSchema, getWikidataURI } from "@/components/seo/JsonLd"
+import { RelatedContentClusters } from "@/components/seo/RelatedContentClusters"
 import prisma from "@/lib/prisma"
 
 
@@ -172,6 +174,7 @@ export default async function CollegeSEOPage({ params }: Props) {
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/8 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-12 relative z-10">
+        <BreadcrumbsUI items={breadcrumbItems} />
         
         {/* Header */}
         <div className="text-center md:text-left space-y-4 border-b border-white/5 pb-8">
@@ -280,6 +283,9 @@ export default async function CollegeSEOPage({ params }: Props) {
           </div>
 
         </div>
+
+        {/* Cross-Linking Clusters */}
+        <RelatedContentClusters currentType="college" currentSlug={slug} />
 
       </div>
     </div>
