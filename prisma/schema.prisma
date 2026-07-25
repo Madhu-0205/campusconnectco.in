@@ -77,6 +77,7 @@ model User {
   applications         Application[]
   gigsPosted           Gig[]               @relation("PostedGigs")
   messages             Message[]
+  analytics            Analytics[]
 }
 
 model Follows {
@@ -493,8 +494,16 @@ model ResumeAnalysis {
 model Analytics {
   id        String   @id @default(uuid()) @db.Uuid
   event     String
+  userId    String?  @db.Uuid
+  sessionId String?
   data      Json?
   createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([event, createdAt])
+  @@index([userId, event])
+  @@index([sessionId])
 }
 
 model CareerRoadmap {

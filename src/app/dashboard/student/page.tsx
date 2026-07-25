@@ -9,6 +9,10 @@ import { redirect } from "next/navigation"
 
 import { AIPersonalizedFeed } from "@/components/ai/AIPersonalizedFeed"
 import { TrendingSidebar } from "@/components/ai/TrendingSidebar"
+import { RecommendationCard } from "@/components/dashboard/RecommendationCard"
+import { CareerRoadmapTracker } from "@/components/dashboard/CareerRoadmapTracker"
+import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel"
+import { getPersonalizedRecommendations, CareerRoadmapGenerator, AIInsightsGenerator } from "@/lib/recommendation-engine"
 import { GamificationDashboard } from "@/components/gamification/GamificationDashboard"
 import { ReferralTracker } from "@/components/growth/ReferralTracker"
 import { ReputationLedgerCard } from "@/components/profile/ReputationLedgerCard"
@@ -88,6 +92,24 @@ export default async function StudentDashboard() {
     } catch (error) {
         console.error("[STUDENT_DASHBOARD_DB_ERROR]:", error);
         dbError = true;
+    }
+
+    // Recommendation Engine Integration
+    let profileGraph = null;
+    let recommendations: any[] = [];
+    let roadmap = null;
+    let insights: any[] = [];
+    try {
+        const aiData = await getPersonalizedRecommendations(user!.id);
+        profileGraph = aiData.profileGraph;
+        recommendations = aiData.recommendations;
+
+        if (profileGraph) {
+            roadmap = new CareerRoadmapGenerator().generateRoadmap(profileGraph);
+            insights = new AIInsightsGenerator().generateInsights(profileGraph);
+        }
+    } catch (e) {
+        console.error("[AI_ENGINE_ERROR]:", e);
     }
 
     const earnings = Number(earningsAgg?._sum?.sellerPayout || 0);
@@ -219,16 +241,21 @@ export default async function StudentDashboard() {
                 {/* LEFT COLUMN: Feed & Opportunities */}
                 <div className="lg:col-span-2 space-y-8">
 
-                    {/* AI Opportunities Feed */}
+                    {/* AI Career Insights */}
+                    {insights.length > 0 && (
+                        <AIInsightsPanel insights={insights} />
+                    )}
+
+                    {/* AI Opportunities Feed - Explainable AI */}
                     <section className="bg-(--surface) border border-(--border) rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-violet-500/5 blur-[100px] rounded-full pointer-events-none" />
                         
                         <div className="flex items-center justify-between mb-8 relative z-10">
                             <div>
                                 <h2 className="font-black text-white flex items-center gap-3" style={{ fontFamily: "var(--font-display)" }}>
-                                    AI Top Picks <Sparkles size={20} className="text-violet-400" />
+                                    Recommended For You <Sparkles size={20} className="text-violet-400" />
                                 </h2>
-                                <p className="text-slate-400 mt-1">Gigs matching your skill vectors with 90%+ confidence.</p>
+                                <p className="text-slate-400 mt-1">Opportunities matched to your skills, goals, and behavior.</p>
                             </div>
                             <Link href="/dashboard/student/smartmatch">
                                 <Button variant="outline" className="hidden sm:flex rounded-xl font-bold border-(--border) text-white hover:bg-white/5">
@@ -236,8 +263,14 @@ export default async function StudentDashboard() {
                                 </Button>
                             </Link>
                         </div>
-                        <div className="relative z-10">
-                            <AIPersonalizedFeed />
+                        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {recommendations.length > 0 ? (
+                                recommendations.map(rec => (
+                                    <RecommendationCard key={rec.opportunity.id} recommendation={rec} />
+                                ))
+                            ) : (
+                                <AIPersonalizedFeed />
+                            )}
                         </div>
                     </section>
 
@@ -290,6 +323,11 @@ export default async function StudentDashboard() {
                                 })}
                             </div>
                         </section>
+                    )}
+
+                    {/* AI Career Roadmap */}
+                    {roadmap && (
+                        <CareerRoadmapTracker roadmap={roadmap} />
                     )}
 
                     {/* Active Projects Container */}

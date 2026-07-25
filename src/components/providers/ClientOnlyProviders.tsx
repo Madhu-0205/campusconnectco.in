@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic"
 import React, { useEffect, useState } from "react"
+import { AnalyticsProvider } from "@/components/Analytics/AnalyticsProvider"
 
 const CustomCursor = dynamic(() => import("@/components/ui/CustomCursor"), { ssr: false })
 const GlobalBackground = dynamic(() => import("@/components/GlobalBackground").then(m => m.GlobalBackground), { ssr: false })
@@ -33,7 +34,9 @@ export function ClientOnlyProviders({ children }: { children: React.ReactNode })
       <CustomCursor />
       <GlobalBackground />
       <SmoothScrollProvider>
-        {children}
+        <AnalyticsProvider>
+          {children}
+        </AnalyticsProvider>
       </SmoothScrollProvider>
       {mountedAgent && <AIServiceAgent />}
       <NetworkStatusIndicator />
