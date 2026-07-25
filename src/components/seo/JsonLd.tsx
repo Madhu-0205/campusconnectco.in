@@ -351,3 +351,51 @@ export function AggregateRatingSchema({
   )
 }
 
+export function ArticleSchema({
+  title,
+  description,
+  authorName,
+  publishedAt,
+  updatedAt,
+  images,
+  nonce
+}: {
+  title: string
+  description: string
+  authorName: string
+  publishedAt: string
+  updatedAt: string
+  images: string[]
+  nonce?: string
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "image": images,
+    "datePublished": publishedAt,
+    "dateModified": updatedAt,
+    "author": {
+      "@type": "Person",
+      "name": authorName
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "CampusConnect",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://campusconnectco.in/logo-v2.jpg"
+      }
+    }
+  }
+
+  return (
+    <script nonce={nonce} suppressHydrationWarning
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+
