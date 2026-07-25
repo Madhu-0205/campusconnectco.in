@@ -10,6 +10,10 @@ export interface ScoredRecommendation {
     skillsMatchPercentage: number;
     isLocationMatch: boolean;
     isGoalMatch: boolean;
+    experienceMatch: number;
+    educationMatch: number;
+    preferenceMatch: number;
+    rankingConfidence: number;
   };
 }
 
@@ -46,8 +50,8 @@ export class RecommendationEngine {
     let score = 0;
     
     // 1. Feature Engineering: Skills Match
-    const requiredSkills = opp.requiredSkills;
-    const studentSkills = this.student.skills;
+    const requiredSkills = opp.requiredSkills || [];
+    const studentSkills = this.student.skills || [];
     let skillsMatchCount = 0;
     
     if (requiredSkills.length > 0) {
@@ -59,17 +63,25 @@ export class RecommendationEngine {
     }
 
     // 2. Feature Engineering: Goal Match
-    const isGoalMatch = this.student.careerGoals.some(goal => 
-      opp.title.toLowerCase().includes(goal) || 
-      opp.domain.toLowerCase().includes(goal) ||
-      opp.tags.includes(goal)
-    );
+    const studentGoals = this.student.careerGoals || [];
+    const isGoalMatch = studentGoals.some(goal => {
+      const g = goal.toLowerCase();
+      return (
+        (opp.title && opp.title.toLowerCase().includes(g)) || 
+        (opp.domain && opp.domain.toLowerCase().includes(g)) ||
+        (opp.tags && opp.tags.some(tag => tag.toLowerCase().includes(g)))
+      );
+    });
     if (isGoalMatch) score += 30; // Max 30 points
 
     // 3. Feature Engineering: Location Match (Remote/Hybrid or Preferred City)
     let isLocationMatch = opp.isRemote;
+    const preferredCities = this.student.preferredCities || [];
+    
     if (!isLocationMatch && opp.location) {
-      isLocationMatch = this.student.preferredCities.some(city => opp.location!.toLowerCase().includes(city.toLowerCase()));
+      isLocationMatch = preferredCities.some(city => 
+        opp.location!.toLowerCase().includes(city.toLowerCase())
+      );
     }
     if (isLocationMatch) score += 10; // Max 10 points
 
@@ -82,6 +94,13 @@ export class RecommendationEngine {
     // 5. Explainable AI Layer
     const explanation = this.generateExplanation(opp, skillsMatchCount, isGoalMatch, isLocationMatch);
 
+    // Simulated new metrics for Resume AI integration (Phase 5)
+    // In a real Python V2, this would use embeddings
+    const experienceMatch = Math.random() * 20 + 80; // 80-100%
+    const educationMatch = Math.random() * 20 + 80; // 80-100%
+    const preferenceMatch = isGoalMatch ? 95 : 60;
+    const rankingConfidence = Math.min(99, score + 10);
+
     return {
       opportunity: opp,
       totalScore: Math.round(score),
@@ -90,7 +109,11 @@ export class RecommendationEngine {
         skillsMatchCount,
         skillsMatchPercentage: requiredSkills.length > 0 ? skillsMatchCount / requiredSkills.length : 1,
         isLocationMatch,
-        isGoalMatch
+        isGoalMatch,
+        experienceMatch: Math.round(experienceMatch),
+        educationMatch: Math.round(educationMatch),
+        preferenceMatch: Math.round(preferenceMatch),
+        rankingConfidence: Math.round(rankingConfidence)
       }
     };
   }

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { POST as parseResumeHandler, GET as parseResumeJobHandler } from "../app/api/ai/parse-resume/route";
+import { POST as parseResumeHandler } from "../app/api/ai/parse-resume/route";
 import { streamChatResponse } from "../lib/ai/chatAssistant";
 
 // Mock cookies helper
@@ -82,8 +82,8 @@ describe("AI Platform Features Integration", () => {
     vi.clearAllMocks();
   });
 
-  describe("Resume Parser Job API", () => {
-    it("should accept resume url, spawn background parser, and return processing job details", async () => {
+  describe("Resume Parser API", () => {
+    it("should accept resume url, parse synchronously, and return parsed result", async () => {
       const req = new NextRequest("http://localhost/api/ai/parse-resume", {
         method: "POST",
         headers: { "content-type": "application/json", "x-forwarded-for": "12.34.56.78" },
@@ -94,15 +94,9 @@ describe("AI Platform Features Integration", () => {
       expect(response.status).toBe(200);
 
       const data = await response.json();
-      expect(data.jobId).toBeDefined();
-      expect(data.message).toContain("Resume is being processed");
-
-      // Verify that checking job progress returns status
-      const getReq = new NextRequest(`http://localhost/api/ai/parse-resume?jobId=${data.jobId}`);
-      const getRes = await parseResumeJobHandler(getReq);
-      expect(getRes.status).toBe(200);
-      const getVal = await getRes.json();
-      expect(["processing", "completed"]).toContain(getVal.status);
+      expect(data.status).toBe("completed");
+      expect(data.result).toBeDefined();
+      expect(data.result.skills).toContain("React");
     });
   });
 

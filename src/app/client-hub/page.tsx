@@ -18,6 +18,11 @@ export default async function ClientDashboard() {
         redirect("/auth/sign-in")
     }
 
+    const orgMembership = await prisma.member.findFirst({ where: { userId: user?.id } })
+    if (!orgMembership) {
+        redirect("/client-hub/onboarding")
+    }
+
     let activeGigsCount = 0;
     let applicationsCount = 0;
     let completedGigsCount = 0;

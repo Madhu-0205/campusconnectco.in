@@ -29,7 +29,7 @@ export function CareerRoadmapTracker({ roadmap }: { roadmap: PersonalizedRoadmap
         </p>
       </div>
 
-      <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
+      <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-white/10 before:to-transparent">
         {roadmap.steps.map((step, idx) => {
           const isCompleted = step.isCompleted;
           

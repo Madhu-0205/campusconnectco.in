@@ -10,7 +10,7 @@ interface ClusterNavigatorProps {
 
 export function ClusterNavigator({ cluster }: ClusterNavigatorProps) {
   return (
-    <div className="bg-gradient-to-br from-violet-600/10 to-cyan-500/5 border border-violet-500/10 rounded-3xl p-6 mt-12">
+    <div className="bg-linear-to-br from-violet-600/10 to-cyan-500/5 border border-violet-500/10 rounded-3xl p-6 mt-12">
       <div className="flex items-start gap-4">
         <div className="w-10 h-10 rounded-xl bg-violet-600/20 text-violet-400 flex items-center justify-center shrink-0">
           <Box className="w-5 h-5" />

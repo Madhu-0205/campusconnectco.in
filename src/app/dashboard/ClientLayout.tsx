@@ -17,7 +17,7 @@ const studentItems = [
     { icon: GraduationCap, label: "Internships", href: "/dashboard/student/internships" },
     { icon: BarChart, label: "Applications", href: "/dashboard/student/applications" },
     { icon: Sparkles, label: "SmartMatch", href: "/dashboard/student/smartmatch" },
-    { icon: FileText, label: "AI Resume Analyzer", href: "/dashboard/student/resume-analyzer" },
+    { icon: Brain, label: "Resume Intelligence", href: "/dashboard/student/resume" },
     { icon: User, label: "Profile", href: "/dashboard/student/profile" },
 ]
 
@@ -78,6 +78,7 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
         if (pathname?.includes("/users")) return "User Manager"
         if (pathname?.includes("/moderation")) return "Moderation Queue"
         if (pathname?.includes("/ai-insights")) return "AI Insights"
+        if (pathname?.includes("/resume")) return "Resume Intelligence"
         if (pathname?.includes("/approvals")) return "Pending Approvals"
         if (pathname?.includes("/reports")) return "Platform Reports"
         if (pathname?.includes("/notifications")) return "System Notifications"

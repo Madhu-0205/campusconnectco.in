@@ -4,11 +4,51 @@ import { getOpenAI } from './client';
 
 const pdfParse = require('pdf-parse');
 
+export interface ATSCategoryScores {
+  structure: number;
+  formatting: number;
+  skills: number;
+  projects: number;
+  experience: number;
+  education: number;
+  keywords: number;
+  readability: number;
+  contactInformation: number;
+  grammar: number;
+}
+
+export interface ATSScore {
+  overallScore: number;
+  categoryScores: ATSCategoryScores;
+  strengths: string[];
+  weaknesses: string[];
+}
+
+export interface ResumeImprovement {
+  summary: string;
+  bulletPoints: string[];
+  projectDescriptions: string[];
+  missingSkills: string[];
+  suggestedActionVerbs: string[];
+  betterKeywords: string[];
+  removedWeakSections: string[];
+  missingProjects: string[];
+  certifications: string[];
+}
+
 export interface ResumeData {
+  personalInfo: {
+    name: string;
+    email: string;
+    phone: string;
+    linkedin: string;
+    github: string;
+    portfolio: string;
+  };
   skills: string[];
   tools: string[];
   domains: string[];
-  education: { degree: string; field: string; college: string; year: string }[];
+  education: { degree: string; field: string; college: string; year: string; cgpa: string }[];
   projects: { name: string; description: string; techStack: string[]; url: string }[];
   experience: { role: string; company: string; duration: string; description: string }[];
   languages: string[];
@@ -16,6 +56,8 @@ export interface ResumeData {
   keywords: string[];
   experienceLevel: 'fresher' | 'junior' | 'intermediate' | 'senior';
   summary: string;
+  atsScore: ATSScore;
+  improvements: ResumeImprovement;
 }
 
 export async function parseResume(fileUrl: string): Promise<ResumeData> {
@@ -87,20 +129,44 @@ export async function parseResume(fileUrl: string): Promise<ResumeData> {
       messages: [
           {
               role: 'system',
-              content: `Extract structured data from this resume.
-Return JSON with:
-- skills: string[] (tech + soft skills)
-- tools: string[] (software, frameworks, platforms)
-- domains: string[] (web, mobile, AI, design, etc.)
-- education: { degree, field, college, year }[]
-- projects: { name, description, techStack[], url }[]
-- experience: { role, company, duration, description }[]
-- languages: string[]
-- certifications: string[]
-- keywords: string[] (20 most important career keywords)
-- experienceLevel: fresher|junior|intermediate|senior
-- summary: string (2 sentence professional summary)
-Return ONLY valid JSON. No preamble.`
+              content: `You are an expert AI Career Coach and ATS Optimizer. Extract and analyze the resume data from the text provided.
+Return a structured JSON object strictly adhering to this schema:
+{
+  "personalInfo": { "name": "", "email": "", "phone": "", "linkedin": "", "github": "", "portfolio": "" },
+  "skills": ["..."],
+  "tools": ["..."],
+  "domains": ["..."],
+  "education": [{ "degree": "", "field": "", "college": "", "year": "", "cgpa": "" }],
+  "projects": [{ "name": "", "description": "", "techStack": ["..."], "url": "" }],
+  "experience": [{ "role": "", "company": "", "duration": "", "description": "" }],
+  "languages": ["..."],
+  "certifications": ["..."],
+  "keywords": ["..."],
+  "experienceLevel": "fresher" | "junior" | "intermediate" | "senior",
+  "summary": "...",
+  "atsScore": {
+    "overallScore": 0-100,
+    "categoryScores": {
+      "structure": 0-100, "formatting": 0-100, "skills": 0-100, "projects": 0-100, 
+      "experience": 0-100, "education": 0-100, "keywords": 0-100, "readability": 0-100, 
+      "contactInformation": 0-100, "grammar": 0-100
+    },
+    "strengths": ["..."],
+    "weaknesses": ["..."]
+  },
+  "improvements": {
+    "summary": "Better rewritten summary...",
+    "bulletPoints": ["Rewritten bullet 1...", "Rewritten bullet 2..."],
+    "projectDescriptions": ["Strengthened project 1..."],
+    "missingSkills": ["..."],
+    "suggestedActionVerbs": ["..."],
+    "betterKeywords": ["..."],
+    "removedWeakSections": ["..."],
+    "missingProjects": ["..."],
+    "certifications": ["..."]
+  }
+}
+Return ONLY valid JSON. Ensure there are no duplicate skills. Provide realistic ATS scores based on structure, depth, and impact. Explain every recommendation clearly.`
           },
           {
               role: 'user',

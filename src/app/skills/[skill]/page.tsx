@@ -202,7 +202,7 @@ export default async function SkillSEOPage({ params }: Props) {
             <Award size={12} /> Programmatic Sourcing directory
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight font-heading">
-            Hire Top Student Experts in <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">{decodedSkill}</span>
+            Hire Top Student Experts in <span className="text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-cyan-400">{decodedSkill}</span>
           </h1>
           <p className="text-slate-400 max-w-3xl text-base md:text-lg leading-relaxed">
             Browse verified college students, design portfolios, and campus opportunities requiring {decodedSkill} skill competency. All transactions are protected via platform milestone escrows.
@@ -290,7 +290,7 @@ export default async function SkillSEOPage({ params }: Props) {
             )}
 
             {/* Escrow Guarantee Box */}
-            <div className="bg-gradient-to-br from-violet-600/10 to-cyan-500/5 border border-violet-500/10 rounded-3xl p-5 space-y-2.5">
+            <div className="bg-linear-to-br from-violet-600/10 to-cyan-500/5 border border-violet-500/10 rounded-3xl p-5 space-y-2.5">
               <div className="flex items-center gap-2 text-amber-400">
                 <ShieldCheck size={16} />
                 <h4 className="font-black uppercase tracking-wider text-xs">Escrow Guarantee</h4>

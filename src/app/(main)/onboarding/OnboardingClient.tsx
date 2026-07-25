@@ -12,6 +12,7 @@ import { toast } from "sonner"
 
 import { ReferralTracker } from "@/components/growth/ReferralTracker"
 import SkillSelector from "@/components/SkillSelector"
+import { ResumeUploader } from "@/components/resume/ResumeUploader"
 import { VerificationBadge } from "@/components/ui/VerificationBadge"
 import { Skill, SKILLS_DATASET } from "@/lib/skills-dataset"
 
@@ -139,6 +140,7 @@ export default function OnboardingPage() {
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([])
 
   // AI Resume parsing state
+  const [file, setFile] = useState<File | null>(null)
   const [fileUrl, setFileUrl] = useState("")
   const [parseStatus, setParseStatus] = useState<'idle' | 'processing' | 'done'>('idle')
 
@@ -200,57 +202,46 @@ export default function OnboardingPage() {
   }
 
   // Handle AI Resume Auto-Fill
-  const handleAIParse = async () => {
-    if (!fileUrl) return
+  const handleAIParse = async (finalUrl: string) => {
+    if (!finalUrl) return
     setParseStatus('processing')
     try {
       const res = await fetch('/api/ai/parse-resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileUrl })
+        body: JSON.stringify({ fileUrl: finalUrl })
       })
       const data = await res.json()
-      if (data.error) throw new Error(data.error)
-
-      // Poll for job completion
-      const jobId = data.jobId
-      let polling = true
-      while (polling) {
-        await new Promise(r => setTimeout(r, 2000))
-        const pollRes = await fetch(`/api/ai/parse-resume?jobId=${jobId}`)
-        const pollData = await pollRes.json()
-        
-        if (pollData.status === 'completed') {
-          const result = pollData.result
-          
-          // Map skills strings to dataset object models
-          let matched: Skill[] = []
-          if (result.skills && Array.isArray(result.skills)) {
-            matched = SKILLS_DATASET.filter(s => 
-              result.skills.some((skName: string) => skName.toLowerCase().includes(s.name.toLowerCase()))
-            )
-          }
-
-          setForm(prev => ({
-            ...prev,
-            bio: result.summary || prev.bio,
-            careerGoal: result.experienceLevel ? `Junior Developer (${result.experienceLevel})` : prev.careerGoal
-          }))
-
-          if (matched.length > 0) {
-            setSelectedSkills(prev => {
-              const unique = new Map([...prev, ...matched].map(s => [s.id, s]))
-              return Array.from(unique.values())
-            })
-          }
-
-          setParseStatus('done')
-          polling = false
-          toast.success("AI successfully imported your resume credentials!")
-        } else if (pollData.status === 'failed') {
-          throw new Error(pollData.error || 'Failed to process resume')
-        }
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to process resume')
       }
+
+      const result = data.result
+      
+      // Map skills strings to dataset object models
+      let matched: Skill[] = []
+      if (result.skills && Array.isArray(result.skills)) {
+        matched = SKILLS_DATASET.filter(s => 
+          result.skills.some((skName: string) => skName.toLowerCase().includes(s.name.toLowerCase()))
+        )
+      }
+
+      setForm(prev => ({
+        ...prev,
+        bio: result.summary || prev.bio,
+        careerGoal: result.experienceLevel ? `Junior Developer (${result.experienceLevel})` : prev.careerGoal
+      }))
+
+      if (matched.length > 0) {
+        setSelectedSkills(prev => {
+          const unique = new Map([...prev, ...matched].map(s => [s.id, s]))
+          return Array.from(unique.values())
+        })
+      }
+
+      setParseStatus('done')
+      toast.success("AI successfully imported your resume credentials!")
     } catch (e: any) {
       toast.error(e.message || "Failed to process resume PDF")
       setParseStatus('idle')
@@ -298,8 +289,8 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-background text-white py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative overflow-hidden" style={{ fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}>
       <ReferralTracker />
       {/* Background gradients */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/8 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-10%] w-125 h-125 bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-125 h-125 bg-cyan-500/8 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10 items-stretch">
         
@@ -426,7 +417,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Active steps renders */}
-            <div className="min-h-[340px] flex flex-col justify-start">
+            <div className="min-h-85 flex flex-col justify-start">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={step}
@@ -508,25 +499,16 @@ export default function OnboardingPage() {
                   {/* Step 3: AI Resume Auto-Fill */}
                   {step === 3 && (
                     <div className="space-y-5">
-                      <p className="text-sm text-slate-400 font-medium">Upload a public link to your resume PDF. The AI parser will automatically index your career level, extract achievements, and pre-populate your bio.</p>
+                      <p className="text-sm text-slate-400 font-medium">Upload your resume PDF. The AI parser will automatically index your career level, extract achievements, and pre-populate your bio.</p>
                       
-                      <div className="flex gap-2">
-                        <input 
-                          type="url" 
-                          placeholder="https://example.com/resume.pdf" 
-                          value={fileUrl}
-                          onChange={(e) => setFileUrl(e.target.value)}
-                          className="flex-1 bg-(--surface-2) border border-(--border) rounded-xl px-4 py-3 text-sm placeholder-slate-600 focus:outline-none"
+                      <div className="flex flex-col gap-4">
+                        <ResumeUploader 
+                          currentFileUrl={fileUrl}
+                          onUploadComplete={(url) => {
+                            setFileUrl(url)
+                            handleAIParse(url)
+                          }} 
                         />
-                        <button 
-                          type="button"
-                          onClick={handleAIParse}
-                          disabled={parseStatus === 'processing' || !fileUrl}
-                          className="bg-violet-600 hover:bg-violet-700 px-6 py-2 rounded-xl shrink-0 font-bold text-sm disabled:opacity-50 transition-all flex items-center gap-1.5"
-                        >
-                          {parseStatus === 'processing' && <Loader2 className="w-4 h-4 animate-spin" />}
-                          {parseStatus === 'processing' ? 'Parsing...' : 'Fill with AI'}
-                        </button>
                       </div>
 
                       {parseStatus === 'processing' && (
@@ -541,7 +523,7 @@ export default function OnboardingPage() {
                           placeholder="Describe your capabilities. Highlighting your past projects and working style increases hiring rates."
                           value={form.bio}
                           onChange={e => setForm({ ...form, bio: e.target.value })}
-                          className="w-full bg-(--surface-2) border border-(--border) rounded-xl p-3.5 text-sm min-h-[120px] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/50"
+                          className="w-full bg-(--surface-2) border border-(--border) rounded-xl p-3.5 text-sm min-h-30 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/50"
                         />
                       </div>
                     </div>
@@ -567,7 +549,7 @@ export default function OnboardingPage() {
                           <div>
                             <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">GitHub URL</label>
                             <div className="relative">
-                              <span className="absolute left-3.5 top-[14px] text-slate-600"><Github size={16} /></span>
+                              <span className="absolute left-3.5 top-3.5 text-slate-600"><Github size={16} /></span>
                               <input 
                                 placeholder="https://github.com/yourusername"
                                 value={form.github}
@@ -580,7 +562,7 @@ export default function OnboardingPage() {
                           <div>
                             <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">LinkedIn URL</label>
                             <div className="relative">
-                              <span className="absolute left-3.5 top-[14px] text-slate-600"><Linkedin size={16} /></span>
+                              <span className="absolute left-3.5 top-3.5 text-slate-600"><Linkedin size={16} /></span>
                               <input 
                                 placeholder="https://linkedin.com/in/yourusername"
                                 value={form.linkedin}
@@ -594,7 +576,7 @@ export default function OnboardingPage() {
                         <div>
                           <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Personal Portfolio URL</label>
                           <div className="relative">
-                            <span className="absolute left-3.5 top-[14px] text-slate-600"><Globe size={16} /></span>
+                            <span className="absolute left-3.5 top-3.5 text-slate-600"><Globe size={16} /></span>
                             <input 
                               placeholder="https://yourportfolio.com"
                               value={form.portfolio}

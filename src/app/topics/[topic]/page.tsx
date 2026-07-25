@@ -67,7 +67,7 @@ export default async function TopicHubPage({ params }: Props) {
       <BreadcrumbSchema items={breadcrumbItems} nonce={nonce} />
       
       {/* Background gradients */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-10%] w-125 h-125 bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-16 relative z-10">
         <header className="text-center md:text-left space-y-4 border-b border-white/5 pb-8">
