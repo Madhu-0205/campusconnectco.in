@@ -1,11 +1,10 @@
 "use client"
 
 import {
-  Star, Zap, Trophy, Users, TrendingUp, CheckCircle2,
-  ArrowRight, Crown, Rocket, Target, Gift, Shield,
-  GraduationCap, MessageCircle, ChevronDown, ChevronUp
+  TrendingUp, CheckCircle2,
+  ArrowRight, Crown, Rocket, Gift, Shield,
+  GraduationCap, ChevronDown, ChevronUp
 } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 
 const BENEFITS = [

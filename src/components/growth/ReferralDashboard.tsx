@@ -1,9 +1,9 @@
 "use client"
 
 import {
-  Copy, Share2, Gift, Users, TrendingUp, CheckCircle2,
-  ChevronRight, Zap, Trophy, MessageCircle, Linkedin,
-  Twitter, Instagram, ExternalLink, Star
+  Copy, Share2, Gift, TrendingUp, CheckCircle2,
+  MessageCircle, Linkedin,
+  Twitter
 } from "lucide-react"
 import { useEffect, useState, useCallback } from "react"
 
@@ -44,7 +44,7 @@ function nextTier(converted: number) {
   return TIER_CONFIG[idx + 1] || null
 }
 
-export function ReferralDashboard({ userId }: { userId: string }) {
+export function ReferralDashboard({}: { userId: string }) {
   const [data, setData] = useState<ReferralData | null>(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)

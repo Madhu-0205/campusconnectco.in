@@ -2,8 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Brain, Sparkles, Loader2, CheckCircle, AlertTriangle, BookOpen,
-    ArrowRight, Target, Shield, Compass, Award, ExternalLink
+    Brain, Loader2, CheckCircle, AlertTriangle, BookOpen,
+    ArrowRight, Target, Shield, Compass, ExternalLink
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+
 import { AlertTriangle, RefreshCcw } from "lucide-react"
 import { useEffect } from 'react'
 

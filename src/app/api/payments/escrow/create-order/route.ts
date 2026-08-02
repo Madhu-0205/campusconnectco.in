@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
         // Atomically Create Transaction and Escrow in PENDING state
         await prisma.$transaction(async (tx: any) => {
-            const escrow = await tx.escrow.create({
+            await tx.escrow.create({
                 data: {
                     gigId,
                     clientId: user.id,

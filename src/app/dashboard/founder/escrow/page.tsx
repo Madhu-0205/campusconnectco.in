@@ -1,4 +1,4 @@
-import { ArrowLeft, Lock, ShieldCheck, RefreshCw, AlertTriangle, Activity } from "lucide-react";
+import { ArrowLeft, Lock, ShieldCheck, RefreshCw, Activity } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 

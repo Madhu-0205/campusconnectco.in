@@ -26,7 +26,7 @@ const FEATURED_SKILLS = [
 
 export function RelatedContentClusters({
   currentType,
-  currentSlug,
+  
 }: {
   currentType: "category" | "company" | "college" | "skill" | "career" | "location";
   currentSlug?: string;

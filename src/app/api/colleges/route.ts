@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { fuzzySearchColleges, getNearbyColleges } from "@/lib/colleges-geo"
+
 import { INDIA_COLLEGES } from "@/lib/colleges-dataset"
+import { fuzzySearchColleges, getNearbyColleges } from "@/lib/colleges-geo"
 
 export const runtime = "edge"
 

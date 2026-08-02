@@ -1,13 +1,13 @@
 "use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { useState, useCallback } from "react"
 import { GraduationCap, ChevronDown, X } from "lucide-react"
+import { useState, useCallback } from "react"
 
-import LocationPermissionCard from "./LocationPermissionCard"
-import CollegeSearchList from "./CollegeSearchList"
-import ManualCollegeForm from "./ManualCollegeForm"
 import CollegePickerSkeleton from "./CollegePickerSkeleton"
+import CollegeSearchList from "./CollegeSearchList"
+import LocationPermissionCard from "./LocationPermissionCard"
+import ManualCollegeForm from "./ManualCollegeForm"
 
 type PickerState = "idle" | "permission" | "locating" | "list" | "manual"
 

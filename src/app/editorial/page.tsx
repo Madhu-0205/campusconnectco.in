@@ -1,6 +1,6 @@
 import {
-  FileText, Shield, Users, CheckCircle, AlertCircle,
-  BookOpen, Edit3, Eye, Clock, ArrowRight, Scale, Star
+  FileText, Shield, CheckCircle, AlertCircle,
+  BookOpen, Edit3, Eye, ArrowRight, Scale
 } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"

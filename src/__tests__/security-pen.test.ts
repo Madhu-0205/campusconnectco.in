@@ -76,7 +76,7 @@ describe("Automated Security & Penetration Audits", () => {
 
   describe("Privilege Escalation Check", () => {
     it("should block non-founder users from accessing founder dashboard APIs", () => {
-      const roles = ["STUDENT", "CLIENT", "STARTUP", "FOUNDER"];
+      // ["STUDENT", "CLIENT", "STARTUP", "FOUNDER"];
       
       const isAuthorizedForFounderHub = (role: string) => {
         return role === "FOUNDER";

@@ -1,5 +1,5 @@
 'use client'
-import { Filter, X, ChevronRight, Briefcase, Zap, Globe, Clock, IndianRupee } from 'lucide-react'
+import { Filter, ChevronRight, Globe, IndianRupee } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
  
  

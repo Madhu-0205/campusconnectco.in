@@ -2,16 +2,16 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Brain, Sparkles, Loader2, ChevronRight, Award, Plus,
-    TrendingUp, MessageSquare, Terminal, RefreshCw, BarChart2,
-    Calendar, CheckCircle, AlertCircle, History, Shield, Play
+    Brain, Loader2, ChevronRight, Award, Plus,
+    TrendingUp, Terminal, RefreshCw, BarChart2,
+    CheckCircle, AlertCircle, History, Shield, Play
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 
 
@@ -43,7 +43,7 @@ export default function InterviewSimulatorPage() {
     
     // Active states
     const [activeInterview, setActiveInterview] = useState<MockInterview | null>(null);
-    const [currentQuestion, setCurrentQuestion] = useState("");
+    const [, setCurrentQuestion] = useState("");
     const [userAnswer, setUserAnswer] = useState("");
     const [questionIndex, setQuestionIndex] = useState(1);
     const [isStarting, setIsStarting] = useState(false);
@@ -239,7 +239,7 @@ export default function InterviewSimulatorPage() {
                             className="space-y-6"
                         >
                             <div className="space-y-3">
-                                <div className="w-16 h-16 rounded-[24px] bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-2xl">
+                                <div className="w-16 h-16 rounded-3xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-2xl">
                                     <Brain size={32} />
                                 </div>
                                 <h1 className="font-black text-white tracking-tighter leading-none">
@@ -250,7 +250,7 @@ export default function InterviewSimulatorPage() {
                                 </p>
                             </div>
 
-                            <Card className="border-white/10 bg-[#111116] p-8 md:p-10 rounded-[32px] shadow-2xl relative overflow-hidden">
+                            <Card className="border-white/10 bg-[#111116] p-8 md:p-10 rounded-4xl shadow-2xl relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 blur-[60px] pointer-events-none" />
                                 <CardContent className="p-0 space-y-8">
                                     {/* Role Selector */}
@@ -338,7 +338,7 @@ export default function InterviewSimulatorPage() {
                             {/* Two-Column split workspace */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Left Side: Interviewer chat */}
-                                <div className="flex flex-col h-[480px] bg-[#111116] border border-white/10 rounded-3xl overflow-hidden shadow-xl">
+                                <div className="flex flex-col h-120 bg-[#111116] border border-white/10 rounded-3xl overflow-hidden shadow-xl">
                                     <div className="p-4 bg-white/2 border-b border-white/5 flex items-center gap-2">
                                         <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
                                         <span className="text-xs font-black text-slate-400 uppercase tracking-widest">AI Interviewer Terminal</span>
@@ -360,7 +360,7 @@ export default function InterviewSimulatorPage() {
                                 </div>
 
                                 {/* Right Side: Code editor / Answer board */}
-                                <div className="flex flex-col h-[480px] bg-[#0A0A0F] border border-white/10 rounded-3xl overflow-hidden shadow-xl relative">
+                                <div className="flex flex-col h-120 bg-[#0A0A0F] border border-white/10 rounded-3xl overflow-hidden shadow-xl relative">
                                     <div className="p-4 bg-[#111116] border-b border-white/10 flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <Terminal size={14} className="text-purple-400" />
@@ -423,7 +423,7 @@ export default function InterviewSimulatorPage() {
                             {/* Performance Grid */}
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {/* Large Scorecard Panel */}
-                                <Card className="lg:col-span-1 border-white/10 bg-[#111116] p-8 rounded-[32px] flex flex-col items-center justify-center text-center relative overflow-hidden shadow-2xl">
+                                <Card className="lg:col-span-1 border-white/10 bg-[#111116] p-8 rounded-4xl flex flex-col items-center justify-center text-center relative overflow-hidden shadow-2xl">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[50px] pointer-events-none" />
                                     
                                     <h3 className="font-black text-slate-400 uppercase tracking-widest text-xs mb-6">Overall Grade</h3>
@@ -451,7 +451,7 @@ export default function InterviewSimulatorPage() {
                                 </Card>
 
                                 {/* Diagnostics & Category Metrics */}
-                                <Card className="lg:col-span-2 border-white/10 bg-[#111116] p-8 rounded-[32px] shadow-2xl">
+                                <Card className="lg:col-span-2 border-white/10 bg-[#111116] p-8 rounded-4xl shadow-2xl">
                                     <h3 className="font-black text-white flex items-center gap-2 mb-6 text-lg">
                                         <BarChart2 className="text-emerald-400" size={20} /> Diagnostic Metrics
                                     </h3>
@@ -484,7 +484,7 @@ export default function InterviewSimulatorPage() {
                             {/* Strengths & Improvements */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Strengths */}
-                                <Card className="border-white/10 bg-[#111116] p-8 rounded-[32px] shadow-lg">
+                                <Card className="border-white/10 bg-[#111116] p-8 rounded-4xl shadow-lg">
                                     <h3 className="font-black text-white flex items-center gap-2 mb-5 text-base">
                                         <CheckCircle className="text-emerald-400" size={18} /> Top Strengths
                                     </h3>
@@ -499,7 +499,7 @@ export default function InterviewSimulatorPage() {
                                 </Card>
 
                                 {/* Improvements */}
-                                <Card className="border-white/10 bg-[#111116] p-8 rounded-[32px] shadow-lg">
+                                <Card className="border-white/10 bg-[#111116] p-8 rounded-4xl shadow-lg">
                                     <h3 className="font-black text-white flex items-center gap-2 mb-5 text-base">
                                         <AlertCircle className="text-amber-400" size={18} /> Target Improvement Areas
                                     </h3>

@@ -44,7 +44,7 @@ export default function CCPageLoader({ isBot = false }: { isBot?: boolean }) {
                 setLoading(false)
                 try {
                     sessionStorage.setItem("cc_visited", "true")
-                } catch (e) {
+                } catch {
                     // Ignore storage errors in incognito/private modes
                 }
             }, 300)

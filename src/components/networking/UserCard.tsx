@@ -4,7 +4,7 @@
 import { Star, MapPin, Briefcase, CheckCircle2, Circle } from "lucide-react";
 
 import Image from "@/components/ui/ResilientImage";
-import { safeArray, safeNumber, getInitials, truncate } from "@/lib/utils/safe";
+import { safeArray, getInitials, truncate } from "@/lib/utils/safe";
 
 import ConnectionButton from "./ConnectionButton";
  

@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Building2, CheckCircle2, Loader2, Sparkles } from "lucide-react"
 import { useState } from "react"
+
 import { INDIAN_STATES } from "@/lib/colleges-dataset"
 
 interface ManualCollegeFormProps {

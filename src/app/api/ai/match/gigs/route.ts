@@ -11,7 +11,7 @@ export async function GET(req: Request) {
         const ranked = await rankGigsForUser(userId);
         // Stripping vector from response for performance
         const results = ranked.map(r => {
-            const { vector, ...safeGig } = r;
+            const { ...safeGig } = r;
             return safeGig;
         });
 

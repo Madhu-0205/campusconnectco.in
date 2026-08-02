@@ -1,4 +1,4 @@
-import { ArrowRight, Award, Briefcase, ExternalLink, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, Briefcase, ExternalLink, ShieldCheck, Users } from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";

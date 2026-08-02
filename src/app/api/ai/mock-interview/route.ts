@@ -180,7 +180,7 @@ No preamble. Return ONLY a valid JSON object.`
             let parsedData;
             try {
                 parsedData = JSON.parse(rawContent);
-            } catch (err) {
+            } catch {
                 console.error("Failed to parse LLM grading output:", rawContent);
                 parsedData = {
                     score: 70,

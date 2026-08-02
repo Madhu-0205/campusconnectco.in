@@ -1,6 +1,7 @@
 "use client"
 
 import { Megaphone, ExternalLink } from "lucide-react"
+import Link from "next/link"
 import React, { useState, useEffect } from "react"
 
 interface AdvertisementBannerProps {
@@ -131,7 +132,7 @@ export default function AdvertisementBanner({
               >
                 {widthLabel}
               </span>
-              <a
+              <Link
                 href="/contact-us?subject=Advertising"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
                 style={{
@@ -152,7 +153,7 @@ export default function AdvertisementBanner({
                 onMouseUp={e => { e.currentTarget.style.transform = "scale(1.04)" }}
               >
                 Promote Here <ExternalLink className="w-3.5 h-3.5" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>

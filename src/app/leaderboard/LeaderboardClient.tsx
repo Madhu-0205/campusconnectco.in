@@ -1,7 +1,7 @@
 "use client"
 
 import {
-  Trophy, Star, Flame, Target, TrendingUp,
+  Trophy, Star, Flame, TrendingUp,
   Search, Crown, Zap, GraduationCap, BadgeCheck
 } from "lucide-react"
 import Image from "next/image"

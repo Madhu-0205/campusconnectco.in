@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Check, X, Flag, RefreshCw, AlertTriangle, Eye } from 'lucide-react';
+import { Shield, Check, X, RefreshCw, AlertTriangle, Eye } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 

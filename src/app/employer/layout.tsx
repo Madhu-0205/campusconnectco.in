@@ -1,5 +1,5 @@
 import {
-  Search, Target, Building2, Zap, ChevronRight,
+  Search, Target, Building2, Zap, 
   LayoutDashboard, Crown
 } from "lucide-react"
 import Link from "next/link"

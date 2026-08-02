@@ -10,7 +10,7 @@ export async function GET(req: Request) {
         
         const ranked = await rankStudentsForUser(userId);
         const results = ranked.map(r => {
-            const { vector, ...safeStudent } = r;
+            const { ...safeStudent } = r;
             return safeStudent;
         });
 

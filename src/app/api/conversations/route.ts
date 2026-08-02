@@ -36,7 +36,7 @@ export async function GET(req: Request) {
         const skip = (page - 1) * pageSize;
 
         // Fetch conversations where user is participant_1 or participant_2
-        const [conversations, total] = await Promise.all([
+        const [conversations] = await Promise.all([
             prisma.conversation.findMany({
                 where: {
                     OR: [

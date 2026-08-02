@@ -21,7 +21,7 @@ import {
   MessageSquare, Users, Bell, Search, ChevronDown, Building2,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   LogOut, Settings, UserCircle, Plus, GraduationCap,
-  ArrowUp, Trophy, Rocket, Gift, Target,
+  ArrowUp, Trophy, Gift, Target,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Shield, CreditCard, Info, Menu, X, LucideIcon
 } from 'lucide-react'

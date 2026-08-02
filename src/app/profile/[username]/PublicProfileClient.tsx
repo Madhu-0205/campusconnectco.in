@@ -2,10 +2,10 @@
 
 import { motion } from "framer-motion"
 import {
-  MapPin, ExternalLink, Linkedin, Github, Calendar,
+  ExternalLink, Linkedin, Github, Calendar,
   ShieldCheck, Star, TrendingUp, Briefcase, Award, CheckCircle2, Mail
 } from "lucide-react"
-import Link from "next/link"
+
 
 import MatchRing from "@/components/ui/MatchRing"
 import { VerificationBadge } from "@/components/ui/VerificationBadge"
@@ -23,7 +23,7 @@ const levelColors: Record<string, string> = {
   Beginner: "bg-amber-500/15 text-amber-500 border-amber-500/25",
 }
 
-export default function PublicProfileClient({ username, profile }: PublicProfileClientProps) {
+export default function PublicProfileClient({ profile }: PublicProfileClientProps) {
   const s = profile
 
   return (
@@ -33,7 +33,7 @@ export default function PublicProfileClient({ username, profile }: PublicProfile
     >
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-violet-600/12 rounded-full blur-[120px]" />
+        <div className="absolute top-0 left-1/3 w-125 h-125 bg-violet-600/12 rounded-full blur-[120px]" />
       </div>
 
       <div className="max-w-5xl mx-auto space-y-8">

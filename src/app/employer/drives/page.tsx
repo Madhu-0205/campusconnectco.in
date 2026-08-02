@@ -1,6 +1,6 @@
 import {
-  Building2, Plus, MapPin, CalendarDays,
-  Users, Target, Trophy, Clock, Zap,
+  CalendarDays,
+  Target, Trophy, Clock, Zap,
   ChevronRight, GraduationCap, PlayCircle
 } from "lucide-react"
 import { Metadata } from "next"

@@ -189,7 +189,7 @@ async function auditEnvironmentAndSecrets() {
                     }
                 }
             });
-        } catch (err) {
+        } catch {
             // ignore unreadable
         }
     }

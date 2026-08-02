@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, Sparkles, Briefcase, MapPin, Clock, MessageCircle, ArrowRight } from 'lucide-react';
+import { Heart, Sparkles, Briefcase, Clock, MessageCircle, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
@@ -52,7 +52,7 @@ export function AIPersonalizedFeed() {
 
   return (
     <div className="space-y-4">
-      {items.map((item, index) => {
+      {items.map((item) => {
         if (item.type === 'post') {
           const post = item.data as FeedPost;
           return (

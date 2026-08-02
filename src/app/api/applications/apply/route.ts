@@ -5,7 +5,7 @@ import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
-import { validateSessionUserId, isValidUUID } from "@/lib/uuid-utils";
+import { validateSessionUserId } from "@/lib/uuid-utils";
 
 const ApplySchema = z.object({
     gigId: z.string().uuid("Invalid Gig ID format"),

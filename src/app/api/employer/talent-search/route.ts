@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const auth = await protectApi(["FOUNDER", "STARTUP", "CLIENT"])
     if (auth.errorResponse) return auth.errorResponse
     
-    const { user } = auth;
+    const {} = auth;
 
     const { searchParams } = new URL(req.url)
     const query = searchParams.get("q") || ""

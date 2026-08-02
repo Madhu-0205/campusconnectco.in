@@ -1,6 +1,6 @@
 import {
   Shield, CheckCircle, Lock, Eye, AlertTriangle,
-  BadgeCheck, Scale, Users, Star, Zap, ArrowRight,
+  BadgeCheck, Scale, Zap, ArrowRight,
   CreditCard, FileText, Globe, HeartHandshake
 } from "lucide-react"
 import type { Metadata } from "next"

@@ -5,9 +5,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import React from "react"
 
-import { BreadcrumbsUI } from "@/components/seo/BreadcrumbsUI"
+
 import { BreadcrumbSchema, FAQSchema, getWikidataURI } from "@/components/seo/JsonLd"
-import { RelatedContentClusters } from "@/components/seo/RelatedContentClusters"
 import prisma from "@/lib/prisma"
 
 

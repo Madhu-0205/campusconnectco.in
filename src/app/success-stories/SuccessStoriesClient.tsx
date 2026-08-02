@@ -1,9 +1,9 @@
 "use client"
 
 import {
-  Star, Quote, TrendingUp, Award, Users, ArrowRight,
-  CheckCircle, Briefcase, GraduationCap, Building2, MapPin,
-  Play, ChevronRight, Sparkles, BadgeCheck, Heart
+  Star, Quote, TrendingUp, ArrowRight,
+  GraduationCap, Building2, MapPin,
+  ChevronRight, Sparkles, BadgeCheck
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"

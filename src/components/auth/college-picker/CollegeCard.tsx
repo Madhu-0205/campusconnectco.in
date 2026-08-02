@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { MapPin, CheckCircle2 } from "lucide-react"
+
 import type { CollegeResult } from "@/lib/colleges-geo"
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {

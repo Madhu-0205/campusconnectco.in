@@ -243,7 +243,7 @@ export default function Profile() {
             }));
             
             toast.success("Profile Auto-Filled! Don't forget to Publish Changes.", { icon: "✨" });
-        } catch (e) {
+        } catch {
             toast.error("Failed to auto-fill from resume.");
         }
     };

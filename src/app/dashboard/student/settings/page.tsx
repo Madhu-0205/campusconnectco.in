@@ -37,7 +37,7 @@ export default function SettingsPage() {
                 }
                 setInitialData(profileData)
                 setFormData(profileData)
-            } catch (error) {
+            } catch {
                 toast.error("Error loading settings")
             } finally {
                 setLoading(false)

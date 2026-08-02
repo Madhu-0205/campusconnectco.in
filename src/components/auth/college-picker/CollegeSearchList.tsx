@@ -6,7 +6,9 @@ import {
   ChevronRight, Sparkles
 } from "lucide-react"
 import { useState, useEffect, useRef, useCallback } from "react"
+
 import type { CollegeResult } from "@/lib/colleges-geo"
+
 import CollegeCard from "./CollegeCard"
 
 const RADII = [20, 50, 100] as const

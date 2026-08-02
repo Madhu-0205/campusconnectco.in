@@ -67,7 +67,7 @@ describe("AI Embeddings and Matching", () => {
       { id: "cand2", vector: [0.8, 0, 0], boostVal: 0.3 }, // Similarity: 0.8 + 0.3 = 1.1
     ];
 
-    const boostFn = (cand: Candidate, baseScore: number) => {
+    const boostFn = (cand: Candidate): number => {
       return cand.boostVal || 0;
     };
 

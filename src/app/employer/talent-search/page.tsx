@@ -1,6 +1,6 @@
 import {
-  Search, Sparkles, Filter, Users, Brain,
-  GraduationCap, MapPin, Star, ShieldCheck,
+  Sparkles, Brain,
+  GraduationCap, Star, ShieldCheck,
   Lock, ArrowRight, Zap
 } from "lucide-react"
 import { Metadata } from "next"
@@ -117,7 +117,7 @@ export default async function TalentSearchPage({
 }: {
   searchParams: Promise<{ q?: string; tier?: string; year?: string }>
 }) {
-  const user = await getSession()
+  // await getSession()
   const params = await searchParams
   const query = params.q || ""
   const candidates = await getTalentData(query)

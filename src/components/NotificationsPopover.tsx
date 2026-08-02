@@ -88,7 +88,7 @@ export default function NotificationsPopover({
                     )
                 
                 const subscribeWithRetry = () => {
-                    channel.subscribe((status, err) => {
+                    channel.subscribe((status) => {
                         if (status === 'SUBSCRIBED') {
                             retryCount = 0;
                         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {

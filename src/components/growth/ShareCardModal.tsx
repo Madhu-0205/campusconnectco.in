@@ -1,10 +1,9 @@
 "use client"
 
 import {
-  Share2, MessageCircle, Linkedin, Twitter, Instagram,
+  MessageCircle, Linkedin, Twitter, Instagram,
   X, CheckCircle2, ExternalLink, Copy, Zap
 } from "lucide-react"
-import Link from "next/link"
 import { useState, useEffect, useCallback } from "react"
 
 interface ShareCardModalProps {

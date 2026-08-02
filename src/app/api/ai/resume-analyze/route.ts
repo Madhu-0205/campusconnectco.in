@@ -148,7 +148,7 @@ No preamble. No markdown. Just JSON.`,
 // GET /api/ai/resume-analyze
 // Returns the authenticated user's resume analysis history (latest 10 results).
 // ────────────────────────────────────────────────────────────────────────────
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
     const auth = await protectApi(["FOUNDER", "STUDENT", "STARTUP", "CLIENT"]);
     if (auth.errorResponse) return auth.errorResponse;

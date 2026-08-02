@@ -1,9 +1,9 @@
  
 import { Prisma } from "@prisma/client"
-import { MapPin, Sparkles, Clock, Users, IndianRupee, ArrowUpRight, Star } from "lucide-react"
-import Link from "next/link"
+import { MapPin, Sparkles, Clock, Users, IndianRupee, ArrowUpRight } from "lucide-react"
 
-import { Card } from "@/components/ui/Card"
+
+
 import { calculateDistance, calculateMatchScore } from "@/lib/matching"
 import prisma from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"

@@ -45,7 +45,7 @@ type HistoryEntry = {
     createdAt: string;
 };
 
-const RESUME_ANALYZE_ENDPOINT = "/api/ai/resume-analyzer";
+// "/api/ai/resume-analyzer";
 
 export default function ResumeAnalyzerPage() {
     const [resumeText, setResumeText] = useState("");
