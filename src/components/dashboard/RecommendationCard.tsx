@@ -1,8 +1,8 @@
 import { Sparkles, MapPin, Briefcase, Tag } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { useAnalytics } from "@/components/Analytics/AnalyticsProvider";
 
+import { useAnalytics } from "@/components/Analytics/AnalyticsProvider";
 import { ScoredRecommendation } from "@/lib/recommendation-engine";
 
 interface RecommendationCardProps {

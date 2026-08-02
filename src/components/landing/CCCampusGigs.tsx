@@ -95,7 +95,7 @@ export default function CCCampusGigs() {
 
             {/* ambient glow */}
             <div
-                className="absolute top-0 right-0 w-[500px] h-[300px] pointer-events-none"
+                className="absolute top-0 right-0 w-125 h-75 pointer-events-none"
                 style={{
                     background: "radial-gradient(ellipse, rgba(139,92,246,0.06) 0%, transparent 70%)",
                     filter: "blur(60px)",
@@ -242,9 +242,6 @@ export default function CCCampusGigs() {
                                                 height={32}
                                                 isAvatar={true}
                                             />
-                                            <span className="text-xs font-medium" style={{ color: "var(--text-2)" }}>
-                                                {g.student}
-                                            </span>
                                         </div>
                                         <div
                                             className="text-lg"

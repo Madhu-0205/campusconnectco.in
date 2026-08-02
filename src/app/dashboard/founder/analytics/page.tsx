@@ -1,9 +1,11 @@
-import React from "react";
-import { protectPage } from "@/lib/auth-checks";
-import { redirect } from "next/navigation";
-import { getFunnelMetrics, getRecommendationIntelligence, getRetentionMetrics } from "@/lib/analytics";
-import { Card } from "@/components/ui/Card";
 import { Users, Zap, Target, AlertCircle } from "lucide-react";
+import { redirect } from "next/navigation";
+import React from "react";
+
+import { Card } from "@/components/ui/Card";
+import { getFunnelMetrics, getRecommendationIntelligence, getRetentionMetrics } from "@/lib/analytics";
+import { protectPage } from "@/lib/auth-checks";
+
 
 export default async function AnalyticsDashboard() {
   const { authorized } = await protectPage(["FOUNDER"]);

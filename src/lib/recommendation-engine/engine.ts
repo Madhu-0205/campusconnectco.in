@@ -166,7 +166,7 @@ export class RecommendationEngine {
    * Future ML Integration Point.
    * Designed to be swapped with a real Python microservice call later.
    */
-  public async getAdvancedMLScores(_opportunities: OpportunityNode[]): Promise<null> {
+  public async getAdvancedMLScores(): Promise<null> {
     // Interface ready for V2:
     // const payload = { user: this.student, ops: opportunities };
     // const res = await fetch('https://ml-service.campusconnectco.in/rank', { ... });

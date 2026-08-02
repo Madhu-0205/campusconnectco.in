@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic"
 import React, { useEffect, useState } from "react"
+
 import { AnalyticsProvider } from "@/components/Analytics/AnalyticsProvider"
 
 const CustomCursor = dynamic(() => import("@/components/ui/CustomCursor"), { ssr: false })

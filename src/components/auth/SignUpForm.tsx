@@ -1,13 +1,14 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { Loader2, UserPlus, AlertCircle, Sparkles, CheckCircle2, ChevronDown, Search, Eye, EyeOff, GraduationCap, Building2, ArrowRight } from "lucide-react"
+import { Loader2, UserPlus, AlertCircle, CheckCircle2, Eye, EyeOff, GraduationCap, Building2, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 
+import CollegePicker from "@/components/auth/college-picker/CollegePicker"
 import { createClient } from "@/lib/supabase/client"
- 
+
 
 function GoogleIcon() {
   return (
@@ -20,107 +21,7 @@ function GoogleIcon() {
   )
 }
 
-// ── Indian colleges list ─────────────────────────────────────────────────────
-const COLLEGES = [
-  "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kanpur", "IIT Kharagpur",
-  "IIT Roorkee", "IIT Guwahati", "IIT Hyderabad", "IIT BHU", "IIT Patna",
-  "NIT Trichy", "NIT Warangal", "NIT Surathkal", "NIT Calicut", "NIT Rourkela",
-  "BITS Pilani", "BITS Goa", "BITS Hyderabad", "BITS Pilani (Pilani Campus)",
-  "IIIT Hyderabad", "IIIT Bangalore", "IIIT Allahabad",
-  "VIT Vellore", "VIT Chennai", "VIT Bhopal", "VIT-AP",
-  "SRM Institute of Science and Technology", "Manipal Institute of Technology",
-  "PSG College of Technology", "Amrita School of Engineering",
-  "Jadavpur University", "Anna University", "Osmania University",
-  "Delhi Technological University", "NSUT Delhi", "IGDTUW",
-  "PES University", "RV College of Engineering", "BMS College of Engineering",
-  "SASTRA University", "Vellore Institute of Technology", "Sri Sivasubramaniya Nadar College",
-  "Karpagam Academy of Higher Education", "Kumaraguru College of Technology",
-  "Thiagarajar College of Engineering", "Coimbatore Institute of Technology",
-  "Birla Institute of Technology Mesra", "Thapar Institute of Engineering",
-  "Chandigarh University", "LPU (Lovely Professional University)",
-  "KIIT University", "Kalinga Institute of Industrial Technology",
-  "Other College / University",
-]
-
-// ── College Searchable Dropdown ──────────────────────────────────────────────
-function CollegeDropdown({
-  value, onChange
-}: { value: string; onChange: (v: string) => void }) {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState("")
-  const containerRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  const filtered = COLLEGES.filter(c =>
-    c.toLowerCase().includes(search.toLowerCase())
-  )
-
-  useEffect(() => {
-    function handleOut(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener("mousedown", handleOut)
-    return () => document.removeEventListener("mousedown", handleOut)
-  }, [])
-
-  return (
-    <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => { setOpen(!open); setTimeout(() => inputRef.current?.focus(), 100) }}
-        className="w-full bg-(--surface-2) border border-(--border) text-left p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all flex items-center justify-between"
-      >
-        <span className={value ? "text-white font-medium" : "text-slate-600"}>
-          {value || "Select your college…"}
-        </span>
-        <ChevronDown size={16} className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-2 bg-[#1A2240] border border-(--border) rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
-          >
-            {/* Search input */}
-            <div className="p-2 border-white/5 flex items-center gap-2 px-3">
-              <Search size={14} className="text-muted-foreground shrink-0" />
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Search college…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full bg-transparent text-white placeholder-slate-500 focus:outline-none py-2"
-              />
-            </div>
-            {/* College list */}
-            <ul className="max-h-52 overflow-y-auto py-1">
-              {filtered.length === 0 ? (
-                <li className="px-4 py-3 text-center">No colleges found</li>
-              ) : filtered.map(college => (
-                <li key={college}>
-                  <button
-                    type="button"
-                    onClick={() => { onChange(college); setOpen(false); setSearch("") }}
-                    className={`w-full px-4 py-2.5 transition-colors hover:bg-[#7C3AED]/20 hover:text-white ${value === college ? "bg-[#7C3AED]/20 text-white font-bold" : "text-muted-foreground"}`}
-                  >
-                    {college}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
+// CollegePicker replaces the old hardcoded CollegeDropdown
 
 // ── Step Progress Bar ────────────────────────────────────────────────────────
 function StepProgress({ current, total }: { current: number; total: number }) {
@@ -390,7 +291,10 @@ export default function SignUpForm() {
               {form.role === "STUDENT" && (
                 <div>
                   <label className="block font-black text-muted-foreground uppercase tracking-widest mb-2">Your College</label>
-                  <CollegeDropdown value={form.college} onChange={(v) => setForm({ ...form, college: v })} />
+                  <CollegePicker
+                    value={form.college}
+                    onChange={(v) => setForm({ ...form, college: v })}
+                  />
                 </div>
               )}
 
@@ -465,7 +369,7 @@ export default function SignUpForm() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-[14px] text-muted-foreground hover:text-white transition-colors"
+                    className="absolute right-4 top-3.5 text-muted-foreground hover:text-white transition-colors"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

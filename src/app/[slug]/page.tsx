@@ -12,11 +12,16 @@ export async function generateStaticParams() {
   return SEO_LANDING_PAGE_SLUGS.map((slug) => ({ slug }))
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const page = SEO_LANDING_PAGES[params.slug]
+interface Props {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const page = SEO_LANDING_PAGES[slug]
   if (!page) return { title: "Page not found | CampusConnect" }
 
-  const canonical = `https://www.campusconnectco.in/${params.slug}`
+  const canonical = `https://www.campusconnectco.in/${slug}`
 
   return {
     title: page.title,
@@ -44,8 +49,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function SEOLandingPage({ params }: { params: { slug: string } }) {
-  const page = SEO_LANDING_PAGES[params.slug]
+export default async function SEOLandingPage({ params }: Props) {
+  const { slug } = await params
+  const page = SEO_LANDING_PAGES[slug]
   if (!page) notFound()
 
   const nonce = (await headers()).get("x-nonce") || undefined
@@ -58,7 +64,7 @@ export default async function SEOLandingPage({ params }: { params: { slug: strin
         nonce={nonce}
         items={[
           { name: "Home", url: "https://www.campusconnectco.in" },
-          { name: page.title, url: `https://www.campusconnectco.in/${params.slug}` },
+          { name: page.title, url: `https://www.campusconnectco.in/${slug}` },
         ]}
       />
 

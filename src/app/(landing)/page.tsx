@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
+import dynamic from "next/dynamic"
 import { headers } from "next/headers"
 
-import dynamic from "next/dynamic"
 
 import CCHero from "@/components/landing/CCHero"
 import CCNavbar from "@/components/landing/CCNavbar"
@@ -19,6 +19,9 @@ const CCAIRoadmap = dynamic(() => import("@/components/landing/CCAIRoadmap"))
 const LandingTestimonials = dynamic(() => import("@/components/landing/LandingTestimonials"))
 const CCFinalCTA = dynamic(() => import("@/components/landing/CCFinalCTA"))
 const CCFooter = dynamic(() => import("@/components/landing/CCFooter"))
+const AdvertisementBanner = dynamic(() => import("@/components/AdvertisementBanner"))
+const SidebarAd = dynamic(() => import("@/components/SidebarAd"))
+const AnnouncementSection = dynamic(() => import("@/components/AnnouncementSection"))
 
 export const metadata: Metadata = {
   title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnect",
@@ -101,8 +104,20 @@ export default async function CampusConnectLandingPage() {
         {/* ── Hero & 3D Map ── */}
         <CCHero />
 
+        {/* ── Horizontal Leaderboard Ad Banner (Below Hero) ── */}
+        <AdvertisementBanner
+          slotId="hero-bottom-728x90"
+          label="Featured Campus Sponsor"
+          widthLabel="728 × 90 Responsive Banner"
+        />
+
         {/* ── Live Stats Ticker ── */}
         <CCMarquee />
+
+        {/* ── Announcements & Campus News Section ── */}
+        <div className="fast-render">
+          <AnnouncementSection />
+        </div>
 
         {/* ── Problem Section: Why existing solutions fail ── */}
         <div className="fast-render">
@@ -124,10 +139,31 @@ export default async function CampusConnectLandingPage() {
           <CCHowItWorks />
         </div>
 
-        {/* ── Live Gig marketplace ── */}
-        <div className="fast-render">
-          <CCCampusGigs />
+        {/* ── Content Layout with Desktop Sidebar Ad ── */}
+        <div className="fast-render max-w-7xl mx-auto px-4 sm:px-6 w-full py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-8">
+              <CCCampusGigs />
+            </div>
+            <div className="lg:col-span-4 hidden lg:block sticky top-24">
+              <SidebarAd
+                slotId="sidebar-300x250"
+                title="Promote Your Startup Drive"
+                subtitle="Reach 10,000+ verified engineering & design candidates directly on CampusConnect."
+                ctaText="Launch Campus Drive"
+                href="/employer/drives"
+              />
+            </div>
+          </div>
         </div>
+
+        {/* ── In-Feed Content Interstitial Ad Banner ── */}
+        <AdvertisementBanner
+          slotId="in-feed-interstitial"
+          label="In-Feed Placement"
+          widthLabel="Responsive Sponsored Placement"
+          className="my-4"
+        />
 
         {/* ── AI Matching & internships ── */}
         <div className="fast-render">

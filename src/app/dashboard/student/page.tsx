@@ -1,7 +1,7 @@
 import {
     Sparkles, ArrowRight,
     CircleDot, Activity, CheckCircle2, Trophy, TrendingUp,
-    Star, Zap, Brain, Briefcase, Users, MessageCircle, Map as TargetIcon,
+    Zap, Brain, Briefcase, Users, MessageCircle, Map as TargetIcon,
     Rocket, FileText, Gift, Crown
 } from "lucide-react"
 import Link from "next/link"
@@ -9,10 +9,9 @@ import { redirect } from "next/navigation"
 
 import { AIPersonalizedFeed } from "@/components/ai/AIPersonalizedFeed"
 import { TrendingSidebar } from "@/components/ai/TrendingSidebar"
-import { RecommendationCard } from "@/components/dashboard/RecommendationCard"
-import { CareerRoadmapTracker } from "@/components/dashboard/CareerRoadmapTracker"
 import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel"
-import { getPersonalizedRecommendations, CareerRoadmapGenerator, AIInsightsGenerator } from "@/lib/recommendation-engine"
+import { CareerRoadmapTracker } from "@/components/dashboard/CareerRoadmapTracker"
+import { RecommendationCard } from "@/components/dashboard/RecommendationCard"
 import { GamificationDashboard } from "@/components/gamification/GamificationDashboard"
 import { ReferralTracker } from "@/components/growth/ReferralTracker"
 import { ReputationLedgerCard } from "@/components/profile/ReputationLedgerCard"
@@ -20,6 +19,7 @@ import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { protectPage } from "@/lib/auth-checks"
 import prisma from "@/lib/prisma"
+import { getPersonalizedRecommendations, CareerRoadmapGenerator, AIInsightsGenerator } from "@/lib/recommendation-engine"
 
 export default async function StudentDashboard() {
     const { authorized, user } = await protectPage(["STUDENT", "FOUNDER"]) // Founder can view student dashboard for testing

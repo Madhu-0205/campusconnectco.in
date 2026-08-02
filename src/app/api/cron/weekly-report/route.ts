@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { getFunnelMetrics, getRecommendationIntelligence, getRetentionMetrics } from "@/lib/analytics";
 // import { sendEmail } from "@/lib/email"; // Mocked out for this implementation
 

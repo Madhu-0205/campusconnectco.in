@@ -1,6 +1,6 @@
 import {
     PlusCircle, Users, CheckCircle, Briefcase, ArrowRight,
-    TrendingUp, Zap, Brain,
+    Zap, Brain,
     CircleDot, ShieldCheck, Sparkles, Building2, FileText, Target,
     Star, ChevronRight, Award, MessageSquare
 } from "lucide-react"

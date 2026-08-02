@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 import { 
     CheckCircle2, TrendingUp, AlertCircle, Loader2, Sparkles, BrainCircuit, Zap, LayoutTemplate
 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
 
@@ -32,7 +31,7 @@ export default function ResumeDashboardClient() {
                     setActiveAnalysis(data.analyses[0]);
                 }
             }
-        } catch (error) {
+        } catch {
             toast.error("Failed to load resume history");
         } finally {
             setLoading(false);

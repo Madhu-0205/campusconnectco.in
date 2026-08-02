@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AnalyticsContextType {
   track: (event: string, data?: any) => void;

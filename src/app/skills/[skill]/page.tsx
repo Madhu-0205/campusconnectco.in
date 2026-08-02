@@ -176,8 +176,8 @@ export default async function SkillSEOPage({ params }: Props) {
       </div>
       
       {/* Background gradients */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/8 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-10%] w-125 h-125 bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-125 h-125 bg-cyan-500/8 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-12 relative z-10">
         <BreadcrumbsUI items={breadcrumbItems} />

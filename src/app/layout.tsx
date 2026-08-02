@@ -116,7 +116,7 @@ export default async function RootLayout({
   const nonce = (await headers()).get("x-nonce") || undefined
 
   return (
-    <html lang="en" nonce={nonce} data-scroll-behavior="smooth">
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
         className={`${bricolage.variable} ${dmSans.variable} ${jetbrainsMono.variable} antialiased relative`}
         style={{ fontFamily: "var(--font-body)" }}

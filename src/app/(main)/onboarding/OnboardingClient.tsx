@@ -2,17 +2,17 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import { 
-  GraduationCap, Sparkles, User, Link2, ArrowLeft, ArrowRight, 
-  CheckCircle2, ShieldCheck, Mail, Github, Linkedin, Globe, 
-  Loader2, Search, ChevronDown, Award, Compass
+  ArrowLeft, ArrowRight, 
+  CheckCircle2, Github, Linkedin, Globe, 
+  Loader2, Search, ChevronDown, Compass
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 
 import { ReferralTracker } from "@/components/growth/ReferralTracker"
-import SkillSelector from "@/components/SkillSelector"
 import { ResumeUploader } from "@/components/resume/ResumeUploader"
+import SkillSelector from "@/components/SkillSelector"
 import { VerificationBadge } from "@/components/ui/VerificationBadge"
 import { Skill, SKILLS_DATASET } from "@/lib/skills-dataset"
 
@@ -140,7 +140,6 @@ export default function OnboardingPage() {
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([])
 
   // AI Resume parsing state
-  const [file, setFile] = useState<File | null>(null)
   const [fileUrl, setFileUrl] = useState("")
   const [parseStatus, setParseStatus] = useState<'idle' | 'processing' | 'done'>('idle')
 

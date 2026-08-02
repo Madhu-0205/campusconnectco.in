@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { trackEvent } from "@/lib/analytics";
 
 export async function POST(req: Request) {

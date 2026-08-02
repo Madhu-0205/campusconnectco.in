@@ -182,7 +182,7 @@ Return ONLY valid JSON. Ensure there are no duplicate skills. Provide realistic 
 
   try {
       return JSON.parse(content) as ResumeData;
-  } catch (e) {
+  } catch {
       throw new Error("Failed to parse JSON response from OpenAI");
   }
 }
