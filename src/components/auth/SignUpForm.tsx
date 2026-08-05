@@ -69,6 +69,8 @@ export default function SignUpForm() {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [marketingConsent, setMarketingConsent] = useState(false)
 
   const handleGoogleSignUp = async () => {
     setGoogleLoading(true)
@@ -115,6 +117,10 @@ export default function SignUpForm() {
     setError("")
 
     try {
+      if (!acceptedTerms) {
+        throw new Error("You must agree to the Terms & Conditions and Privacy Policy to create an account.")
+      }
+
       if (form.password.length < 8) throw new Error("Password must be at least 8 characters")
       const hasComplexity = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(form.password)
       if (!hasComplexity) throw new Error("Password must include uppercase, lowercase and numbers")
@@ -144,6 +150,8 @@ export default function SignUpForm() {
             name: form.name,
             role: form.role,
             college: form.college,
+            acceptedTerms,
+            marketingConsent,
           }),
         })
 
@@ -391,10 +399,48 @@ export default function SignUpForm() {
                 )}
               </div>
 
+              {/* Consent Checkboxes */}
+              <div className="space-y-4 pt-2">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="relative flex items-center justify-center mt-0.5 shrink-0">
+                    <input 
+                      type="checkbox" 
+                      required
+                      checked={acceptedTerms}
+                      onChange={(e) => setAcceptedTerms(e.target.checked)}
+                      className="peer sr-only" 
+                    />
+                    <div className="w-5 h-5 rounded border-2 border-white/20 bg-white/5 peer-checked:bg-(--primary) peer-checked:border-(--primary) peer-focus:ring-2 peer-focus:ring-(--primary)/50 transition-all group-hover:border-white/40 flex items-center justify-center">
+                      <CheckCircle2 size={14} className="text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-snug">
+                    I have read and agree to the <Link href="/terms" className="text-white font-medium hover:text-(--primary-light) transition-colors hover:underline">Terms & Conditions</Link> and <Link href="/privacy" className="text-white font-medium hover:text-(--primary-light) transition-colors hover:underline">Privacy Policy</Link>.
+                  </p>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="relative flex items-center justify-center mt-0.5 shrink-0">
+                    <input 
+                      type="checkbox" 
+                      checked={marketingConsent}
+                      onChange={(e) => setMarketingConsent(e.target.checked)}
+                      className="peer sr-only" 
+                    />
+                    <div className="w-5 h-5 rounded border-2 border-white/20 bg-white/5 peer-checked:bg-(--primary) peer-checked:border-(--primary) peer-focus:ring-2 peer-focus:ring-(--primary)/50 transition-all group-hover:border-white/40 flex items-center justify-center">
+                      <CheckCircle2 size={14} className="text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-snug">
+                    I would like to receive updates about internships, jobs, events, scholarships and new features by email.
+                  </p>
+                </label>
+              </div>
+
               {/* Submit */}
               <button
                 type="submit"
-                disabled={loading || googleLoading}
+                disabled={loading || googleLoading || !acceptedTerms}
                 className={`w-full font-black py-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] mt-2 ${ form.role === "CLIENT" ? "bg-[#F59E0B] shadow-[0_0_20px_rgba(245,158,11,0.3)]" : "bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-[0_0_20px_rgba(124,58,237,0.3)]" }`}
               >
                 {loading ? <><Loader2 className="animate-spin" size={18} /> Creating Account...</> : "Create Account"}
@@ -407,11 +453,8 @@ export default function SignUpForm() {
           )}
         </AnimatePresence>
 
-        <p className="text-muted-foreground mt-5 leading-relaxed">
-          By signing up, you agree to our{" "}
-          <Link href="/terms-and-conditions" className="text-(--primary-light) hover:text-white transition-colors font-bold hover:underline">Terms</Link>
-          {" "}and{" "}
-          <Link href="/privacy-policy" className="text-(--primary-light) hover:text-white transition-colors font-bold hover:underline">Privacy Policy</Link>
+        <p className="text-muted-foreground mt-5 leading-relaxed text-center">
+          Join CampusConnect and supercharge your career.
         </p>
 
         <div className="mt-5 text-center pt-4 border-white/5">

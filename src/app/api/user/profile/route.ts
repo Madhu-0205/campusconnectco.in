@@ -41,10 +41,14 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { id, email, name, role } = body;
+        const { id, email, name, role, acceptedTerms, marketingConsent } = body;
 
         if (!id || !email) {
             return NextResponse.json({ error: "id and email are required" }, { status: 400 });
+        }
+
+        if (acceptedTerms !== true) {
+            return NextResponse.json({ error: "You must accept the Terms & Conditions and Privacy Policy." }, { status: 400 });
         }
 
         // Enforce that the user can only create/update their own profile
@@ -85,6 +89,11 @@ export async function POST(req: Request) {
                 role: finalRole,
                 isVerified: autoVerify || isFounder,
                 college: authUser.user_metadata?.college || body.college || null,
+                acceptedTerms: true,
+                acceptedTermsAt: new Date(),
+                acceptedTermsVersion: "1.0",
+                marketingConsent: !!marketingConsent,
+                marketingConsentAt: marketingConsent ? new Date() : null,
             },
         });
 

@@ -41,6 +41,11 @@ model User {
   year                 String?
   username             String?             @unique
   resumeData           Json?
+  acceptedTerms        Boolean             @default(false)
+  acceptedTermsAt      DateTime?
+  acceptedTermsVersion String?
+  marketingConsent     Boolean             @default(false)
+  marketingConsentAt   DateTime?
   ambassadorProfile    Ambassador?
   careerRoadmaps       CareerRoadmap[]
   connectionsReceived  ConnectionRequest[] @relation("ConnectionReceiver")
@@ -386,6 +391,8 @@ model Internship {
   applyCount      Int               @default(0)
   tags            String?
   views           Int               @default(0)
+  externalId      String?           @unique
+  source          String?
   savedBy         SavedInternship[]
 }
 
