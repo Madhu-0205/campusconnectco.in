@@ -246,7 +246,7 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
                         </h1>
                     </div>
                     <div className="flex items-center gap-3">
-                        <div className="hidden sm:block font-black tracking-widest text-slate-500 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                        <div suppressHydrationWarning className="hidden sm:block font-black tracking-widest text-slate-500 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
                             {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                         </div>
                         <div className="h-6 w-px bg-white/5 mx-1" />

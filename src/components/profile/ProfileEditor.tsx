@@ -155,7 +155,7 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
                Your profile is currently <span className="text-emerald-400 font-bold">active</span> and visible to verified Indian startups.
              </p>
              {profile.username ? (
-               <a href={`/profile/${profile.username}`} target="_blank" className="block w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-black text-white uppercase tracking-widest transition-all">
+               <a href={`/profile/${profile.username}`} target="_blank" rel="noopener noreferrer" className="block w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-black text-white uppercase tracking-widest transition-all">
                  View Public Preview
                </a>
              ) : (

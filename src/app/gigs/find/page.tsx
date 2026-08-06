@@ -135,7 +135,7 @@ export default async function FindGigsPage({ searchParams }: PageProps) {
 
       <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-12">
         {/* Filter sidebar */}
-        <Suspense fallback={<div className="lg:w-80 shrink-0 h-[600px] animate-pulse bg-white/5 rounded-2xl border border-white/10" />}>
+        <Suspense fallback={<div className="lg:w-80 shrink-0 h-150 animate-pulse bg-white/5 rounded-2xl border border-white/10" />}>
           <FilterSidebar
             currentFilters={params}
             className="lg:w-80 shrink-0"
