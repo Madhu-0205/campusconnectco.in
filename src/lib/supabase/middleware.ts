@@ -75,14 +75,18 @@ export async function updateSession(request: NextRequest) {
         path.startsWith('/api/skills') ||
         path.startsWith('/api/ai/resume-analyze') ||
         path.startsWith('/api/internal/import-internship') ||
+        path.startsWith('/api/internal/opportunities') ||
+        path.startsWith('/api/analytics/track') ||
         path.startsWith('/skills') ||
         path.startsWith('/skill-selector') ||
         path.startsWith('/browse-gigs') ||
         path.startsWith('/gigs/') ||
         path === '/marketplace' ||
-        path === '/terms-and-conditions' ||
-        path === '/privacy-policy' ||
-        path === '/refund-policy' ||
+        path === '/terms' ||
+        path === '/privacy' ||
+        path === '/community-guidelines' ||
+        path === '/cookies' ||
+        path === '/contact' ||
         path.startsWith('/_next/') ||
         path.startsWith('/images/') ||
         path.startsWith('/icons/') ||

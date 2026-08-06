@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { proxy as middleware } from "../proxy";
+import { proxy as middleware } from "../middleware";
 
 // Mock Supabase Middleware
 vi.mock("../lib/supabase/middleware", () => {
@@ -27,7 +27,7 @@ vi.mock("../lib/rate-limit", () => {
   };
 });
 
-describe("Root Security Proxy (src/proxy.ts)", () => {
+describe("Root Security Proxy (s../middleware.ts)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

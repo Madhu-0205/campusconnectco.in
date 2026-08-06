@@ -34,20 +34,13 @@ function deterministicVector(seed: number, dimensions: number): number[] {
 let _client: OpenAI | null = null;
 
 export function getChatModel(): string {
-  const apiKey = process.env.OPENAI_API_KEY || "";
-  if (apiKey.startsWith("gsk_")) {
-    const envModel = process.env.AI_CHAT_MODEL;
-    if (envModel && (envModel.includes("llama") || envModel.includes("mixtral") || envModel.includes("gemma"))) {
-      return envModel;
-    }
-    return "llama-3.3-70b-versatile";
-  }
-  return process.env.AI_CHAT_MODEL || "gpt-4o-mini";
+  // Always use gemini-1.5-flash as default
+  return process.env.AI_CHAT_MODEL || "gemini-1.5-flash";
 }
 
 export function getOpenAI(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY || "";
-  const isPlaceholder = apiKey === "" || apiKey.includes("placeholder") || apiKey.includes("your_openai");
+  const apiKey = process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY || "";
+  const isPlaceholder = apiKey === "" || apiKey.includes("placeholder") || apiKey.includes("your_");
 
   if (isPlaceholder) {
     return new Proxy({}, {
@@ -58,7 +51,7 @@ export function getOpenAI(): OpenAI {
               create: async (params: { stream?: boolean; messages?: Array<{ role: string; content: string }> }) => {
                 if (params.stream) {
                   return (async function* () {
-                    yield { choices: [{ delta: { content: "AI service unavailable: configure OPENAI_API_KEY or GROQ_API_KEY." } }] };
+                    yield { choices: [{ delta: { content: "AI service unavailable: configure GEMINI_API_KEY." } }] };
                   })();
                 }
                 const systemPrompt = params.messages?.find((m) => m.role === 'system')?.content || '';
@@ -102,9 +95,6 @@ export function getOpenAI(): OpenAI {
           return {
             create: async (params: { model?: string; input?: string }) => {
               const dimensions = params.model?.includes('nomic') ? 768 : 1536;
-              // Deterministic hash-based embedding: same text always yields same vector.
-              // Uses a seeded XOR-shift PRNG so the vector is stable and spans [-1, 1].
-              // This is a fallback only — configure a real API key for production embeddings.
               const seed = deterministicSeed(String(params.input ?? ''));
               const vector = deterministicVector(seed, dimensions);
               return { data: [{ embedding: vector }] };
@@ -119,9 +109,7 @@ export function getOpenAI(): OpenAI {
   if (!_client) {
     _client = new OpenAI({
       apiKey: apiKey,
-      ...(apiKey.startsWith("gsk_")
-        ? { baseURL: "https://api.groq.com/openai/v1" }
-        : {}),
+      baseURL: process.env.GEMINI_API_KEY ? "https://generativelanguage.googleapis.com/v1beta/openai/" : undefined,
     });
   }
   return _client;

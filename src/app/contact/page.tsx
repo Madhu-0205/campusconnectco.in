@@ -34,7 +34,7 @@ export default function ContactPage() {
     >
       <div className="mb-12">
         <p className="text-xl">
-          We're here to help! Whether you're a student facing an issue, a startup looking to partner, or someone with a legal inquiry, you can reach the right team below.
+          We&apos;re here to help! Whether you&apos;re a student facing an issue, a startup looking to partner, or someone with a legal inquiry, you can reach the right team below.
         </p>
       </div>
 

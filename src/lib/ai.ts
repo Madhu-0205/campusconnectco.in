@@ -1,9 +1,6 @@
-import Groq from "groq-sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const groq = new Groq({
-    // Fallback to "dummy" so Next.js build doesn't crash if the env var is missing during static analysis
-    apiKey: process.env.GROQ_API_KEY || "dummy",
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "dummy");
 
 export type AIRequestType = "resume" | "smartmatch" | "career";
 
@@ -15,21 +12,22 @@ export interface AIResponse {
 
 export class AIService {
     /**
-     * Send a request to Groq and return a structured JSON response
+     * Send a request to Gemini and return a structured JSON response
      */
-    static async generateJSON(systemPrompt: string, userPrompt: string, model: string = "llama-3.3-70b-versatile") {
+    static async generateJSON(systemPrompt: string, userPrompt: string, model: string = "gemini-1.5-flash") {
         try {
-            const completion = await groq.chat.completions.create({
-                messages: [
-                    { role: "system", content: `${systemPrompt}\n\nIMPORTANT: Respond ONLY with a valid JSON object. No markdown, no thinking, no preamble.` },
-                    { role: "user", content: userPrompt },
-                ],
+            const generativeModel = genAI.getGenerativeModel({
                 model: model,
-                response_format: { type: "json_object" },
-                temperature: 0.1, // Low temperature for consistent JSON
+                systemInstruction: `${systemPrompt}\n\nIMPORTANT: Respond ONLY with a valid JSON object. No markdown, no thinking, no preamble.`,
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    temperature: 0.1,
+                }
             });
 
-            const content = completion.choices[0]?.message?.content;
+            const result = await generativeModel.generateContent(userPrompt);
+            const content = result.response.text();
+            
             if (!content) throw new Error("Empty response from AI");
 
             // Resiliency: The model might occasionally wrap results in markdown even if told not to

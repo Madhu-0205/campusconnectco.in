@@ -1,0 +1,110 @@
+[
+  {
+    "filePath": "/Users/madhu/Desktop/campusconnectco.in-main/src/app/contact/page.tsx",
+    "errorCount": 2,
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 37,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 37,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "/Users/madhu/Desktop/campusconnectco.in-main/src/app/privacy/page.tsx",
+    "errorCount": 8,
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 43,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 43,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 43,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 43,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 43,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 43,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "@next/next/no-html-link-for-pages",
+        "line": 78,
+        "message": "Do not use an `<a>` element to navigate to `/cookies/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages"
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 107,
+        "message": "`'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`."
+      }
+    ]
+  },
+  {
+    "filePath": "/Users/madhu/Desktop/campusconnectco.in-main/src/app/terms/page.tsx",
+    "errorCount": 8,
+    "messages": [
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 45,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 45,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 45,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 45,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 140,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 140,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 140,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      },
+      {
+        "ruleId": "react/no-unescaped-entities",
+        "line": 140,
+        "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`."
+      }
+    ]
+  }
+]

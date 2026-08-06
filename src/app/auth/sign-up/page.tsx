@@ -14,8 +14,8 @@ export default function SignUpPage() {
         <div className="min-h-screen relative flex items-center justify-center p-4 bg-background overflow-hidden" style={{ fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}>
             {/* Background FX */}
             <div className="absolute inset-0 bg-size-[48px_48px]" />
-            <div className="absolute top-[-20%] right-[-5%] w-[500px] h-[500px] bg-(--primary)/15 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-15%] left-[-10%] w-[400px] h-[400px] bg-(--accent)/10 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute top-[-20%] right-[-5%] w-125 h-125 bg-(--primary)/15 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-15%] left-[-10%] w-100 h-100 bg-(--accent)/10 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="relative z-10 w-full max-w-md">
                 {/* Logo & Brand */}
@@ -55,8 +55,8 @@ export default function SignUpPage() {
 
                 <p className="text-xs mt-6">
                     By joining you agree to our{" "}
-                    <Link href="/terms-and-conditions" className="text-(--primary-light) hover:text-white transition-colors hover:underline">Terms</Link> &{" "}
-                    <Link href="/privacy-policy" className="text-(--primary-light) hover:text-white transition-colors hover:underline">Privacy Policy</Link>
+                    <Link href="/terms" className="text-(--primary-light) hover:text-white transition-colors hover:underline">Terms</Link> &{" "}
+                    <Link href="/privacy" className="text-(--primary-light) hover:text-white transition-colors hover:underline">Privacy Policy</Link>
                 </p>
             </div>
         </div>

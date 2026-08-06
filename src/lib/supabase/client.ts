@@ -35,21 +35,11 @@ export function createClient() {
     )
 
     // Listen to online/offline to pause/resume realtime WebSockets and prevent retry loops
-    window.addEventListener('offline', () => {
-        if (client) {
-            if (process.env.NODE_ENV === 'development') {
-                console.log('[Supabase] Offline detected. Disconnecting Realtime WebSocket.');
-            }
-            client.realtime.disconnect();
-        }
-    });
-
     window.addEventListener('online', () => {
         if (client) {
             if (process.env.NODE_ENV === 'development') {
-                console.log('[Supabase] Online detected. Reconnecting Realtime WebSocket and triggering token refresh.');
+                console.log('[Supabase] Online detected. Triggering token refresh.');
             }
-            client.realtime.connect();
             // Instantly try refreshing token when back online
             client.auth.getSession();
         }

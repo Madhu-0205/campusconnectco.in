@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import LegalLayout from "@/components/legal/LegalLayout";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | CampusConnect",
@@ -40,7 +41,7 @@ export default function PrivacyPage() {
       <section id="introduction">
         <h2>1. Introduction</h2>
         <p>
-          At CampusConnect ("we", "our", or "us"), your privacy is our priority. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website (campusconnectco.in) and use our platform. 
+          At CampusConnect (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), your privacy is our priority. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website (campusconnectco.in) and use our platform. 
           By using CampusConnect, you consent to the data practices described in this policy, which is aligned with standard data protection principles including the GDPR and Indian IT regulations.
         </p>
       </section>
@@ -75,7 +76,7 @@ export default function PrivacyPage() {
           We use Supabase for secure authentication. When you log in (via email/password or Google), secure session tokens are generated. 
         </p>
         <p>
-          We also use cookies to store your preferences, maintain your logged-in state, and analyze site traffic. For more detailed information, please review our <a href="/cookies">Cookie Policy</a>.
+          We also use cookies to store your preferences, maintain your logged-in state, and analyze site traffic. For more detailed information, please review our <Link href="/cookies">Cookie Policy</Link>.
         </p>
       </section>
 
@@ -104,7 +105,7 @@ export default function PrivacyPage() {
       </section>
 
       <section id="children-privacy">
-        <h2>8. Children's Privacy</h2>
+        <h2>8. Children&apos;s Privacy</h2>
         <p>
           CampusConnect is intended for college students and young professionals. We do not knowingly collect personal information from children under the age of 16. If we become aware that a child under 16 has provided us with personal information, we will take steps to delete it immediately.
         </p>

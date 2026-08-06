@@ -42,7 +42,7 @@ export default function TermsPage() {
       <section id="introduction">
         <h2>1. Introduction</h2>
         <p>
-          Welcome to CampusConnect. These Terms & Conditions ("Terms") govern your access to and use of the CampusConnect website, platform, and services (collectively, the "Services"). 
+          Welcome to CampusConnect. These Terms & Conditions (&quot;Terms&quot;) govern your access to and use of the CampusConnect website, platform, and services (collectively, the &quot;Services&quot;). 
           By creating an account, accessing, or using our Services, you agree to be bound by these Terms and our Privacy Policy.
         </p>
         <p>
@@ -137,7 +137,7 @@ export default function TermsPage() {
       <section id="disclaimer">
         <h2>10. Disclaimer & Limitation of Liability</h2>
         <p>
-          The Services are provided on an "AS-IS" and "AS-AVAILABLE" basis. CampusConnect disclaims all warranties, express or implied, including the implied warranties of merchantability and fitness for a particular purpose.
+          The Services are provided on an &quot;AS-IS&quot; and &quot;AS-AVAILABLE&quot; basis. CampusConnect disclaims all warranties, express or implied, including the implied warranties of merchantability and fitness for a particular purpose.
         </p>
         <p>
           To the maximum extent permitted by law, CampusConnect shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the platform, your interactions with other users, or any employment outcomes.

@@ -139,7 +139,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // 1. Generate a secure cryptographic nonce
-    const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+    const nonce = btoa(crypto.randomUUID());
 
     // 2. Set the x-nonce in request headers so Server Components can read it
     request.headers.set('x-nonce', nonce);

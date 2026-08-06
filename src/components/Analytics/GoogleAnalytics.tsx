@@ -25,6 +25,7 @@
  */
 
 import Script from "next/script";
+import { Suspense } from "react";
 
 import { GAPageviewTracker } from "./GAPageviewTracker";
 
@@ -87,8 +88,11 @@ export function GAScripts({ nonce }: GoogleAnalyticsProps) {
       {/*
        * 3. Client-side pageview tracker — fires page_view on every
        *    App Router navigation including the initial load.
+       *    Must be wrapped in Suspense because it uses useSearchParams().
        */}
-      <GAPageviewTracker measurementId={GA_MEASUREMENT_ID} />
+      <Suspense fallback={null}>
+        <GAPageviewTracker measurementId={GA_MEASUREMENT_ID} />
+      </Suspense>
     </>
   );
 }

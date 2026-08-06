@@ -99,6 +99,9 @@ export async function GET(request: Request) {
                         ? "FOUNDER" 
                         : (user.user_metadata?.role || roleParam || "STUDENT"),
                     college: user.user_metadata?.college || null,
+                    acceptedTerms: true,
+                    acceptedTermsAt: new Date(),
+                    acceptedTermsVersion: "1.0",
                 },
                 select: {
                     role: true,

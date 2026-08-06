@@ -127,16 +127,20 @@ export default async function FindGigsPage({ searchParams }: PageProps) {
               </div>
             </div>
           </div>
-          <GigSearchBar defaultValue={params.q || ''} />
+          <Suspense fallback={<div className="h-14 w-full animate-pulse bg-white/5 rounded-2xl border border-white/10" />}>
+            <GigSearchBar defaultValue={params.q || ''} />
+          </Suspense>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-12">
         {/* Filter sidebar */}
-        <FilterSidebar
-          currentFilters={params}
-          className="lg:w-80 shrink-0"
-        />
+        <Suspense fallback={<div className="lg:w-80 shrink-0 h-[600px] animate-pulse bg-white/5 rounded-2xl border border-white/10" />}>
+          <FilterSidebar
+            currentFilters={params}
+            className="lg:w-80 shrink-0"
+          />
+        </Suspense>
 
         {/* Content Area */}
         <main className="flex-1 min-w-0">
