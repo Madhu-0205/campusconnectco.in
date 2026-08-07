@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Info, Save, DollarSign, Bell, Shield, Palette, Globe, Trash2, Plus, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/Button"
 
@@ -25,6 +26,7 @@ interface Settings {
 }
 
 export default function PlatformSettingsPage() {
+    const router = useRouter()
     const [activeTab, setActiveTab] = useState("general")
     const [loading, setLoading] = useState(false)
     const [fetching, setFetching] = useState(true)
@@ -79,6 +81,30 @@ export default function PlatformSettingsPage() {
             toast.error("Failed to save settings")
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleDeleteAccount = async () => {
+        const confirmation = window.prompt("To permanently delete your founder account, type 'DELETE' below:")
+        if (confirmation !== "DELETE") {
+            if (confirmation !== null) toast.error("Account deletion cancelled.")
+            return
+        }
+
+        try {
+            const res = await fetch("/api/user/delete", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ confirmation: "DELETE" })
+            })
+
+            if (!res.ok) throw new Error("Failed to delete account")
+            
+            toast.success("Founder account permanently deleted.")
+            router.push("/")
+        } catch (error) {
+            toast.error("Failed to delete account")
+            console.error(error)
         }
     }
 
@@ -223,6 +249,26 @@ export default function PlatformSettingsPage() {
                         ))}
                     </div>
                 )
+            case "danger":
+                return (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-500">
+                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-between gap-6">
+                            <div>
+                                <h3 className="font-bold text-red-500 tracking-tight text-xl mb-1">Delete Founder Account</h3>
+                                <p className="text-red-400/80 font-medium max-w-lg text-sm">
+                                    Permanently delete your founder account and all associated platform data. This action is irreversible.
+                                </p>
+                            </div>
+                            <Button 
+                                variant="destructive" 
+                                className="h-12 px-6 rounded-xl font-bold bg-red-600 hover:bg-red-700 text-white shrink-0"
+                                onClick={handleDeleteAccount}
+                            >
+                                Delete Account
+                            </Button>
+                        </div>
+                    </div>
+                )
             default:
                 return null
         }
@@ -256,6 +302,7 @@ export default function PlatformSettingsPage() {
                             { id: "fees", icon: DollarSign, label: "Fees & Commission" },
                             { id: "categories", icon: Globe, label: "Categories" },
                             { id: "features", icon: Shield, label: "Feature Flags" },
+                            { id: "danger", icon: Trash2, label: "Danger Zone" },
                         ].map((tab) => (
                             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${activeTab === tab.id ? "bg-(--primary) text-white shadow-lg shadow-(--primary)/20" : "text-slate-400 hover:bg-white/5"}`}>

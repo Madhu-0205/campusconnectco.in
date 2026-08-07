@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { AIService } from "@/lib/ai";
+import { AIService, AIConfigurationError, AIRateLimitError } from "@/lib/ai";
 import { protectApi } from "@/lib/auth-checks";
 import { aiLimiter } from "@/lib/rate-limit";
 
@@ -66,15 +66,22 @@ export async function POST(req: Request) {
 
     } catch (error: unknown) {
         console.error("[AI_API_ERROR]:", error);
-        const errObj = error instanceof Error ? error : new Error(String(error));
-        
-        // Handle specific Groq API errors
-        if (errObj.message?.includes("API Key")) {
-            return NextResponse.json({ error: "AI Service Configuration Error. Contact Admin." }, { status: 500 });
+
+        if (error instanceof AIConfigurationError) {
+            return NextResponse.json({ error: "AI service is not configured. Contact Admin." }, { status: 503 });
         }
 
+        if (error instanceof AIRateLimitError) {
+            return NextResponse.json({ error: "AI quota exceeded. Please try again later." }, { status: 429 });
+        }
+
+        if (error instanceof SyntaxError) {
+            return NextResponse.json({ error: "AI returned an invalid response. Please try again." }, { status: 422 });
+        }
+
+        const errObj = error instanceof Error ? error : new Error(String(error));
         return NextResponse.json(
-            { error: errObj.message || "The AI model is busy or failed to respond. Please try again." },
+            { error: errObj.message || "The AI model failed to respond. Please try again." },
             { status: 500 }
         );
     }

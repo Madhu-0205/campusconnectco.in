@@ -3,7 +3,7 @@
 import { 
   Sun, Compass, FileText, Target, Presentation, 
   Users, Calendar, TrendingUp, CheckSquare, Zap,
-  Briefcase, Code2, AlertTriangle, ChevronRight,
+  AlertTriangle, ChevronRight,
   ShieldCheck
 } from "lucide-react"
 import React from "react"

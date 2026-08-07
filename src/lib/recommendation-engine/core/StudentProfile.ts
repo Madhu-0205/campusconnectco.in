@@ -25,9 +25,8 @@ export function buildStudentProfileGraph(
   user: User, 
   applications?: (Application & { gig?: Gig })[],
   savedInternships?: SavedInternship[],
-  // Telemetry is mocked in this version
-  viewedOpportunitiesMock: string[] = [],
-  searchHistoryMock: string[] = []
+  viewedOpportunities: string[] = [],
+  searchHistory: string[] = []
 ): StudentProfileGraph {
   
   // Extract explicit skills
@@ -62,7 +61,7 @@ export function buildStudentProfileGraph(
     certifications: [], // Placeholder for expanded schema
     previousApplications,
     savedOpportunities: savedOpps,
-    viewedOpportunities: viewedOpportunitiesMock,
-    searchHistory: searchHistoryMock
+    viewedOpportunities,
+    searchHistory
   };
 }

@@ -16,6 +16,8 @@ export default async function SettingsRedirect() {
         redirect("/dashboard/student/settings");
     } else if (user?.role === "FOUNDER") {
         redirect("/dashboard/founder/settings");
+    } else if (user?.role === "COLLEGE") {
+        redirect("/dashboard/college/settings");
     } else {
         redirect("/dashboard");
     }

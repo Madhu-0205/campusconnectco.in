@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
-import { razorpay } from "@/lib/razorpay";
+import { getRazorpay } from "@/lib/razorpay";
 
 export async function POST(req: NextRequest) {
     try {
@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
             }
         };
 
+        const razorpay = getRazorpay();
         const order = await razorpay.orders.create(options);
 
         if (!order || !order.id) {

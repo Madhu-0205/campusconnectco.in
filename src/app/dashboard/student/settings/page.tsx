@@ -3,11 +3,13 @@
 import { User, Bell, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 
 export default function SettingsPage() {
+    const router = useRouter()
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [initialData, setInitialData] = useState({
@@ -73,6 +75,30 @@ export default function SettingsPage() {
     const handleDiscard = () => {
         setFormData(initialData)
         toast.info("Changes discarded")
+    }
+
+    const handleDeleteAccount = async () => {
+        const confirmation = window.prompt("To permanently delete your account, type 'DELETE' below:")
+        if (confirmation !== "DELETE") {
+            if (confirmation !== null) toast.error("Account deletion cancelled.")
+            return
+        }
+
+        try {
+            const res = await fetch("/api/user/delete", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ confirmation: "DELETE" })
+            })
+
+            if (!res.ok) throw new Error("Failed to delete account")
+            
+            toast.success("Account permanently deleted.")
+            router.push("/")
+        } catch (error) {
+            toast.error("Failed to delete account")
+            console.error(error)
+        }
     }
 
     if (loading) {
@@ -156,7 +182,7 @@ export default function SettingsPage() {
                                     checked={formData.emailNotifications}
                                     onChange={(e) => setFormData({ ...formData, emailNotifications: e.target.checked })}
                                 />
-                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
 
@@ -172,7 +198,7 @@ export default function SettingsPage() {
                                     checked={formData.desktopAlerts}
                                     onChange={(e) => setFormData({ ...formData, desktopAlerts: e.target.checked })}
                                 />
-                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
                     </div>
@@ -199,6 +225,27 @@ export default function SettingsPage() {
                             </>
                         ) : "Save Preferences"}
                     </Button>
+                </div>
+                
+                {/* Danger Zone */}
+                <div className="pt-8">
+                    <Card className="p-4 md:p-8 border-none bg-red-50/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div>
+                                <h3 className="font-bold text-red-600 tracking-tight text-xl mb-1">Danger Zone</h3>
+                                <p className="text-red-900/60 font-medium max-w-lg">
+                                    Permanently delete your account and all associated data. This action cannot be undone.
+                                </p>
+                            </div>
+                            <Button 
+                                variant="destructive" 
+                                className="h-12 px-6 rounded-xl font-bold bg-red-600 hover:bg-red-700 w-full md:w-auto shrink-0"
+                                onClick={handleDeleteAccount}
+                            >
+                                Delete Account
+                            </Button>
+                        </div>
+                    </Card>
                 </div>
             </div>
         </div>

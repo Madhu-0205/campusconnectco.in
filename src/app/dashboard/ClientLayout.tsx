@@ -1,6 +1,6 @@
 "use client"
 import { motion, AnimatePresence } from "framer-motion"
-import { BarChart, Briefcase, Home, LogOut, Settings, User, GraduationCap, Info, Menu, MessageCircle, Users, FileText, Zap, ShieldAlert, Brain, Bell, Sparkles } from "lucide-react"
+import { BarChart, Briefcase, Home, LogOut, Settings, User, GraduationCap, Info, Menu, MessageCircle, Users, FileText, Zap, ShieldAlert, Brain, Bell, Sparkles, Bookmark } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
@@ -19,6 +19,7 @@ const studentItems = [
     { icon: GraduationCap, label: "Internships", href: "/dashboard/student/internships" },
     { icon: BarChart, label: "Applications", href: "/dashboard/student/applications" },
     { icon: Sparkles, label: "SmartMatch", href: "/dashboard/student/smartmatch" },
+    { icon: Bookmark, label: "Saved", href: "/dashboard/student/saved" },
     { icon: Brain, label: "Resume Intelligence", href: "/dashboard/student/resume" },
     { icon: User, label: "Profile", href: "/dashboard/student/profile" },
 ]
@@ -44,6 +45,13 @@ const founderItems = [
     { icon: Settings, label: "System Settings", href: "/dashboard/founder/settings" },
 ]
 
+const collegeItems = [
+    { icon: Home, label: "Overview", href: "/dashboard/college" },
+    { icon: Users, label: "Students", href: "/dashboard/college/students" },
+    { icon: BarChart, label: "Analytics", href: "/dashboard/college/analytics" },
+    { icon: Settings, label: "Settings", href: "/dashboard/college/settings" },
+]
+
 
 interface ClientLayoutProps {
     children: React.ReactNode;
@@ -66,6 +74,14 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
     const isClientPath = pathname?.startsWith("/dashboard") && !isStudentPath && !isFounderPath
 
     // Dynamic Header Title
+    const getNavigationItems = () => {
+        if (role === "STUDENT") return studentItems
+        if (role === "CLIENT") return clientItems
+        if (role === "FOUNDER") return founderItems
+        if (role === "COLLEGE") return collegeItems
+        return []
+    }
+    
     const getHeaderTitle = () => {
         if (pathname === "/dashboard/student") return "Student Overview"
         if (pathname === "/dashboard") return "Dashboard"
@@ -82,6 +98,7 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
         if (pathname?.includes("/ai-insights")) return "AI Insights"
         if (pathname?.includes("/resume")) return "Resume Intelligence"
         if (pathname?.includes("/approvals")) return "Pending Approvals"
+        if (pathname?.includes("/saved")) return "Saved Opportunities"
         if (pathname?.includes("/reports")) return "Platform Reports"
         if (pathname?.includes("/notifications")) return "System Notifications"
         if (pathname?.includes("/settings")) return "Platform Settings"

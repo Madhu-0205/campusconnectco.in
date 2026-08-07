@@ -41,7 +41,8 @@ export class RateLimiter {
                     const result = await response.json();
                     if (Array.isArray(result) && result[0] && typeof result[0].result === 'number') {
                         const count = result[0].result;
-                        return count <= this.maxRequests;
+                        const effectiveMax = process.env.NODE_ENV === 'development' ? this.maxRequests * 100 : this.maxRequests;
+                        return count <= effectiveMax;
                     }
                 }
             } catch (error) {
@@ -55,7 +56,9 @@ export class RateLimiter {
         let timestamps = this.requests.get(ip) || [];
         timestamps = timestamps.filter(t => t > windowStart);
 
-        if (timestamps.length >= this.maxRequests) {
+        const effectiveMax = process.env.NODE_ENV === 'development' ? this.maxRequests * 100 : this.maxRequests;
+
+        if (timestamps.length >= effectiveMax) {
             this.requests.set(ip, timestamps);
             return false;
         }

@@ -149,8 +149,8 @@ function DesignSystemContent() {
             <QualityGate checks={ALL_PASSED} componentName="Gig & Internship Cards" />
             <DesignNode metadata={{ name: "GigCard", tokens: ["--color-surface", "--color-border"], typography: "Bricolage Grotesque (Titles), DM Sans (Body)", motionPreset: "Hover Spotlight, springSnappy", borderRadius: "24px", elevation: "Shadow Card", colors: "Surface, Muted", spacing: "P 6, Gap 4", accessibilityNotes: "Hover lighting uses useMotionTemplate to avoid DOM updates. Tab index is 0." }}>
               <div className="grid md:grid-cols-2 gap-8">
-                <GigCard title="Full Stack Developer" company="Stealth AI" location="Remote" compensation="$1,200" duration="3 weeks" tags={["React", "AI"]} href="#" isFeatured />
-                <InternshipCard role="Product Design Intern" company="Linear" location="SF" type="In-person" stipend="$4,000/mo" tags={["Figma", "UX"]} href="#" isUrgent />
+                <GigCard title="Full Stack Developer" company="Stealth AI" location="Remote" compensation="$1,200" duration="3 weeks" tags={["React", "AI"]} href="/gigs/1" isFeatured />
+                <InternshipCard role="Product Design Intern" company="Linear" location="SF" type="In-person" stipend="$4,000/mo" tags={["Figma", "UX"]} href="/internships/1" isUrgent />
               </div>
             </DesignNode>
           </section>

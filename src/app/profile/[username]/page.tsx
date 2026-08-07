@@ -159,7 +159,7 @@ export default async function PublicProfilePage({
       
       <div className="min-h-screen bg-background pb-32">
         <div className="h-64 w-full bg-surface-2 border-b border-border relative overflow-hidden">
-           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]"></div>
            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2/3 h-64 bg-primary/20 blur-[100px] rounded-full" />
         </div>
 

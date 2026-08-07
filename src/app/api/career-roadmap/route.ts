@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { AIService } from '@/lib/ai';
+import { AIService, AIConfigurationError, AIRateLimitError } from '@/lib/ai';
 import { protectApi } from '@/lib/auth-checks';
 import prisma from '@/lib/prisma';
 
@@ -55,8 +55,16 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true, data: savedRoadmap });
     } catch (error: unknown) {
-        const msg = error instanceof Error ? error.message : "Internal error";
         console.error("[CAREER_COOP_ERROR]:", error);
+
+        if (error instanceof AIConfigurationError) {
+            return NextResponse.json({ error: "AI service is not configured correctly." }, { status: 503 });
+        }
+        if (error instanceof AIRateLimitError) {
+            return NextResponse.json({ error: "AI quota exceeded. Please try again later." }, { status: 429 });
+        }
+
+        const msg = error instanceof Error ? error.message : "Internal error";
         return NextResponse.json(
             { error: msg || "Failed to generate roadmap." },
             { status: 500 }

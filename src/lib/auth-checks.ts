@@ -35,7 +35,7 @@ export async function getUserRoleFromDb(userId: string) {
 /**
  * Protects an API route by validating session and role from database
  */
-export async function protectApi(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT")[]) {
+export async function protectApi(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
     const user = await getSession();
 
     if (!user) {
@@ -68,7 +68,7 @@ export async function protectApi(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP
 /**
  * Protects a Server Component/Action
  */
-export async function protectPage(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT")[]) {
+export async function protectPage(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
     const user = await getSession();
 
     if (!user) {
@@ -112,7 +112,7 @@ export async function requireUser() {
 /**
  * Ensures user has a specific role, returning the user and role or an error Response
  */
-export async function requireRole(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT")[]) {
+export async function requireRole(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
     const { errorResponse, user } = await requireUser();
     if (errorResponse) return { errorResponse, user: null, role: null };
 

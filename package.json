@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "check-casing": "node scripts/check-casing.js",
-    "predev": "node scripts/check-casing.js && node scripts/predev.js",
+    "predev": "node scripts/check-casing.js && node scripts/validate-schema.js && node scripts/predev.js",
     "dev": "next dev",
-    "build": "node scripts/check-casing.js && prisma generate && next build",
+    "build": "node scripts/check-casing.js && node scripts/validate-schema.js && prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "type-check": "node scripts/check-casing.js && tsc --noEmit",

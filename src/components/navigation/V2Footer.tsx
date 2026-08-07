@@ -83,9 +83,9 @@ export function V2Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/5 text-sm text-text-3">
             <p>© {new Date().getFullYear()} CampusConnect. All rights reserved.</p>
             <div className="flex items-center gap-4 mt-4 md:mt-0">
-              <a href="#" className="hover:text-white transition-colors">Twitter</a>
-              <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
-              <a href="#" className="hover:text-white transition-colors">Instagram</a>
+              <a href="https://twitter.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Twitter</a>
+              <a href="https://linkedin.com/company/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
+              <a href="https://instagram.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
             </div>
           </div>
         </Reveal>

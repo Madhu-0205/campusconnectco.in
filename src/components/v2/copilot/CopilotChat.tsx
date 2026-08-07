@@ -105,10 +105,10 @@ export const CopilotChat = () => {
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-50">
                   <Sparkles size={48} className="text-muted-foreground mb-4" />
-                  <p className="text-sm font-medium text-muted-foreground max-w-[250px]">
+                  <p className="text-sm font-medium text-muted-foreground max-w-62.5">
                     Ask me anything about your career, resume, or upcoming interviews.
                   </p>
-                  <div className="flex flex-col gap-2 w-full max-w-[250px] mt-8">
+                  <div className="flex flex-col gap-2 w-full max-w-62.5 mt-8">
                     <button onClick={() => promptChat("Review my resume")} className="text-xs font-bold bg-surface-2 p-3 rounded-xl hover:bg-surface-2/80 transition-colors text-left ">Review my resume</button>
                     <button onClick={() => promptChat("Find me remote React internships")} className="text-xs font-bold bg-surface-2 p-3 rounded-xl hover:bg-surface-2/80 transition-colors text-left ">Find me remote React internships</button>
                   </div>
@@ -168,7 +168,7 @@ export const CopilotChat = () => {
                   value={input}
                   onChange={handleInputChange}
                   placeholder="Ask your career copilot..."
-                  className="w-full bg-surface-2 rounded-2xl py-3 px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none min-h-[52px] max-h-32 custom-scrollbar"
+                  className="w-full bg-surface-2 rounded-2xl py-3 px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none min-h-13 max-h-32 custom-scrollbar"
                   rows={1}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {

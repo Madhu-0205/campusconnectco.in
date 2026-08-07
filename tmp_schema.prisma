@@ -47,13 +47,13 @@ model User {
   marketingConsent     Boolean             @default(false)
   marketingConsentAt   DateTime?
   ambassadorProfile    Ambassador?
+  analytics            Analytics[]
   careerRoadmaps       CareerRoadmap[]
   connectionsReceived  ConnectionRequest[] @relation("ConnectionReceiver")
   connectionsSent      ConnectionRequest[] @relation("ConnectionSender")
   conversations1       Conversation[]      @relation("User1Conv")
   conversations2       Conversation[]      @relation("User2Conv")
   copilotSessions      CopilotSession[]
-  savedGigs            SavedGig[]
   endorsementsReceived Endorsement[]       @relation("EndorsementsReceived")
   endorsementsGiven    Endorsement[]       @relation("EndorsementsGiven")
   clientEscrows        Escrow[]            @relation("ClientEscrow")
@@ -83,7 +83,6 @@ model User {
   applications         Application[]
   gigsPosted           Gig[]               @relation("PostedGigs")
   messages             Message[]
-  analytics            Analytics[]
 }
 
 model Follows {
@@ -153,11 +152,9 @@ model Gig {
   ownerConfirmed   Boolean       @default(false)
   studentConfirmed Boolean       @default(false)
   posted_by        String        @db.Uuid
-
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   completedAt      DateTime?
-  savedGigs        SavedGig[]
   isPremium        Boolean       @default(false)
   expires_at       DateTime      @default(now())
   required_skills  Json?
@@ -413,20 +410,6 @@ model SavedInternship {
   @@index([internshipId])
 }
 
-model SavedGig {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
-  gigId     String   @db.Uuid
-  liked     Boolean  @default(false)
-  createdAt DateTime @default(now())
-  gig       Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, gigId])
-  @@index([userId])
-  @@index([gigId])
-}
-
 model Announcement {
   id        String   @id @default(uuid()) @db.Uuid
   title     String
@@ -500,17 +483,17 @@ model Startup {
 }
 
 model ResumeAnalysis {
-  id             String   @id @default(uuid()) @db.Uuid
-  userId         String   @db.Uuid
-  score          Int
-  grade          String   @default("N/A")
-  resumeSnippet  String?  // First 200 chars of resume text for history preview
-  wordCount      Int      @default(0)
-  result         Json?    // Full structured AI output (score, strengths, suggestions, etc.)
-  feedback       Json?    // Legacy field — kept for backward compatibility
-  fileName       String?
-  createdAt      DateTime @default(now())
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  score         Int
+  feedback      Json?
+  fileName      String?
+  createdAt     DateTime @default(now())
+  grade         String   @default("N/A")
+  result        Json?
+  resumeSnippet String?
+  wordCount     Int      @default(0)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt(sort: Desc)])
 }
@@ -518,12 +501,11 @@ model ResumeAnalysis {
 model Analytics {
   id        String   @id @default(uuid()) @db.Uuid
   event     String
-  userId    String?  @db.Uuid
-  sessionId String?
   data      Json?
   createdAt DateTime @default(now())
-
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sessionId String?
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id])
 
   @@index([event, createdAt])
   @@index([userId, event])
@@ -802,6 +784,29 @@ model GrowthEvent {
   @@index([college, createdAt])
 }
 
+model College {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  city      String
+  district  String
+  state     String
+  latitude  Float?
+  longitude Float?
+  type      String   @default("Engineering")
+  approved  Boolean  @default(false)
+  verified  Boolean  @default(false)
+  website   String?
+  logo      String?
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([state, city])
+  @@index([approved])
+  @@index([name])
+  @@map("colleges")
+}
+
 enum TransactionStatus {
   PENDING
   PAID
@@ -862,28 +867,4 @@ enum DriveStatus {
   COMPLETED
 }
 
-// ── College model ─────────────────────────────────────────────────────────────
-// Stores user-submitted colleges for admin approval.
-// Approved colleges are synced from AISHE/UGC/AICTE datasets.
-model College {
-  id         String   @id @default(uuid()) @db.Uuid
-  name       String
-  city       String
-  district   String
-  state      String
-  latitude   Float?
-  longitude  Float?
-  type       String   @default("Engineering")
-  approved   Boolean  @default(false)
-  verified   Boolean  @default(false)
-  website    String?
-  logo       String?
-  createdBy  String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 
-  @@index([state, city])
-  @@index([approved])
-  @@index([name])
-  @@map("colleges")
-}

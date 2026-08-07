@@ -126,7 +126,7 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string; l
 
                     <div className="flex gap-5">
                         {/* Avatar */}
-                        <div className="w-14 h-14 rounded-2xl bg-accent dark:bg-slate-800 shrink-0 flex items-center justify-center font-black text-slate-400 dark:text-slate-500 group-hover:bg-accent text-foreground group-hover:text-foreground transition-colors border border-border">
+                        <div className="w-14 h-14 rounded-2xl bg-accent dark:bg-slate-800 shrink-0 flex items-center justify-center font-black dark:text-slate-500 group-hover:bg-accent text-foreground group-hover:text-foreground transition-colors border border-border">
                             {gig.poster.name?.[0]?.toUpperCase() || "C"}
                         </div>
 

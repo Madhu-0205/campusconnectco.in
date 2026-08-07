@@ -1,10 +1,10 @@
 "use client"
 
-import React from "react"
+import React, { useContext } from "react"
 
 import { cn } from "@/lib/utils"
 
-import { useDesignInspector, DesignMetadata } from "./DesignInspectorProvider"
+import { DesignInspectorContext, DesignMetadata } from "./DesignInspectorProvider"
 
 interface DesignNodeProps {
   children: React.ReactNode
@@ -13,7 +13,13 @@ interface DesignNodeProps {
 }
 
 export const DesignNode = ({ children, metadata, className }: DesignNodeProps) => {
-  const { isActive, selectedNode, setSelectedNode } = useDesignInspector()
+  // Safe: returns null when no DesignInspectorProvider is in the tree.
+  // This allows DesignNode to be used outside /design-system as a transparent wrapper.
+  const context = useContext(DesignInspectorContext)
+
+  const isActive = context?.isActive ?? false
+  const selectedNode = context?.selectedNode ?? null
+  const setSelectedNode = context?.setSelectedNode ?? (() => {})
 
   const isSelected = selectedNode?.name === metadata.name
 
@@ -31,7 +37,7 @@ export const DesignNode = ({ children, metadata, className }: DesignNodeProps) =
     <div 
       className={cn(
         "relative transition-all cursor-crosshair rounded-xl",
-        "outline outline-1 outline-primary/20 bg-primary/5 hover:outline-primary hover:outline-2 hover:bg-primary/20",
+        "outline outline-primary/20 bg-primary/5 hover:outline-primary hover:outline-2 hover:bg-primary/20",
         isSelected && "outline-primary outline-2 bg-primary/20 shadow-[0_0_0_4px_rgba(var(--color-primary),0.1)]",
         className
       )}
