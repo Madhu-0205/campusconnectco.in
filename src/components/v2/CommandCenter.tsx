@@ -84,7 +84,7 @@ export const CommandCenter = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={springSmooth}
-            className="relative z-50 w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-surface/90 shadow-card-hover backdrop-blur-2xl"
+            className="relative z-50 w-full max-w-2xl overflow-hidden rounded-2xl bg-surface/90 shadow-card-hover backdrop-blur-2xl"
           >
             <Command className="w-full flex flex-col">
               <div className="flex items-center border-b border-border px-4" cmdk-input-wrapper="">
@@ -94,7 +94,7 @@ export const CommandCenter = () => {
                   placeholder="What do you need?"
                   className="flex h-16 w-full rounded-md bg-transparent py-3 text-lg outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 font-medium text-foreground"
                 />
-                <kbd className="hidden sm:inline-flex h-6 items-center gap-1 rounded border border-border bg-surface-2 px-2 text-[10px] font-medium text-muted-foreground">
+                <kbd className="hidden sm:inline-flex h-6 items-center gap-1 rounded bg-surface-2 px-2 text-[10px] font-medium text-muted-foreground">
                   <span className="text-xs">ESC</span>
                 </kbd>
               </div>

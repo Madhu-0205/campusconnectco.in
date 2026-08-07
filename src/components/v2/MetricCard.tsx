@@ -30,7 +30,7 @@ export const MetricCard = ({
       whileHover={{ y: -2 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className={cn(
-        "relative overflow-hidden rounded-2xl bg-surface/60 p-6 backdrop-blur-xl border border-border shadow-card flex flex-col",
+        "relative overflow-hidden rounded-2xl bg-surface/60 p-6 backdrop-blur-xl shadow-card flex flex-col",
         className
       )}
     >

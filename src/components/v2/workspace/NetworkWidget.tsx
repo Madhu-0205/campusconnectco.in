@@ -1,6 +1,6 @@
-import React from "react"
 import { MessageSquare, Users } from "lucide-react"
 import Link from "next/link"
+import React from "react"
 
 import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
 import { DesignNode } from "@/components/v2/inspector/DesignNode"
@@ -25,7 +25,7 @@ export const NetworkWidget = ({ unreadMessages, pendingConnections }: NetworkWid
         accessibilityNotes: "Displays counts for notifications"
       }}
     >
-      <div className="rounded-2xl bg-surface-2 border border-border p-6 flex flex-col h-full shadow-sm hover:border-primary/30 transition-colors">
+      <div className="rounded-2xl bg-surface-2 p-6 flex flex-col h-full shadow-sm hover:border-primary/30 transition-colors">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-black text-foreground flex items-center gap-2">
             <Users size={18} className="text-primary" /> Network & Comm
@@ -35,9 +35,9 @@ export const NetworkWidget = ({ unreadMessages, pendingConnections }: NetworkWid
         <div className="flex-1 flex flex-col gap-4 justify-center">
           <HoverMagnetic strength={0.03}>
             <Link href="/dashboard/student/messages" className="block">
-              <div className="p-4 rounded-xl border border-border bg-background hover:border-primary/50 transition-colors group flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-background hover:border-primary/50 transition-colors group flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${unreadMessages > 0 ? 'bg-primary/20 text-primary' : 'bg-surface-2 border border-border text-muted-foreground'}`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${unreadMessages > 0 ? 'bg-primary/20 text-primary' : 'bg-surface-2 text-muted-foreground'}`}>
                     <MessageSquare size={16} />
                   </div>
                   <h4 className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">Messages</h4>
@@ -55,9 +55,9 @@ export const NetworkWidget = ({ unreadMessages, pendingConnections }: NetworkWid
 
           <HoverMagnetic strength={0.03}>
             <Link href="/network" className="block">
-              <div className="p-4 rounded-xl border border-border bg-background hover:border-primary/50 transition-colors group flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-background hover:border-primary/50 transition-colors group flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${pendingConnections > 0 ? 'bg-primary/20 text-primary' : 'bg-surface-2 border border-border text-muted-foreground'}`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${pendingConnections > 0 ? 'bg-primary/20 text-primary' : 'bg-surface-2 text-muted-foreground'}`}>
                     <Users size={16} />
                   </div>
                   <h4 className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">Connections</h4>

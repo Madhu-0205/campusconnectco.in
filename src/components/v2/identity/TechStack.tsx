@@ -1,5 +1,5 @@
-import React from "react"
 import { Code2 } from "lucide-react"
+import React from "react"
 
 import { Badge } from "@/components/ui/Badge"
 
@@ -11,9 +11,9 @@ export const TechStack = ({ skills }: TechStackProps) => {
   if (!skills || skills.length === 0) return null
 
   return (
-    <div className="bg-surface border border-border rounded-4xl p-8 shadow-sm">
+    <div className="bg-surface rounded-4xl p-8 shadow-sm">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-accent border border-border flex items-center justify-center text-foreground">
+        <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-foreground">
           <Code2 size={20} />
         </div>
         <h2 className="text-xl font-black text-foreground">Tech Stack</h2>

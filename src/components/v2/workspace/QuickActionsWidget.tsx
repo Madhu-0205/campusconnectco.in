@@ -1,6 +1,6 @@
-import React from "react"
 import { Upload, Sparkles, UserCircle } from "lucide-react"
 import Link from "next/link"
+import React from "react"
 
 import { Button } from "@/components/ui/Button"
 import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
@@ -21,7 +21,7 @@ export const QuickActionsWidget = () => {
         accessibilityNotes: "Buttons use visible focus rings"
       }}
     >
-      <div className="rounded-2xl bg-surface-2 border border-border p-6 flex flex-col h-full shadow-sm hover:border-primary/30 transition-colors">
+      <div className="rounded-2xl bg-surface-2 p-6 flex flex-col h-full shadow-sm hover:border-primary/30 transition-colors">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-black text-foreground flex items-center gap-2">
              Quick Actions

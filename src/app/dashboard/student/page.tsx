@@ -1,21 +1,20 @@
-import React, { Suspense } from "react"
 import { redirect } from "next/navigation"
+import React, { Suspense } from "react"
 
+import { DesignNode } from "@/components/v2/inspector/DesignNode"
+import { QualityGate } from "@/components/v2/QualityGate"
+import { ActivePursuitsWidget } from "@/components/v2/workspace/ActivePursuitsWidget"
+import { AICopilotWidget } from "@/components/v2/workspace/AICopilotWidget"
+import { CareerProgressWidget } from "@/components/v2/workspace/CareerProgressWidget"
+import { DeadlinesWidget } from "@/components/v2/workspace/DeadlinesWidget"
+import { NetworkWidget } from "@/components/v2/workspace/NetworkWidget"
+import { OpportunitiesWidget } from "@/components/v2/workspace/OpportunitiesWidget"
+import { QuickActionsWidget } from "@/components/v2/workspace/QuickActionsWidget"
+import { WorkspaceGrid } from "@/components/v2/workspace/WorkspaceGrid"
+import { WorkspaceWelcome } from "@/components/v2/workspace/WorkspaceWelcome"
 import { protectPage } from "@/lib/auth-checks"
 import prisma from "@/lib/prisma"
 import { getPersonalizedRecommendations } from "@/lib/recommendation-engine"
-import { DesignNode } from "@/components/v2/inspector/DesignNode"
-import { QualityGate } from "@/components/v2/QualityGate"
-
-import { WorkspaceGrid } from "@/components/v2/workspace/WorkspaceGrid"
-import { WorkspaceWelcome } from "@/components/v2/workspace/WorkspaceWelcome"
-import { AICopilotWidget } from "@/components/v2/workspace/AICopilotWidget"
-import { ActivePursuitsWidget } from "@/components/v2/workspace/ActivePursuitsWidget"
-import { OpportunitiesWidget } from "@/components/v2/workspace/OpportunitiesWidget"
-import { DeadlinesWidget } from "@/components/v2/workspace/DeadlinesWidget"
-import { NetworkWidget } from "@/components/v2/workspace/NetworkWidget"
-import { CareerProgressWidget } from "@/components/v2/workspace/CareerProgressWidget"
-import { QuickActionsWidget } from "@/components/v2/workspace/QuickActionsWidget"
 
 // Add a standard widget skeleton
 const WidgetSkeleton = ({ height = "h-64" }: { height?: string }) => (

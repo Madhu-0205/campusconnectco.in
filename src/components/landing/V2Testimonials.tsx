@@ -1,13 +1,13 @@
 "use client"
 
-import React, { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
+import React, { useState } from "react"
 
 import { Card } from "@/components/ui/Card"
 import Image from "@/components/ui/ResilientImage"
-import { getLocalAvatar } from "@/lib/avatar"
 import { ActivityFeed } from "@/components/v2/ActivityFeed"
+import { getLocalAvatar } from "@/lib/avatar"
 
 const testimonials = [
   {

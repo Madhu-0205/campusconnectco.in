@@ -1,7 +1,8 @@
 "use client"
 
-import React, { useState } from "react"
 import { CheckCircle2, Circle, ChevronDown, ChevronUp, ShieldCheck } from "lucide-react"
+import React, { useState } from "react"
+
 import { cn } from "@/lib/utils"
 
 export interface QualityGateChecks {
@@ -62,7 +63,7 @@ export const QualityGate = ({ checks, componentName }: { checks: QualityGateChec
       </button>
 
       {expanded && (
-        <div className="p-4 mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 border border-border rounded-lg bg-surface-2/50">
+        <div className="p-4 mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 rounded-lg bg-surface-2/50">
           {checkArray.map(check => {
             const passed = checks[check.key]
             return (

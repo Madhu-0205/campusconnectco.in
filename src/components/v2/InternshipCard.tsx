@@ -20,6 +20,8 @@ interface InternshipCardProps {
   isUrgent?: boolean
 }
 
+import Image from "next/image"
+
 export const InternshipCard = ({
   role,
   company,
@@ -72,9 +74,9 @@ export const InternshipCard = ({
       )}
 
       <div className="flex gap-5">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white border border-border shadow-sm overflow-hidden p-2">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm overflow-hidden p-2">
           {logoUrl ? (
-            <img src={logoUrl} alt={company} className="h-full w-full object-contain" />
+            <Image src={logoUrl} alt={company} fill className="object-contain p-2" />
           ) : (
             <span className="text-2xl font-bold text-black">
               {company.charAt(0)}
@@ -111,7 +113,7 @@ export const InternshipCard = ({
           {tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center rounded-md bg-surface-2 px-2 py-1 text-xs font-medium text-text-2 border border-border-subtle"
+              className="inline-flex items-center rounded-md bg-surface-2 px-2 py-1 text-xs font-medium text-text-2 -subtle"
             >
               {tag}
             </span>

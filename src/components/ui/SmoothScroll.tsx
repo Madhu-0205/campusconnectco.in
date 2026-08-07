@@ -2,7 +2,7 @@
 
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import type Lenis from "lenis"
+import type from "lenis"
 import { ReactLenis } from "lenis/react"
 import type { LenisRef } from "lenis/react"
 import { useEffect, useRef } from "react"

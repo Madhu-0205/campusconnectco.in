@@ -8,7 +8,7 @@ import {
     GraduationCap, Star, Flame
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback} from "react";
 import { toast } from "sonner";
 
 interface Internship {

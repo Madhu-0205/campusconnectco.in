@@ -1,11 +1,13 @@
 "use client"
 
-import { AnimatePresence } from "framer-motion"
-import React from "react"
+import { AnimatePresence, motion } from "framer-motion"
+import { LayoutGrid, List, ChevronRight } from "lucide-react"
+import Image from "next/image"
+import React, { useState } from "react"
 
-import { StaggerContainer as Stagger, StaggerItem } from "@/components/ui/motion/Stagger"
 import { GigCard } from "@/components/v2/GigCard"
 import { InternshipCard } from "@/components/v2/InternshipCard"
+
 
 export interface Opportunity {
   id: string
@@ -35,21 +37,56 @@ export const OpportunityFeed = ({
   emptyMessage = "No opportunities found.",
   className
 }: OpportunityFeedProps) => {
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+
   return (
     <div className={className}>
+      {opportunities.length > 0 && (
+        <div className="flex justify-end mb-6">
+          <div className="bg-surface rounded-xl p-1 inline-flex gap-1">
+            <button 
+              onClick={() => setViewMode("grid")}
+              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-surface-2 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button 
+              onClick={() => setViewMode("list")}
+              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-surface-2 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <List size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
       <AnimatePresence mode="popLayout">
         {opportunities.length === 0 ? (
-          <Stagger key="empty" staggerChildren={0.1}>
-            <StaggerItem>
-              <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-surface-2 p-12 text-center">
-                <p className="text-muted-foreground font-medium">{emptyMessage}</p>
-              </div>
-            </StaggerItem>
-          </Stagger>
-        ) : (
-          <Stagger key="feed" staggerChildren={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {opportunities.map((opp) => (
-              <StaggerItem key={opp.id}>
+          <motion.div 
+            key="empty" 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-surface-2 p-12 text-center">
+              <p className="text-muted-foreground font-medium">{emptyMessage}</p>
+            </div>
+          </motion.div>
+        ) : viewMode === "grid" ? (
+          <motion.div 
+            key="grid" 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {opportunities.map((opp, i) => (
+              <motion.div 
+                key={opp.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03, duration: 0.2 }}
+              >
                 {opp.type === "gig" ? (
                   <GigCard
                     title={opp.title}
@@ -77,9 +114,57 @@ export const OpportunityFeed = ({
                     className="h-full"
                   />
                 )}
-              </StaggerItem>
+              </motion.div>
             ))}
-          </Stagger>
+          </motion.div>
+        ) : (
+          <motion.div 
+            key="list"
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="flex flex-col rounded-2xl bg-background overflow-hidden"
+          >
+            {opportunities.map((opp, i) => (
+              <motion.a
+                key={opp.id}
+                href={opp.href}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: i * 0.02, duration: 0.15 }}
+                className={`flex items-center justify-between p-4 group hover:bg-surface-2 transition-colors cursor-pointer ${i !== opportunities.length - 1 ? 'border-b border-border' : ''}`}
+              >
+                <div className="flex items-center gap-4">
+                  {opp.logoUrl ? (
+                    <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0">
+                      <Image src={opp.logoUrl} alt={opp.company} fill className="object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs uppercase">
+                      {opp.company.charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <h4 className="font-bold text-sm group-hover:text-primary transition-colors flex items-center gap-2">
+                      {opp.title}
+                      {opp.isUrgent && <span className="w-2 h-2 rounded-full bg-destructive" />}
+                      {opp.isFeatured && <span className="w-2 h-2 rounded-full bg-warning" />}
+                    </h4>
+                    <p className="text-xs text-muted-foreground font-medium">{opp.company} &middot; {opp.location}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
+                  <span className="hidden sm:inline-block">
+                    {opp.type === "gig" 
+                      ? `${opp.compensation} • ${opp.duration}`
+                      : `${opp.stipend} • ${opp.workType}`
+                    }
+                  </span>
+                  <ChevronRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity text-primary -translate-x-2 group-hover:translate-x-0 transform" />
+                </div>
+              </motion.a>
+            ))}
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

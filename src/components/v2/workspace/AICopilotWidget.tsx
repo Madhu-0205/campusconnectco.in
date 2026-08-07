@@ -1,6 +1,6 @@
-import React from "react"
 import { Brain, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import React from "react"
 
 import { Button } from "@/components/ui/Button"
 import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"

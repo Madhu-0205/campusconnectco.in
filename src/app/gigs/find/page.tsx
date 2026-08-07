@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
 
-import { QualityGate } from '@/components/v2/QualityGate'
 import { DesignNode } from '@/components/v2/inspector/DesignNode'
 import { OpportunityDiscoveryClient } from '@/components/v2/OpportunityDiscoveryClient'
+import { QualityGate } from '@/components/v2/QualityGate'
 import { createClient } from '@/lib/supabase/server'
 
 interface PageProps {

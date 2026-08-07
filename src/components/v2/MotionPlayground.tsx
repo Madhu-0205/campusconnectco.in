@@ -1,9 +1,8 @@
 "use client"
 
+import { motion} from "framer-motion"
 import React, { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 
-import { springSnappy } from "@/lib/motion"
 
 export const MotionPlayground = () => {
   const [stiffness, setStiffness] = useState(300)
@@ -12,7 +11,7 @@ export const MotionPlayground = () => {
   const [active, setActive] = useState(false)
 
   return (
-    <div className="rounded-2xl border border-border bg-surface p-8 shadow-card flex flex-col md:flex-row gap-12 items-center">
+    <div className="rounded-2xl bg-surface p-8 shadow-card flex flex-col md:flex-row gap-12 items-center">
       <div className="flex-1 space-y-6 w-full max-w-sm">
         <div>
           <h3 className="text-lg font-bold mb-1">Spring Physics</h3>
@@ -56,7 +55,7 @@ export const MotionPlayground = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center gap-8 w-full min-h-[300px] rounded-xl bg-surface-2 border border-border-subtle overflow-hidden relative">
+      <div className="flex-1 flex flex-col items-center justify-center gap-8 w-full min-h-[300px] rounded-xl bg-surface-2 -subtle overflow-hidden relative">
         {/* Grid Background */}
         <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
         

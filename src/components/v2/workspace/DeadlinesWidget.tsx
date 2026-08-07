@@ -1,5 +1,5 @@
-import React from "react"
 import { Calendar, Clock } from "lucide-react"
+import React from "react"
 
 import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
 import { DesignNode } from "@/components/v2/inspector/DesignNode"
@@ -30,7 +30,7 @@ export const DeadlinesWidget = ({ deadlines }: DeadlinesWidgetProps) => {
         accessibilityNotes: "List format for deadlines"
       }}
     >
-      <div className="rounded-2xl bg-surface-2 border border-border p-6 flex flex-col h-full shadow-sm hover:border-primary/30 transition-colors">
+      <div className="rounded-2xl bg-surface-2 p-6 flex flex-col h-full shadow-sm hover:border-primary/30 transition-colors">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-black text-foreground flex items-center gap-2">
             <Calendar size={18} className="text-primary" /> Upcoming Deadlines
@@ -45,7 +45,7 @@ export const DeadlinesWidget = ({ deadlines }: DeadlinesWidgetProps) => {
               return (
                 <HoverMagnetic key={item.id} strength={0.03}>
                   <div className={`p-4 rounded-xl border bg-background transition-all group flex items-start gap-4 ${isUrgent ? 'border-amber-500/30 hover:border-amber-500/60' : 'border-border hover:border-primary/50'}`}>
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${isUrgent ? 'bg-amber-500/20 text-amber-500' : 'bg-surface-2 border border-border text-muted-foreground'}`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${isUrgent ? 'bg-amber-500/20 text-amber-500' : 'bg-surface-2 text-muted-foreground'}`}>
                       {item.type === 'INTERVIEW' ? <Clock size={16} /> : <Calendar size={16} />}
                     </div>
                     <div className="flex-1 min-w-0">

@@ -1,19 +1,17 @@
+import { motion } from "framer-motion"
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 
 import { StudentPersonSchema } from "@/components/seo/JsonLd"
-import prisma from "@/lib/prisma"
-
+import { CareerStory } from "@/components/v2/identity/CareerStory"
+import { ExperienceTimeline } from "@/components/v2/identity/ExperienceTimeline"
+import { IdentityCard } from "@/components/v2/identity/IdentityCard"
+import { ProjectShowcase } from "@/components/v2/identity/ProjectShowcase"
+import { TechStack } from "@/components/v2/identity/TechStack"
 import { DesignNode } from "@/components/v2/inspector/DesignNode"
 import { QualityGate } from "@/components/v2/QualityGate"
-
-import { IdentityCard } from "@/components/v2/identity/IdentityCard"
-import { CareerStory } from "@/components/v2/identity/CareerStory"
-import { TechStack } from "@/components/v2/identity/TechStack"
-import { ProjectShowcase } from "@/components/v2/identity/ProjectShowcase"
-import { ExperienceTimeline } from "@/components/v2/identity/ExperienceTimeline"
-import { StaggerContainer, StaggerItem } from "@/components/ui/motion/Stagger"
+import prisma from "@/lib/prisma"
 
 export async function generateMetadata({
   params,
@@ -204,29 +202,29 @@ export default async function PublicProfilePage({
 
                 {/* Right Column: Professional Content */}
                 <div className="lg:col-span-8">
-                  <StaggerContainer className="space-y-8" staggerChildren={0.08} delayChildren={0.1}>
-                    <StaggerItem>
+                  <div className="space-y-8">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
                       <CareerStory bio={studentData.bio} />
-                    </StaggerItem>
+                    </motion.div>
                     
                     {studentData.skills.length > 0 && (
-                      <StaggerItem>
+                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.05 }}>
                         <TechStack skills={studentData.skills} />
-                      </StaggerItem>
+                      </motion.div>
                     )}
 
                     {studentData.projects.length > 0 && (
-                      <StaggerItem>
+                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.1 }}>
                         <ProjectShowcase projects={studentData.projects} />
-                      </StaggerItem>
+                      </motion.div>
                     )}
 
                     {studentData.experiences.length > 0 && (
-                      <StaggerItem>
+                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: 0.15 }}>
                         <ExperienceTimeline experiences={studentData.experiences} />
-                      </StaggerItem>
+                      </motion.div>
                     )}
-                  </StaggerContainer>
+                  </div>
                 </div>
               </div>
             </div>

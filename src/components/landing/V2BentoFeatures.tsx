@@ -1,10 +1,8 @@
 "use client"
 
-import { motion } from "framer-motion"
 import { ShieldCheck, Zap, Briefcase, Users, BrainCircuit } from "lucide-react"
 import React from "react"
 
-import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
 import { Reveal } from "@/components/ui/motion/Reveal"
 import { MetricCard } from "@/components/v2/MetricCard"
 

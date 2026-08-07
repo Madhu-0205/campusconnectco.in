@@ -1,10 +1,14 @@
 "use client"
 
-import React from "react"
-import { X, Layers, Type, Wind, Maximize, Droplet, Box, Keyboard } from "lucide-react"
-import { useDesignInspector } from "./DesignInspectorProvider"
 import { motion, AnimatePresence } from "framer-motion"
+import { X, Layers, Type, Wind, Maximize, Droplet, Box, Keyboard } from "lucide-react"
+import React from "react"
+
 import { Badge } from "@/components/ui/Badge"
+
+import { useDesignInspector } from "./DesignInspectorProvider"
+
+
 
 export const DesignPropertiesPanel = () => {
   const { isActive, selectedNode, setSelectedNode } = useDesignInspector()
@@ -19,7 +23,7 @@ export const DesignPropertiesPanel = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 20 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="fixed right-6 top-24 z-50 w-80 bg-surface/90 backdrop-blur-2xl border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100vh-8rem)]"
+          className="fixed right-6 top-24 z-50 w-80 bg-surface/90 backdrop-blur-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100vh-8rem)]"
         >
           <div className="flex items-center justify-between p-4 border-b border-border bg-surface-2/50">
             <div>
@@ -89,7 +93,7 @@ export const DesignPropertiesPanel = () => {
             {/* Accessibility Notes */}
             <div className="space-y-2">
               <h4 className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1.5"><Keyboard className="w-3.5 h-3.5"/> Accessibility</h4>
-              <p className="text-xs text-text-2 leading-relaxed bg-surface-2 p-3 rounded-xl border border-border-subtle">{selectedNode.accessibilityNotes}</p>
+              <p className="text-xs text-text-2 leading-relaxed bg-surface-2 p-3 rounded-xl -subtle">{selectedNode.accessibilityNotes}</p>
             </div>
 
           </div>

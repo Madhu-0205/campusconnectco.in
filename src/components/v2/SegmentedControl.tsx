@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import React, { useState } from "react"
+import React, { } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -39,7 +39,7 @@ export const SegmentedControl = ({
           {value === option && (
             <motion.div
               layoutId="segmented-control-active"
-              className="absolute inset-0 -z-10 rounded-md bg-surface shadow-sm border border-border/50"
+              className="absolute inset-0 -z-10 rounded-md bg-surface shadow-sm /50"
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
             />
           )}

@@ -1,33 +1,23 @@
 "use client"
 
-import React, { useState } from "react"
 import { Moon, Sun, Monitor, LayoutDashboard } from "lucide-react"
 import { useTheme } from "next-themes"
+import React, { useState } from "react"
 
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
-import { Input } from "@/components/ui/Input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table"
-import { Badge } from "@/components/ui/Badge"
 import { ActivityFeed } from "@/components/v2/ActivityFeed"
-import { AIChatBubble } from "@/components/v2/AIChatBubble"
 import { FilterBar } from "@/components/v2/FilterBar"
 import { GigCard } from "@/components/v2/GigCard"
-import { InternshipCard } from "@/components/v2/InternshipCard"
-import { MetricCard } from "@/components/v2/MetricCard"
-import { SegmentedControl } from "@/components/v2/SegmentedControl"
-import { Skeleton } from "@/components/v2/Skeleton"
-import { Spinner } from "@/components/v2/Spinner"
-import { EmptyState, ErrorState } from "@/components/v2/States"
-import { MotionPlayground } from "@/components/v2/MotionPlayground"
-import { toast } from "sonner"
-import { OpportunityFeed } from "@/components/v2/OpportunityFeed"
-
-// V2 Architecture Imports
 import { DesignInspectorProvider, useDesignInspector } from "@/components/v2/inspector/DesignInspectorProvider"
 import { DesignNode } from "@/components/v2/inspector/DesignNode"
 import { DesignPropertiesPanel } from "@/components/v2/inspector/DesignPropertiesPanel"
+import { InternshipCard } from "@/components/v2/InternshipCard"
+import { MetricCard } from "@/components/v2/MetricCard"
+import { OpportunityFeed } from "@/components/v2/OpportunityFeed"
 import { QualityGate } from "@/components/v2/QualityGate"
+
+// V2 Architecture Imports
 
 const sections = [
   "Production Showcase",

@@ -8,7 +8,7 @@ import { Opportunity, OpportunityFeed } from "@/components/v2/OpportunityFeed"
 
 // Using any here to bypass complex Supabase generated types for the client mapping,
 // but we will cast safely.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function OpportunityDiscoveryClient({ gigs }: { gigs: any[] }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -98,7 +98,7 @@ export function OpportunityDiscoveryClient({ gigs }: { gigs: any[] }) {
         activeFilters={[localCategory]}
         onFilterToggle={handleFilterToggle}
         onSearch={setLocalSearch}
-        className="sticky top-24 z-20 backdrop-blur-md p-2 rounded-2xl bg-surface/50 border border-border"
+        className="sticky top-24 z-20 backdrop-blur-md p-2 rounded-2xl bg-surface/50 "
       />
       
       <OpportunityFeed 

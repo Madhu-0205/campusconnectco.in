@@ -8,7 +8,6 @@ import Link from "next/link"
 
 import { TalentSearchClient } from "@/components/employer/TalentSearchClient"
 import { Card } from "@/components/ui/Card"
-import { getSession } from "@/lib/auth-checks"
 import prisma from "@/lib/prisma"
 
 export const metadata: Metadata = {

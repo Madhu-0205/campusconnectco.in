@@ -38,7 +38,7 @@ export const ConnectionCard = ({
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={cn(
-        "group flex flex-col items-center overflow-hidden rounded-2xl bg-surface/80 p-6 text-center backdrop-blur-xl transition-all duration-300 hover:shadow-card-hover shadow-card border border-border",
+        "group flex flex-col items-center overflow-hidden rounded-2xl bg-surface/80 p-6 text-center backdrop-blur-xl transition-all duration-300 hover:shadow-card-hover shadow-card ",
         className
       )}
     >

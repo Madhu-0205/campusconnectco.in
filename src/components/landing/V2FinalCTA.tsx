@@ -1,13 +1,11 @@
 "use client"
 
-import { motion } from "framer-motion"
 import { ArrowRight, Star } from "lucide-react"
 import Link from "next/link"
 import React from "react"
 
 import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
 import { Reveal } from "@/components/ui/motion/Reveal"
-import { springSnappy } from "@/lib/motion"
 
 export function V2FinalCTA() {
   return (

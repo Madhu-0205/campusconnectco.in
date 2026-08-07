@@ -2,7 +2,7 @@
 
 import { motion, LayoutGroup } from "framer-motion"
 import { Search, SlidersHorizontal, X } from "lucide-react"
-import React, { useState } from "react"
+import React, { } from "react"
 
 import { cn } from "@/lib/utils"
 

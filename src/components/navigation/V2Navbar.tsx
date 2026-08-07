@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useState } from "react"
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion"
-import Link from "next/link"
 import { Menu, X, Search } from "lucide-react"
+import Link from "next/link"
+import React, { useState } from "react"
 
 import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
 import { springSnappy } from "@/lib/motion"

@@ -1,10 +1,8 @@
 "use client"
 
-import React from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import React from "react"
 
-import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
 import { Reveal } from "@/components/ui/motion/Reveal"
 
 const FooterLink = ({ href, children }: { href: string; children: React.ReactNode }) => (

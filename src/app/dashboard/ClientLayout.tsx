@@ -9,6 +9,8 @@ import { toast } from "sonner"
 import PostGigModal from "@/components/gigs/PostGigModal"
 import NotificationsPopover from "@/components/NotificationsPopover"
 import { Button } from "@/components/ui/Button"
+import { CopilotChat } from "@/components/v2/copilot/CopilotChat"
+import { CopilotProvider } from "@/components/v2/copilot/CopilotProvider"
 import { createClient } from "@/lib/supabase/client"
 
 const studentItems = [
@@ -116,7 +118,8 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground relative overflow-hidden transition-colors duration-300">
+        <CopilotProvider>
+            <div className="min-h-screen flex bg-background text-foreground relative overflow-hidden transition-colors duration-300">
             {/* 10. FOUNDER PREVIEW MODE LABEL (Requirement 10) */}
             {isPreviewMode && (
                 <div className="bg-amber-400 px-4 py-2 text-center font-bold flex justify-between items-center shadow-md relative z-50">
@@ -251,6 +254,13 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
                         </div>
                         <div className="h-6 w-px bg-white/5 mx-1" />
                         <PostGigModal />
+                        <button
+                            onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'j', metaKey: true }))}
+                            className="relative p-2.5 rounded-full text-slate-500 hover:bg-white/5 transition-all duration-300 hidden md:block"
+                            title="Open Career Copilot (⌘ + J)"
+                        >
+                            <Sparkles size={20} />
+                        </button>
                         <Link href="/dashboard/student/messages" className="relative p-2.5 rounded-full text-slate-500 hover:bg-white/5 transition-all duration-300">
                             <MessageCircle size={20} />
                         </Link>
@@ -265,7 +275,10 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
                     {children}
                 </div>
             </main>
+            
+            <CopilotChat />
         </div>
+        </CopilotProvider>
     )
 }
 

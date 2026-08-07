@@ -1,8 +1,10 @@
 "use client"
 
 import React from "react"
-import { useDesignInspector, DesignMetadata } from "./DesignInspectorProvider"
+
 import { cn } from "@/lib/utils"
+
+import { useDesignInspector, DesignMetadata } from "./DesignInspectorProvider"
 
 interface DesignNodeProps {
   children: React.ReactNode

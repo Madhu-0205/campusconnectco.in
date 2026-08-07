@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Inbox, FileText, Compass, AlertCircle, RefreshCcw } from "lucide-react"
+import { Inbox,   AlertCircle, RefreshCcw } from "lucide-react"
 import React from "react"
 
 import { Button } from "@/components/ui/Button"
@@ -29,7 +29,7 @@ export const EmptyState = ({
   return (
     <div
       className={cn(
-        "flex min-h-100 w-full flex-col items-center justify-center rounded-2xl border border-border border-dashed bg-surface/30 p-8 text-center animate-in fade-in duration-500",
+        "flex min-h-100 w-full flex-col items-center justify-center rounded-2xl border-dashed bg-surface/30 p-8 text-center animate-in fade-in duration-500",
         className
       )}
     >

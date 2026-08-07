@@ -1,9 +1,9 @@
+import { ExternalLink, Github, Linkedin, Mail,  Download } from "lucide-react"
 import React from "react"
-import { ExternalLink, Github, Linkedin, Mail, MapPin, Download } from "lucide-react"
 
-import { UserAvatar } from "@/components/v2/UserAvatar"
-import { VerificationBadge } from "@/components/ui/VerificationBadge"
 import { Button } from "@/components/ui/Button"
+import { VerificationBadge } from "@/components/ui/VerificationBadge"
+import { UserAvatar } from "@/components/v2/UserAvatar"
 
 interface IdentityCardProps {
   profile: {
@@ -24,7 +24,7 @@ interface IdentityCardProps {
 
 export const IdentityCard = ({ profile }: IdentityCardProps) => {
   return (
-    <div className="sticky top-24 bg-surface-2/50 backdrop-blur-xl border border-border rounded-4xl p-8 flex flex-col items-center text-center shadow-glow-primary">
+    <div className="sticky top-24 bg-surface-2/50 backdrop-blur-xl rounded-4xl p-8 flex flex-col items-center text-center shadow-glow-primary">
       <div className="relative mb-6">
         <UserAvatar
           src={profile.avatar}
@@ -71,7 +71,7 @@ export const IdentityCard = ({ profile }: IdentityCardProps) => {
 
       <div className="w-full flex flex-col gap-3">
         {profile.linkedin && (
-          <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-4 py-3 rounded-2xl bg-background border border-border hover:border-primary/50 transition-colors group">
+          <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-4 py-3 rounded-2xl bg-background hover:border-primary/50 transition-colors group">
             <div className="flex items-center gap-3 text-muted-foreground group-hover:text-foreground transition-colors">
               <Linkedin size={18} />
               <span className="text-sm font-bold">LinkedIn</span>
@@ -80,7 +80,7 @@ export const IdentityCard = ({ profile }: IdentityCardProps) => {
           </a>
         )}
         {profile.github && (
-          <a href={profile.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-4 py-3 rounded-2xl bg-background border border-border hover:border-primary/50 transition-colors group">
+          <a href={profile.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-4 py-3 rounded-2xl bg-background hover:border-primary/50 transition-colors group">
             <div className="flex items-center gap-3 text-muted-foreground group-hover:text-foreground transition-colors">
               <Github size={18} />
               <span className="text-sm font-bold">GitHub</span>
@@ -89,7 +89,7 @@ export const IdentityCard = ({ profile }: IdentityCardProps) => {
           </a>
         )}
         {profile.portfolio && (
-          <a href={profile.portfolio} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-4 py-3 rounded-2xl bg-background border border-border hover:border-primary/50 transition-colors group">
+          <a href={profile.portfolio} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-4 py-3 rounded-2xl bg-background hover:border-primary/50 transition-colors group">
             <div className="flex items-center gap-3 text-muted-foreground group-hover:text-foreground transition-colors">
               <ExternalLink size={18} />
               <span className="text-sm font-bold">Portfolio</span>

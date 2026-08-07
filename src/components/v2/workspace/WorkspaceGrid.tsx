@@ -1,9 +1,10 @@
 "use client"
 
+import { motion } from "framer-motion"
 import React from "react"
+
 import { DesignNode } from "@/components/v2/inspector/DesignNode"
 import { QualityGate } from "@/components/v2/QualityGate"
-import { StaggerContainer, StaggerItem } from "@/components/ui/motion/Stagger"
 
 interface WorkspaceGridProps {
   children: React.ReactNode
@@ -16,7 +17,7 @@ export const WorkspaceGrid = ({ children }: WorkspaceGridProps) => {
         name: "WorkspaceGrid",
         tokens: ['grid', 'gap-6'],
         typography: "Inter (Sans)",
-        motionPreset: "stagger, springSmooth",
+        motionPreset: "fade-in",
         borderRadius: "rounded-2xl",
         elevation: "shadow-glow-primary",
         colors: "background, surface-2",
@@ -40,16 +41,20 @@ export const WorkspaceGrid = ({ children }: WorkspaceGridProps) => {
             performance: true
           }} 
         />
-        <StaggerContainer
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          staggerChildren={0.05}
+        <div
+          className="flex overflow-x-auto snap-x snap-mandatory pb-4 -mx-6 px-6 md:mx-0 md:px-0 md:pb-0 md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 [&::-webkit-scrollbar]:hidden after:content-[''] after:shrink-0 after:w-6 md:after:hidden"
         >
-          {React.Children.map(children, (child) => (
-            <StaggerItem className="w-full flex flex-col h-full">
+          {React.Children.map(children, (child, index) => (
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              transition={{ duration: 0.15, delay: index * 0.03 }}
+              className="w-[85vw] shrink-0 snap-center md:w-auto flex flex-col h-full"
+            >
               {child}
-            </StaggerItem>
+            </motion.div>
           ))}
-        </StaggerContainer>
+        </div>
       </div>
     </DesignNode>
   )

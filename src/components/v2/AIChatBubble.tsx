@@ -34,7 +34,7 @@ export const AIChatBubble = ({
       )}
     >
       {isAssistant && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-2 border border-border shadow-sm">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-2 shadow-sm">
           <Sparkles className="h-4 w-4 text-foreground" />
         </div>
       )}
@@ -55,7 +55,7 @@ export const AIChatBubble = ({
       </div>
 
       {!isAssistant && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-3 border border-border shadow-sm">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-3 shadow-sm">
           <User className="h-4 w-4 text-muted-foreground" />
         </div>
       )}

@@ -12,6 +12,7 @@ interface UserAvatarProps {
   className?: string
   isOnline?: boolean
 }
+import Image from "next/image"
 
 export const UserAvatar = ({
   src,
@@ -37,12 +38,13 @@ export const UserAvatar = ({
 
   return (
     <div className={cn("relative inline-flex shrink-0", sizeClasses[size], className)}>
-      <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-surface-2 border border-border shadow-sm">
+      <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-surface-2 shadow-sm">
         {src ? (
-          <img
+          <Image
             src={src}
             alt={alt}
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
           />
         ) : (
           <span className="font-medium text-muted-foreground uppercase">

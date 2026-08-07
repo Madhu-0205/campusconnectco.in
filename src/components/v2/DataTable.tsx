@@ -26,7 +26,7 @@ export function DataTable<T>({
   className
 }: DataTableProps<T>) {
   return (
-    <div className={cn("w-full overflow-hidden rounded-2xl border border-border bg-surface", className)}>
+    <div className={cn("w-full overflow-hidden rounded-2xl bg-surface", className)}>
       <div className="overflow-x-auto scrollbar-none">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border bg-surface-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">

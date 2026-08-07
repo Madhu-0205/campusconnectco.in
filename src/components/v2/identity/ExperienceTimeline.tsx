@@ -1,5 +1,5 @@
-import React from "react"
 import { Briefcase, ShieldCheck } from "lucide-react"
+import React from "react"
 
 interface Experience {
   id: string
@@ -18,7 +18,7 @@ export const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => 
   if (!experiences || experiences.length === 0) return null
 
   return (
-    <div className="bg-surface border border-border rounded-4xl p-8 shadow-sm relative overflow-hidden">
+    <div className="bg-surface rounded-4xl p-8 shadow-sm relative overflow-hidden">
       <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
         <ShieldCheck size={120} />
       </div>
@@ -39,7 +39,7 @@ export const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => 
               <ShieldCheck size={16} className="text-success" />
             </div>
             
-            <div className="bg-background border border-border rounded-3xl p-6 group hover:border-primary/50 transition-colors">
+            <div className="bg-background rounded-3xl p-6 group hover:border-primary/50 transition-colors">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
                 <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{exp.title}</h3>
                 <span className="text-sm font-bold text-muted-foreground">{exp.date}</span>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+
 import { Spinner } from "@/components/v2/Spinner";
 
 export default function RootLoading() {

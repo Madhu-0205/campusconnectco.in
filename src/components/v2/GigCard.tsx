@@ -1,10 +1,9 @@
 "use client"
 
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
-import { Clock, MapPin, DollarSign, ExternalLink, ArrowRight } from "lucide-react"
+import { Clock, MapPin, DollarSign,  ArrowRight } from "lucide-react"
 import React, { MouseEvent } from "react"
 
-import { Button } from "@/components/ui/Button"
 import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
 import { cn } from "@/lib/utils"
 
@@ -20,6 +19,8 @@ interface GigCardProps {
   className?: string
   isFeatured?: boolean
 }
+
+import Image from "next/image"
 
 export const GigCard = ({
   title,
@@ -74,9 +75,9 @@ export const GigCard = ({
 
       <div className="flex items-start justify-between">
         <div className="flex gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-2 border border-border overflow-hidden">
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-2 overflow-hidden">
             {logoUrl ? (
-              <img src={logoUrl} alt={company} className="h-full w-full object-cover" />
+              <Image src={logoUrl} alt={company} fill className="object-cover" />
             ) : (
               <span className="text-xl font-bold text-muted-foreground">
                 {company.charAt(0)}
@@ -121,7 +122,7 @@ export const GigCard = ({
         {tags.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-text-2 border border-border-subtle"
+            className="inline-flex items-center rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-text-2 -subtle"
           >
             {tag}
           </span>
