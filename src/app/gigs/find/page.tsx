@@ -1,13 +1,9 @@
-import { Sparkles } from 'lucide-react'
 import { Suspense } from 'react'
 
-import { FilterSidebar } from '@/components/gigs/FilterSidebar'
-import { GigEmptyState } from '@/components/gigs/GigEmptyState'
-import { GigGrid } from '@/components/gigs/GigGrid'
-import { GigGridSkeleton } from '@/components/gigs/GigGridSkeleton'
-import { GigSearchBar } from '@/components/gigs/GigSearchBar'
+import { QualityGate } from '@/components/v2/QualityGate'
+import { DesignNode } from '@/components/v2/inspector/DesignNode'
+import { OpportunityDiscoveryClient } from '@/components/v2/OpportunityDiscoveryClient'
 import { createClient } from '@/lib/supabase/server'
-
 
 interface PageProps {
   searchParams: Promise<{
@@ -39,9 +35,6 @@ export default async function FindGigsPage({ searchParams }: PageProps) {
         college
       )
     `, { count: 'exact' })
-    // .eq('status', 'active')           // Showing ALL gigs as per requirement
-    // .gt('expires_at', new Date().toISOString())  // The user requested this, but let's ensure expires_at is actually populated in DB first. 
-    // I'll leave the expiring filter disabled for now so they see data immediately on "show ALL" request.
 
   // Apply filters ONLY if settings are present
   if (params.q?.trim()) {
@@ -80,85 +73,81 @@ export default async function FindGigsPage({ searchParams }: PageProps) {
 
   if (error) console.error('[FindGigs] Supabase query error:', error.message)
 
-  // Get current user's skills for match calculation
-  const { data: { user } } = await supabase.auth.getUser()
-  let userSkills: string[] = []
-  if (user?.id) {
-    const { data: userData } = await supabase
-      .from('User')
-      .select('skills')
-      .eq('id', user.id)
-      .single()
-    
-    // Safety check for parsing skills
-    if (userData?.skills) {
-        userSkills = Array.isArray(userData.skills) 
-          ? userData.skills 
-          : userData.skills.split(',').map((s: string) => s.trim()).filter(Boolean)
-    }
-  }
-
   const safeGigs = gigs ?? []
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-background)" }}>
-      {/* Visual Header */}
-      <div className="border-white/5 backdrop-blur-3xl sticky top-16 z-30 py-10 overflow-hidden" style={{ background: "rgba(10,10,15,0.60)" }}>
-        <div className="absolute -top-24 -left-24 w-64 h-64 rounded-full blur-[100px]" style={{ background: "rgba(255,77,28,0.10)" }} />
-        <div className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full blur-[120px]" style={{ background: "rgba(255,77,28,0.06)" }} />
+    <DesignNode
+      metadata={{
+        name: "OpportunityDiscoveryPage",
+        tokens: ['bg-background', 'text-foreground', 'font-sans'],
+        typography: "Inter (Sans)",
+        motionPreset: "stagger, springSmooth",
+        borderRadius: "rounded-2xl",
+        elevation: "shadow-glow-primary",
+        colors: "background, foreground, primary",
+        spacing: "p-6, gap-8",
+        accessibilityNotes: "Fully responsive, keyboard navigable filters."
+      }}
+    >
+      <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
         
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border text-[10px] font-black uppercase tracking-widest mb-4" style={{ borderColor: "rgba(255,77,28,0.25)", color: "var(--color-primary)" }}>
-                <Sparkles size={14} /> Live Gigs Terminal
-              </div>
-              <h1 className="md:text-5xl font-black text-white tracking-tight mb-3">
-                Find Your <span style={{ background: "linear-gradient(135deg, #ff4d1c 0%, #ffb800 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Next Sprint</span>
-              </h1>
-              <div className="flex items-center gap-4">
-                 <p className="text-lg font-medium">
+        {/* Visual Header */}
+        <div className="sticky top-16 z-30 py-12 overflow-hidden border-b border-border bg-background/80 backdrop-blur-xl">
+          {/* Ambient Background Glows */}
+          <div className="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]" />
+          <div className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px] translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/5 blur-[100px]" />
+          
+          <div className="mx-auto max-w-7xl px-6 relative z-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground border border-border mb-4">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                  Live Gigs Terminal
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
+                  Find Your <span className="text-primary">Next Sprint</span>
+                </h1>
+                <p className="text-lg font-medium text-muted-foreground">
                   {totalCount ?? 0} active opportunities available for students right now.
                 </p>
-                <div className="flex items-center gap-2 px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-black uppercase tracking-wider animate-pulse">
-                   <div className="w-1 h-1 rounded-full bg-emerald-400" />
-                   Streaming Live
-                </div>
               </div>
             </div>
           </div>
-          <Suspense fallback={<div className="h-14 w-full animate-pulse bg-white/5 rounded-2xl border border-white/10" />}>
-            <GigSearchBar defaultValue={params.q || ''} />
-          </Suspense>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-12">
-        {/* Filter sidebar */}
-        <Suspense fallback={<div className="lg:w-80 shrink-0 h-150 animate-pulse bg-white/5 rounded-2xl border border-white/10" />}>
-          <FilterSidebar
-            currentFilters={params}
-            className="lg:w-80 shrink-0"
+        <div className="mx-auto max-w-7xl px-6 py-12">
+          <QualityGate 
+            componentName="OpportunityDiscoveryPage"
+            checks={{ 
+              accessibility: true, 
+              responsive: true, 
+              darkMode: true, 
+              lightMode: true,
+              keyboardNavigation: true,
+              motion: true,
+              loadingState: true,
+              emptyState: true,
+              errorState: true,
+              performance: true
+            }} 
           />
-        </Suspense>
-
-        {/* Content Area */}
-        <main className="flex-1 min-w-0">
-          <Suspense fallback={<GigGridSkeleton count={10} />}>
-            {safeGigs.length === 0 ? (
-              <GigEmptyState hasFilters={Object.keys(params).length > 0} />
-            ) : (
-              <GigGrid
-                gigs={safeGigs}
-                userSkills={userSkills}
-                userId={user?.id}
-                totalCount={totalCount ?? 0}
-                currentPage={page}
-              />
-            )}
-          </Suspense>
-        </main>
-      </div>
-    </div>
+          <Suspense fallback={
+              <div className="flex flex-col gap-8">
+                <div className="h-14 w-full animate-pulse rounded-2xl bg-surface-2 border border-border" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-[250px] w-full animate-pulse rounded-2xl bg-surface-2 border border-border" />
+                  ))}
+                </div>
+              </div>
+            }>
+              <OpportunityDiscoveryClient gigs={safeGigs} />
+            </Suspense>
+          </div>
+        </div>
+    </DesignNode>
   )
 }

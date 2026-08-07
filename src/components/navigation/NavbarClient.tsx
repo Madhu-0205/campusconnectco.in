@@ -198,7 +198,12 @@ export function NavbarClient({
 
           {/* Right Actions */}
           <div className="flex items-center gap-2">
-            <button className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+            <button 
+              onClick={() => document.dispatchEvent(new CustomEvent('open-command-center'))}
+              title="Open Command Center (⌘K)"
+              aria-label="Open command center"
+              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            >
               <Search className="w-4 h-4" />
             </button>
 
