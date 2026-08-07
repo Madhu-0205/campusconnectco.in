@@ -94,8 +94,8 @@ export default async function FindGigsPage({ searchParams }: PageProps) {
         {/* Visual Header */}
         <div className="sticky top-16 z-30 py-12 overflow-hidden border-b border-border bg-background/80 backdrop-blur-xl">
           {/* Ambient Background Glows */}
-          <div className="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]" />
-          <div className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px] translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/5 blur-[100px]" />
+          <div className="pointer-events-none absolute left-0 top-0 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]" />
+          <div className="pointer-events-none absolute right-0 top-0 h-125 w-125 translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/5 blur-[100px]" />
           
           <div className="mx-auto max-w-7xl px-6 relative z-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -139,7 +139,7 @@ export default async function FindGigsPage({ searchParams }: PageProps) {
                 <div className="h-14 w-full animate-pulse rounded-2xl bg-surface-2 border border-border" />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="h-[250px] w-full animate-pulse rounded-2xl bg-surface-2 border border-border" />
+                    <div key={i} className="h-62.5 w-full animate-pulse rounded-2xl bg-surface-2 border border-border" />
                   ))}
                 </div>
               </div>

@@ -28,7 +28,7 @@ export const DesignInspector = ({ children }: { children: React.ReactNode }) => 
       <div 
         className={cn(
           "transition-all duration-300 relative",
-          active && "[&_*]:outline [&_*]:outline-1 [&_*]:outline-primary/40 [&_*]:bg-primary/5 hover:[&_*]:outline-primary hover:[&_*]:bg-primary/20 hover:[&_*]:outline-2"
+     active && "**:outline **:outline-1 **:outline-primary/40 **:bg-primary/5 hover:**:outline-primary hover:**:bg-primary/20 hover:**:outline-2"
         )}
       >
         {children}

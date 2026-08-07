@@ -31,7 +31,7 @@ export const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => 
       </div>
 
       <div className="space-y-6 relative z-10">
-        <div className="absolute left-[19px] top-16 bottom-4 w-px bg-border/50" />
+        <div className="absolute left-4.75 top-16 bottom-4 w-px bg-border/50" />
         
         {experiences.map((exp) => (
           <div key={exp.id} className="relative pl-12">
