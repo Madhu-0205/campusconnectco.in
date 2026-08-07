@@ -186,7 +186,7 @@ export default function NetworkPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="md:text-4xl font-black text-white tracking-tight mb-3">
+        <h1 className="md:text-4xl font-black text-foreground tracking-tight mb-3">
           Discover Your Network
         </h1>
         <p className="max-w-2xl mx-auto text-sm">
@@ -199,20 +199,20 @@ export default function NetworkPage() {
         <div className="flex flex-col md:flex-row gap-3 items-center">
           <div className="relative flex-1 w-full">
             <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
               size={18}
             />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, skill, or college…"
-              className="w-full bg-[#0F1629] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white font-medium placeholder:text-slate-500 focus:outline-none focus:border-[#7C3AED]/50 focus:ring-1 focus:ring-[#7C3AED]/30 transition-all"
+              className="w-full bg-[#0F1629] border border-border rounded-xl pl-10 pr-4 py-3 text-foreground font-medium placeholder:text-muted-foreground focus:outline-none focus:border-[#7C3AED]/50 focus:ring-1 focus:ring-[#7C3AED]/30 transition-all"
             />
           </div>
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white/5 rounded-lg font-medium text-slate-400 hover:bg-white/10 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 bg-accent rounded-lg font-medium text-muted-foreground hover:bg-accent transition-colors"
             >
               <RotateCcw size={12} /> Clear
             </button>
@@ -233,13 +233,13 @@ export default function NetworkPage() {
             <button
               key={tab.key}
               onClick={() => switchTab(tab.key)}
-              className={`relative flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${ isActive ? "bg-[#7C3AED] text-white shadow-[0_0_20px_rgba(124,58,237,0.3)]" : "text-slate-400 hover:text-white hover:bg-white/5" }`}
+              className={`relative flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${ isActive ? "bg-[#7C3AED] text-foreground shadow-[0_0_20px_rgba(124,58,237,0.3)]" : "text-muted-foreground hover:text-foreground hover:bg-accent" }`}
             >
               <Icon size={15} />
               {tab.label}
               {count !== null && count > 0 && (
                 <span
-                  className={`ml-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full font-bold ${ isActive ? "bg-white/20" : "bg-white/10 text-slate-300" }`}
+                  className={`ml-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full font-bold ${ isActive ? "bg-white/20" : "bg-accent text-muted-foreground" }`}
                 >
                   {count}
                 </span>
@@ -266,7 +266,7 @@ export default function NetworkPage() {
                 </div>
               ) : filteredDiscoverUsers.length === 0 ? (
                 <EmptyState
-                  icon={<Users size={32} className="text-slate-500" />}
+                  icon={<Users size={32} className="text-muted-foreground" />}
                   title="No profiles found"
                   description={
                     search
@@ -303,7 +303,7 @@ export default function NetworkPage() {
                 </div>
               ) : filteredConnections.length === 0 ? (
                 <EmptyState
-                  icon={<UserPlus size={32} className="text-slate-500" />}
+                  icon={<UserPlus size={32} className="text-muted-foreground" />}
                   title="No connections yet"
                   description="Start connecting with students in the Discover tab to build your network."
                   ctaLabel="Discover Students"
@@ -341,12 +341,12 @@ export default function NetworkPage() {
                 <>
                   {/* Received */}
                   <section>
-                    <h3 className="font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <h3 className="font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                       <Inbox size={15} className="text-[#7C3AED]" />
                       Requests I Received ({pendingReceived.length})
                     </h3>
                     {pendingReceived.length === 0 ? (
-                      <p className="text-slate-500 py-4">No pending requests.</p>
+                      <p className="text-muted-foreground py-4">No pending requests.</p>
                     ) : (
                       <div className="space-y-3">
                         {pendingReceived.map((conn) => (
@@ -364,12 +364,12 @@ export default function NetworkPage() {
 
                   {/* Sent */}
                   <section>
-                    <h3 className="font-bold text-slate-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <h3 className="font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                       <UserPlus size={15} className="text-[#0EA5E9]" />
                       Requests I Sent ({pendingSent.length})
                     </h3>
                     {pendingSent.length === 0 ? (
-                      <p className="text-slate-500 py-4">No sent requests.</p>
+                      <p className="text-muted-foreground py-4">No sent requests.</p>
                     ) : (
                       <div className="space-y-3">
                         {pendingSent.map((conn) => (
@@ -411,11 +411,11 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-2xl bg-accent border border-border flex items-center justify-center mb-4">
         {icon}
       </div>
-      <h3 className="font-bold text-white mb-1">{title}</h3>
-      <p className="text-slate-400 max-w-sm mb-6">{description}</p>
+      <h3 className="font-bold text-foreground mb-1">{title}</h3>
+      <p className="text-muted-foreground max-w-sm mb-6">{description}</p>
       {ctaLabel && onCta && (
         <button
           onClick={onCta}

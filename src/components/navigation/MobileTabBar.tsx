@@ -6,6 +6,8 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import { cn } from '@/lib/utils'
+
 interface TabItem {
   label: string
   href: string
@@ -52,48 +54,31 @@ export function MobileTabBar({ userRole }: { userRole: string | null }) {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 lg:hidden pb-safe"
-      style={{
-        background: 'rgba(8,8,15,0.92)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        borderTop: '1px solid var(--border)',
-      }}
+      className="fixed bottom-0 left-0 right-0 z-50 lg:hidden pb-safe bg-background/90 backdrop-blur-md border-t border-border/50"
     >
       <div className="flex items-center justify-around h-16 px-2">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href || pathname.startsWith(tab.href + '/')
-          const activeColor = tab.highlight ? 'var(--gold)' : 'var(--primary-light)'
-          const inactiveColor = 'var(--text-3)'
 
           return (
             <Link
               key={tab.href}
               href={tab.href}
-              className="flex flex-col items-center gap-1 min-w-[56px] py-1 transition-all"
-              style={{ color: isActive ? activeColor : inactiveColor }}
+              className={cn(
+                "flex flex-col items-center gap-1 min-w-14 py-1 transition-all",
+                isActive ? "text-foreground" : "text-muted-foreground",
+                tab.highlight && isActive && "text-foreground"
+              )}
             >
               <div
-                className="p-2 rounded-xl transition-all"
-                style={{
-                  background: isActive
-                    ? tab.highlight
-                      ? 'rgba(245,158,11,0.12)'
-                      : 'rgba(124,58,237,0.14)'
-                    : 'transparent',
-                }}
+                className={cn(
+                  "p-2 rounded-xl transition-all",
+                  isActive ? "bg-accent/50 text-foreground" : "bg-transparent text-muted-foreground hover:bg-accent/30"
+                )}
               >
                 <tab.icon className="w-5 h-5" />
               </div>
-              <span
-                className="uppercase"
-                style={{
-                  fontSize: '9px',
-                  fontWeight: 700,
-                  letterSpacing: '0.12em',
-                  fontFamily: 'var(--font-mono)',
-                }}
-              >
+              <span className="text-[10px] font-semibold tracking-wide">
                 {tab.label}
               </span>
             </Link>

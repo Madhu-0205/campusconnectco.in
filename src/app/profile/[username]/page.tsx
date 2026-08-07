@@ -93,13 +93,13 @@ export default async function PublicProfilePage({
 
   if (dbError) {
     return (
-      <div className="min-h-screen bg-[#08080F] text-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-[#08080F] text-foreground flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full text-center space-y-6 bg-[#111127]/60 border border-white/5 p-8 rounded-3xl backdrop-blur-md">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           </div>
           <h2 className="text-2xl font-black">Connection Offline</h2>
-          <p className="text-slate-400 text-sm">We are temporarily unable to load this user&apos;s profile details because the database is offline. Please try reloading the page.</p>
+          <p className="text-muted-foreground text-sm">We are temporarily unable to load this user&apos;s profile details because the database is offline. Please try reloading the page.</p>
           <a href={`/profile/${username}`} className="inline-block w-full py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-xl text-sm font-black transition-colors">
             Retry Connection
           </a>

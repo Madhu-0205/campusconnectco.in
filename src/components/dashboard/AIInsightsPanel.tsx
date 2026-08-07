@@ -9,11 +9,11 @@ export function AIInsightsPanel({ insights }: { insights: AIInsight[] }) {
   return (
     <div className="bg-[#111127]/60 border border-white/5 rounded-3xl p-6 lg:p-8">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Sparkles className="text-violet-400" />
+        <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+          <Sparkles className="text-foreground" />
           AI Career Insights
         </h2>
-        <span className="text-xs font-mono text-slate-500 bg-black/40 px-3 py-1 rounded-full border border-white/5">
+        <span className="text-xs font-mono text-muted-foreground bg-black/40 px-3 py-1 rounded-full border border-white/5">
           Updated Today
         </span>
       </div>
@@ -22,8 +22,8 @@ export function AIInsightsPanel({ insights }: { insights: AIInsight[] }) {
         {insights.map((insight, idx) => {
           let Icon = Zap;
           let bgColor = "bg-violet-600/10";
-          let textColor = "text-violet-400";
-          let borderColor = "border-violet-500/20";
+          let textColor = "text-foreground";
+          let borderColor = "border-border";
 
           if (insight.type === "completion") {
             Icon = AlertCircle;
@@ -32,9 +32,9 @@ export function AIInsightsPanel({ insights }: { insights: AIInsight[] }) {
             borderColor = "border-amber-500/20";
           } else if (insight.type === "market_trend") {
             Icon = TrendingUp;
-            bgColor = "bg-cyan-500/10";
-            textColor = "text-cyan-400";
-            borderColor = "border-cyan-500/20";
+            bgColor = "bg-accent";
+            textColor = "text-foreground";
+            borderColor = "border-border";
           } else if (insight.type === "improvement") {
             Icon = AlertCircle;
             bgColor = "bg-rose-500/10";
@@ -48,8 +48,8 @@ export function AIInsightsPanel({ insights }: { insights: AIInsight[] }) {
                 <Icon size={18} />
               </div>
               <div>
-                <h3 className="font-bold text-white mb-1.5">{insight.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <h3 className="font-bold text-foreground mb-1.5">{insight.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {insight.description}
                 </p>
               </div>

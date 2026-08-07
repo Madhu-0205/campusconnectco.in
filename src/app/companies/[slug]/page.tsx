@@ -150,7 +150,7 @@ export default async function CompanySEOPage({ params }: Props) {
             <Building2 size={12} /> Verified Company Hub
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight font-heading">
-            Campus Hiring & Internships at <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">{comp.name}</span>
+            Campus Hiring & Internships at <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-violet-400">{comp.name}</span>
           </h1>
           <p className="text-slate-400 max-w-3xl text-base md:text-lg leading-relaxed">
             {comp.description} View core tech stack dependencies, open student roles, and match with verified university candidates.

@@ -133,7 +133,7 @@ export default async function CareerPathSEOPage({ params }: Props) {
             <Compass size={12} /> AI Career Roadmap
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight font-heading">
-            How to Become a <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-violet-400">{career.title}</span>
+            How to Become a <span className="text-transparent bg-clip-text bg-linear-to-r from-amber-400 to-violet-400">{career.title}</span>
           </h1>
           <p className="text-slate-400 max-w-3xl text-base md:text-lg leading-relaxed">
             {career.description} Follow our structured step-by-step student roadmap, acquire core technical skills, and land verified internships.

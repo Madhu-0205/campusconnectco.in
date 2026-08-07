@@ -174,7 +174,7 @@ export default async function CityInternshipsPage({ params }: Props) {
             <MapPin size={12} /> University Placements
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight font-heading">
-            Student Internships in <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">{cityName}</span>
+            Student Internships in <span className="text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-cyan-400">{cityName}</span>
           </h1>
           <p className="text-slate-400 max-w-3xl text-base md:text-lg leading-relaxed">
             Apply to verified internships and startup roles in {cityName}. Earn stipends, gain industry experience, and accelerate your dynamic career path.

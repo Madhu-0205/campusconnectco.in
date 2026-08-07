@@ -30,13 +30,13 @@ export function BreadcrumbsUI({ items }: { items: BreadcrumbItem[] }) {
             <li key={index} className="flex items-center gap-1.5">
               <ChevronRight size={12} className="text-slate-600 shrink-0" />
               {isLast ? (
-                <span className="text-slate-200 font-semibold truncate max-w-[200px] sm:max-w-[300px]" aria-current="page">
+                <span className="text-slate-200 font-semibold truncate max-w-50 sm:max-w-[300px]" aria-current="page">
                   {item.name}
                 </span>
               ) : (
                 <Link
                   href={href || "/"}
-                  className="hover:text-violet-400 transition-colors truncate max-w-[150px] sm:max-w-[200px]"
+                  className="hover:text-violet-400 transition-colors truncate max-w-[150px] sm:max-w-50"
                 >
                   {item.name}
                 </Link>

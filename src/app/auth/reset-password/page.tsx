@@ -97,17 +97,17 @@ export default function ResetPasswordPage() {
     if (success) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 p-4">
-                <div className="w-full max-w-md bg-(--surface) rounded-2xl shadow-2xl p-4 md:p-8 border border-(--border)">
+                <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl p-4 md:p-8 border border-border">
                     <div className="text-center">
                         <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
                             <CheckCircle size={32} className="text-green-600 dark:text-green-400" />
                         </div>
 
-                        <h1 className="font-bold text-white mb-2">
+                        <h1 className="font-bold text-foreground mb-2">
                             Password Reset Successful!
                         </h1>
 
-                        <p className="text-slate-600 dark:text-muted-foreground mb-6">
+                        <p className="text-muted-foreground dark:text-muted-foreground mb-6">
                             Your password has been updated successfully. Redirecting to sign in...
                         </p>
 
@@ -123,23 +123,23 @@ export default function ResetPasswordPage() {
     if (!isValidSession && error) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 p-4">
-                <div className="w-full max-w-md bg-(--surface) rounded-2xl shadow-2xl p-4 md:p-8 border border-(--border)">
+                <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl p-4 md:p-8 border border-border">
                     <div className="text-center">
                         <div className="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
                             <Lock size={32} className="text-red-600 dark:text-red-400" />
                         </div>
 
-                        <h1 className="font-bold text-white mb-2">
+                        <h1 className="font-bold text-foreground mb-2">
                             Invalid Reset Link
                         </h1>
 
-                        <p className="text-slate-600 dark:text-muted-foreground mb-6">
+                        <p className="text-muted-foreground dark:text-muted-foreground mb-6">
                             {error}
                         </p>
 
                         <Link
                             href="/auth/forgot-password"
-                            className="inline-block bg-(--primary) hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02]"
+                            className="inline-block bg-foreground text-background hover:bg-foreground/90 text-foreground font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02]"
                         >
                             Request New Reset Link
                         </Link>
@@ -151,17 +151,17 @@ export default function ResetPasswordPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 p-4">
-            <div className="w-full max-w-md bg-(--surface) rounded-2xl shadow-2xl p-4 md:p-8 border border-(--border)">
+            <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl p-4 md:p-8 border border-border">
                 <div className="text-center mb-8">
-                    <div className="mx-auto w-16 h-16 bg-(--primary)/10 dark:bg-(--primary)/20 rounded-full flex items-center justify-center mb-4">
+                    <div className="mx-auto w-16 h-16 bg-foreground text-background/10 dark:bg-foreground text-background rounded-full flex items-center justify-center mb-4">
                         <Lock size={32} className="text-(--primary)" />
                     </div>
 
-                    <h1 className="font-bold text-white mb-2">
+                    <h1 className="font-bold text-foreground mb-2">
                         Reset Your Password
                     </h1>
 
-                    <p className="text-slate-600 dark:text-muted-foreground">
+                    <p className="text-muted-foreground dark:text-muted-foreground">
                         Enter your new password below
                     </p>
                 </div>
@@ -182,7 +182,7 @@ export default function ResetPasswordPage() {
                                 id="password"
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Enter new password"
-                                className="w-full border border-slate-300 dark:border-slate-600 bg-(--surface-2) text-white p-3 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary) outline-none transition-all pr-12"
+                                className="w-full border border-slate-300 dark:border-slate-600 bg-(--surface-2) text-foreground p-3 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary) outline-none transition-all pr-12"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
@@ -190,7 +190,7 @@ export default function ResetPasswordPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-slate-600 dark:hover:text-muted-foreground"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground"
                             >
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
@@ -206,7 +206,7 @@ export default function ResetPasswordPage() {
                                 id="confirmPassword"
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm new password"
-                                className="w-full border border-slate-300 dark:border-slate-600 bg-(--surface-2) text-white p-3 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary) outline-none transition-all pr-12"
+                                className="w-full border border-slate-300 dark:border-slate-600 bg-(--surface-2) text-foreground p-3 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary) outline-none transition-all pr-12"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
@@ -214,7 +214,7 @@ export default function ResetPasswordPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-slate-600 dark:hover:text-muted-foreground"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground"
                             >
                                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
@@ -222,7 +222,7 @@ export default function ResetPasswordPage() {
                     </div>
 
                     <div className="bg-(--surface-2)/50 p-3 rounded-lg">
-                        <p className="text-slate-600 dark:text-muted-foreground font-semibold mb-2">
+                        <p className="text-muted-foreground dark:text-muted-foreground font-semibold mb-2">
                             Password Requirements:
                         </p>
                         <ul className="text-muted-foreground dark:text-muted-foreground space-y-1">
@@ -248,7 +248,7 @@ export default function ResetPasswordPage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-(--primary) hover:bg-blue-700 disabled:bg-slate-400 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none shadow-lg disabled:shadow-none flex items-center justify-center gap-2"
+                        className="w-full bg-foreground text-background hover:bg-foreground/90 disabled:bg-slate-400 text-foreground font-bold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none shadow-lg disabled:shadow-none flex items-center justify-center gap-2"
                     >
                         {isLoading ? (
                             <>
@@ -267,7 +267,7 @@ export default function ResetPasswordPage() {
                 <div className="mt-6 text-center">
                     <Link
                         href="/auth/sign-in"
-                        className="text-slate-600 dark:text-muted-foreground hover:text-(--primary) dark:hover:text-(--primary) font-semibold transition-colors"
+                        className="text-muted-foreground dark:text-muted-foreground hover:text-(--primary) dark:hover:text-(--primary) font-semibold transition-colors"
                     >
                         Back to Sign In
                     </Link>

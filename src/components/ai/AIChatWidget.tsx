@@ -149,16 +149,16 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
 
   return (
     <div className={`fixed bottom-6 right-6 z-50 w-[380px] ${className}`}>
-      <div className="bg-[#0e0e12] border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="bg-[#0e0e12] border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-white/10 bg-linear-to-r from-amber-500/10 to-orange-500/10">
+        <div className="flex items-center justify-between px-4 py-3 border-border bg-linear-to-r from-amber-500/10 to-orange-500/10">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-(--accent)/20 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-amber-400" />
             </div>
             <div>
               <p className="text-sm font-black">CampusConnect AI</p>
-              <p className="text-slate-500">
+              <p className="text-muted-foreground">
                 {streaming ? (
                   <span className="text-amber-400 animate-pulse">Typing...</span>
                 ) : 'Ask me anything'}
@@ -168,13 +168,13 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
           <div className="flex items-center gap-1">
             <button
               onClick={() => setMinimized(!minimized)}
-              className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-slate-400"
+              className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground"
             >
               {minimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
             </button>
             <button
               onClick={() => setOpen(false)}
-              className="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 transition-colors shrink-0"
+              className="p-1.5 hover:bg-accent rounded-lg text-muted-foreground transition-colors shrink-0"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -195,7 +195,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
                       <Bot className="w-3 h-3 text-amber-400" />
                     </div>
                   )}
-                  <div className={`p-3 max-w-[85%] ${msg.role === 'user' ? 'bg-linear-to-r from-orange-500 to-amber-500 ml-auto' : 'bg-white/10 border border-white/5 text-slate-200 rounded-tl-[4px]'}`}>
+                  <div className={`p-3 max-w-[85%] ${msg.role === 'user' ? 'bg-linear-to-r from-orange-500 to-amber-500 ml-auto' : 'bg-accent border border-white/5 text-foreground rounded-tl-[4px]'}`}>
                     {msg.content || (
                       <span className="flex gap-1 items-center py-1">
                         <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -216,7 +216,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
                   <button
                     key={p}
                     onClick={() => sendMessage(p)}
-                    className="px-3 py-1.5 bg-(--surface-2) hover:bg-white/10 border border-white/10 rounded-full text-slate-400 hover:text-white transition-all"
+                    className="px-3 py-1.5 bg-(--surface-2) hover:bg-accent border border-border rounded-full text-muted-foreground hover:text-foreground transition-all"
                   >
                     {p}
                   </button>
@@ -225,8 +225,8 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
             )}
 
             {/* Input */}
-            <div className="p-3 border-white/10">
-              <div className="flex gap-2 items-end bg-(--surface-2) rounded-xl border border-white/10 px-3 py-2 focus-within:border-amber-500/30 transition-colors">
+            <div className="p-3 border-border">
+              <div className="flex gap-2 items-end bg-(--surface-2) rounded-xl border border-border px-3 py-2 focus-within:border-amber-500/30 transition-colors">
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -234,13 +234,13 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
                   onKeyDown={handleKeyDown}
                   placeholder="Ask anything about this gig..."
                   rows={1}
-                  className="flex-1 bg-transparent text-slate-200 focus:outline-none resize-none placeholder:text-slate-600 max-h-24"
+                  className="flex-1 bg-transparent text-foreground focus:outline-none resize-none placeholder:text-muted-foreground max-h-24"
                   style={{ fieldSizing: 'content' } as any}
                 />
                 <button
                   onClick={() => sendMessage()}
                   disabled={!input.trim() || streaming}
-                  className="w-10 h-10 rounded-xl bg-(--primary) hover:bg-orange-600 text-white flex items-center justify-center shrink-0 disabled:opacity-50 transition-colors shadow-lg"
+                  className="w-10 h-10 rounded-xl bg-foreground text-background hover:bg-orange-600 text-foreground flex items-center justify-center shrink-0 disabled:opacity-50 transition-colors shadow-lg"
                 >
                   <Send className="w-3.5 h-3.5" />
                 </button>

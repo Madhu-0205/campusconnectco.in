@@ -1,3 +1,5 @@
+"use client";
+
 import { Sparkles, MapPin, Briefcase, Tag } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -35,19 +37,19 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
     >
       <div className="flex justify-between items-start mb-4">
         <div>
-          <span className="text-xs font-bold text-violet-400 uppercase tracking-wider mb-2 block">
+          <span className="text-xs font-bold text-foreground uppercase tracking-wider mb-2 block">
             {opportunity.company}
           </span>
           <h3 className="font-bold text-lg leading-snug group-hover:text-violet-300 transition-colors">
             {opportunity.title}
           </h3>
         </div>
-        <div className="bg-violet-600/10 border border-violet-500/20 text-violet-400 p-2 rounded-xl">
+        <div className="bg-violet-600/10 border border-border text-foreground p-2 rounded-xl">
           <Sparkles size={16} />
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3 mb-6 text-sm text-slate-400">
+      <div className="flex flex-wrap gap-3 mb-6 text-sm text-muted-foreground">
         <span className="flex items-center gap-1">
           <Briefcase size={14} /> 
           {opportunity.type === "gig" ? "Freelance Gig" : "Internship"}
@@ -70,20 +72,20 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
 
       {/* Explainable AI Banner */}
       <div className="bg-linear-to-r from-violet-600/10 to-cyan-500/5 rounded-2xl p-4 border border-violet-500/10 mt-auto">
-        <p className="text-xs text-slate-300 flex items-start gap-2">
-          <Sparkles className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+        <p className="text-xs text-muted-foreground flex items-start gap-2">
+          <Sparkles className="w-4 h-4 text-foreground shrink-0 mt-0.5" />
           <span>{explanation}</span>
         </p>
         
         {matchMetrics.skillsMatchCount > 0 && (
           <div className="mt-3 flex gap-1.5 flex-wrap">
             {opportunity.requiredSkills.slice(0, 3).map(skill => (
-              <span key={skill} className="px-2 py-1 bg-black/40 rounded-md text-[10px] text-slate-400 border border-white/5 uppercase tracking-wider">
+              <span key={skill} className="px-2 py-1 bg-black/40 rounded-md text-[10px] text-muted-foreground border border-white/5 uppercase tracking-wider">
                 {skill}
               </span>
             ))}
             {opportunity.requiredSkills.length > 3 && (
-              <span className="px-2 py-1 bg-black/40 rounded-md text-[10px] text-slate-500 border border-white/5 uppercase tracking-wider">
+              <span className="px-2 py-1 bg-black/40 rounded-md text-[10px] text-muted-foreground border border-white/5 uppercase tracking-wider">
                 +{opportunity.requiredSkills.length - 3}
               </span>
             )}

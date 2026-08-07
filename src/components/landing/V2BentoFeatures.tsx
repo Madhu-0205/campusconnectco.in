@@ -1,0 +1,106 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { ShieldCheck, Zap, Briefcase, Users, BrainCircuit } from "lucide-react"
+import React from "react"
+
+import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
+import { Reveal } from "@/components/ui/motion/Reveal"
+import { MetricCard } from "@/components/v2/MetricCard"
+
+export function V2BentoFeatures() {
+  return (
+    <section className="py-24 relative overflow-hidden">
+      
+      <div className="container mx-auto px-6 max-w-6xl relative z-10">
+        
+        <Reveal>
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+              Everything you need to <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-gold">stand out.</span>
+            </h2>
+            <p className="text-text-2 text-lg">
+              We stripped away the noise to give you the ultimate unfair advantage in your career journey.
+            </p>
+          </div>
+        </Reveal>
+
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
+          
+          {/* Large Feature 1 */}
+          <Reveal className="md:col-span-2 md:row-span-2">
+            <div className="relative h-full w-full rounded-3xl border border-white/5 bg-surface/30 backdrop-blur-md p-8 overflow-hidden group shadow-card hover:shadow-card-hover transition-all duration-500">
+              <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                    <BrainCircuit className="w-6 h-6 text-gold" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">AI Career Copilot</h3>
+                  <p className="text-text-2 max-w-sm">
+                    Upload your resume and let our AI engine instantly match you with perfect internships and gigs based on your exact skillset.
+                  </p>
+                </div>
+                
+                {/* Mock UI Element */}
+                <div className="mt-8 relative -mx-8 -mb-8 pt-8 px-8 bg-linear-to-t from-bg to-transparent">
+                  <div className="rounded-t-2xl border border-border border-b-0 bg-surface shadow-2xl p-4 flex flex-col gap-3 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                        <Zap className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="h-2 w-24 bg-white/10 rounded-full" />
+                        <div className="h-2 w-16 bg-white/5 rounded-full" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Metric 1 */}
+          <Reveal delay={0.1}>
+            <MetricCard
+              title="Verified Opportunities"
+              value="2,400+"
+              trend={{ value: 15, label: "this week", isPositive: true }}
+              icon={<Briefcase className="w-5 h-5" />}
+              className="h-full border-white/5 bg-surface/30 backdrop-blur-md"
+            />
+          </Reveal>
+
+          {/* Small Feature 1 */}
+          <Reveal delay={0.2}>
+            <div className="relative h-full w-full rounded-3xl border border-white/5 bg-surface/30 backdrop-blur-md p-6 flex flex-col gap-4 group shadow-card hover:shadow-card-hover transition-all duration-500 overflow-hidden">
+              <div className="absolute inset-0 bg-linear-to-tr from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-accent" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mb-1">Escrow Payments</h3>
+                <p className="text-sm text-text-2">
+                  Never work for free again. Funds are secured before you write a single line of code.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Metric 2 */}
+          <Reveal delay={0.3}>
+            <MetricCard
+              title="Active Founders"
+              value="850+"
+              trend={{ value: 5, label: "this month", isPositive: true }}
+              icon={<Users className="w-5 h-5" />}
+              className="h-full border-white/5 bg-surface/30 backdrop-blur-md"
+            />
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  )
+}

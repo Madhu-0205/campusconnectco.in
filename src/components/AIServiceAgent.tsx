@@ -442,7 +442,7 @@ export default function AIServiceAgent() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 16, scale: 0.96 }}
                         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                        className={`pointer-events-auto mb-4 flex flex-col rounded-2xl overflow-hidden border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.6)] bg-[#0D1120] backdrop-blur-xl transition-all duration-300 ${isMinimized ? "w-80" : "w-[calc(100vw-3rem)] sm:w-[380px] md:w-[400px] h-[70vh] min-h-[400px] max-h-[620px]" }`}
+                        className={`pointer-events-auto mb-4 flex flex-col rounded-2xl overflow-hidden border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.6)] bg-[#0D1120] backdrop-blur-xl transition-all duration-300 ${isMinimized ? "w-80" : "w-[calc(100vw-3rem)] sm:w-[380px] md:w-[400px] h-[70vh] min-h-100 max-h-[620px]" }`}
                     >
                         {/* Header */}
                         <div

@@ -69,10 +69,10 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
       {/* ── HEADER NAVIGATION ─────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-white/5 pb-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-widest mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent border border-border text-[11px] font-black uppercase tracking-widest mb-6">
             <User size={14} /> Profile Workshop v2.0
           </div>
-          <h1 className="md:text-5xl font-black text-white tracking-tight leading-tight mb-2">
+          <h1 className="md:text-5xl font-black text-foreground tracking-tight leading-tight mb-2">
             Build Your <span className="text-transparent bg-linear-to-r from-indigo-500 to-emerald-400">Professional Brand</span>
           </h1>
           <p className="text-lg max-w-xl font-medium">
@@ -80,12 +80,12 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
           </p>
         </div>
         
-        <div className="flex bg-[#111116] border border-white/10 rounded-2xl p-1 gap-1 flex-wrap md:flex-nowrap">
+        <div className="flex bg-[#111116] border border-border rounded-2xl p-1 gap-1 flex-wrap md:flex-nowrap">
           {sections.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setActiveSection(id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${ activeSection === id ? "bg-indigo-600/10 text-indigo-400 border" : "text-slate-500 hover:text-slate-300 hover:bg-white/5 border border-transparent" }`}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${ activeSection === id ? "bg-foreground text-background/10 text-foreground border" : "text-muted-foreground hover:text-muted-foreground hover:bg-accent border border-transparent" }`}
             >
               <Icon size={14} /> {label}
             </button>
@@ -98,38 +98,38 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
         {/* ── LEFT: AVATAR & QUICK STATS ────────────────────────────────── */}
         <div className="lg:col-span-4 space-y-8">
           <div className="bg-[#111116] border border-white/8 rounded-5xl p-10 flex flex-col items-center text-center shadow-2xl relative overflow-hidden group">
-            <div className="absolute -top-24 -left-24 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full" />
+            <div className="absolute -top-24 -left-24 w-64 h-64 bg-accent blur-[100px] rounded-full" />
             
             <div className="relative z-10 space-y-6 flex flex-col items-center">
               <AvatarUpload initialImage={profile.image} userId={profile.id} />
               
               <div className="flex flex-col items-center gap-1.5">
                 <div className="flex items-center gap-2 justify-center flex-wrap">
-                  <h2 className="font-black text-white">{profile.name || "Set your Name"}</h2>
+                  <h2 className="font-black text-foreground">{profile.name || "Set your Name"}</h2>
                   <VerificationBadge isVerified={!!profile.isVerified} />
                 </div>
-                <p className="text-sm font-bold uppercase tracking-widest text-slate-400">{profile.email}</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">{profile.email}</p>
                 {profile.username && <p className="text-xs font-bold">@{profile.username}</p>}
               </div>
 
-              <div className="w-full h-px bg-white/5" />
+              <div className="w-full h-px bg-accent" />
 
               <div className="w-full space-y-4">
                 <div className="bg-white/2 border border-white/5 rounded-2xl p-4 text-left">
-                  <p className="font-black text-slate-500 uppercase tracking-widest mb-1">Reputation Score</p>
-                  <p className="font-black text-white flex items-center justify-between">
-                    100 <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-widest">Master</span>
+                  <p className="font-black text-muted-foreground uppercase tracking-widest mb-1">Reputation Score</p>
+                  <p className="font-black text-foreground flex items-center justify-between">
+                    100 <span className="bg-success/10 text-success border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-widest">Master</span>
                   </p>
                 </div>
                 
                 <div className="bg-white/2 border border-white/5 rounded-2xl p-4 text-left">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-black text-slate-500 uppercase tracking-widest">Profile Completion</p>
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${completionPercentage === 100 ? 'text-emerald-400' : 'text-indigo-400'}`}>
+                    <p className="font-black text-muted-foreground uppercase tracking-widest">Profile Completion</p>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${completionPercentage === 100 ? 'text-success' : 'text-foreground'}`}>
                       {completionPercentage}%
                     </span>
                   </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-accent rounded-full overflow-hidden">
                     <div 
                       className={`h-full rounded-full transition-all duration-1000 ${completionPercentage === 100 ? 'bg-emerald-500' : 'bg-indigo-500'}`} 
                       style={{ width: `${completionPercentage}%` }}
@@ -146,16 +146,16 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
           </div>
 
           <div className="bg-[#131929] border border-[#7C3AED]/20 rounded-3xl p-8 relative overflow-hidden">
-             <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none" />
+             <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-accent blur-[60px] rounded-full pointer-events-none" />
              <div className="flex items-center gap-3 mb-4">
                <ShieldCheck className="text-[#A78BFA]" size={20} />
                <h3 className="font-black uppercase text-xs tracking-widest">Public Visibility</h3>
              </div>
-             <p className="text-slate-400 leading-relaxed mb-6 font-medium">
-               Your profile is currently <span className="text-emerald-400 font-bold">active</span> and visible to verified Indian startups.
+             <p className="text-muted-foreground leading-relaxed mb-6 font-medium">
+               Your profile is currently <span className="text-success font-bold">active</span> and visible to verified Indian startups.
              </p>
              {profile.username ? (
-               <a href={`/profile/${profile.username}`} target="_blank" rel="noopener noreferrer" className="block w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-black text-white uppercase tracking-widest transition-all">
+               <a href={`/profile/${profile.username}`} target="_blank" rel="noopener noreferrer" className="block w-full py-3 bg-accent hover:bg-accent border border-border rounded-xl font-black text-foreground uppercase tracking-widest transition-all">
                  View Public Preview
                </a>
              ) : (
@@ -274,7 +274,7 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
                </div>
                
                <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl flex items-start gap-4">
-                  <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                  <div className="p-2 rounded-xl bg-accent text-foreground">
                     <Sparkles size={18} />
                   </div>
                   <div>

@@ -74,7 +74,7 @@ export function FilterSidebar({ currentFilters, className }: { currentFilters: R
         </div>
         <div className="px-4 space-y-4">
            <div>
-              <p className="font-black text-slate-600 uppercase tracking-wider mb-2">Range Start</p>
+              <p className="font-black text-muted-foreground uppercase tracking-wider mb-2">Range Start</p>
               <input 
                 type="number" 
                 placeholder="₹200"
@@ -84,7 +84,7 @@ export function FilterSidebar({ currentFilters, className }: { currentFilters: R
               />
            </div>
            <div>
-              <p className="font-black text-slate-600 uppercase tracking-wider mb-2">Maximum Budget</p>
+              <p className="font-black text-muted-foreground uppercase tracking-wider mb-2">Maximum Budget</p>
               <input 
                 type="number" 
                 placeholder="₹1,00,000+"

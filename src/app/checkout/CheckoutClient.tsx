@@ -237,7 +237,7 @@ function CheckoutContent({ nonce }: { nonce?: string }) {
   return (
     <div className="min-h-screen bg-slate-950 text-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-extrabold tracking-tight mb-8 bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-extrabold tracking-tight mb-8 bg-linear-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
           Secure Gig Escrow
         </h1>
 

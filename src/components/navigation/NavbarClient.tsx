@@ -1,28 +1,11 @@
 'use client'
 
-/**
- * NavbarClient — auth-aware, hydration-safe navbar.
- *
- * Architecture: server component (Navbar.tsx) passes initial user data as
- * props from an SSR fetch. This client component then subscribes to
- * Supabase's onAuthStateChange so the UI reacts instantly to login/logout
- * without a full-page refresh.
- *
- * Hydration safety:
- * - No Math.random() or Date.now() during render.
- * - Auth UI is gated behind `mounted` state so SSR HTML (logged-out)
- *   matches the initial client render before JS hydrates.
- */
-
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Briefcase, Sparkles,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MessageSquare, Users, Bell, Search, ChevronDown, Building2,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   LogOut, Settings, UserCircle, Plus, GraduationCap,
   ArrowUp, Trophy, Gift, Target,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Shield, CreditCard, Info, Menu, X, LucideIcon
 } from 'lucide-react'
 import Image from 'next/image'
@@ -33,6 +16,8 @@ import { useState, useEffect, useCallback } from 'react'
 import NotificationsPopover from '@/components/NotificationsPopover'
 import { SignOutButton } from '@/components/SignOutButton'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { Button } from '@/components/ui/Button'
+import { pressScale, springSnappy } from '@/lib/motion'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
@@ -106,14 +91,7 @@ export function NavbarClient({
   const router = useRouter()
   const supabase = createClient()
 
-  // ── Hydration gate ──────────────────────────────────────────────────────
-  // On the server, we always render the logged-OUT state to produce
-  // a stable SSR HTML. After mount we sync to the real auth state.
   const [mounted, setMounted] = useState(false)
-
-  // ── Live auth state — seeded from server props to avoid flash ─────────
-  // Server component (Navbar.tsx) already fetched these safely server-side.
-  // We use them as initial values so the first render is already correct.
   const [userId, setUserId] = useState<string | null>(initialUserId)
   const [userRole, setUserRole] = useState<string | null>(initialRole)
   const [userName, setUserName] = useState<string | null>(initialUserName)
@@ -123,18 +101,12 @@ export function NavbarClient({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const isScrolled = useScroll()
 
-  // Close mobile menu on path changes safely (React 19 rules compliant)
   const [prevPathname, setPrevPathname] = useState(pathname)
   if (pathname !== prevPathname) {
     setPrevPathname(pathname)
     setIsMobileMenuOpen(false)
   }
 
-  // ── Sync auth state from server props + Supabase listener ───────────────
-  // Sync auth state. We deliberately do NOT query the User table here —
-  // that triggers a Supabase RLS 403 from the client-side anon key.
-  // Instead we read from auth.getUser() which is always permitted, and
-  // fall back to the server-passed props that were already fetched safely.
   const syncUser = useCallback(async () => {
     const { data: { user }, error } = await supabase.auth.getUser()
     if (error || !user) {
@@ -146,23 +118,16 @@ export function NavbarClient({
     }
 
     setUserId(user.id)
-    // Use user_metadata populated by OAuth/auth provider — no DB round-trip needed
     const meta = user.user_metadata ?? {}
     setUserName(meta.full_name ?? meta.name ?? user.email?.split('@')[0] ?? null)
     setUserAvatar(meta.avatar_url ?? meta.picture ?? null)
-    // Role comes from the server props (already correct) — don't overwrite unless we
-    // can read it without 403. Keep existing userRole state from initial server props.
   }, [supabase])
 
   useEffect(() => {
-    // 1. Mount flag — prevents auth UI flash on SSR
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
-
-    // 2. Initial sync
     syncUser()
 
-    // 3. Real-time listener — reacts to login/logout from any tab
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') syncUser()
       if (event === 'SIGNED_OUT') {
@@ -171,7 +136,6 @@ export function NavbarClient({
         setUserName(null)
         setUserAvatar(null)
       }
-      // Refresh server components (RSC) so Navbar.tsx re-fetches
       router.refresh()
     })
 
@@ -180,41 +144,31 @@ export function NavbarClient({
 
   const navLinks = getNavLinks(userRole)
 
-  // ── Don't render nav on landing page ────────────────────────────────────
   if (pathname === '/') return null
 
   return (
     <>
       <nav
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 h-16 border-b transition-all duration-300',
+          'fixed top-0 left-0 right-0 z-50 h-14 border-b transition-colors duration-300',
           isScrolled
-            ? 'backdrop-blur-3xl border-white/10'
-            : 'border-white/5'
+            ? 'bg-background/80 backdrop-blur-md border-border'
+            : 'bg-transparent border-transparent'
         )}
-        style={{
-          background: isScrolled
-            ? 'rgba(8,8,15,0.92)'
-            : 'rgba(8,8,15,1)',
-        }}
       >
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between gap-6">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="relative w-8 h-8">
-              <Image src="/logo-v2.jpg" alt="CampusConnect" width={32} height={32} className="rounded-lg object-contain" />
-              <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full" style={{ background: 'var(--accent)' }} />
+          <Link href="/" className="flex items-center gap-2 shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md">
+            <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center text-background font-bold text-xs">
+              CC
             </div>
-            <span
-              className="text-lg hidden sm:block"
-              style={{ fontFamily: "var(--font-heading)", fontWeight: 700, color: "var(--text)" }}
-            >
-              Campus<span className="text-gradient">Connect</span>
+            <span className="text-sm font-semibold hidden sm:block tracking-tight text-foreground">
+              CampusConnect
             </span>
           </Link>
 
-          {/* Desktop Nav Links — only shown when logged in */}
-          <div className="hidden lg:flex items-center gap-1.5 flex-1 justify-center">
+          {/* Desktop Nav Links */}
+          <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {mounted && userId && navLinks.map(link => {
               const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
               const badgeCount = link.badge === 'messages' ? unreadMessages
@@ -225,41 +179,15 @@ export function NavbarClient({
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'relative flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300',
-                    link.highlight && !isActive && 'border',
-                    link.highlight && isActive && 'border',
-                    !link.highlight && !isActive && 'hover:bg-white/5',
-                    !link.highlight && isActive && 'border',
+                    'relative flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                    isActive ? 'text-foreground bg-accent' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
+                    link.highlight && 'text-primary'
                   )}
-                  style={{
-                    color: link.highlight
-                      ? 'var(--gold)'
-                      : isActive
-                        ? 'var(--primary-light)'
-                        : 'var(--text-2)',
-                    background: link.highlight && isActive
-                      ? 'rgba(245,158,11,0.12)'
-                      : link.highlight && !isActive
-                        ? 'rgba(245,158,11,0.05)'
-                        : !link.highlight && isActive
-                          ? 'rgba(124,58,237,0.12)'
-                          : undefined,
-                    borderColor: link.highlight && isActive
-                      ? 'rgba(245,158,11,0.3)'
-                      : link.highlight && !isActive
-                        ? 'rgba(245,158,11,0.12)'
-                        : !link.highlight && isActive
-                          ? 'rgba(124,58,237,0.25)'
-                          : undefined,
-                  }}
                 >
                   <link.icon className="w-4 h-4" />
                   <span>{link.label}</span>
                   {badgeCount > 0 && (
-                    <span
-                      className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full text-[9px] font-black flex items-center justify-center px-1 border-2"
-                      style={{ background: 'var(--primary)', borderColor: 'var(--bg)' }}
-                    >
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
                       {badgeCount > 9 ? '9+' : badgeCount}
                     </span>
                   )}
@@ -269,8 +197,8 @@ export function NavbarClient({
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3">
-            <button className="p-2.5 rounded-xl text-slate-500 hover:text-white hover:bg-white/5 transition-all">
+          <div className="flex items-center gap-2">
+            <button className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
               <Search className="w-4 h-4" />
             </button>
 
@@ -284,46 +212,33 @@ export function NavbarClient({
             </div>
 
             {(userRole === 'CLIENT' || userRole === 'STARTUP') && mounted && userId && (
-              <Link
-                href="/post-gig"
-                className="hidden xl:flex items-center gap-2 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all"
-                style={{
-                  background: "var(--grad-brand)",
-                  boxShadow: "var(--shadow-glow-primary)",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-btn-hover)" }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-glow-primary)" }}
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Post Gig
-              </Link>
+              <Button asChild size="sm" className="hidden xl:flex">
+                <Link href="/post-gig">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Post Gig
+                </Link>
+              </Button>
             )}
 
-            {/* ── Auth UI — gated behind `mounted` to prevent hydration mismatch ── */}
             {!mounted ? (
-              // Skeleton placeholder — same dimensions as auth buttons to avoid layout shift
-              <div className="w-24 h-9 rounded-2xl bg-white/5 animate-pulse" />
+              <div className="w-8 h-8 rounded-full bg-accent animate-pulse" />
             ) : userId ? (
-              // ── LOGGED IN ──────────────────────────────────────────────
               <div className="relative group">
-                <button className="flex items-center gap-3 p-1 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all">
-                  <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center border" style={{ background: 'rgba(124,58,237,0.15)', borderColor: 'var(--border)' }}>
-                    {userAvatar ? (
-                      <Image src={userAvatar} alt="Avatar" width={36} height={36} className="w-full h-full object-cover" referrerPolicy="no-referrer" unoptimized />
-                    ) : (
-                      <span className="font-black text-sm" style={{ color: "var(--primary-light)" }}>
-                        {userName?.charAt(0)?.toUpperCase() ?? 'U'}
-                      </span>
-                    )}
-                  </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-colors pr-2" />
+                <button className="flex items-center justify-center w-8 h-8 rounded-full bg-accent border border-border overflow-hidden hover:border-foreground/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  {userAvatar ? (
+                    <Image src={userAvatar} alt="Avatar" width={32} height={32} className="w-full h-full object-cover" unoptimized />
+                  ) : (
+                    <span className="font-semibold text-xs text-foreground">
+                      {userName?.charAt(0)?.toUpperCase() ?? 'U'}
+                    </span>
+                  )}
                 </button>
 
                 {/* Dropdown */}
-                <div className="absolute right-0 top-full mt-3 w-64 bg-[#111116] border border-white/10 rounded-3xl py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-2xl overflow-hidden ring-1 ring-white/5">
-                  <div className="px-5 py-4 border-b mb-2" style={{ borderColor: 'var(--border)' }}>
-                    <p className="text-sm font-black truncate" style={{ color: 'var(--text)' }}>{userName ?? 'Authenticated User'}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest mt-0.5" style={{ color: "var(--primary-light)" }}>{userRole}</p>
+                <div className="absolute right-0 top-full mt-2 w-56 bg-popover border border-border rounded-lg py-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-card">
+                  <div className="px-3 py-2 border-b border-border mb-1">
+                    <p className="text-sm font-medium truncate text-foreground">{userName ?? 'Authenticated User'}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 capitalize">{userRole?.toLowerCase()}</p>
                   </div>
 
                   <DropdownItem href={userRole === 'STUDENT' ? '/dashboard/student/profile' : '/dashboard'} icon={UserCircle} label="Account Profile" />
@@ -331,51 +246,36 @@ export function NavbarClient({
 
                   {userRole === 'STUDENT' && (
                     <>
-                      <DropdownItem href="/dashboard/student/resume-analyzer" icon={Sparkles} label="Resume Analyzer" amber />
-                      <DropdownItem href="/dashboard/student/career-copilot" icon={Sparkles} label="Career Copilot" amber />
+                      <DropdownItem href="/dashboard/student/resume-analyzer" icon={Sparkles} label="Resume Analyzer" />
+                      <DropdownItem href="/dashboard/student/career-copilot" icon={Sparkles} label="Career Copilot" />
                     </>
                   )}
 
                   {(userRole === 'CLIENT' || userRole === 'STARTUP') && (
-                    <DropdownItem href="/dashboard" icon={Building2} label="Dashboard" amber />
+                    <DropdownItem href="/dashboard" icon={Building2} label="Dashboard" />
                   )}
 
-                  <div className="mt-3 pt-3 border-white/5 px-2">
-                    <div className="flex items-center justify-center">
+                  <div className="mt-1 pt-1 border-t border-border px-1">
+                    <div className="flex items-center justify-center w-full">
                       <SignOutButton />
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              // ── LOGGED OUT ─────────────────────────────────────────────
-              <div className="flex items-center gap-3">
-                <Link href="/auth/sign-in" className="text-[11px] font-black uppercase tracking-widest pr-2 transition-colors" style={{ color: 'var(--text-2)' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-2)' }}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/auth/sign-up"
-                  className="px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest active:scale-95 transition-all"
-                  style={{
-                    background: "var(--grad-brand)",
-                    boxShadow: "var(--shadow-glow-primary)",
-                  }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-btn-hover)" }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-glow-primary)" }}
-                >
-                  Join Free →
-                </Link>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/auth/sign-in">Sign In</Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link href="/auth/sign-up">Join Free</Link>
+                </Button>
               </div>
             )}
 
-            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(prev => !prev)}
-              className="lg:hidden p-2.5 rounded-xl text-slate-500 hover:text-white hover:bg-white/5 transition-all"
-              aria-label="Toggle menu"
+              className="lg:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -390,29 +290,17 @@ export function NavbarClient({
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="lg:hidden overflow-hidden border-t"
-              style={{ background: 'var(--bg)', borderColor: 'var(--border)' }}
+              className="lg:hidden overflow-hidden border-t border-border bg-background"
             >
               <div className="p-4 space-y-1 max-h-[70vh] overflow-y-auto">
-                {/* Auth links for logged-out mobile */}
                 {mounted && !userId && (
                   <div className="flex gap-2 mb-4">
-                    <Link
-                      href="/auth/sign-in"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex-1 py-3 rounded-xl text-sm font-bold transition-colors"
-                      style={{ border: '1px solid var(--border)', color: 'var(--text)' }}
-                    >
-                      Log In
-                    </Link>
-                    <Link
-                      href="/auth/sign-up"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex-1 py-3 rounded-xl font-bold text-white"
-                      style={{ background: 'var(--grad-brand)' }}
-                    >
-                      Join Free
-                    </Link>
+                    <Button variant="outline" className="flex-1" asChild>
+                      <Link href="/auth/sign-in" onClick={() => setIsMobileMenuOpen(false)}>Log In</Link>
+                    </Button>
+                    <Button className="flex-1" asChild>
+                      <Link href="/auth/sign-up" onClick={() => setIsMobileMenuOpen(false)}>Join Free</Link>
+                    </Button>
                   </div>
                 )}
                 {mounted && navLinks.map((link) => {
@@ -422,12 +310,10 @@ export function NavbarClient({
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold"
-                      style={{
-                        color: link.highlight ? 'var(--gold)' : isActive ? 'var(--text)' : 'var(--text-2)',
-                        background: isActive && !link.highlight ? 'rgba(124,58,237,0.12)' : undefined,
-                        border: isActive && !link.highlight ? '1px solid rgba(124,58,237,0.25)' : '1px solid transparent',
-                      }}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium",
+                        isActive ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                      )}
                     >
                       <link.icon className="w-5 h-5" />
                       <span>{link.label}</span>
@@ -439,11 +325,11 @@ export function NavbarClient({
           )}
         </AnimatePresence>
       </nav>
+      <ScrollToTop />
     </>
   )
 }
 
-/* ── Scroll-to-top button ──────────────────────────────────────────── */
 function ScrollToTop() {
   const [show, setShow] = useState(false)
   useEffect(() => {
@@ -455,47 +341,29 @@ function ScrollToTop() {
     <AnimatePresence>
       {show && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: 20 }}
+          transition={springSnappy}
+          whileTap={{ scale: pressScale }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Scroll to top"
-          className="fixed bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full glass border text-sm font-medium transition-all hover:scale-105 active:scale-95"
-          style={{
-            color: 'var(--text-2)',
-            borderColor: 'var(--border)',
-            background: 'rgba(17,17,39,0.85)',
-            backdropFilter: 'blur(20px)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
-          }}
+          className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-surface border border-border text-foreground shadow-card hover:bg-accent transition-colors"
         >
           <ArrowUp className="w-4 h-4" />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px' }}>Top</span>
         </motion.button>
       )}
     </AnimatePresence>
   )
 }
 
-function DropdownItem({ href, icon: Icon, label, amber }: { href: string; icon: LucideIcon; label: string; amber?: boolean }) {
+function DropdownItem({ href, icon: Icon, label }: { href: string; icon: LucideIcon; label: string }) {
   return (
     <Link
       href={href}
-      className={cn(
-        'flex items-center gap-3 px-5 py-3 text-[11px] font-black uppercase tracking-widest transition-all',
-      )}
-      style={{ color: amber ? 'var(--gold)' : 'var(--text-2)' }}
-      onMouseEnter={e => {
-        e.currentTarget.style.background = amber ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.04)'
-        e.currentTarget.style.color = amber ? 'var(--gold)' : 'var(--text)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.background = ''
-        e.currentTarget.style.color = amber ? 'var(--gold)' : 'var(--text-2)'
-      }}
+      className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md mx-1 transition-colors"
     >
-      <Icon size={16} />
+      <Icon className="w-4 h-4" />
       {label}
     </Link>
   )

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
         try {
             validateSessionUserId(userId, "POST /api/applications/apply");
         } catch (uuidErr) {
-            console.error("[P2023 Guard]", uuidErr);
+            logger.error("[P2023 Guard] Invalid Session ID", uuidErr, { userId });
             return NextResponse.json({ error: "Invalid session. Please sign out and sign in again." }, { status: 400 });
         }
         // Parse request body
@@ -129,9 +130,9 @@ export async function POST(req: Request) {
             },
         });
     } catch (error) {
-        console.error("Error creating application:", error);
+        logger.error("Error creating application", error, { gigId: req.url });
         return NextResponse.json(
-            { error: "Failed to submit application" },
+            { error: "Failed to submit application. Please try again later." },
             { status: 500 }
         );
     }

@@ -65,7 +65,7 @@ function XpBar({ progress, levelTitle, level, nextLevelXp, totalXp }: {
         <div>
           <div className="flex items-center gap-2">
             <span
-              className="text-2xl font-black text-white"
+              className="text-2xl font-black text-foreground"
               style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}
             >
               Level {level}
@@ -74,10 +74,10 @@ function XpBar({ progress, levelTitle, level, nextLevelXp, totalXp }: {
               {levelTitle}
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">{totalXp.toLocaleString()} / {nextLevelXp.toLocaleString()} XP</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{totalXp.toLocaleString()} / {nextLevelXp.toLocaleString()} XP</p>
         </div>
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black" style={{ background: "linear-gradient(135deg, #7C3AED, #FF4500)" }}>
-          <Zap size={20} className="text-white" />
+          <Zap size={20} className="text-foreground" />
         </div>
       </div>
       <div className="relative h-3 bg-white/8 rounded-full overflow-hidden">
@@ -86,7 +86,7 @@ function XpBar({ progress, levelTitle, level, nextLevelXp, totalXp }: {
           style={{ width: `${progress}%`, background: "linear-gradient(90deg, #7C3AED, #FF4500)", boxShadow: "0 0 12px rgba(124,58,237,0.5)" }}
         />
       </div>
-      <p className="text-[10px] text-slate-600 mt-2">{progress}% to next level</p>
+      <p className="text-[10px] text-muted-foreground mt-2">{progress}% to next level</p>
     </div>
   )
 }
@@ -105,8 +105,8 @@ function StreakCard({ current, longest, multiplier }: { current: number; longest
     >
       {isHot && <div className="absolute -right-4 -top-4 w-20 h-20 blur-3xl rounded-full bg-[#EF4444]/20" />}
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
-          <Flame size={11} className={isHot ? "text-[#EF4444]" : "text-slate-500"} />
+        <span className="text-xs font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+          <Flame size={11} className={isHot ? "text-[#EF4444]" : "text-muted-foreground"} />
           Daily Streak
         </span>
         {multiplier > 1 && (
@@ -115,10 +115,10 @@ function StreakCard({ current, longest, multiplier }: { current: number; longest
           </span>
         )}
       </div>
-      <p className="text-4xl font-black text-white my-1">{fire} {current}</p>
-      <p className="text-xs text-slate-500">days · best: {longest}</p>
+      <p className="text-4xl font-black text-foreground my-1">{fire} {current}</p>
+      <p className="text-xs text-muted-foreground">days · best: {longest}</p>
       {current === 0 && (
-        <p className="text-[10px] text-slate-600 mt-2 border-t border-white/5 pt-2">
+        <p className="text-[10px] text-muted-foreground mt-2 border-t border-white/5 pt-2">
           Complete any activity today to start your streak
         </p>
       )}
@@ -140,12 +140,12 @@ function ScoreRadar({ reliability, execution, learning, community, smart }: {
     <div className="p-6 rounded-3xl" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="font-black text-white text-sm">Smart Score</h3>
-          <p className="text-[10px] text-slate-500">4-dimensional reputation</p>
+          <h3 className="font-black text-foreground text-sm">Smart Score</h3>
+          <p className="text-[10px] text-muted-foreground">4-dimensional reputation</p>
         </div>
         <div className="text-right">
-          <p className="text-3xl font-black text-white">{smart}</p>
-          <p className="text-[10px] text-slate-500">/ 100</p>
+          <p className="text-3xl font-black text-foreground">{smart}</p>
+          <p className="text-[10px] text-muted-foreground">/ 100</p>
         </div>
       </div>
 
@@ -155,9 +155,9 @@ function ScoreRadar({ reliability, execution, learning, community, smart }: {
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1.5">
                 <Icon size={11} style={{ color }} />
-                <span className="text-xs text-slate-400">{label}</span>
+                <span className="text-xs text-muted-foreground">{label}</span>
               </div>
-              <span className="text-xs font-black text-white">{value}</span>
+              <span className="text-xs font-black text-foreground">{value}</span>
             </div>
             <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
               <div
@@ -165,7 +165,7 @@ function ScoreRadar({ reliability, execution, learning, community, smart }: {
                 style={{ width: `${value}%`, background: color }}
               />
             </div>
-            <p className="text-[10px] text-slate-600 mt-0.5">{desc}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">{desc}</p>
           </div>
         ))}
       </div>
@@ -182,7 +182,7 @@ function BadgeWall({ badges }: { badges: UserBadge[] }) {
 
   return (
     <div className="p-6 rounded-3xl" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
-      <h3 className="font-black text-white text-sm mb-4 flex items-center gap-2">
+      <h3 className="font-black text-foreground text-sm mb-4 flex items-center gap-2">
         <Trophy size={14} className="text-[#F59E0B]" />
         Badges ({badges.length})
       </h3>
@@ -190,7 +190,7 @@ function BadgeWall({ badges }: { badges: UserBadge[] }) {
       {badges.length === 0 ? (
         <div className="text-center py-6">
           <p className="text-3xl mb-2">🎯</p>
-          <p className="text-xs text-slate-500">Complete your first gig to earn badges</p>
+          <p className="text-xs text-muted-foreground">Complete your first gig to earn badges</p>
         </div>
       ) : (
         <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
@@ -202,7 +202,7 @@ function BadgeWall({ badges }: { badges: UserBadge[] }) {
               title={`${ub.badge.name} — ${ub.badge.description}`}
             >
               <span className="text-xl">{ub.badge.icon}</span>
-              <span className="text-[8px] text-slate-500 mt-0.5 text-center leading-tight hidden group-hover:block absolute -bottom-6 bg-slate-900 px-1 rounded z-10 whitespace-nowrap">
+              <span className="text-[8px] text-muted-foreground mt-0.5 text-center leading-tight hidden group-hover:block absolute -bottom-6 bg-background px-1 rounded z-10 whitespace-nowrap">
                 {ub.badge.name}
               </span>
             </div>
@@ -218,14 +218,14 @@ function XpFeed({ events }: { events: GamificationProfile["xpEvents"] }) {
 
   return (
     <div className="p-5 rounded-3xl" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
-      <h3 className="font-black text-white text-sm mb-4 flex items-center gap-2">
+      <h3 className="font-black text-foreground text-sm mb-4 flex items-center gap-2">
         <Zap size={13} className="text-[#7C3AED]" />
         Recent XP
       </h3>
       <div className="space-y-2">
         {events.slice(0, 6).map((ev) => (
           <div key={ev.id} className="flex items-center justify-between text-xs">
-            <span className="text-slate-400 truncate flex-1">{ev.description}</span>
+            <span className="text-muted-foreground truncate flex-1">{ev.description}</span>
             <span className="font-black text-[#10B981] shrink-0 ml-2">+{ev.xpAwarded} XP</span>
           </div>
         ))}
@@ -257,7 +257,7 @@ export function GamificationDashboard() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-pulse">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-32 rounded-3xl bg-white/5" />
+          <div key={i} className="h-32 rounded-3xl bg-accent" />
         ))}
       </div>
     )
@@ -270,15 +270,15 @@ export function GamificationDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-black text-white flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="text-xl font-black text-foreground flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
             <Sparkles size={16} className="text-[#F59E0B]" />
             Your Progress
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">Keep building. Every gig counts.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Keep building. Every gig counts.</p>
         </div>
         <Link
           href="/leaderboard"
-          className="flex items-center gap-1.5 text-xs font-bold text-[#A78BFA] hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-xs font-bold text-[#A78BFA] hover:text-foreground transition-colors"
         >
           <Trophy size={12} /> Leaderboard <ChevronRight size={11} />
         </Link>
@@ -314,7 +314,7 @@ export function GamificationDashboard() {
           >
             <Icon size={14} className={`${color} mx-auto mb-1`} />
             <p className={`text-lg font-black ${color}`}>{value}</p>
-            <p className="text-[10px] text-slate-500">{label}</p>
+            <p className="text-[10px] text-muted-foreground">{label}</p>
           </div>
         ))}
       </div>
@@ -342,8 +342,8 @@ export function GamificationDashboard() {
               style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(239,68,68,0.08))", border: "1px solid rgba(245,158,11,0.2)" }}
             >
               <p className="text-[10px] font-black text-[#FCD34D] uppercase tracking-wider mb-1">🔥 Streak Active</p>
-              <p className="text-white text-sm font-bold">All XP this week is {profile.streakMultiplier}×</p>
-              <p className="text-xs text-slate-500 mt-0.5">Keep your streak alive to maximise reputation</p>
+              <p className="text-foreground text-sm font-bold">All XP this week is {profile.streakMultiplier}×</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Keep your streak alive to maximise reputation</p>
             </div>
           )}
           {/* CTA: Find a gig */}
@@ -353,8 +353,8 @@ export function GamificationDashboard() {
             style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(255,69,0,0.1))", border: "1px solid rgba(124,58,237,0.2)" }}
           >
             <div>
-              <p className="text-sm font-black text-white">Find a gig</p>
-              <p className="text-[10px] text-slate-500">Earn XP + real money</p>
+              <p className="text-sm font-black text-foreground">Find a gig</p>
+              <p className="text-[10px] text-muted-foreground">Earn XP + real money</p>
             </div>
             <ArrowRight size={16} className="text-[#A78BFA] group-hover:translate-x-1 transition-transform" />
           </Link>

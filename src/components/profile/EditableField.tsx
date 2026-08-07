@@ -44,14 +44,14 @@ export function EditableField({
   return (
     <div className="space-y-2 group">
       <div className="flex items-center justify-between">
-        <label className="font-bold text-slate-500 uppercase tracking-widest">
+        <label className="font-bold text-muted-foreground uppercase tracking-widest">
           {label}
         </label>
         
         {!isEditing && !saving && (
           <button
             onClick={() => setIsEditing(true)}
-            className="p-1 px-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-indigo-500/10 rounded-lg text-[10px] font-black uppercase flex items-center gap-1.5"
+            className="p-1 px-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-accent rounded-lg text-[10px] font-black uppercase flex items-center gap-1.5"
           >
             <Edit2 size={12} /> Edit
           </button>
@@ -79,14 +79,14 @@ export function EditableField({
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={placeholder}
                 rows={3}
-                className="w-full bg-[#111116] border border-white/10 hover:border-indigo-500/50 focus:border-indigo-500 focus:outline-none rounded-xl px-4 py-3 transition-all text-sm leading-relaxed"
+                className="w-full bg-[#111116] border border-border hover:border-indigo-500/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm leading-relaxed"
                 autoFocus
               />
             ) : type === "select" ? (
               <select
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="w-full bg-[#111116] border border-white/10 hover:border-indigo-500/50 focus:border-indigo-500 focus:outline-none rounded-xl px-4 py-3 transition-all text-sm"
+                className="w-full bg-[#111116] border border-border hover:border-indigo-500/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm"
                 autoFocus
               >
                 <option value="">Select {label}</option>
@@ -100,7 +100,7 @@ export function EditableField({
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-[#111116] border border-white/10 hover:border-indigo-500/50 focus:border-indigo-500 focus:outline-none rounded-xl px-4 py-3 transition-all text-sm"
+                className="w-full bg-[#111116] border border-border hover:border-indigo-500/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave()
@@ -112,7 +112,7 @@ export function EditableField({
             <div className="flex items-center gap-2 justify-end">
               <button
                 onClick={handleCancel}
-                className="p-2 px-3 hover:text-white text-xs font-bold transition-colors"
+                className="p-2 px-3 hover:text-foreground text-xs font-bold transition-colors"
                 disabled={saving}
               >
                 Cancel
@@ -120,7 +120,7 @@ export function EditableField({
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="p-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-xs font-black shadow-lg shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
+                className="p-2 px-4 bg-foreground text-background hover:bg-foreground/90 rounded-xl text-xs font-black shadow-lg shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2"
               >
                 {saving ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
                 Save Changes
@@ -132,7 +132,7 @@ export function EditableField({
             onClick={() => setIsEditing(true)}
             className="w-full bg-white/2 border border-transparent hover:border-white/5 hover:bg-white/4 rounded-xl px-4 py-3 transition-all cursor-pointer min-h-[46px] flex items-center"
           >
-            <p className={`text-sm ${!value ? 'text-slate-600 italic' : 'text-slate-200'}`}>
+            <p className={`text-sm ${!value ? 'text-muted-foreground italic' : 'text-foreground'}`}>
               {value || `No ${label.toLowerCase()} added yet.`}
             </p>
           </div>

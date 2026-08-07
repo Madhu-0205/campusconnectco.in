@@ -1,6 +1,7 @@
 import { Metadata } from "next";
-import LegalLayout from "@/components/legal/LegalLayout";
 import Link from "next/link";
+
+import LegalLayout from "@/components/legal/LegalLayout";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | CampusConnect",

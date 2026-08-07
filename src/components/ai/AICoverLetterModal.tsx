@@ -77,32 +77,32 @@ export function AICoverLetterModal({ gigId, gigTitle, onSelect, onClose }: Cover
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
       <div
-        className="bg-[#0e0e12] border border-white/10 rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-[#0e0e12] border border-border rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-white/10 shrink-0">
+        <div className="flex items-center justify-between p-6 border-border shrink-0">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-5 h-5 text-amber-400" />
               <h2 className="font-black text-lg">AI Cover Letter</h2>
             </div>
-            <p className="text-slate-400 truncate max-w-[360px]">for: {gigTitle}</p>
+            <p className="text-muted-foreground truncate max-w-[360px]">for: {gigTitle}</p>
           </div>
-          <button onClick={onClose} className="p-2 bg-(--surface-2) hover:bg-white/10 rounded-xl text-slate-400 transition-colors shrink-0">
+          <button onClick={onClose} className="p-2 bg-(--surface-2) hover:bg-accent rounded-xl text-muted-foreground transition-colors shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tone Selector */}
-        <div className="p-6 border-white/10 shrink-0">
-          <p className="text-slate-500 font-bold uppercase mb-3">Select Tone</p>
+        <div className="p-6 border-border shrink-0">
+          <p className="text-muted-foreground font-bold uppercase mb-3">Select Tone</p>
           <div className="grid grid-cols-3 gap-2">
             {TONES.map((t) => (
               <button
                 key={t.value}
                 onClick={() => setTone(t.value)}
-                className={`px-3 py-2.5 rounded-xl border transition-all ${ tone === t.value ? 'border-amber-500/60' : 'border-white/10 bg-(--surface-2) text-slate-400 hover:border-white/20' }`}
+                className={`px-3 py-2.5 rounded-xl border transition-all ${ tone === t.value ? 'border-amber-500/60' : 'border-border bg-(--surface-2) text-muted-foreground hover:border-white/20' }`}
               >
                 <p className="text-sm font-bold">{t.label}</p>
                 <p className="text-xs opacity-70">{t.desc}</p>
@@ -114,7 +114,7 @@ export function AICoverLetterModal({ gigId, gigTitle, onSelect, onClose }: Cover
         {/* Letter Output */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {!letter && !loading && (
-            <div className="py-12 text-slate-500">
+            <div className="py-12 text-muted-foreground">
               <Sparkles className="w-8 h-8 mx-auto mb-3 opacity-40" />
               <p className="text-sm">Choose your tone and click Generate</p>
             </div>
@@ -133,13 +133,13 @@ export function AICoverLetterModal({ gigId, gigTitle, onSelect, onClose }: Cover
               <textarea
                 value={letter}
                 onChange={(e) => setLetter(e.target.value)}
-                className="w-full bg-(--surface-2) border border-white/10 rounded-xl p-4 text-slate-200 min-h-[240px] resize-none focus:outline-none focus:border-amber-500/40 leading-relaxed"
+                className="w-full bg-(--surface-2) border border-border rounded-xl p-4 text-foreground min-h-[240px] resize-none focus:outline-none focus:border-amber-500/40 leading-relaxed"
               />
 
               {/* Feedback section */}
               <button
                 onClick={() => setShowFeedback(!showFeedback)}
-                className="text-slate-500 flex items-center gap-1 hover:text-slate-300 transition-colors"
+                className="text-muted-foreground flex items-center gap-1 hover:text-muted-foreground transition-colors"
               >
                 {showFeedback ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 Improve with feedback
@@ -151,7 +151,7 @@ export function AICoverLetterModal({ gigId, gigTitle, onSelect, onClose }: Cover
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
                     placeholder="e.g. Make it shorter, mention my React experience more..."
-                    className="w-full bg-(--surface-2) border border-white/10 rounded-xl p-3 text-slate-300 h-20 resize-none focus:outline-none focus:border-white/20"
+                    className="w-full bg-(--surface-2) border border-border rounded-xl p-3 text-muted-foreground h-20 resize-none focus:outline-none focus:border-white/20"
                   />
                   <button onClick={improve} disabled={!feedback.trim() || improving} className="px-3 py-1 bg-(--accent) rounded-lg text-xs font-bold hover:bg-amber-600 disabled:opacity-50 shrink-0">
                   {improving ? 'Improving...' : '✨ Apply Feedback'}
@@ -163,7 +163,7 @@ export function AICoverLetterModal({ gigId, gigTitle, onSelect, onClose }: Cover
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 border-white/10 shrink-0 flex gap-3">
+        <div className="p-6 border-border shrink-0 flex gap-3">
           <button
             onClick={generate}
             disabled={loading}
@@ -177,9 +177,9 @@ export function AICoverLetterModal({ gigId, gigTitle, onSelect, onClose }: Cover
             <>
               <button
                 onClick={copy}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/15 rounded-xl transition-colors font-medium"
+                className="flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-white/15 rounded-xl transition-colors font-medium"
               >
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
                 {copied ? 'Copied!' : 'Copy'}
               </button>
               {onSelect && (

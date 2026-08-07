@@ -77,17 +77,17 @@ export function AvatarUpload({ initialImage, userId }: AvatarUploadProps) {
         {image ? (
           <Image src={image} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" unoptimized />
         ) : (
-          <User size={40} className="text-slate-500" />
+          <User size={40} className="text-muted-foreground" />
         )}
         
         {/* Overlay */}
         <div className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ${uploading ? 'opacity-100' : ''}`}>
            {uploading ? (
-             <Loader2 size={24} className="text-white animate-spin" />
+             <Loader2 size={24} className="text-foreground animate-spin" />
            ) : (
              <>
-               <Camera size={20} className="text-white mb-1" />
-               <span className="font-black text-white uppercase">Replace</span>
+               <Camera size={20} className="text-foreground mb-1" />
+               <span className="font-black text-foreground uppercase">Replace</span>
              </>
            )}
         </div>
@@ -104,7 +104,7 @@ export function AvatarUpload({ initialImage, userId }: AvatarUploadProps) {
 
       {/* Status badge */}
       {saved && !uploading && (
-        <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-1 rounded-full shadow-lg border-[#121826] animate-bounce">
+        <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-foreground p-1 rounded-full shadow-lg border-[#121826] animate-bounce">
           <Check size={12} strokeWidth={4} />
         </div>
       )}

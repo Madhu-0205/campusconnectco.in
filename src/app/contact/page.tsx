@@ -1,7 +1,8 @@
-import { Metadata } from "next";
-import LegalLayout from "@/components/legal/LegalLayout";
-import Link from "next/link";
 import { Mail, ShieldAlert, LifeBuoy } from "lucide-react";
+import { Metadata } from "next";
+import Link from "next/link";
+
+import LegalLayout from "@/components/legal/LegalLayout";
 
 export const metadata: Metadata = {
   title: "Contact Us | CampusConnect",

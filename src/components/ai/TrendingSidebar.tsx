@@ -48,7 +48,7 @@ export function TrendingSidebar() {
     return (
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-(--surface-2) border border-white/10 rounded-2xl p-4 animate-pulse h-32" />
+          <div key={i} className="bg-(--surface-2) border border-border rounded-2xl p-4 animate-pulse h-32" />
         ))}
       </div>
     );
@@ -58,22 +58,22 @@ export function TrendingSidebar() {
     <div className="space-y-4">
       {/* Trending Gigs */}
       {gigs.length > 0 && (
-        <div className="bg-[#0e0e12] border border-white/10 rounded-2xl p-4">
+        <div className="bg-[#0e0e12] border border-border rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <Flame className="w-4 h-4 text-orange-400" />
-            <p className="font-black uppercase tracking-widest text-slate-400">Hot Gigs</p>
+            <p className="font-black uppercase tracking-widest text-muted-foreground">Hot Gigs</p>
           </div>
           <div className="space-y-2">
             {gigs.map((gig, i) => (
               <Link key={gig.id} href={`/dashboard/student/gigs`}>
                 <div className="flex items-center gap-3 py-2 hover:bg-(--surface-2) rounded-lg px-2 -mx-2 transition-colors cursor-pointer group">
-                  <span className="font-black text-slate-600 w-4 shrink-0">{i + 1}</span>
+                  <span className="font-black text-muted-foreground w-4 shrink-0">{i + 1}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-slate-300 line-clamp-1 group-hover:text-white transition-colors">{gig.title}</p>
+                    <p className="font-bold text-muted-foreground line-clamp-1 group-hover:text-foreground transition-colors">{gig.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-emerald-400 font-bold">₹{gig.budget.toLocaleString()}</span>
-                      <span className="text-slate-600">·</span>
-                      <span className="text-slate-500">{gig.applicationCount} applied</span>
+                      <span className="text-success font-bold">₹{gig.budget.toLocaleString()}</span>
+                      <span className="text-muted-foreground">·</span>
+                      <span className="text-muted-foreground">{gig.applicationCount} applied</span>
                       {gig.velocity > 0 && (
                         <span className="text-orange-400 flex items-center gap-0.5">
                           <TrendingUp className="w-2.5 h-2.5" />
@@ -82,7 +82,7 @@ export function TrendingSidebar() {
                       )}
                     </div>
                   </div>
-                  <ArrowUpRight className="w-3 h-3 text-slate-600 group-hover:text-slate-400 shrink-0" />
+                  <ArrowUpRight className="w-3 h-3 text-muted-foreground group-hover:text-muted-foreground shrink-0" />
                 </div>
               </Link>
             ))}
@@ -92,10 +92,10 @@ export function TrendingSidebar() {
 
       {/* Trending Skills */}
       {skills.length > 0 && (
-        <div className="bg-[#0e0e12] border border-white/10 rounded-2xl p-4">
+        <div className="bg-[#0e0e12] border border-border rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <Zap className="w-4 h-4 text-amber-400" />
-            <p className="font-black uppercase tracking-widest text-slate-400">Rising Skills</p>
+            <p className="font-black uppercase tracking-widest text-muted-foreground">Rising Skills</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {skills.map((skill) => (
@@ -111,7 +111,7 @@ export function TrendingSidebar() {
                 <span>{skill.icon}</span>
                 <span>{skill.name}</span>
                 {skill.velocity > 0 && (
-                  <span className="text-emerald-400">+{skill.velocity}%</span>
+                  <span className="text-success">+{skill.velocity}%</span>
                 )}
               </div>
             ))}
@@ -121,17 +121,17 @@ export function TrendingSidebar() {
 
       {/* Trending Topics */}
       {topics.length > 0 && (
-        <div className="bg-[#0e0e12] border border-white/10 rounded-2xl p-4">
+        <div className="bg-[#0e0e12] border border-border rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <Hash className="w-4 h-4 text-blue-400" />
-            <p className="font-black uppercase tracking-widest text-slate-400">Trending Topics</p>
+            <p className="font-black uppercase tracking-widest text-muted-foreground">Trending Topics</p>
           </div>
           <div className="space-y-1.5">
             {topics.map((topic) => (
               <div key={topic.tag} className="flex items-center justify-between">
                 <div>
-                  <p className="font-bold text-slate-300">#{topic.tag}</p>
-                  <p className="text-slate-600">{topic.count} gigs</p>
+                  <p className="font-bold text-muted-foreground">#{topic.tag}</p>
+                  <p className="text-muted-foreground">{topic.count} gigs</p>
                 </div>
                 <span className={`font-black px-1.5 py-0.5 rounded-md ${ topic.change > 0 ? 'bg-emerald-500/15' : 'bg-red-500/15 text-red-400' }`}>
                   {topic.change > 0 ? '+' : ''}{topic.change}%
@@ -150,7 +150,7 @@ export function TrendingSidebar() {
           </div>
           <p className="font-black text-amber-400">AI Feed Active</p>
         </div>
-        <p className="text-slate-500 leading-relaxed">
+        <p className="text-muted-foreground leading-relaxed">
           Your feed is ranked by skills, social connections, and real-time platform activity.
         </p>
       </div>

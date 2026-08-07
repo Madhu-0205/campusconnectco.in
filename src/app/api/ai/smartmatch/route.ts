@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { AIService } from '@/lib/ai';
 import { protectApi } from '@/lib/auth-checks';
+import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { aiLimiter } from '@/lib/rate-limit';
 
@@ -63,11 +64,11 @@ export async function POST(req: Request) {
 
         let result;
         try {
+            logger.info("SmartMatch generation started", { userId: auth.user!.id });
             result = await AIService.getSmartMatch(userProfile, opportunitiesContext);
         } catch (error: unknown) {
-             const msg = error instanceof Error ? error.message : "Unknown error";
-             console.error("[SMARTMATCH_ENGINE_CRASH]:", error);
-             throw new Error(`Matching Engine Error: ${msg}`);
+             logger.error("SmartMatch engine crash", error, { userId: auth.user!.id });
+             throw error;
         }
 
         // Add correct IDs and types so frontend can format correctly and navigate later
@@ -83,15 +84,15 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, data: result });
 
     } catch (error: unknown) {
-        console.error("[SMARTMATCH_API_ERROR]:", error);
+        logger.error("SmartMatch API Error", error);
         const errObj = error instanceof Error ? error : new Error(String(error));
         
-        if (errObj.message?.includes("API Key")) {
-            return NextResponse.json({ error: "AI Service Configuration Error. Contact Admin." }, { status: 500 });
+        if (errObj.message?.includes("API Key") || errObj.message?.includes("403") || errObj.message?.includes("400")) {
+            return NextResponse.json({ error: "AI Service Configuration Error. Please configure a valid GEMINI_API_KEY." }, { status: 503 });
         }
 
         return NextResponse.json(
-            { error: errObj.message || "Failed to generate matches. Please try again." },
+            { error: "Failed to generate matches. Please try again later." },
             { status: 500 }
         );
     }

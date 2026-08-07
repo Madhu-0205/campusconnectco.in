@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+import { logger } from "@/lib/logger";
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "dummy");
 
 export type AIRequestType = "resume" | "smartmatch" | "career";
@@ -25,7 +27,15 @@ export class AIService {
                 }
             });
 
-            const result = await generativeModel.generateContent(userPrompt);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 50000); // 50 seconds
+
+            const result = await generativeModel.generateContent({
+                contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+            }, { signal: controller.signal });
+            
+            clearTimeout(timeoutId);
+
             const content = result.response.text();
             
             if (!content) throw new Error("Empty response from AI");
@@ -35,7 +45,13 @@ export class AIService {
             return JSON.parse(cleanedContent);
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : "AI Generation Failed";
-            console.error("[AI_SERVICE_ERROR]:", error);
+            
+            if (error instanceof Error && error.name === 'AbortError') {
+                logger.error("AI Request Timeout", error, { model });
+                throw new Error("AI Request timed out. Please try again.");
+            }
+            
+            logger.error("AI Service Error", error, { model });
             throw new Error(msg);
         }
     }
@@ -70,11 +86,12 @@ export class AIService {
     /**
      * Career Copilot Roadmap
      */
-    static async getCareerRoadmap(targetCareer: string, currentSkills: string[]) {
+    static async getCareerRoadmap(targetCareer: string, currentSkills: string[] | string) {
         const systemPrompt = `You are a professional career path architect. 
         Based on the target career and current skills, create a highly actionable roadmap.
         Return JSON structure: { "roadmapSteps": string[], "learningPath": string[], "projects": string[], "jobPrepTips": string[] }`;
 
-        return this.generateJSON(systemPrompt, `Target: ${targetCareer}\nSkills: ${currentSkills.join(", ")}`);
+        const skillsString = Array.isArray(currentSkills) ? currentSkills.join(", ") : String(currentSkills || "");
+        return this.generateJSON(systemPrompt, `Target: ${targetCareer}\nSkills: ${skillsString}`);
     }
 }

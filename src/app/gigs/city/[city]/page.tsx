@@ -180,7 +180,7 @@ export default async function CityGigsPage({ params }: Props) {
             <MapPin size={12} /> Local Opportunities
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight font-heading">
-            Student Gigs & Projects in <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">{cityName}</span>
+            Student Gigs & Projects in <span className="text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-cyan-400">{cityName}</span>
           </h1>
           <p className="text-slate-400 max-w-3xl text-base md:text-lg leading-relaxed">
             Discover part-time coding gigs, design projects, and event roles posted by clients and startups located in {cityName}. Earn securely through milestone escrows.

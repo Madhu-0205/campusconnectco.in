@@ -7,8 +7,8 @@ import {
     ChevronRight, Users, Eye,
     GraduationCap, Star, Flame
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { toast } from "sonner";
 
 interface Internship {
@@ -233,7 +233,15 @@ export default function InternshipsClient({
     const [recommended, setRecommended] = useState<Internship[]>(initialRecommended);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<"all" | "trending" | "recommended" | "saved">("all");
+    
+    // We can't use useSearchParams directly at the top level without wrapping the component in Suspense
+    // But since this is the whole page client component, it's better to extract the inner part or just use window.location if possible.
+    // Wait, next/navigation useSearchParams works in client components but requires Suspense boundary higher up.
+    // Let's use it and ensure the page has Suspense, or just use it.
+    const searchParams = useSearchParams();
+    const initialTab = (searchParams.get("tab") as "all" | "trending" | "recommended" | "saved") || "all";
+    
+    const [activeTab, setActiveTab] = useState<"all" | "trending" | "recommended" | "saved">(initialTab);
     const [search, setSearch] = useState("");
     const [locationFilter, setLocationFilter] = useState("");
     const [engagement, setEngagement] = useState<EngagementState>({});

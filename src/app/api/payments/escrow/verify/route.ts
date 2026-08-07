@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth-checks";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -63,11 +64,14 @@ export async function POST(req: NextRequest) {
                     data: { status: "ACCEPTED" }
                 });
             }
+        }).catch(txError => {
+            logger.error("Escrow verify transaction failed", txError, { gigId, clientId: user.id });
+            throw txError;
         });
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
-        console.error("[VERIFY_ORDER_ERROR]", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+    } catch (error) {
+        logger.error("Verify Order Error", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

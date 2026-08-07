@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { protectApi } from "@/lib/auth-checks";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -45,7 +46,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ disputes, stats });
   } catch (error) {
-    console.error("[DISPUTES_GET_ERROR]", error);
+    logger.error("Disputes GET Error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -115,6 +116,9 @@ export async function POST(req: Request) {
       });
 
       return updatedDispute;
+    }).catch(txError => {
+      logger.error("Dispute resolution transaction failed", txError, { disputeId, resolution });
+      throw txError;
     });
 
     return NextResponse.json({
@@ -123,7 +127,7 @@ export async function POST(req: Request) {
       dispute: result,
     });
   } catch (error) {
-    console.error("[DISPUTES_POST_ERROR]", error);
+    logger.error("Disputes POST Error", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal Server Error" },
       { status: 400 }

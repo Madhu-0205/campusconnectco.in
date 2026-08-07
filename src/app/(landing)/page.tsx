@@ -2,26 +2,18 @@ import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 import { headers } from "next/headers"
 
+const SmoothScroll = dynamic(() => import("@/components/ui/SmoothScroll"))
 
-import CCHero from "@/components/landing/CCHero"
-import CCNavbar from "@/components/landing/CCNavbar"
-import CCPageLoader from "@/components/landing/CCPageLoader"
+// V2 Landing Components
+import { V2BentoFeatures } from "@/components/landing/V2BentoFeatures"
+import { V2FinalCTA } from "@/components/landing/V2FinalCTA"
+import { V2Hero } from "@/components/landing/V2Hero"
+import { V2LiveOpportunities } from "@/components/landing/V2LiveOpportunities"
+import { V2Marquee } from "@/components/landing/V2Marquee"
+import { V2Testimonials } from "@/components/landing/V2Testimonials"
+import { V2Footer } from "@/components/navigation/V2Footer"
+import { V2Navbar } from "@/components/navigation/V2Navbar"
 import { WebsiteSchema, FAQSchema } from "@/components/seo/JsonLd"
-
-const CCMarquee = dynamic(() => import("@/components/landing/CCMarquee"))
-const LandingProblem = dynamic(() => import("@/components/landing/LandingProblem"))
-const CCFeatures = dynamic(() => import("@/components/landing/CCFeatures"))
-const LandingComparison = dynamic(() => import("@/components/landing/LandingComparison"))
-const CCHowItWorks = dynamic(() => import("@/components/landing/CCHowItWorks"))
-const CCCampusGigs = dynamic(() => import("@/components/landing/CCCampusGigs"))
-const CCInternships = dynamic(() => import("@/components/landing/CCInternships"))
-const CCAIRoadmap = dynamic(() => import("@/components/landing/CCAIRoadmap"))
-const LandingTestimonials = dynamic(() => import("@/components/landing/LandingTestimonials"))
-const CCFinalCTA = dynamic(() => import("@/components/landing/CCFinalCTA"))
-const CCFooter = dynamic(() => import("@/components/landing/CCFooter"))
-const AdvertisementBanner = dynamic(() => import("@/components/AdvertisementBanner"))
-const SidebarAd = dynamic(() => import("@/components/SidebarAd"))
-const AnnouncementSection = dynamic(() => import("@/components/AnnouncementSection"))
 
 export const metadata: Metadata = {
   title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnect",
@@ -68,8 +60,6 @@ export const metadata: Metadata = {
 
 export default async function CampusConnectLandingPage() {
   const nonce = (await headers()).get("x-nonce") || undefined
-  const userAgent = (await headers()).get("user-agent") || ""
-  const isBot = /Lighthouse|Chrome-Lighthouse|Googlebot|bingbot|yandex|baiduspider|headless/i.test(userAgent)
 
   const landingFaqs = [
     {
@@ -91,105 +81,43 @@ export default async function CampusConnectLandingPage() {
   ]
 
   return (
-    <>
+    <SmoothScroll>
       <WebsiteSchema nonce={nonce} />
       <FAQSchema faqs={landingFaqs} nonce={nonce} />
-      {/* ── Page Transition Loader ── */}
-      <CCPageLoader isBot={isBot} />
 
-      {/* ── Fixed Navigation ── */}
-      <CCNavbar />
+      {/* ── Fixed Navigation (V2) ── */}
+      <V2Navbar />
 
       <main className="landing-body flex flex-col min-h-screen">
-        {/* ── Hero & 3D Map ── */}
-        <CCHero />
+        
+        {/* V2 Hero Section */}
+        <V2Hero />
 
-        {/* ── Horizontal Leaderboard Ad Banner (Below Hero) ── */}
-        <AdvertisementBanner
-          slotId="hero-bottom-728x90"
-          label="Featured Campus Sponsor"
-          widthLabel="728 × 90 Responsive Banner"
-        />
-
-        {/* ── Live Stats Ticker ── */}
-        <CCMarquee />
-
-        {/* ── Announcements & Campus News Section ── */}
-        <div className="fast-render">
-          <AnnouncementSection />
+        {/* V2 Stats Ticker */}
+        <div className="relative z-10">
+          <V2Marquee />
         </div>
 
-        {/* ── Problem Section: Why existing solutions fail ── */}
-        <div className="fast-render">
-          <LandingProblem />
+        {/* V2 Bento Features */}
+        <V2BentoFeatures />
+
+        {/* V2 Live Opportunities Showcase */}
+        <V2LiveOpportunities />
+
+        {/* V2 Testimonials */}
+        <div className="fast-render relative z-10">
+          <V2Testimonials />
         </div>
 
-        {/* ── Features: Bento Grid ── */}
-        <div className="fast-render">
-          <CCFeatures />
+        {/* V2 Final CTA */}
+        <V2FinalCTA />
+
+        {/* Footer (V2) */}
+        <div className="fast-render relative z-10 bg-bg">
+          <V2Footer />
         </div>
 
-        {/* ── Comparison: Side-by-side metric checklist ── */}
-        <div className="fast-render">
-          <LandingComparison />
-        </div>
-
-        {/* ── Step-by-step scrolling process ── */}
-        <div className="fast-render">
-          <CCHowItWorks />
-        </div>
-
-        {/* ── Content Layout with Desktop Sidebar Ad ── */}
-        <div className="fast-render max-w-7xl mx-auto px-4 sm:px-6 w-full py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-8">
-              <CCCampusGigs />
-            </div>
-            <div className="lg:col-span-4 hidden lg:block sticky top-24">
-              <SidebarAd
-                slotId="sidebar-300x250"
-                title="Promote Your Startup Drive"
-                subtitle="Reach 10,000+ verified engineering & design candidates directly on CampusConnect."
-                ctaText="Launch Campus Drive"
-                href="/employer/drives"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ── In-Feed Content Interstitial Ad Banner ── */}
-        <AdvertisementBanner
-          slotId="in-feed-interstitial"
-          label="In-Feed Placement"
-          widthLabel="Responsive Sponsored Placement"
-          className="my-4"
-        />
-
-        {/* ── AI Matching & internships ── */}
-        <div className="fast-render">
-          <CCInternships />
-        </div>
-
-        {/* ── AI Career roadmap ── */}
-        <div className="fast-render">
-          <CCAIRoadmap />
-        </div>
-
-        {/* ── Testimonials & live activity feed ── */}
-        <div className="fast-render">
-          <LandingTestimonials />
-        </div>
-
-        {/* ── Final Conversion CTA & Footer ── */}
-        <div className="fast-render">
-          <CCFinalCTA />
-        </div>
-        <div className="fast-render">
-          <CCFooter />
-        </div>
       </main>
-    </>
+    </SmoothScroll>
   )
 }
-
-

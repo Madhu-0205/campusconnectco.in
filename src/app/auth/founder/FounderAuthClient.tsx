@@ -54,10 +54,10 @@ export default function FounderSignInPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
             {/* Background glows */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-amber-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-(--primary)/5 rounded-full blur-3xl" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-warning/10 text-warning rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-foreground text-background/5 rounded-full blur-3xl" />
 
             <motion.div
                 initial={{ opacity: 0, y: 24 }}
@@ -66,17 +66,17 @@ export default function FounderSignInPage() {
                 className="w-full max-w-md relative z-10"
             >
                 {/* Card */}
-                <div className="bg-slate-900 border border-(--border-subtle) rounded-3xl overflow-hidden shadow-2xl shadow-black/60">
+                <div className="bg-background border border-border rounded-3xl overflow-hidden shadow-2xl shadow-black/60">
                     {/* Top accent */}
                     <div className="h-1 w-full bg-linear-to-r from-amber-500 via-orange-400 to-amber-600" />
 
                     <div className="p-4 md:p-8">
                         {/* Header */}
                         <div className="text-center mb-8">
-                            <div className="mx-auto w-14 h-14 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mb-4">
+                            <div className="mx-auto w-14 h-14 bg-warning/10 text-warning border border-amber-500/20 rounded-2xl flex items-center justify-center mb-4">
                                 <ShieldCheck size={26} className="text-amber-400" />
                             </div>
-                            <h1 className="font-black text-white">Founder Control Panel</h1>
+                            <h1 className="font-black text-foreground">Founder Control Panel</h1>
                             <p className="text-sm mt-1">Restricted access · Authorized personnel only</p>
                         </div>
 
@@ -106,7 +106,7 @@ export default function FounderSignInPage() {
                                 <input
                                     type="email"
                                     placeholder="founder@campusconnectco.in"
-                                    className="w-full bg-slate-800 border-slate-700 text-white p-3 rounded-xl focus:ring-0 focus:border-amber-500 outline-none transition-all font-medium placeholder:text-slate-600"
+                                    className="w-full bg-card border-border text-foreground p-3 rounded-xl focus:ring-0 focus:border-amber-500 outline-none transition-all font-medium placeholder:text-muted-foreground"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -121,7 +121,7 @@ export default function FounderSignInPage() {
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         placeholder="••••••••"
-                                        className="w-full bg-slate-800 border-slate-700 text-white p-3 rounded-xl focus:ring-0 focus:border-amber-500 outline-none transition-all pr-11 font-medium placeholder:text-slate-600"
+                                        className="w-full bg-card border-border text-foreground p-3 rounded-xl focus:ring-0 focus:border-amber-500 outline-none transition-all pr-11 font-medium placeholder:text-muted-foreground"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
@@ -158,7 +158,7 @@ export default function FounderSignInPage() {
                 </div>
 
                 {/* Footer note */}
-                <p className="text-slate-600 mt-4">
+                <p className="text-muted-foreground mt-4">
                     campusconnectco.in · Founder Portal · v2.0
                 </p>
             </motion.div>

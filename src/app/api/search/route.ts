@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
                 if (user.skills) {
                     const skills = user.skills.split(",").map((s: any) => s.trim());
                     skills.forEach((skill: any) => {
-                        if (skill.toLowerCase().includes(searchTerm)) {
+                        if (skill && (skill as string).toLowerCase().includes(searchTerm)) {
                             skillsSet.add(skill);
                         }
                     });

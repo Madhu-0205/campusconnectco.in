@@ -360,7 +360,7 @@ export default function Profile() {
                         <Button
                             variant="glass"
                             onClick={handleAutoFill}
-                            className="bg-orange-500/20 backdrop-blur-xl border-orange-500/30 text-orange-400 hover:bg-orange-500 hover:text-white transition-all duration-500 rounded-full px-6 py-3 font-black text-sm uppercase tracking-widest shadow-2xl flex items-center gap-2"
+                            className="bg-orange-500/20 backdrop-blur-xl border-orange-500/30 text-orange-400 hover:bg-orange-500 hover:text-foreground transition-all duration-500 rounded-full px-6 py-3 font-black text-sm uppercase tracking-widest shadow-2xl flex items-center gap-2"
                         >
                             <Sparkles size={16} /> Auto-Fill
                         </Button>
@@ -369,7 +369,7 @@ export default function Profile() {
                         variant="glass"
                         onClick={() => isEditing ? handleSave() : setIsEditing(true)}
                         disabled={saving}
-                        className="bg-white/10 backdrop-blur-xl border-(--border-subtle) hover:bg-white hover:text-foreground transition-all duration-500 rounded-full px-8 py-3 font-black text-sm uppercase tracking-widest shadow-2xl"
+                        className="bg-accent backdrop-blur-xl border-(--border-subtle) hover:bg-white hover:text-foreground transition-all duration-500 rounded-full px-8 py-3 font-black text-sm uppercase tracking-widest shadow-2xl"
                     >
                         {isEditing ? (saving ? "Syncing..." : "Publish Changes") : "Customize Profile"}
                     </Button>
@@ -377,7 +377,7 @@ export default function Profile() {
                         <Button
                             variant="glass"
                             onClick={() => setIsEditing(false)}
-                            className="bg-red-500/20 backdrop-blur-xl border-red-500/30 text-white hover:bg-red-500 transition-all rounded-full p-3"
+                            className="bg-red-500/20 backdrop-blur-xl border-red-500/30 text-foreground hover:bg-red-500 transition-all rounded-full p-3"
                         >
                             <X size={20} />
                         </Button>
@@ -394,14 +394,14 @@ export default function Profile() {
                             onMouseMove={handleMouseMove}
                             onMouseLeave={handleMouseLeave}
                             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-                            className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-5xl shadow-2xl p-10 border border-(--border-subtle) dark:border-slate-800 flex flex-col items-center text-center relative overflow-hidden"
+                            className="bg-card/80 dark:bg-background/80 backdrop-blur-xl rounded-5xl shadow-2xl p-10 border border-(--border-subtle) border-border flex flex-col items-center text-center relative overflow-hidden"
                         >
                             {/* Accent bar */}
                             <div className="absolute top-0 left-0 w-full h-1.5 rounded-t-5xl" style={{ background: "linear-gradient(90deg, var(--color-primary), #ffb800)" }} />
 
                             {/* Avatar */}
                             <div className="relative group mb-8">
-                                <div className="h-40 w-40 rounded-4xl bg-(--surface-2) flex items-center justify-center font-black text-white shadow-2xl transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 overflow-hidden border-white dark:border-slate-700">
+                                <div className="h-40 w-40 rounded-4xl bg-(--surface-2) flex items-center justify-center font-black text-foreground shadow-2xl transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 overflow-hidden border-white border-border">
                                     {profile.image ? (
                                         <Image src={profile.image} alt={profile.name} width={120} height={120} className="h-full w-full object-cover" />
                                     ) : (
@@ -435,13 +435,13 @@ export default function Profile() {
                                             value={profile.name}
                                             onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                                             placeholder="Display Name"
-                                            className="w-full bg-(--surface-2) border-white/5 dark:border-slate-700 rounded-2xl px-6 py-4 font-black focus:border-electric outline-none transition-all text-foreground"
+                                            className="w-full bg-(--surface-2) border-white/5 border-border rounded-2xl px-6 py-4 font-black focus:border-electric outline-none transition-all text-foreground"
                                         />
                                         <input
                                             value={profile.role}
                                             onChange={(e) => setProfile({ ...profile, role: e.target.value })}
                                             placeholder="Professional Role"
-                                            className="w-full bg-(--surface-2) border-white/5 dark:border-slate-700 rounded-2xl px-6 py-3 font-bold text-center focus:border-electric outline-none transition-all"
+                                            className="w-full bg-(--surface-2) border-white/5 border-border rounded-2xl px-6 py-3 font-bold text-center focus:border-electric outline-none transition-all"
                                         />
                                     </div>
                                 ) : (
@@ -462,8 +462,8 @@ export default function Profile() {
                             </div>
 
                             {/* Social Connectivity */}
-                            <div className="mt-10 pt-10 border-white/5 dark:border-slate-800 w-full relative z-10">
-                                <p className="font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Digital Presence</p>
+                            <div className="mt-10 pt-10 border-white/5 border-border w-full relative z-10">
+                                <p className="font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">Digital Presence</p>
                                 <div className="space-y-4">
                                     <SocialLink
                                         icon={Github}
@@ -498,15 +498,15 @@ export default function Profile() {
 
                             {/* Stats Quick Look */}
                             <div className="grid grid-cols-2 gap-4 mt-8 w-full relative z-10">
-                                <div className="bg-(--surface-2)/50 p-4 rounded-3xl border border-white/5 dark:border-slate-800">
+                                <div className="bg-(--surface-2)/50 p-4 rounded-3xl border border-white/5 border-border">
                                     <p className="font-black text-foreground">{stats.connections}</p>
-                                    <p className="font-bold text-slate-400 uppercase">Network</p>
+                                    <p className="font-bold text-muted-foreground uppercase">Network</p>
                                 </div>
-                                <div className="bg-(--surface-2)/50 p-4 rounded-3xl border border-white/5 dark:border-slate-800">
+                                <div className="bg-(--surface-2)/50 p-4 rounded-3xl border border-white/5 border-border">
                                     <p className="font-black text-foreground flex items-center gap-1">
                                         {(stats.reputationPoints / 100).toFixed(1)} <Sparkles size={16} className="text-amber-400" />
                                     </p>
-                                    <p className="font-bold text-slate-400 uppercase">Reputation Loop</p>
+                                    <p className="font-bold text-muted-foreground uppercase">Reputation Loop</p>
                                 </div>
                             </div>
 
@@ -514,7 +514,7 @@ export default function Profile() {
                             <div className="mt-4 w-full relative z-10 rounded-3xl flex items-center justify-between p-4" style={{ background: "rgba(124,58,237,0.05)", border: "1px solid rgba(124,58,237,0.20)" }}>
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: "var(--color-primary)" }}>Invite Friends</p>
-                                    <p className="font-bold text-muted-foreground dark:text-slate-300">Earn a profile boost</p>
+                                    <p className="font-bold text-muted-foreground dark:text-muted-foreground">Earn a profile boost</p>
                                 </div>
                                 <Button variant="outline" className="h-8 rounded-xl text-xs font-black px-3" style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)" }} onClick={() => {
                                     navigator.clipboard.writeText("CAMPUS2024");
@@ -530,10 +530,10 @@ export default function Profile() {
                     <div className="lg:col-span-8 space-y-12">
 
                         {/* THE STORY (ABOUT) */}
-                        <section className="bg-card/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-5xl p-10 border border-(--border-subtle) dark:border-slate-800 shadow-xl">
+                        <section className="bg-card/60 dark:bg-background/60 backdrop-blur-xl rounded-5xl p-10 border border-(--border-subtle) border-border shadow-xl">
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="font-black text-foreground tracking-tight flex items-center gap-3">
-                                    <div className="p-3 bg-slate-900 dark:bg-white text-white dark:text-foreground rounded-2xl shadow-lg">
+                                    <div className="p-3 bg-background dark:bg-white text-foreground rounded-2xl shadow-lg">
                                         <Award size={20} />
                                     </div>
                                     The Story
@@ -545,23 +545,23 @@ export default function Profile() {
                                     value={profile.bio}
                                     onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
                                     placeholder="Write your professional journey..."
-                                    className="w-full h-48 bg-(--surface-2) border-white/5 dark:border-slate-700 rounded-3xl p-6 font-medium text-foreground focus:border-electric outline-none transition-all resize-none"
+                                    className="w-full h-48 bg-(--surface-2) border-white/5 border-border rounded-3xl p-6 font-medium text-foreground focus:border-electric outline-none transition-all resize-none"
                                 />
                             ) : (
-                                <p className="text-muted-foreground dark:text-slate-300 leading-relaxed font-medium">
+                                <p className="text-muted-foreground dark:text-muted-foreground leading-relaxed font-medium">
                                     {profile.bio || "No biography provided yet. Start telling your story."}
                                 </p>
                             )}
 
                             {/* Skills Cloud */}
                             <div className="mt-10">
-                                <p className="font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Core Competencies</p>
+                                <p className="font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">Core Competencies</p>
                                 <div className="flex flex-wrap gap-2">
                                     {profile.skills.map((skill) => (
                                         <motion.span
                                             key={skill}
                                             layout
-                                            className="px-5 py-2.5 rounded-2xl bg-slate-900 dark:bg-white dark:text-foreground text-xs font-black flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"
+                                            className="px-5 py-2.5 rounded-2xl bg-background dark:bg-white text-foreground text-xs font-black flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"
                                         >
                                             {skill}
                                             {isEditing && (
@@ -593,14 +593,14 @@ export default function Profile() {
                         <section>
                             <div className="flex items-center justify-between mb-8 px-4">
                                 <h2 className="font-black text-foreground tracking-tight flex items-center gap-4">
-                                    <div className="p-3 rounded-2xl shadow-xl text-white" style={{ background: "var(--color-primary)", boxShadow: "0 8px 24px rgba(124,58,237,0.20)" }}>
+                                    <div className="p-3 rounded-2xl shadow-xl text-foreground" style={{ background: "var(--color-primary)", boxShadow: "0 8px 24px rgba(124,58,237,0.20)" }}>
                                         <Code size={24} />
                                     </div>
                                     Wall of Fame
                                 </h2>
                                 <Button
                                     onClick={() => setShowProjectModal(true)}
-                                    className="rounded-2xl px-6 py-6 shadow-xl active:scale-95 transition-all font-bold text-white"
+                                    className="rounded-2xl px-6 py-6 shadow-xl active:scale-95 transition-all font-bold text-foreground"
                                     style={{ background: "var(--color-primary)", boxShadow: "0 8px 24px rgba(124,58,237,0.20)" }}>
 
                                     <Plus size={20} className="mr-2" /> Showcase Project
@@ -618,7 +618,7 @@ export default function Profile() {
                                             />
                                         ))
                                     ) : (
-                                        <div className="md:col-span-2 py-20 bg-(--surface) dark:bg-slate-900/30 border-(--border) rounded-5xl flex flex-col items-center justify-center text-slate-400 gap-4">
+                                        <div className="md:col-span-2 py-20 bg-(--surface) dark:bg-background/30 border-(--border) rounded-5xl flex flex-col items-center justify-center text-muted-foreground gap-4">
                                             <Code size={48} className="opacity-20" />
                                             <p className="font-black">Your portfolio is empty. Add your best work!</p>
                                         </div>
@@ -636,23 +636,23 @@ export default function Profile() {
                                 </div>
                                 <div className="relative z-10 h-full flex flex-col">
                                     <div className="flex items-center gap-3 mb-4">
-                                        <div className="p-2.5 text-white rounded-xl shadow-lg" style={{ background: "var(--color-primary)", boxShadow: "0 4px 16px rgba(124,58,237,0.30)" }}>
+                                        <div className="p-2.5 text-foreground rounded-xl shadow-lg" style={{ background: "var(--color-primary)", boxShadow: "0 4px 16px rgba(124,58,237,0.30)" }}>
                                             <Sparkles size={18} />
                                         </div>
                                         <h2 className="font-black text-foreground">AI Resume Analyzer</h2>
                                     </div>
-                                    <p className="text-muted-foreground dark:text-slate-300 font-medium mb-6">
+                                    <p className="text-muted-foreground dark:text-muted-foreground font-medium mb-6">
                                         Get instant AI feedback on your resume. Optimize keywords, fix formatting, and match startup requirements seamlessly.
                                     </p>
 
                                     <div className="mt-auto space-y-3">
-                                        <div className="flex items-center gap-2 font-bold text-slate-500">
+                                        <div className="flex items-center gap-2 font-bold text-muted-foreground">
                                             <CheckCircle2 size={14} className="text-emerald-500" /> ATS Optimization Check
                                         </div>
-                                        <div className="flex items-center gap-2 font-bold text-slate-500">
+                                        <div className="flex items-center gap-2 font-bold text-muted-foreground">
                                             <CheckCircle2 size={14} className="text-emerald-500" /> Action Verb Enhancement
                                         </div>
-                                        <Button className="w-full mt-4 text-white shadow-xl font-bold rounded-2xl p-6" style={{ background: "var(--color-primary)", boxShadow: "0 8px 24px rgba(124,58,237,0.25)" }}>
+                                        <Button className="w-full mt-4 text-foreground shadow-xl font-bold rounded-2xl p-6" style={{ background: "var(--color-primary)", boxShadow: "0 8px 24px rgba(124,58,237,0.25)" }}>
                                             Upload & Analyze
                                         </Button>
                                     </div>
@@ -660,15 +660,15 @@ export default function Profile() {
                             </section>
 
                             {/* Gamification & Reputation */}
-                            <section className="bg-card/60 dark:bg-slate-900/60 backdrop-blur-xl border border-(--border-subtle) dark:border-slate-800 rounded-5xl p-8 relative overflow-hidden">
+                            <section className="bg-card/60 dark:bg-background/60 backdrop-blur-xl border border-(--border-subtle) border-border rounded-5xl p-8 relative overflow-hidden">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="font-black text-foreground flex items-center gap-3">
-                                        <div className="p-2.5 bg-amber-500 text-white rounded-xl shadow-lg shadow-amber-500/30">
+                                        <div className="p-2.5 bg-amber-500 text-foreground rounded-xl shadow-lg shadow-amber-500/30">
                                             <TrendingUp size={18} />
                                         </div>
                                         Campus Rank
                                     </h2>
-                                    <span className="px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-xs font-black uppercase tracking-widest">
+                                    <span className="px-3 py-1 bg-warning/10 text-warning border border-amber-500/20 rounded-full text-xs font-black uppercase tracking-widest">
                                         Top 5%
                                     </span>
                                 </div>
@@ -676,7 +676,7 @@ export default function Profile() {
                                 <div className="space-y-6">
                                     <div>
                                         <div className="flex justify-between items-end mb-2">
-                                            <span className="font-black text-foreground">{stats.reputationPoints} <span className="text-slate-400">pts</span></span>
+                                            <span className="font-black text-foreground">{stats.reputationPoints} <span className="text-muted-foreground">pts</span></span>
                                             <span className="font-bold text-emerald-500">+15 this week</span>
                                         </div>
                                         <div className="h-2 bg-(--surface-2) rounded-full overflow-hidden">
@@ -685,26 +685,26 @@ export default function Profile() {
                                         <p className="font-bold mt-2 uppercase tracking-widest text-center">{Math.max(0, 1000 - stats.reputationPoints)} pts to &quot;Expert&quot; tier</p>
                                     </div>
 
-                                    <div className="pt-4 border-white/5 dark:border-slate-800">
+                                    <div className="pt-4 border-white/5 border-border">
                                         <div className="grid grid-cols-2 gap-4 mb-5">
                                             <div>
                                                 <p className="font-black text-foreground">{stats.completedGigs}</p>
-                                                <p className="font-bold text-slate-400 uppercase">Completed Gigs</p>
+                                                <p className="font-bold text-muted-foreground uppercase">Completed Gigs</p>
                                             </div>
                                             <div>
                                                 <p className="font-black text-foreground">{stats.responseRate}%</p>
-                                                <p className="font-bold text-slate-400 uppercase">Response Rate</p>
+                                                <p className="font-bold text-muted-foreground uppercase">Response Rate</p>
                                             </div>
                                         </div>
-                                        <p className="font-black text-slate-400 uppercase tracking-widest mb-3">Trust Badges</p>
+                                        <p className="font-black text-muted-foreground uppercase tracking-widest mb-3">Trust Badges</p>
                                         <div className="flex gap-2">
-                                            <div className="flex items-center justify-center p-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-500/20 text-blue-500 rounded-2xl hover:scale-105 transition-transform cursor-help" title="Top Developer">
+                                            <div className="flex items-center justify-center p-3 bg-blue-50 dark:bg-accent border border-border text-foreground rounded-2xl hover:scale-105 transition-transform cursor-help" title="Top Developer">
                                                 <Code size={20} />
                                             </div>
                                             <div className="flex items-center justify-center p-3 bg-purple-50 dark:bg-purple-500/10 border border-purple-500/20 text-purple-500 rounded-2xl hover:scale-105 transition-transform cursor-help" title="Verified Designer">
                                                 <Award size={20} />
                                             </div>
-                                            <div className="flex items-center justify-center p-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-2xl hover:scale-105 transition-transform cursor-help" title="Campus Leader">
+                                            <div className="flex items-center justify-center p-3 bg-emerald-50 dark:bg-success/10 text-success border border-emerald-500/20 text-emerald-500 rounded-2xl hover:scale-105 transition-transform cursor-help" title="Campus Leader">
                                                 <Users size={20} />
                                             </div>
                                         </div>
@@ -731,11 +731,11 @@ export default function Profile() {
                             initial={{ opacity: 0, scale: 0.9, y: 40 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                            className="relative w-full max-w-xl bg-(--surface) rounded-5xl shadow-2xl p-10 flex flex-col gap-6 border border-white/5 dark:border-slate-800"
+                            className="relative w-full max-w-xl bg-(--surface) rounded-5xl shadow-2xl p-10 flex flex-col gap-6 border border-white/5 border-border"
                         >
                             <div className="flex justify-between items-center">
                                 <h3 className="font-black text-foreground tracking-tight">Showcase Project</h3>
-                                <button onClick={() => setShowProjectModal(false)} className="p-2 hover:bg-(--surface-2) dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
+                                <button onClick={() => setShowProjectModal(false)} className="p-2 hover:bg-(--surface-2) dark:hover:bg-card rounded-full transition-colors text-muted-foreground">
                                     <X size={24} />
                                 </button>
                             </div>
@@ -754,11 +754,11 @@ export default function Profile() {
                                     placeholder="https://github.com/..."
                                 />
                                 <div className="space-y-2">
-                                    <label className="font-black text-slate-400 uppercase tracking-widest px-1">Description</label>
+                                    <label className="font-black text-muted-foreground uppercase tracking-widest px-1">Description</label>
                                     <textarea
                                         value={newProject.description}
                                         onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                                        className="w-full h-32 bg-(--surface-2) border-white/5 dark:border-slate-700 rounded-2xl p-4 font-bold outline-none focus:border-electric transition-all resize-none text-foreground"
+                                        className="w-full h-32 bg-(--surface-2) border-white/5 border-border rounded-2xl p-4 font-bold outline-none focus:border-electric transition-all resize-none text-foreground"
                                         placeholder="What makes this project standout?"
                                     />
                                 </div>
@@ -766,7 +766,7 @@ export default function Profile() {
 
                             <Button
                                 onClick={handleAddProject}
-                                className="w-full bg-slate-900 dark:bg-white hover:bg-violet-600 dark:hover:bg-violet-600 dark:text-foreground py-6 rounded-2xl font-black text-lg transition-all shadow-xl"
+                                className="w-full bg-background dark:bg-white hover:bg-foreground text-background dark:hover:bg-foreground text-foreground py-6 rounded-2xl font-black text-lg transition-all shadow-xl"
                             >
                                 Publish to Wall of Fame
                             </Button>
@@ -795,12 +795,12 @@ function SocialLink({ icon: Icon, label, value, isEditing, onChange }: {
         <div className="group">
             {isEditing ? (
                 <div className="relative">
-                    <Icon size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Icon size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <input
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder={`${label} Profile URL`}
-                        className="w-full bg-(--surface-2) border-white/5 dark:border-slate-700 rounded-2xl pl-12 pr-6 py-3 font-bold text-foreground focus:border-electric outline-none transition-all"
+                        className="w-full bg-(--surface-2) border-white/5 border-border rounded-2xl pl-12 pr-6 py-3 font-bold text-foreground focus:border-electric outline-none transition-all"
                     />
                 </div>
             ) : (
@@ -813,16 +813,16 @@ function SocialLink({ icon: Icon, label, value, isEditing, onChange }: {
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(124,58,237,0.20)"; (e.currentTarget as HTMLElement).style.background = "rgba(124,58,237,0.05)" }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "transparent"; (e.currentTarget as HTMLElement).style.background = "transparent" }}
                 >
-                    <div className="h-10 w-10 bg-(--surface-2) shadow-lg border border-white/5 dark:border-slate-700 rounded-xl flex items-center justify-center text-foreground dark:text-foreground transition-all"
+                    <div className="h-10 w-10 bg-(--surface-2) shadow-lg border border-white/5 border-border rounded-xl flex items-center justify-center text-foreground transition-all"
                         onMouseEnter={(e) => { const el = e.currentTarget; el.style.background = "var(--color-primary)"; el.style.color = "white" }}
                         onMouseLeave={(e) => { const el = e.currentTarget; el.style.background = ""; el.style.color = "" }}>
                         <Icon size={18} />
                     </div>
                     <div className="text-left">
-                        <p className="font-black text-slate-400 uppercase tracking-widest">{label}</p>
+                        <p className="font-black text-muted-foreground uppercase tracking-widest">{label}</p>
                         <p className="font-black text-foreground truncate max-w-[150px]">{value ? "Connected" : "Not Connected"}</p>
                     </div>
-                    {value && <ExternalLink size={14} className="ml-auto text-slate-300 transition-all" style={{ color: "var(--color-text-muted)" }} />}
+                    {value && <ExternalLink size={14} className="ml-auto text-muted-foreground transition-all" style={{ color: "var(--color-text-muted)" }} />}
                 </a>
             )}
         </div>
@@ -836,14 +836,14 @@ function ProjectCard({ project, onRemove }: { project: Project, onRemove: () => 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="group bg-card/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-4xl border border-white/5 dark:border-slate-800 shadow-xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500"
+            className="group bg-card/50 dark:bg-background/50 backdrop-blur-xl rounded-4xl border border-white/5 border-border shadow-xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500"
         >
             <div className="relative h-48 bg-(--surface-2)">
                 {project.image ? (
                     <Image src={project.image} alt={project.title} width={400} height={300} className="w-full h-full object-cover" />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
-                        <Code size={40} className="text-slate-200 dark:text-slate-700" />
+                        <Code size={40} className="text-foreground dark:text-slate-700" />
                     </div>
                 )}
 
@@ -861,7 +861,7 @@ function ProjectCard({ project, onRemove }: { project: Project, onRemove: () => 
                     )}
                     <button
                         onClick={onRemove}
-                        className="p-4 bg-red-500 rounded-2xl text-white hover:scale-110 transition-transform shadow-2xl shadow-red-500/20"
+                        className="p-4 bg-red-500 rounded-2xl text-foreground hover:scale-110 transition-transform shadow-2xl shadow-red-500/20"
                     >
                         <Trash2 size={20} />
                     </button>
@@ -881,12 +881,12 @@ function ProjectCard({ project, onRemove }: { project: Project, onRemove: () => 
 function InputField({ label, value, onChange, placeholder }: { label: string, value: string, onChange: (v: string) => void, placeholder: string }) {
     return (
         <div className="space-y-2">
-            <label className="font-black text-slate-400 uppercase tracking-widest px-1">{label}</label>
+            <label className="font-black text-muted-foreground uppercase tracking-widest px-1">{label}</label>
             <input
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-(--surface-2) border-white/5 dark:border-slate-700 rounded-2xl px-6 py-4 font-bold text-foreground outline-none focus:border-electric transition-all"
+                className="w-full bg-(--surface-2) border-white/5 border-border rounded-2xl px-6 py-4 font-bold text-foreground outline-none focus:border-electric transition-all"
             />
         </div>
     );

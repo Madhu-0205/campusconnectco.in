@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
@@ -67,11 +68,11 @@ export async function POST(req: NextRequest) {
           notes: { reason: reason || "User requested refund" },
         });
       } catch (rzpError) {
-        console.error("[Razorpay Refund Error]", rzpError);
+        logger.error("Razorpay Refund Error", rzpError, { transactionId });
         return NextResponse.json({ error: "Failed to process refund with payment provider" }, { status: 502 });
       }
     } else {
-      console.warn("[Refund API] Operating in local mock mode. Bypassing Razorpay.");
+      logger.info("Refund API Operating in local mock mode. Bypassing Razorpay.", { transactionId });
     }
 
     // Process refund in a Prisma transaction block
@@ -119,11 +120,14 @@ export async function POST(req: NextRequest) {
           metadata: { reason: reason || "User requested refund" },
         },
       });
+    }).catch(txError => {
+      logger.error("Refund transaction failed", txError, { transactionId });
+      throw txError;
     });
 
     return NextResponse.json({ success: true, message: "Refund processed successfully" });
   } catch (error) {
-    console.error("[REFUND_API_ERROR]", error);
+    logger.error("Refund API Error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

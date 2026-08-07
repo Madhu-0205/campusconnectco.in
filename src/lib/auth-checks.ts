@@ -46,22 +46,23 @@ export async function protectApi(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP
     if (!role && user.user_metadata?.role) {
         role = user.user_metadata.role;
     }
+    const normalizedRole = role ? role.toUpperCase() : null;
 
-    if (!allowedRoles.includes(role as (typeof allowedRoles)[number])) {
-        console.warn(`[AUTH] Unauthorized access attempt by ${user.email} (Role: ${role}) to restricted API`);
+    if (!normalizedRole || !allowedRoles.includes(normalizedRole as (typeof allowedRoles)[number])) {
+        console.warn(`[AUTH] Unauthorized access attempt by ${user.email} (Role: ${normalizedRole || role}) to restricted API`);
         logSecurityEvent("AUTH_LOGIN_FAILED", {
             userId: user.id,
             metadata: {
                 email: user.email,
-                attemptedRole: role || "unknown",
+                attemptedRole: normalizedRole || role || "unknown",
                 allowedRoles,
                 context: "api"
             }
         }).catch(() => {});
-        return { errorResponse: new NextResponse("Forbidden", { status: 403 }), user };
+        return { errorResponse: new NextResponse("Forbidden", { status: 403 }), user, role: normalizedRole || role };
     }
 
-    return { errorResponse: null, user, role };
+    return { errorResponse: null, user, role: normalizedRole };
 }
 
 /**
@@ -78,22 +79,23 @@ export async function protectPage(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTU
     if (!role && user.user_metadata?.role) {
         role = user.user_metadata.role;
     }
+    const normalizedRole = role ? role.toUpperCase() : null;
 
-    if (!allowedRoles.includes(role as (typeof allowedRoles)[number])) {
+    if (!normalizedRole || !allowedRoles.includes(normalizedRole as (typeof allowedRoles)[number])) {
         logSecurityEvent("AUTH_LOGIN_FAILED", {
             userId: user.id,
             metadata: {
                 email: user.email,
-                attemptedRole: role || "unknown",
+                attemptedRole: normalizedRole || role || "unknown",
                 allowedRoles,
                 context: "page"
             }
         }).catch(() => {});
-        return { authorized: false, user, role };
+        return { authorized: false, user, role: normalizedRole || role };
     }
 
 
-    return { authorized: true, user, role };
+    return { authorized: true, user, role: normalizedRole };
 }
 
 /**
@@ -118,14 +120,15 @@ export async function requireRole(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTU
     if (!role && user!.user_metadata?.role) {
         role = user!.user_metadata.role;
     }
+    const normalizedRole = role ? role.toUpperCase() : null;
 
-    if (!allowedRoles.includes(role as any)) {
-        console.warn(`[AUTH] Unauthorized access attempt by ${user!.email} (Role: ${role}) to restricted API`);
+    if (!normalizedRole || !allowedRoles.includes(normalizedRole as any)) {
+        console.warn(`[AUTH] Unauthorized access attempt by ${user!.email} (Role: ${normalizedRole || role}) to restricted API`);
         logSecurityEvent("AUTH_LOGIN_FAILED", {
             userId: user!.id,
             metadata: {
                 email: user!.email,
-                attemptedRole: role || "unknown",
+                attemptedRole: normalizedRole || role || "unknown",
                 allowedRoles,
                 context: "api"
             }
@@ -133,7 +136,7 @@ export async function requireRole(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTU
         return { errorResponse: NextResponse.json({ error: "Forbidden" }, { status: 403 }), user, role: null };
     }
 
-    return { errorResponse: null, user, role };
+    return { errorResponse: null, user, role: normalizedRole };
 }
 
 /**

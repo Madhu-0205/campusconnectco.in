@@ -20,8 +20,8 @@ export default function NetworkError({
       <div className="w-16 h-16 rounded-2xl bg-[#F43F5E]/10 border border-[#F43F5E]/20 flex items-center justify-center mb-6">
         <AlertTriangle size={28} className="text-[#F43F5E]" />
       </div>
-      <h2 className="font-black text-white mb-2">Network Error</h2>
-      <p className="text-slate-400 max-w-md mb-6">
+      <h2 className="font-black text-foreground mb-2">Network Error</h2>
+      <p className="text-muted-foreground max-w-md mb-6">
         {error.message || "Failed to load the networking page. Please try again."}
       </p>
       <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export default function NetworkError({
         </button>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-transparent text-sm font-semibold border border-white/15 hover:bg-white/5 hover:border-white/30 active:scale-[0.97] transition-all"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-transparent text-sm font-semibold border border-white/15 hover:bg-accent hover:border-white/30 active:scale-[0.97] transition-all"
         >
           <Home size={15} /> Go Home
         </Link>

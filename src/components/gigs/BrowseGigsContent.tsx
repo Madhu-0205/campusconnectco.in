@@ -46,14 +46,14 @@ interface FilterState {
 
 function StatCard({ icon: Icon, label, value }: { icon: React.ComponentType<{ size?: number; className?: string }>; label: string; value: string | number }) {
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800">
+        <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
             <div className="flex items-center gap-3">
-                <div className="p-2 bg-electric/10 rounded-lg">
-                    <Icon size={20} className="text-electric" />
+                <div className="p-2 bg-accent text-foreground rounded-lg">
+                    <Icon size={20} className="text-foreground" />
                 </div>
                 <div>
-                    <p className="text-slate-600 dark:text-slate-400 font-medium">{label}</p>
-                    <p className="font-bold text-slate-900 dark:text-white">{value}</p>
+                    <p className="text-muted-foreground font-medium">{label}</p>
+                    <p className="font-bold text-foreground">{value}</p>
                 </div>
             </div>
         </div>
@@ -66,21 +66,21 @@ function GigCard({ gig, viewMode }: { gig: Gig; viewMode: "grid" | "list" }) {
             <Link href={`/gigs/${gig.id}`}>
                 <motion.div
                     whileHover={{ scale: 1.01 }}
-                    className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all cursor-pointer"
+                    className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-lg transition-all cursor-pointer"
                 >
                     <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-2 hover:text-electric transition-colors">
+                            <h3 className="font-bold text-foreground mb-2 hover:text-foreground transition-colors">
                                 {gig.title}
                             </h3>
-                            <p className="text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">
+                            <p className="text-muted-foreground line-clamp-2 mb-3">
                                 {gig.description}
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {gig.tags?.split(",").slice(0, 3).map((tag, idx) => (
                                     <span
                                         key={idx}
-                                        className="px-2 py-1 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 text-xs font-medium rounded"
+                                        className="px-2 py-1 bg-accent text-muted-foreground text-xs font-medium rounded"
                                     >
                                         {tag.trim()}
                                     </span>
@@ -88,8 +88,8 @@ function GigCard({ gig, viewMode }: { gig: Gig; viewMode: "grid" | "list" }) {
                             </div>
                         </div>
                         <div className="text-right">
-                            <p className="font-black text-electric mb-2">₹{gig.budget.toLocaleString()}</p>
-                            <p className="text-slate-500 dark:text-slate-400">
+                            <p className="font-black text-foreground mb-2">₹{gig.budget.toLocaleString()}</p>
+                            <p className="text-muted-foreground">
                                 {gig._count?.applications || 0} applicants
                             </p>
                         </div>
@@ -104,15 +104,15 @@ function GigCard({ gig, viewMode }: { gig: Gig; viewMode: "grid" | "list" }) {
             <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
                 transition={{ duration: 0.25 }}
-                className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-2xl transition-all cursor-pointer h-full flex flex-col"
+                className="bg-card rounded-2xl p-6 shadow-sm border border-border hover:shadow-2xl transition-all cursor-pointer h-full flex flex-col"
             >
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                        <h3 className="font-bold text-slate-900 dark:text-white mb-1 hover:text-electric transition-colors line-clamp-2">
+                        <h3 className="font-bold text-foreground mb-1 hover:text-foreground transition-colors line-clamp-2">
                             {gig.title}
                         </h3>
                         {gig.tags && (
-                            <p className="text-slate-500 dark:text-slate-400 font-medium">
+                            <p className="text-muted-foreground font-medium">
                                 {gig.tags.split(",")[0].trim()}
                             </p>
                         )}
@@ -124,16 +124,16 @@ function GigCard({ gig, viewMode }: { gig: Gig; viewMode: "grid" | "list" }) {
                     </span>
                 </div>
 
-                <p className="text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 flex-1">
+                <p className="text-muted-foreground line-clamp-3 mb-4 flex-1">
                     {gig.description}
                 </p>
 
-                <div className="pt-4 border-slate-100 dark:border-slate-800 space-y-2">
+                <div className="pt-4 border-border space-y-2">
                     <div className="flex items-center justify-between">
-                        <span className="text-slate-500 dark:text-slate-400">Budget</span>
-                        <span className="font-black text-electric">₹{gig.budget.toLocaleString()}</span>
+                        <span className="text-muted-foreground">Budget</span>
+                        <span className="font-black text-foreground">₹{gig.budget.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center justify-between text-muted-foreground">
                         <span>{gig._count?.applications || 0} applicants</span>
                         {gig.deadline && (
                             <span>Due: {new Date(gig.deadline).toLocaleDateString()}</span>
@@ -148,28 +148,28 @@ function GigCard({ gig, viewMode }: { gig: Gig; viewMode: "grid" | "list" }) {
 function SkeletonCard({ viewMode }: { viewMode: "grid" | "list" }) {
     if (viewMode === "list") {
         return (
-            <div className="animate-pulse bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+            <div className="animate-pulse bg-card rounded-xl p-6 shadow-sm border border-border">
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 space-y-3">
-                        <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-3/4"></div>
-                        <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
-                        <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-2/3"></div>
+                        <div className="h-6 bg-accent rounded w-3/4"></div>
+                        <div className="h-4 bg-accent rounded w-full"></div>
+                        <div className="h-4 bg-accent rounded w-2/3"></div>
                     </div>
-                    <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                    <div className="h-8 w-24 bg-accent rounded"></div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="animate-pulse bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+        <div className="animate-pulse bg-card rounded-2xl p-6 shadow-sm border border-border">
             <div className="space-y-4">
-                <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-3/4"></div>
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/2"></div>
-                <div className="h-20 bg-slate-200 dark:bg-slate-800 rounded"></div>
-                <div className="flex justify-between pt-4 border-slate-100 dark:border-slate-800">
-                    <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/3"></div>
-                    <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-1/4"></div>
+                <div className="h-6 bg-accent rounded w-3/4"></div>
+                <div className="h-4 bg-accent rounded w-1/2"></div>
+                <div className="h-20 bg-accent rounded"></div>
+                <div className="flex justify-between pt-4 border-border">
+                    <div className="h-4 bg-accent rounded w-1/3"></div>
+                    <div className="h-6 bg-accent rounded w-1/4"></div>
                 </div>
             </div>
         </div>
@@ -309,7 +309,7 @@ export default function BrowseGigsContent() {
         (filters.location ? 1 : 0);
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-24 pb-12">
+        <div className="min-h-screen bg-background dark:bg-background pt-24 pb-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <motion.div
@@ -317,10 +317,10 @@ export default function BrowseGigsContent() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                 >
-                    <h1 className="md:text-5xl font-black text-slate-900 dark:text-white mb-3">
+                    <h1 className="md:text-5xl font-black text-foreground mb-3">
                         Browse <span className="text-transparent bg-linear-to-r from-electric to-purple-600">Gigs</span>
                     </h1>
-                    <p className="text-slate-600 dark:text-slate-400">
+                    <p className="text-muted-foreground">
                         Discover opportunities tailored to your skills
                     </p>
                 </motion.div>
@@ -334,17 +334,17 @@ export default function BrowseGigsContent() {
                 </div>
 
                 {/* Search and Filter Bar */}
-                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg p-6 mb-8">
+                <div className="bg-card rounded-2xl shadow-lg p-6 mb-8">
                     <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
                         {/* Search Input */}
                         <div className="relative flex-1">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search gigs by title, description, or tags..."
-                                className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-electric/50 text-slate-900 dark:text-white"
+                                className="w-full pl-12 pr-4 py-3 bg-accent border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-electric/50 text-foreground"
                             />
                         </div>
 
@@ -352,12 +352,12 @@ export default function BrowseGigsContent() {
                         <button
                             type="button"
                             onClick={() => setShowFilters(!showFilters)}
-                            className="flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium"
+                            className="flex items-center gap-2 px-6 py-3 bg-accent text-muted-foreground rounded-xl hover:bg-accent hover:bg-accent transition-colors font-medium"
                         >
                             <SlidersHorizontal size={20} />
                             Filters
                             {activeFiltersCount > 0 && (
-                                <span className="ml-1 px-2 py-0.5 bg-electric text-xs font-bold rounded-full">
+                                <span className="ml-1 px-2 py-0.5 bg-foreground text-background text-xs font-bold rounded-full">
                                     {activeFiltersCount}
                                 </span>
                             )}
@@ -367,7 +367,7 @@ export default function BrowseGigsContent() {
                         <select
                             value={filters.sortBy}
                             onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-                            className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-electric/50 text-slate-900 dark:text-white font-medium"
+                            className="px-4 py-3 bg-accent border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-electric/50 text-foreground font-medium"
                         >
                             {sortOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -377,18 +377,18 @@ export default function BrowseGigsContent() {
                         </select>
 
                         {/* View Mode Toggle */}
-                        <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                        <div className="flex gap-2 bg-accent p-1 rounded-xl">
                             <button
                                 type="button"
                                 onClick={() => setViewMode("grid")}
-                                className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-white dark:bg-slate-700 text-electric shadow-sm" : "text-slate-600 dark:text-slate-400" }`}
+                                className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-white bg-accent text-foreground shadow-sm" : "text-muted-foreground" }`}
                             >
                                 <Grid3x3 size={20} />
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setViewMode("list")}
-                                className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-white dark:bg-slate-700 text-electric shadow-sm" : "text-slate-600 dark:text-slate-400" }`}
+                                className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-white bg-accent text-foreground shadow-sm" : "text-muted-foreground" }`}
                             >
                                 <List size={20} />
                             </button>
@@ -397,7 +397,7 @@ export default function BrowseGigsContent() {
                         {/* Search Button */}
                         <button
                             type="submit"
-                            className="px-8 py-3 bg-electric text-white rounded-xl font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-electric/20"
+                            className="px-8 py-3 bg-foreground text-background text-foreground rounded-xl font-bold hover:opacity-90 transition-colors shadow-lg shadow-sm"
                         >
                             Search
                         </button>
@@ -411,25 +411,25 @@ export default function BrowseGigsContent() {
                                 animate={{ height: "auto", opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.3 }}
-                                className="mt-6 pt-6 border-slate-200 dark:border-slate-700 overflow-hidden"
+                                className="mt-6 pt-6 border-border overflow-hidden"
                             >
                                 <div className="grid md:grid-cols-3 gap-6">
                                     {/* Category Filter */}
                                     <div>
-                                        <h3 className="font-bold text-slate-900 dark:text-white mb-3">
+                                        <h3 className="font-bold text-foreground mb-3">
                                             Category
                                         </h3>
                                         <div className="space-y-2 max-h-48 overflow-y-auto">
                                             {categories.map((category) => (
                                                 <label
                                                     key={category}
-                                                    className="flex items-center gap-2 text-slate-700 dark:text-slate-300 cursor-pointer hover:text-electric transition-colors"
+                                                    className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                                                 >
                                                     <input
                                                         type="checkbox"
                                                         checked={filters.category.includes(category)}
                                                         onChange={() => toggleCategory(category)}
-                                                        className="rounded border-slate-300 dark:border-slate-600 text-electric focus:ring-electric"
+                                                        className="rounded border-slate-300 dark:border-slate-600 text-foreground focus:ring-electric"
                                                     />
                                                     {category}
                                                 </label>
@@ -439,12 +439,12 @@ export default function BrowseGigsContent() {
 
                                     {/* Budget Range */}
                                     <div>
-                                        <h3 className="font-bold text-slate-900 dark:text-white mb-3">
+                                        <h3 className="font-bold text-foreground mb-3">
                                             Budget Range
                                         </h3>
                                         <div className="space-y-3">
                                             <div>
-                                                <label className="text-slate-600 dark:text-slate-400 mb-1 block">
+                                                <label className="text-muted-foreground mb-1 block">
                                                     Minimum (₹)
                                                 </label>
                                                 <input
@@ -453,12 +453,12 @@ export default function BrowseGigsContent() {
                                                     onChange={(e) =>
                                                         setFilters({ ...filters, budgetMin: Number(e.target.value) })
                                                     }
-                                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-electric/50 text-slate-900 dark:text-white"
+                                                    className="w-full px-3 py-2 bg-accent border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-electric/50 text-foreground"
                                                     min="0"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-slate-600 dark:text-slate-400 mb-1 block">
+                                                <label className="text-muted-foreground mb-1 block">
                                                     Maximum (₹)
                                                 </label>
                                                 <input
@@ -467,7 +467,7 @@ export default function BrowseGigsContent() {
                                                     onChange={(e) =>
                                                         setFilters({ ...filters, budgetMax: Number(e.target.value) })
                                                     }
-                                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-electric/50 text-slate-900 dark:text-white"
+                                                    className="w-full px-3 py-2 bg-accent border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-electric/50 text-foreground"
                                                     min="0"
                                                 />
                                             </div>
@@ -477,7 +477,7 @@ export default function BrowseGigsContent() {
                                     {/* Location & Status */}
                                     <div className="space-y-4">
                                         <div>
-                                            <h3 className="font-bold text-slate-900 dark:text-white mb-3">
+                                            <h3 className="font-bold text-foreground mb-3">
                                                 Location
                                             </h3>
                                             <input
@@ -485,17 +485,17 @@ export default function BrowseGigsContent() {
                                                 value={filters.location}
                                                 onChange={(e) => setFilters({ ...filters, location: e.target.value })}
                                                 placeholder="City or region..."
-                                                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-electric/50 text-slate-900 dark:text-white"
+                                                className="w-full px-3 py-2 bg-accent border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-electric/50 text-foreground"
                                             />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-slate-900 dark:text-white mb-3">
+                                            <h3 className="font-bold text-foreground mb-3">
                                                 Status
                                             </h3>
                                             <select
                                                 value={filters.status}
                                                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                                                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-electric/50 text-slate-900 dark:text-white"
+                                                className="w-full px-3 py-2 bg-accent border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-electric/50 text-foreground"
                                             >
                                                 <option value="">All Status</option>
                                                 <option value="OPEN">Open</option>
@@ -522,9 +522,9 @@ export default function BrowseGigsContent() {
 
                 {/* Results Count */}
                 <div className="flex items-center justify-between mb-6">
-                    <p className="text-slate-600 dark:text-slate-400">
-                        Showing <span className="font-bold text-slate-900 dark:text-white">{gigs.length}</span> of{" "}
-                        <span className="font-bold text-slate-900 dark:text-white">{totalGigs}</span> gigs
+                    <p className="text-muted-foreground">
+                        Showing <span className="font-bold text-foreground">{gigs.length}</span> of{" "}
+                        <span className="font-bold text-foreground">{totalGigs}</span> gigs
                     </p>
                 </div>
 
@@ -537,14 +537,14 @@ export default function BrowseGigsContent() {
                     </div>
                 ) : gigs.length === 0 ? (
                     <div className="text-center py-20">
-                        <Briefcase size={64} className="mx-auto text-slate-300 dark:text-slate-700 mb-4" />
-                        <h3 className="font-bold text-slate-900 dark:text-white mb-2">No gigs found</h3>
-                        <p className="text-slate-600 dark:text-slate-400 mb-6">
+                        <Briefcase size={64} className="mx-auto text-muted-foreground mb-4" />
+                        <h3 className="font-bold text-foreground mb-2">No gigs found</h3>
+                        <p className="text-muted-foreground mb-6">
                             Try adjusting your filters or search query
                         </p>
                         <button
                             onClick={clearFilters}
-                            className="px-6 py-3 bg-electric text-white rounded-xl font-bold hover:bg-blue-600 transition-colors"
+                            className="px-6 py-3 bg-foreground text-background text-foreground rounded-xl font-bold hover:opacity-90 transition-colors"
                         >
                             Clear Filters
                         </button>
@@ -562,7 +562,7 @@ export default function BrowseGigsContent() {
                             <div className="flex justify-center mt-10">
                                 <button
                                     onClick={() => loadGigs(page + 1)}
-                                    className="px-8 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold hover:scale-105 active:scale-95 transition-all shadow-lg"
+                                    className="px-8 py-3 bg-card dark:bg-white text-foreground rounded-xl font-bold hover:scale-105 active:scale-95 transition-all shadow-lg"
                                 >
                                     Load More Gigs
                                 </button>

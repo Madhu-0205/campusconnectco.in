@@ -2,12 +2,12 @@
 
 import { usePathname } from "next/navigation"
 
-import CCFooter from "@/components/landing/CCFooter"
+import { V2Footer } from "@/components/navigation/V2Footer"
 import AppFooter from "@/components/ui/AppFooter"
 
 /**
- * Paths where the CCFooter should NOT appear (they get AppFooter or nothing)
- *  - /          (landing has its own CCFooter rendered inside the page)
+ * Paths where the V2Footer should NOT appear (they get AppFooter or nothing)
+ *  - /          (landing has its own V2Footer rendered inside the page)
  *  - /auth/*    (auth pages are standalone — no footer by design)
  *  - /skill-selector (onboarding flow)
  */
@@ -32,5 +32,5 @@ export default function FooterWrapper() {
   // Show compact AppFooter on dashboard routes
   if (APP_FOOTER_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return <AppFooter />
 
-  return <CCFooter />
+  return <V2Footer />
 }

@@ -164,7 +164,7 @@ function JoinPageClient() {
               {/* Action Button */}
               <button
                 onClick={handleClaim}
-                className="w-full mt-8 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 active:scale-[0.98] transition-all font-black py-4 rounded-xl text-white shadow-[0_0_30px_rgba(124,58,237,0.3)] hover:shadow-[0_0_35px_rgba(124,58,237,0.5)] flex items-center justify-center gap-2 group cursor-pointer"
+                className="w-full mt-8 bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 active:scale-[0.98] transition-all font-black py-4 rounded-xl text-white shadow-[0_0_30px_rgba(124,58,237,0.3)] hover:shadow-[0_0_35px_rgba(124,58,237,0.5)] flex items-center justify-center gap-2 group cursor-pointer"
               >
                 Claim Reward & Register <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>

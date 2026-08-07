@@ -182,7 +182,7 @@ export default async function CollegeSEOPage({ params }: Props) {
             <Award size={12} /> Hyperlocal Campus Hub
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight font-heading">
-            Hire Top Talents from <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">{collegeName}</span>
+            Hire Top Talents from <span className="text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-cyan-400">{collegeName}</span>
           </h1>
           <p className="text-slate-400 max-w-3xl text-base md:text-lg leading-relaxed">
             Browse verified students, view code portfolios, and source freelance operators directly from the classrooms of {collegeName}. Zero brokerage and secure escrow support included.

@@ -2,6 +2,7 @@ import { TransactionStatus, DisputeStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
@@ -119,11 +120,14 @@ export async function POST(req: NextRequest) {
       });
 
       return newDispute;
+    }).catch(txError => {
+      logger.error("Dispute transaction failed", txError, { transactionId });
+      throw txError;
     });
 
     return NextResponse.json({ success: true, dispute, message: "Dispute opened successfully. Escrow frozen." });
   } catch (error) {
-    console.error("[DISPUTE_API_ERROR]", error);
+    logger.error("Dispute API Error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

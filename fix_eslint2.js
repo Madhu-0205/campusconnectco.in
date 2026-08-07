@@ -1,7 +1,7 @@
+const { execSync } = require('child_process');
 const fs = require('fs');
 
 // We run eslint and parse output
-const { execSync } = require('child_process');
 execSync('npx eslint . --ext .js,.jsx,.ts,.tsx --format=json > eslint-report-3.json || true');
 
 const data = JSON.parse(fs.readFileSync('eslint-report-3.json', 'utf8'));

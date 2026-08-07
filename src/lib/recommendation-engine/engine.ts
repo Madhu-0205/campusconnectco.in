@@ -65,11 +65,11 @@ export class RecommendationEngine {
     // 2. Feature Engineering: Goal Match
     const studentGoals = this.student.careerGoals || [];
     const isGoalMatch = studentGoals.some(goal => {
-      const g = goal.toLowerCase();
+      const g = (goal || "").toLowerCase();
       return (
         (opp.title && opp.title.toLowerCase().includes(g)) || 
         (opp.domain && opp.domain.toLowerCase().includes(g)) ||
-        (opp.tags && opp.tags.some(tag => tag.toLowerCase().includes(g)))
+        (opp.tags && opp.tags.some(tag => (tag || "").toLowerCase().includes(g)))
       );
     });
     if (isGoalMatch) score += 30; // Max 30 points
@@ -80,7 +80,7 @@ export class RecommendationEngine {
     
     if (!isLocationMatch && opp.location) {
       isLocationMatch = preferredCities.some(city => 
-        opp.location!.toLowerCase().includes(city.toLowerCase())
+        opp.location!.toLowerCase().includes((city || "").toLowerCase())
       );
     }
     if (isLocationMatch) score += 10; // Max 10 points

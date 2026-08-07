@@ -2,6 +2,7 @@ import { TransactionStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 import { triggerReferralConversion } from "@/lib/growth";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { safeCompare } from "@/lib/security/crypto";
 
@@ -28,7 +29,7 @@ export async function GET(req: Request) {
       take: 100, // Process in batches
     });
 
-    console.log(`Cron: Processing ${eligible.length} eligible releases`);
+    logger.info(`Cron: Processing ${eligible.length} eligible releases`);
 
     const results = [];
     for (const transaction of eligible) {
@@ -43,7 +44,7 @@ export async function GET(req: Request) {
           });
 
           if (!current || current.status !== TransactionStatus.COMPLETED) {
-            console.warn(`Transaction ${transaction.id} status changed, skipping.`);
+            logger.warn(`Transaction ${transaction.id} status changed, skipping.`);
             return;
           }
 
@@ -81,6 +82,9 @@ export async function GET(req: Request) {
                   };
 
               // 1. Create Payout Contact
+              const contactController = new AbortController();
+              const contactTimeoutId = setTimeout(() => contactController.abort(), 10000); // 10s
+              
               const contactRes = await fetch("https://api.razorpay.com/v1/contacts", {
                 method: "POST",
                 headers: {
@@ -93,7 +97,10 @@ export async function GET(req: Request) {
                   type: "employee",
                   reference_id: seller.email,
                 }),
+                signal: contactController.signal,
               });
+              
+              clearTimeout(contactTimeoutId);
 
               if (!contactRes.ok) {
                 const errText = await contactRes.text();
@@ -102,6 +109,9 @@ export async function GET(req: Request) {
               const contact = await contactRes.json();
 
               // 2. Create Fund Account
+              const fundController = new AbortController();
+              const fundTimeoutId = setTimeout(() => fundController.abort(), 10000);
+              
               const fundRes = await fetch("https://api.razorpay.com/v1/fund_accounts", {
                 method: "POST",
                 headers: {
@@ -112,7 +122,10 @@ export async function GET(req: Request) {
                   contact_id: contact.id,
                   ...fundAccountBody,
                 }),
+                signal: fundController.signal,
               });
+              
+              clearTimeout(fundTimeoutId);
 
               if (!fundRes.ok) {
                 const errText = await fundRes.text();
@@ -121,6 +134,9 @@ export async function GET(req: Request) {
               const fundAccount = await fundRes.json();
 
               // 3. Create Payout
+              const payoutController = new AbortController();
+              const payoutTimeoutId = setTimeout(() => payoutController.abort(), 15000);
+              
               const payoutRes = await fetch("https://api.razorpay.com/v1/payouts", {
                 method: "POST",
                 headers: {
@@ -138,7 +154,10 @@ export async function GET(req: Request) {
                   reference_id: transaction.id,
                   narration: `Payout for Gig: ${transaction.id.substring(0, 8)}`,
                 }),
+                signal: payoutController.signal,
               });
+              
+              clearTimeout(payoutTimeoutId);
 
               if (!payoutRes.ok) {
                 const errText = await payoutRes.text();
@@ -147,11 +166,11 @@ export async function GET(req: Request) {
               
               payoutSuccess = true;
             } catch (payoutErr: any) {
-              console.error("[Razorpay Payout Error]", payoutErr);
+              logger.error("Razorpay Payout Error", payoutErr, { transactionId: transaction.id });
               throw new Error(`Payout gateway failed: ${payoutErr.message}`);
             }
           } else {
-            console.warn("[Cron Payout] Operating in Sandbox. Simulating successful payout.");
+            logger.info("Cron Payout Operating in Sandbox. Simulating successful payout.", { transactionId: transaction.id });
             payoutSuccess = true;
           }
 
@@ -186,7 +205,7 @@ export async function GET(req: Request) {
           results.push({ id: transaction.id, success: true });
         }
       } catch (err) {
-        console.error(`Error releasing transaction ${transaction.id}:`, err);
+        logger.error(`Error releasing transaction`, err, { transactionId: transaction.id });
         results.push({ id: transaction.id, success: false, error: (err as Error).message });
         
         // Notify admin/Slack on release failure
@@ -201,7 +220,7 @@ export async function GET(req: Request) {
     });
 
   } catch (error) {
-    console.error("Cron Release Payment Error:", error);
+    logger.error("Cron Release Payment Error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

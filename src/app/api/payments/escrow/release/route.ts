@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth-checks";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 
 
@@ -74,11 +75,14 @@ export async function POST(req: NextRequest) {
                     }
                 });
             }
+        }).catch(txError => {
+            logger.error("Escrow release transaction failed", txError, { gigId, clientId: user.id });
+            throw txError;
         });
 
         return NextResponse.json({ success: true, message: "Funds released to worker successfully." });
     } catch (error: any) {
-        console.error("[RELEASE_ESCROW_ERROR]", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        logger.error("Release Escrow Error", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

@@ -22,7 +22,7 @@ export function ReputationLedgerCard({
     let level = 1
     let tierName = "Freshman"
     let tierTitle = "Skills Explorer"
-    let tierColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+    let tierColor = "text-success bg-success/10 text-success border-emerald-500/20"
     let progressMax = 30
     let progressMin = 0
 
@@ -30,21 +30,21 @@ export function ReputationLedgerCard({
         level = 45
         tierName = "Graduate"
         tierTitle = "Alumni Elite"
-        tierColor = "text-amber-400 bg-amber-500/10 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+        tierColor = "text-amber-400 bg-warning/10 text-warning border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
         progressMax = 100
         progressMin = 95
     } else if (score >= 80) {
         level = 32
         tierName = "Senior"
         tierTitle = "Placement Moat"
-        tierColor = "text-cyan-400 bg-cyan-500/10 border-cyan-500/20"
+        tierColor = "text-foreground bg-cyan-500/10 border-cyan-500/20"
         progressMax = 95
         progressMin = 80
     } else if (score >= 55) {
         level = 24
         tierName = "Junior"
         tierTitle = "Escrow Builder"
-        tierColor = "text-violet-400 bg-violet-500/10 border-violet-500/20"
+        tierColor = "text-foreground bg-accent border-border"
         progressMax = 80
         progressMin = 55
     } else if (score >= 30) {
@@ -63,8 +63,8 @@ export function ReputationLedgerCard({
             label: "Reliability",
             score: reliability,
             icon: ShieldCheck,
-            color: "text-emerald-400",
-            bg: "bg-emerald-500/10",
+            color: "text-success",
+            bg: "bg-success/10 text-success",
             barColor: "bg-emerald-500",
             desc: "Milestones completed on schedule and dispute-free escrows."
         },
@@ -72,7 +72,7 @@ export function ReputationLedgerCard({
             label: "Execution",
             score: execution,
             icon: Briefcase,
-            color: "text-cyan-400",
+            color: "text-foreground",
             bg: "bg-cyan-500/10",
             barColor: "bg-cyan-500",
             desc: "Completed gigs volume, verified earnings, and recruiter reviews."
@@ -81,8 +81,8 @@ export function ReputationLedgerCard({
             label: "Learning",
             score: learning,
             icon: Zap,
-            color: "text-violet-400",
-            bg: "bg-violet-500/10",
+            color: "text-foreground",
+            bg: "bg-accent",
             barColor: "bg-violet-500",
             desc: "Vetted skill count and overall portfolio completeness."
         },
@@ -100,11 +100,11 @@ export function ReputationLedgerCard({
     return (
         <div className="rounded-3xl border border-white/5 bg-white/2 p-6 shadow-2xl relative overflow-hidden group">
             {/* Background effects */}
-            <div className="absolute -right-16 -top-16 w-32 h-32 blur-[60px] bg-violet-600/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+            <div className="absolute -right-16 -top-16 w-32 h-32 blur-[60px] bg-foreground text-background/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
             
             <div className="flex items-center justify-between mb-6 relative z-10">
-                <h3 className="font-black text-white flex items-center gap-2 text-base font-display">
-                    <Award size={18} className="text-violet-400" /> Reputation Ledger
+                <h3 className="font-black text-foreground flex items-center gap-2 text-base font-display">
+                    <Award size={18} className="text-foreground" /> Reputation Ledger
                 </h3>
                 <div className={`px-3 py-1 rounded-full text-xs font-black border flex items-center gap-1.5 uppercase tracking-wider ${tierColor}`}>
                     <span>Lv.{level}</span>
@@ -117,26 +117,26 @@ export function ReputationLedgerCard({
             <div className="flex items-center gap-6 mb-6 pb-6 border-b border-white/5 relative z-10">
                 <div className="relative w-20 h-20 shrink-0">
                     <svg className="w-full h-full -rotate-90">
-                        <circle cx="40" cy="40" r="35" strokeWidth="6" fill="transparent" className="text-white/5 stroke-current" />
+                        <circle cx="40" cy="40" r="35" strokeWidth="6" fill="transparent" className="text-foreground/5 stroke-current" />
                         <circle cx="40" cy="40" r="35" strokeWidth="6" fill="transparent" strokeDasharray="220"
                             strokeDashoffset={220 - (220 * score) / 100}
                             className="text-violet-500 stroke-current transition-all duration-1000" strokeLinecap="round" />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="font-black text-xl text-white leading-none">{score}</span>
-                        <span className="text-[9px] uppercase tracking-widest text-slate-500 font-bold mt-0.5">SRS</span>
+                        <span className="font-black text-xl text-foreground leading-none">{score}</span>
+                        <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold mt-0.5">SRS</span>
                     </div>
                 </div>
                 <div className="flex-1 space-y-2">
                     <div className="flex justify-between items-baseline">
-                        <h4 className="font-bold text-slate-200 text-sm">{tierTitle}</h4>
-                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Level Progress</span>
+                        <h4 className="font-bold text-foreground text-sm">{tierTitle}</h4>
+                        <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Level Progress</span>
                     </div>
                     {/* Progress slider bar to next tier */}
-                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-accent rounded-full overflow-hidden">
                         <div className="h-full bg-linear-to-r from-violet-500 to-cyan-400 rounded-full" style={{ width: `${tierPercentage}%` }} />
                     </div>
-                    <p className="text-[10px] text-slate-500 font-medium">Accumulate reputation points by completing escrow gigs to level up.</p>
+                    <p className="text-[10px] text-muted-foreground font-medium">Accumulate reputation points by completing escrow gigs to level up.</p>
                 </div>
             </div>
 
@@ -151,11 +151,11 @@ export function ReputationLedgerCard({
                                     <div className={`p-1.5 rounded-lg border border-white/5 ${dim.bg} ${dim.color}`}>
                                         <Icon size={14} />
                                     </div>
-                                    <span className="font-bold text-slate-300 text-xs">{dim.label}</span>
+                                    <span className="font-bold text-muted-foreground text-xs">{dim.label}</span>
                                     {/* Hover info tooltip trigger */}
                                     <div className="relative group/tooltip">
-                                        <HelpCircle size={11} className="text-slate-600 hover:text-slate-400 cursor-help" />
-                                        <div className="absolute left-1/2 -translate-x-1/2 bottom-5 w-48 p-2 rounded-lg bg-slate-950 border border-white/10 shadow-2xl opacity-0 scale-95 group-hover/tooltip:opacity-100 group-hover/tooltip:scale-100 transition-all duration-200 pointer-events-none z-50 text-[10px] text-slate-400 leading-normal font-medium">
+                                        <HelpCircle size={11} className="text-muted-foreground hover:text-muted-foreground cursor-help" />
+                                        <div className="absolute left-1/2 -translate-x-1/2 bottom-5 w-48 p-2 rounded-lg bg-slate-950 border border-border shadow-2xl opacity-0 scale-95 group-hover/tooltip:opacity-100 group-hover/tooltip:scale-100 transition-all duration-200 pointer-events-none z-50 text-[10px] text-muted-foreground leading-normal font-medium">
                                             {dim.desc}
                                         </div>
                                     </div>
@@ -164,7 +164,7 @@ export function ReputationLedgerCard({
                             </div>
                             
                             {/* Visual Score Bar */}
-                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-1.5 w-full bg-accent rounded-full overflow-hidden">
                                 <div className={`h-full rounded-full ${dim.barColor}`} style={{ width: `${dim.score}%` }} />
                             </div>
                         </div>

@@ -38,8 +38,8 @@ const TOP_COLLEGES = [
   "NIT Trichy", "IIIT Hyderabad", "VIT Vellore", "DTU", "SRM"
 ]
 
-const RANK_COLORS = ["text-[#F59E0B]", "text-slate-300", "text-[#CD7F32]"]
-const RANK_BG = ["bg-[#F59E0B]/15 border-[#F59E0B]/30", "bg-white/5 border-white/15", "bg-[#CD7F32]/15 border-[#CD7F32]/30"]
+const RANK_COLORS = ["text-[#F59E0B]", "text-muted-foreground", "text-[#CD7F32]"]
+const RANK_BG = ["bg-[#F59E0B]/15 border-[#F59E0B]/30", "bg-accent border-white/15", "bg-[#CD7F32]/15 border-[#CD7F32]/30"]
 
 export function LeaderboardClient({ nonce }: { nonce?: string }) {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
@@ -81,7 +81,7 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
 
   return (
     <div
-      className="min-h-screen text-slate-100"
+      className="min-h-screen text-foreground"
       style={{ background: "var(--color-background)", fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}
     >
       {/* Ambient */}
@@ -113,12 +113,12 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
             Live Rankings
           </div>
           <h1
-            className="text-4xl font-black text-white mb-3"
+            className="text-4xl font-black text-foreground mb-3"
             style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}
           >
             Campus Leaderboard
           </h1>
-          <p className="text-slate-400 text-sm">
+          <p className="text-muted-foreground text-sm">
             Ranked by Smart Score — a verified combination of reliability, execution, learning, and community impact.
           </p>
         </div>
@@ -131,7 +131,7 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
               <button
                 key={p.value}
                 onClick={() => setPeriod(p.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${period === p.value ? "text-white" : "text-slate-500 hover:text-slate-300"}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${period === p.value ? "text-foreground" : "text-muted-foreground hover:text-muted-foreground"}`}
                 style={period === p.value ? { background: "linear-gradient(135deg, #7C3AED, #FF4500)" } : {}}
               >
                 {p.label}
@@ -143,7 +143,7 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
           <select
             value={college}
             onChange={e => setCollege(e.target.value)}
-            className="text-xs font-bold rounded-xl px-3 py-2 text-slate-300 appearance-none"
+            className="text-xs font-bold rounded-xl px-3 py-2 text-muted-foreground appearance-none"
             style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
           >
             {TOP_COLLEGES.map(c => (
@@ -153,13 +153,13 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
 
           {/* Search */}
           <div className="flex items-center gap-2 flex-1 min-w-48 rounded-xl px-3 py-2" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
-            <Search size={13} className="text-slate-500 shrink-0" />
+            <Search size={13} className="text-muted-foreground shrink-0" />
             <input
               type="text"
               placeholder="Search name or college…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="bg-transparent text-xs text-slate-300 placeholder-slate-600 outline-none flex-1"
+              className="bg-transparent text-xs text-muted-foreground placeholder-slate-600 outline-none flex-1"
             />
           </div>
         </div>
@@ -172,9 +172,9 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
           >
             <div className="flex items-center gap-2">
               <BadgeCheck size={14} className="text-[#A78BFA]" />
-              <span className="text-sm font-bold text-white">Your rank: <strong className="text-[#A78BFA]">#{myRank}</strong></span>
+              <span className="text-sm font-bold text-foreground">Your rank: <strong className="text-[#A78BFA]">#{myRank}</strong></span>
             </div>
-            <Link href="/get-gig" className="text-xs text-[#A78BFA] hover:text-white font-bold flex items-center gap-1">
+            <Link href="/get-gig" className="text-xs text-[#A78BFA] hover:text-foreground font-bold flex items-center gap-1">
               Earn XP <TrendingUp size={11} />
             </Link>
           </div>
@@ -183,11 +183,11 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-16 rounded-2xl bg-white/5 animate-pulse" />
+              <div key={i} className="h-16 rounded-2xl bg-accent animate-pulse" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16 text-slate-500">
+          <div className="text-center py-16 text-muted-foreground">
             <Trophy size={32} className="mx-auto mb-3 opacity-30" />
             <p>No students found for this filter.</p>
           </div>
@@ -203,13 +203,13 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                     style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
                   >
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 border text-sm font-black ${RANK_BG[1]} ${RANK_COLORS[1]}`}>2</div>
-                    <div className="w-12 h-12 rounded-xl bg-slate-500/20 flex items-center justify-center mx-auto mb-2 text-lg font-black text-slate-300 relative overflow-hidden">
+                    <div className="w-12 h-12 rounded-xl bg-slate-500/20 flex items-center justify-center mx-auto mb-2 text-lg font-black text-muted-foreground relative overflow-hidden">
                       {top3[1].avatar ? <Image src={top3[1].avatar} alt={top3[1].name} fill className="object-cover" /> : top3[1].name.charAt(0)}
                     </div>
-                    <p className="font-black text-white text-xs truncate">{top3[1].name}</p>
-                    <p className="text-[10px] text-slate-500 truncate">{top3[1].college}</p>
-                    <p className="text-sm font-black text-slate-300 mt-1">{top3[1].smartScore}</p>
-                    <p className="text-[9px] text-slate-600">Smart Score</p>
+                    <p className="font-black text-foreground text-xs truncate">{top3[1].name}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{top3[1].college}</p>
+                    <p className="text-sm font-black text-muted-foreground mt-1">{top3[1].smartScore}</p>
+                    <p className="text-[9px] text-muted-foreground">Smart Score</p>
                   </div>
                 )}
 
@@ -224,10 +224,10 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                     <div className="w-14 h-14 rounded-xl bg-[#F59E0B]/20 flex items-center justify-center mx-auto mb-2 text-xl font-black text-[#FCD34D] relative overflow-hidden">
                       {top3[0].avatar ? <Image src={top3[0].avatar} alt={top3[0].name} fill className="object-cover" /> : top3[0].name.charAt(0)}
                     </div>
-                    <p className="font-black text-white text-sm truncate">{top3[0].name}</p>
-                    <p className="text-[10px] text-slate-400 truncate">{top3[0].college}</p>
+                    <p className="font-black text-foreground text-sm truncate">{top3[0].name}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{top3[0].college}</p>
                     <p className="text-lg font-black text-[#F59E0B] mt-1">{top3[0].smartScore}</p>
-                    <p className="text-[9px] text-slate-500">Smart Score</p>
+                    <p className="text-[9px] text-muted-foreground">Smart Score</p>
                     <div className="flex justify-center gap-1 mt-2">
                       {top3[0].topBadges.map((b, i) => (
                         <span key={i} className="text-sm">{b.icon}</span>
@@ -246,10 +246,10 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                     <div className="w-12 h-12 rounded-xl bg-[#CD7F32]/20 flex items-center justify-center mx-auto mb-2 text-lg font-black text-[#CD7F32] relative overflow-hidden">
                       {top3[2].avatar ? <Image src={top3[2].avatar} alt={top3[2].name} fill className="object-cover" /> : top3[2].name.charAt(0)}
                     </div>
-                    <p className="font-black text-white text-xs truncate">{top3[2].name}</p>
-                    <p className="text-[10px] text-slate-500 truncate">{top3[2].college}</p>
+                    <p className="font-black text-foreground text-xs truncate">{top3[2].name}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{top3[2].college}</p>
                     <p className="text-sm font-black text-[#CD7F32] mt-1">{top3[2].smartScore}</p>
-                    <p className="text-[9px] text-slate-600">Smart Score</p>
+                    <p className="text-[9px] text-muted-foreground">Smart Score</p>
                   </div>
                 )}
               </div>
@@ -263,7 +263,7 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                   className={`flex items-center gap-3 p-4 rounded-2xl transition-all hover:border-[#7C3AED]/30 ${entry.isCurrentUser ? "ring-1 ring-[#7C3AED]/40" : ""}`}
                   style={{ background: "var(--color-surface)", border: `1px solid ${entry.isCurrentUser ? "rgba(124,58,237,0.3)" : "var(--color-border)"}` }}
                 >
-                  <span className="text-sm font-black text-slate-500 w-7 text-center shrink-0">#{entry.rank}</span>
+                  <span className="text-sm font-black text-muted-foreground w-7 text-center shrink-0">#{entry.rank}</span>
 
                   <div className="w-9 h-9 rounded-xl bg-[#7C3AED]/15 flex items-center justify-center text-sm font-black text-[#A78BFA] shrink-0 relative overflow-hidden">
                     {entry.avatar
@@ -273,11 +273,11 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-black text-white text-sm truncate">{entry.name}</span>
+                      <span className="font-black text-foreground text-sm truncate">{entry.name}</span>
                       {entry.isCurrentUser && <BadgeCheck size={12} className="text-[#0EA5E9] shrink-0" />}
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] text-slate-500 flex items-center gap-0.5">
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                         <GraduationCap size={9} /> {entry.college}
                       </span>
                       {entry.currentStreak > 0 && (
@@ -295,13 +295,13 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
                   </div>
 
                   <div className="text-right shrink-0">
-                    <p className="font-black text-white text-sm">{entry.smartScore}</p>
-                    <p className="text-[10px] text-slate-600">Score</p>
+                    <p className="font-black text-foreground text-sm">{entry.smartScore}</p>
+                    <p className="text-[10px] text-muted-foreground">Score</p>
                   </div>
 
                   <div className="text-right shrink-0 hidden md:block">
                     <p className="font-black text-[#10B981] text-sm">{entry.gigsCompleted}</p>
-                    <p className="text-[10px] text-slate-600">Gigs</p>
+                    <p className="text-[10px] text-muted-foreground">Gigs</p>
                   </div>
                 </div>
               ))}
@@ -315,13 +315,13 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
           style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(255,69,0,0.08))", border: "1px solid rgba(124,58,237,0.2)" }}
         >
           <Zap size={20} className="text-[#7C3AED] mx-auto mb-3" />
-          <h2 className="font-black text-white text-lg mb-2" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="font-black text-foreground text-lg mb-2" style={{ fontFamily: "var(--font-display)" }}>
             Ready to climb the ranks?
           </h2>
-          <p className="text-slate-400 text-sm mb-5">Complete gigs, earn XP, maintain streaks. Your Smart Score updates live.</p>
+          <p className="text-muted-foreground text-sm mb-5">Complete gigs, earn XP, maintain streaks. Your Smart Score updates live.</p>
           <Link
             href="/get-gig"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-white transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-foreground transition-all active:scale-95"
             style={{ background: "linear-gradient(135deg, #7C3AED, #FF4500)", boxShadow: "0 6px 24px rgba(124,58,237,0.35)" }}
           >
             Find a Gig <Star size={13} />

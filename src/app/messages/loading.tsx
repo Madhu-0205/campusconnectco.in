@@ -7,10 +7,10 @@ export default function Loading() {
       <div className="w-80 border-white/5 p-4 space-y-3 hidden md:block">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3 p-3 rounded-xl">
-            <div className="w-10 h-10 rounded-full bg-(--surface)" />
+            <div className="w-10 h-10 rounded-full bg-card" />
             <div className="space-y-2 flex-1">
-              <div className="w-24 h-3 rounded bg-(--surface)" />
-              <div className="w-32 h-2.5 rounded bg-(--surface)" />
+              <div className="w-24 h-3 rounded bg-card" />
+              <div className="w-32 h-2.5 rounded bg-card" />
             </div>
           </div>
         ))}

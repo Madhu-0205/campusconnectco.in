@@ -210,7 +210,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                 {/* Back Button */}
                 <Link
                     href="/get-gig"
-                    className="inline-flex items-center gap-2 text-muted-foreground dark:text-muted-foreground hover:text-violet-500 transition-colors mb-6"
+                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-violet-500 transition-colors mb-6"
                 >
                     <ArrowLeft size={20} />
                     Back to Gigs
@@ -223,10 +223,10 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                         <Card className="p-8">
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex-1">
-                                    <h1 className="font-black text-foreground dark:text-foreground mb-2">
+                                    <h1 className="font-black text-foreground mb-2">
                                         {gig.title}
                                     </h1>
-                                    <div className="flex flex-wrap gap-4 text-muted-foreground dark:text-muted-foreground">
+                                    <div className="flex flex-wrap gap-4 text-muted-foreground">
                                         <span className="flex items-center gap-1">
                                             <Calendar size={16} />
                                             Posted {new Date(gig.createdAt).toLocaleDateString()}
@@ -251,8 +251,8 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                         <DollarSign className="text-violet-500" size={24} />
                                     </div>
                                     <div>
-                                        <p className="text-muted-foreground dark:text-muted-foreground">Budget</p>
-                                        <p className="font-bold text-foreground dark:text-foreground">
+                                        <p className="text-muted-foreground">Budget</p>
+                                        <p className="font-bold text-foreground">
                                             ₹{gig.budget.toLocaleString()}
                                         </p>
                                     </div>
@@ -264,8 +264,8 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                             <Clock className="text-violet-600 dark:text-violet-400" size={24} />
                                         </div>
                                         <div>
-                                            <p className="text-muted-foreground dark:text-muted-foreground">Deadline</p>
-                                            <p className="font-bold text-foreground dark:text-foreground">
+                                            <p className="text-muted-foreground">Deadline</p>
+                                            <p className="font-bold text-foreground">
                                                 {new Date(gig.deadline).toLocaleDateString()}
                                             </p>
                                         </div>
@@ -279,7 +279,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                     {gig.tags.split(",").map((tag, idx) => (
                                         <span
                                             key={idx}
-                                            className="px-3 py-1 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 text-sm font-medium rounded-lg"
+                                            className="px-3 py-1 bg-accent text-muted-foreground text-sm font-medium rounded-lg"
                                         >
                                             {tag.trim()}
                                         </span>
@@ -289,10 +289,10 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
 
                             {/* Description */}
                             <div>
-                                <h2 className="font-bold text-foreground dark:text-foreground mb-3">
+                                <h2 className="font-bold text-foreground mb-3">
                                     Description
                                 </h2>
-                                <p className="text-muted-foreground dark:text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                                <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
                                     {gig.description}
                                 </p>
                             </div>
@@ -306,26 +306,26 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                         {getStatusIcon(userApplication.status)}
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-bold text-foreground dark:text-foreground mb-1">
+                                        <h3 className="font-bold text-foreground mb-1">
                                             Your Application
                                         </h3>
-                                        <p className="text-muted-foreground dark:text-muted-foreground mb-2">
+                                        <p className="text-muted-foreground mb-2">
                                             Status:{" "}
                                             <span className={`font-semibold ${getStatusColor(userApplication.status)}`}>
                                                 {userApplication.status}
                                             </span>
                                         </p>
                                         {userApplication.coverLetter && (
-                                            <div className="mt-3 p-3 bg-background dark:bg-slate-900 rounded-lg">
-                                                <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                            <div className="mt-3 p-3 bg-background dark:bg-card rounded-lg">
+                                                <p className="font-medium text-muted-foreground mb-1">
                                                     Your Cover Letter:
                                                 </p>
-                                                <p className="text-muted-foreground dark:text-muted-foreground">
+                                                <p className="text-muted-foreground">
                                                     {userApplication.coverLetter}
                                                 </p>
                                             </div>
                                         )}
-                                        <p className="text-slate-500 dark:text-slate-500 mt-2">
+                                        <p className="text-muted-foreground mt-2">
                                             Applied on {new Date(userApplication.createdAt).toLocaleDateString()}
                                         </p>
                                     </div>
@@ -348,22 +348,22 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
 
                         {showApplicationForm && (
                             <Card className="p-6">
-                                <h3 className="font-bold text-foreground dark:text-foreground mb-4">
+                                <h3 className="font-bold text-foreground mb-4">
                                     Submit Your Application
                                 </h3>
                                 <form onSubmit={handleApply} className="space-y-4">
                                     <div>
-                                        <label className="block font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                        <label className="block font-medium text-muted-foreground mb-2">
                                             Cover Letter (Optional)
                                         </label>
                                         <textarea
                                             value={coverLetter}
                                             onChange={(e) => setCoverLetter(e.target.value)}
                                             placeholder="Tell the poster why you're the best fit for this gig..."
-                                            className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-foreground dark:text-foreground focus:ring-2 focus:ring-violet-500/50 outline-none min-h-30"
+                                            className="w-full px-4 py-3 bg-card border border-slate-300 border-border rounded-xl text-foreground focus:ring-2 focus:ring-violet-500/50 outline-none min-h-30"
                                             maxLength={1000}
                                         />
-                                        <p className="text-slate-500 dark:text-slate-500 mt-1">
+                                        <p className="text-muted-foreground mt-1">
                                             {coverLetter.length}/1000 characters
                                         </p>
                                     </div>
@@ -400,29 +400,29 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                         {/* Applications List (for poster only) */}
                         {isOwner && gig.applications.length > 0 && (
                             <Card className="p-6">
-                                <h3 className="font-bold text-foreground dark:text-foreground mb-4">
+                                <h3 className="font-bold text-foreground mb-4">
                                     Applications ({gig.applications.length})
                                 </h3>
                                 <div className="space-y-4">
                                     {gig.applications.map((application) => (
                                         <div
                                             key={application.id}
-                                            className="p-4 bg-background dark:bg-slate-900 rounded-xl"
+                                            className="p-4 bg-background dark:bg-card rounded-xl"
                                         >
                                             <div className="flex items-start justify-between mb-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-full bg-violet-600 text-white font-bold flex items-center justify-center">
+                                                    <div className="h-10 w-10 rounded-full bg-violet-600 text-foreground font-bold flex items-center justify-center">
                                                         {application.applicant.name?.slice(0, 2).toUpperCase() ||
                                                             application.applicant.email.slice(0, 2).toUpperCase()}
                                                     </div>
                                                     <div>
                                                         <div className="flex items-center gap-2 flex-wrap">
-                                                            <p className="font-semibold text-foreground dark:text-foreground">
+                                                            <p className="font-semibold text-foreground">
                                                                 {application.applicant.name || application.applicant.email}
                                                             </p>
                                                             <VerificationBadge isVerified={!!application.applicant.isVerified} />
                                                         </div>
-                                                        <p className="text-slate-500 dark:text-muted-foreground mt-0.5">
+                                                        <p className="text-muted-foreground mt-0.5">
                                                             {application.applicant.email}
                                                         </p>
                                                     </div>
@@ -436,7 +436,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                             </div>
 
                                             {application.coverLetter && (
-                                                <p className="text-muted-foreground dark:text-muted-foreground mb-3">
+                                                <p className="text-muted-foreground mb-3">
                                                     {application.coverLetter}
                                                 </p>
                                             )}
@@ -449,7 +449,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                                         .map((skill, idx) => (
                                                             <span
                                                                 key={idx}
-                                                                className="px-2 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-300 text-xs rounded"
+                                                                className="px-2 py-0.5 bg-white bg-accent text-muted-foreground text-xs rounded"
                                                             >
                                                                 {skill.trim()}
                                                             </span>
@@ -493,7 +493,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                     <div className="space-y-6">
                         {/* Poster Info */}
                         <Card className="p-6">
-                            <h3 className="font-bold text-foreground dark:text-foreground mb-4">
+                            <h3 className="font-bold text-foreground mb-4">
                                 Posted By
                             </h3>
                             <div className="flex items-center gap-3 mb-4">
@@ -503,26 +503,26 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2 flex-wrap">
-                                        <p className="font-semibold text-foreground dark:text-foreground">
+                                        <p className="font-semibold text-foreground">
                                             {gig.poster.name || "Anonymous"}
                                         </p>
                                         <VerificationBadge isVerified={!!gig.poster.isVerified} />
                                     </div>
-                                    <p className="text-slate-500 dark:text-muted-foreground mt-0.5">
+                                    <p className="text-muted-foreground mt-0.5">
                                         {gig.poster.email}
                                     </p>
                                 </div>
                             </div>
 
                             {gig.poster.bio && (
-                                <p className="text-muted-foreground dark:text-muted-foreground mb-4">
+                                <p className="text-muted-foreground mb-4">
                                     {gig.poster.bio}
                                 </p>
                             )}
 
                             {gig.poster.skills && (
                                 <div className="mb-4">
-                                    <p className="font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                    <p className="font-medium text-muted-foreground mb-2">
                                         Skills:
                                     </p>
                                     <div className="flex flex-wrap gap-2">
@@ -532,7 +532,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                             .map((skill, idx) => (
                                                 <span
                                                     key={idx}
-                                                    className="px-2 py-1 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 text-xs rounded"
+                                                    className="px-2 py-1 bg-accent text-muted-foreground text-xs rounded"
                                                 >
                                                     {skill.trim()}
                                                 </span>
@@ -580,45 +580,45 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
 
                         {/* Escrow Payment Timeline */}
                         <Card className="p-6">
-                            <h3 className="font-bold text-foreground dark:text-foreground mb-4 flex items-center gap-2">
-                                <ShieldCheck size={20} className="text-emerald-500" />
+                            <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+                                <ShieldCheck size={20} className="text-success" />
                                 Payment Protection
                             </h3>
-                            <div className="relative border-slate-200 dark:border-slate-800 ml-3 space-y-6 pt-2 pb-2">
+                            <div className="relative border-border ml-3 space-y-6 pt-2 pb-2">
                                 <div className="relative">
-                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status !== 'OPEN' ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                                        <CheckCircle size={12} className="text-white dark:text-foreground" />
+                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status !== 'OPEN' ? 'bg-emerald-500' : 'bg-slate-300 bg-accent'}`}>
+                                        <CheckCircle size={12} className="text-foreground" />
                                     </div>
                                     <div className="pl-6">
-                                        <h4 className="font-bold text-foreground dark:text-foreground">Payment deposited</h4>
-                                        <p className="text-slate-500 mt-1">Client secures funds into escrow.</p>
+                                        <h4 className="font-bold text-foreground">Payment deposited</h4>
+                                        <p className="text-muted-foreground mt-1">Client secures funds into escrow.</p>
                                     </div>
                                 </div>
                                 <div className="relative">
-                                    <div className={`absolute -left-5.25 p-1 rounded-full ${['IN_PROGRESS', 'COMPLETED'].includes(gig.status) ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                                        <Clock size={12} className="text-white dark:text-foreground" />
+                                    <div className={`absolute -left-5.25 p-1 rounded-full ${['IN_PROGRESS', 'COMPLETED'].includes(gig.status) ? 'bg-emerald-500' : 'bg-slate-300 bg-accent'}`}>
+                                        <Clock size={12} className="text-foreground" />
                                     </div>
                                     <div className="pl-6">
-                                        <h4 className="font-bold text-foreground dark:text-foreground">Work in progress</h4>
-                                        <p className="text-slate-500 mt-1">Student begins working.</p>
+                                        <h4 className="font-bold text-foreground">Work in progress</h4>
+                                        <p className="text-muted-foreground mt-1">Student begins working.</p>
                                     </div>
                                 </div>
                                 <div className="relative">
-                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                                        <FileText size={12} className="text-white dark:text-foreground" />
+                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-slate-300 bg-accent'}`}>
+                                        <FileText size={12} className="text-foreground" />
                                     </div>
                                     <div className="pl-6">
-                                        <h4 className="font-bold text-foreground dark:text-foreground">Work submitted</h4>
-                                        <p className="text-slate-500 mt-1">Client reviews the delivery.</p>
+                                        <h4 className="font-bold text-foreground">Work submitted</h4>
+                                        <p className="text-muted-foreground mt-1">Client reviews the delivery.</p>
                                     </div>
                                 </div>
                                 <div className="relative">
-                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                                        <DollarSign size={12} className="text-white dark:text-foreground" />
+                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-slate-300 bg-accent'}`}>
+                                        <DollarSign size={12} className="text-foreground" />
                                     </div>
                                     <div className="pl-6">
-                                        <h4 className="font-bold text-foreground dark:text-foreground">Payment released</h4>
-                                        <p className="text-slate-500 mt-1">Funds transferred to student.</p>
+                                        <h4 className="font-bold text-foreground">Payment released</h4>
+                                        <p className="text-muted-foreground mt-1">Funds transferred to student.</p>
                                     </div>
                                 </div>
                             </div>
@@ -632,11 +632,11 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                         {/* Location */}
                         {(gig.latitude || gig.poster.latitude) && (
                             <Card className="p-6">
-                                <h3 className="font-bold text-foreground dark:text-foreground mb-3 flex items-center gap-2">
+                                <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
                                     <MapPin size={20} className="text-violet-500" />
                                     Location
                                 </h3>
-                                <p className="text-muted-foreground dark:text-muted-foreground">
+                                <p className="text-muted-foreground">
                                     {gig.latitude && gig.longitude
                                         ? `Lat: ${gig.latitude.toFixed(4)}, Long: ${gig.longitude.toFixed(4)}`
                                         : "Location-based gig"}

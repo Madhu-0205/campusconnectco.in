@@ -33,10 +33,10 @@ export default function StartupProfileEditor({ profile }: StartupProfileEditorPr
       {/* ── HEADER ──────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-white/5 pb-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-widest mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent border border-border text-[11px] font-black uppercase tracking-widest mb-6">
             <Building2 size={14} /> Founder WorkOS v2.0
           </div>
-          <h1 className="md:text-5xl font-black text-white tracking-tight leading-tight mb-2">
+          <h1 className="md:text-5xl font-black text-foreground tracking-tight leading-tight mb-2">
             Command <span className="text-transparent bg-linear-to-r from-[#F59E0B] to-[#7C3AED]">Center</span>
           </h1>
           <p className="text-lg max-w-xl font-medium">
@@ -56,18 +56,18 @@ export default function StartupProfileEditor({ profile }: StartupProfileEditorPr
               <AvatarUpload initialImage={profile.image} userId={profile.id} />
               
               <div className="w-full text-center">
-                <h2 className="font-black text-white mb-1 truncate">{profile.name || "Startup Name"}</h2>
+                <h2 className="font-black text-foreground mb-1 truncate">{profile.name || "Startup Name"}</h2>
                 <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
                   <ShieldCheck size={12} className="text-[#10B981]" /> Verified Startup
                 </div>
               </div>
 
-              <div className="w-full h-px bg-white/5" />
+              <div className="w-full h-px bg-accent" />
 
               <div className="w-full space-y-3">
                 <div className="bg-white/2 border border-white/5 rounded-2xl p-4 text-left">
-                  <p className="font-black text-slate-500 uppercase tracking-widest mb-1">Company Email</p>
-                  <p className="font-black text-white truncate">{profile.email}</p>
+                  <p className="font-black text-muted-foreground uppercase tracking-widest mb-1">Company Email</p>
+                  <p className="font-black text-foreground truncate">{profile.email}</p>
                 </div>
               </div>
             </div>
@@ -82,7 +82,7 @@ export default function StartupProfileEditor({ profile }: StartupProfileEditorPr
                <div className="p-2 rounded-xl bg-[#F59E0B]/10 text-[#F59E0B]">
                  <Building2 size={20} />
                </div>
-               <h3 className="font-black text-white px-1">Organization Basics</h3>
+               <h3 className="font-black text-foreground px-1">Organization Basics</h3>
             </div>
             
             <div className="grid grid-cols-1 gap-10">
@@ -115,14 +115,14 @@ export default function StartupProfileEditor({ profile }: StartupProfileEditorPr
                <div className="p-2 rounded-xl bg-[#7C3AED]/10 text-[#7C3AED]">
                  <Briefcase size={20} />
                </div>
-               <h3 className="font-black text-white px-1">Startup Preferences</h3>
+               <h3 className="font-black text-foreground px-1">Startup Preferences</h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                <div className="p-6 bg-[#131929] border border-white/5 rounded-2xl space-y-2">
-                  <p className="font-black text-slate-500 uppercase tracking-widest">Automatic Hiring</p>
+                  <p className="font-black text-muted-foreground uppercase tracking-widest">Automatic Hiring</p>
                   <div className="flex items-center justify-between">
-                     <span className="text-slate-300">Allow SmartMatch sourcing</span>
+                     <span className="text-muted-foreground">Allow SmartMatch sourcing</span>
                      <div className="w-10 h-5 bg-indigo-500 rounded-full flex items-center justify-end px-1 cursor-not-allowed opacity-50">
                         <div className="w-3 h-3 bg-white rounded-full" />
                      </div>
@@ -130,10 +130,10 @@ export default function StartupProfileEditor({ profile }: StartupProfileEditorPr
                </div>
                
                <div className="p-6 bg-[#131929] border border-white/5 rounded-2xl space-y-2">
-                  <p className="font-black text-slate-500 uppercase tracking-widest">Visibility</p>
+                  <p className="font-black text-muted-foreground uppercase tracking-widest">Visibility</p>
                   <div className="flex items-center justify-between">
-                     <span className="text-slate-300">Listing Priority</span>
-                     <span className="font-black bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-lg uppercase">Premium</span>
+                     <span className="text-muted-foreground">Listing Priority</span>
+                     <span className="font-black bg-accent text-foreground border border-border px-2 py-0.5 rounded-lg uppercase">Premium</span>
                   </div>
                </div>
             </div>

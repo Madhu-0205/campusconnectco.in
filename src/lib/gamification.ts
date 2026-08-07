@@ -92,6 +92,6 @@ export function getStreakMultiplier(streak: number): number {
 }
 
 // ── Compute smart score (composite 0-100) ─────────────────────────────────────
-export function computeSmartScore(r: number, e: number, l: number, c: number): number {
-  return Math.min(100, Math.round(r * 0.35 + e * 0.35 + l * 0.2 + c * 0.1))
+export function computeSmartScore(r: number | null | undefined, e: number | null | undefined, l: number | null | undefined, c: number | null | undefined): number {
+  return Math.min(100, Math.round((r || 0) * 0.35 + (e || 0) * 0.35 + (l || 0) * 0.2 + (c || 0) * 0.1))
 }

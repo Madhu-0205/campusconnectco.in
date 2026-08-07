@@ -71,11 +71,11 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string; l
 
     if (gigs.length === 0) {
         return (
-            <div className="p-16 text-center rounded-2xl border border-slate-200 dark:border-slate-800">
-                <div className="w-16 h-16 mx-auto bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-4">
+            <div className="p-16 text-center rounded-2xl border border-border">
+                <div className="w-16 h-16 mx-auto bg-accent dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-4">
                     <Sparkles className="text-slate-400" size={24} />
                 </div>
-                <h3 className="font-black text-slate-700 dark:text-slate-300 mb-1">No gigs found</h3>
+                <h3 className="font-black text-muted-foreground dark:text-slate-300 mb-1">No gigs found</h3>
                 <p className="text-slate-500">Be the first to post one — or adjust your search.</p>
             </div>
         )
@@ -110,23 +110,23 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string; l
     return (
         <div className="space-y-4">
             <p className="font-bold text-slate-500 dark:text-slate-400">
-                <span className="text-slate-900 dark:text-white font-black">{gigs.length}</span> opportunities found
+                <span className="text-foreground dark:text-white font-black">{gigs.length}</span> opportunities found
             </p>
 
             {ratedGigs.map((gig) => (
                 <div key={gig.id}
-                    className="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 hover:border-electric/40 hover:shadow-lg transition-all overflow-hidden cursor-pointer">
+                    className="group relative bg-white dark:bg-slate-900 border border-border rounded-2xl p-6 hover:border-electric/40 hover:shadow-lg transition-all overflow-hidden cursor-pointer">
 
                     {/* Best Match Banner */}
                     {gig.matchScore > 80 && (
-                        <div className="absolute top-0 right-0 bg-electric text-[10px] font-black px-3 py-1.5 rounded-bl-2xl flex items-center gap-1">
+                        <div className="absolute top-0 right-0 bg-foreground text-background text-[10px] font-black px-3 py-1.5 rounded-bl-2xl flex items-center gap-1">
                             <Sparkles size={9} /> BEST MATCH
                         </div>
                     )}
 
                     <div className="flex gap-5">
                         {/* Avatar */}
-                        <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 shrink-0 flex items-center justify-center font-black text-slate-400 dark:text-slate-500 group-hover:bg-electric/10 group-hover:text-electric transition-colors border border-slate-200 dark:border-slate-700">
+                        <div className="w-14 h-14 rounded-2xl bg-accent dark:bg-slate-800 shrink-0 flex items-center justify-center font-black text-slate-400 dark:text-slate-500 group-hover:bg-accent text-foreground group-hover:text-foreground transition-colors border border-border">
                             {gig.poster.name?.[0]?.toUpperCase() || "C"}
                         </div>
 
@@ -135,11 +135,11 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string; l
                             <div className="flex items-start justify-between gap-4 mb-2">
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                                        <h3 className="font-black text-slate-900 dark:text-white group-hover:text-electric transition-colors truncate">
+                                        <h3 className="font-black text-foreground dark:text-white group-hover:text-foreground transition-colors truncate">
                                             {gig.title}
                                         </h3>
                                         {gig.matchScore > 0 && (
-                                            <span className={`font-black px-2 py-0.5 rounded-full shrink-0 ${gig.matchScore > 60 ? "bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"}`}>
+                                            <span className={`font-black px-2 py-0.5 rounded-full shrink-0 ${gig.matchScore > 60 ? "bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-accent text-muted-foreground dark:bg-slate-800 dark:text-slate-400"}`}>
                                                 {gig.matchScore}% Match
                                             </span>
                                         )}
@@ -163,7 +163,7 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string; l
                             </div>
 
                             {/* Description */}
-                            <p className="text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
+                            <p className="text-muted-foreground dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
                                 {gig.description}
                             </p>
 
@@ -171,7 +171,7 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string; l
                             {gig.gigSkills.length > 0 && (
                                 <div className="flex flex-wrap gap-1.5 mb-4">
                                     {gig.gigSkills.slice(0, 4).map(gs => (
-                                        <span key={gs.skillId} className="px-2.5 py-1 rounded-lg font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                        <span key={gs.skillId} className="px-2.5 py-1 rounded-lg font-bold bg-accent dark:bg-slate-800 text-muted-foreground dark:text-slate-300 border border-border">
                                             {gs.skill.name}
                                         </span>
                                     ))}
@@ -195,7 +195,7 @@ export async function GigList({ searchParams }: { searchParams?: { q?: string; l
                                     {gig.applications.length} applicant{gig.applications.length !== 1 ? "s" : ""}
                                 </div>
                                 <div className="ml-auto">
-                                    <ArrowUpRight size={16} className="text-slate-300 group-hover:text-electric transition-colors" />
+                                    <ArrowUpRight size={16} className="text-slate-300 group-hover:text-foreground transition-colors" />
                                 </div>
                             </div>
                         </div>

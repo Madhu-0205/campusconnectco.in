@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
 
     if (!keyId || !keySecret || keyId === "rzp_test_placeholder") {
       // In development/test mock mode when key is absent or placeholder, bypass direct Razorpay call and return mock order
-      console.warn("[Razorpay] API credentials missing or placeholder. Creating a simulated order.");
+      logger.warn("Razorpay API credentials missing or placeholder. Creating a simulated order.");
       const mockOrderId = `order_mock_${Math.random().toString(36).substring(2, 11)}`;
       
       await prisma.transaction.create({
@@ -120,7 +121,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("[CREATE_PAYMENT_ORDER_ERROR]", error);
+    logger.error("Create payment order error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

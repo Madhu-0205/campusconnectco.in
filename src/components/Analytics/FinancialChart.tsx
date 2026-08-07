@@ -36,7 +36,7 @@ export default function FinancialChart() {
     const chartDisplayData = liveData;
 
     return (
-        <div className="w-full h-80 min-h-[300px] relative">
+        <div className="w-full h-80 min-h-75 relative">
             <ResponsiveContainer width="100%" height={300} debounce={100}>
                 <AreaChart
                     data={chartDisplayData}

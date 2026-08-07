@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/seo/JsonLd"
 import { ToastProvider } from "@/components/ToastProvider"
 import FooterWrapper from "@/components/ui/FooterWrapper"
+import { CommandCenter } from "@/components/v2/CommandCenter"
 
 import "./globals.css"
 
@@ -117,10 +118,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
-      <body
-        className={`${bricolage.variable} ${dmSans.variable} ${jetbrainsMono.variable} antialiased relative`}
-        style={{ fontFamily: "var(--font-body)" }}
-      >
+      <body className={`${bricolage.variable} ${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased bg-[#050508] text-white selection:bg-[#7c3aed]/30 selection:text-white relative`}>
         <GAScripts nonce={nonce} />
         <OrganizationSchema nonce={nonce} />
         <WebSiteSchema nonce={nonce} />
@@ -132,6 +130,7 @@ export default async function RootLayout({
               <Navbar />
               <MainWrapper>{children}</MainWrapper>
               <FooterWrapper />
+              <CommandCenter />
             </ClientOnlyProviders>
           </ToastProvider>
         </ThemeProvider>

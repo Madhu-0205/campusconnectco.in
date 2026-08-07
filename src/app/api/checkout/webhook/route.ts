@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { TransactionStatus, EscrowStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { safeCompare } from "@/lib/security/crypto";
 
@@ -24,18 +25,18 @@ export async function POST(req: NextRequest) {
       const digest = shasum.digest("hex");
 
       if (!safeCompare(digest, signature)) {
-        console.error("[Razorpay Webhook] Signature verification failed.");
+        logger.warn("Razorpay Webhook Signature verification failed");
         return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
       }
       event = JSON.parse(bodyText);
     } else {
       if (isProduction) {
-        console.error("[Razorpay Webhook] Signature verification bypassed or secret missing in production!");
+        logger.error("Razorpay Webhook Signature verification bypassed or secret missing in production!");
         return NextResponse.json({ error: "Unauthorized - Signature validation required in production" }, { status: 401 });
       }
       
       // In development/test mode without production webhook secret, accept unsigned JSON body for local triggers
-      console.warn("[Razorpay Webhook] Verification bypassed. Operating in local test mode.");
+      logger.info("Razorpay Webhook Verification bypassed. Operating in local test mode.");
       try {
         event = JSON.parse(bodyText);
         isMock = true;
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
     }
 
     const eventName = event.event;
-    console.log(`[Razorpay Webhook] Received event: ${eventName}`);
+    logger.info(`Razorpay Webhook Received event`, { eventName });
 
     // We respond to order.paid or payment.captured
     if (eventName === "order.paid" || eventName === "payment.captured" || isMock) {
@@ -62,14 +63,15 @@ export async function POST(req: NextRequest) {
       });
 
       if (!transaction) {
-        console.warn(`[Razorpay Webhook] No transaction found for order ID: ${orderId}`);
+        logger.warn(`No transaction found for order ID: ${orderId}`);
         return NextResponse.json({ message: "Transaction not found" }, { status: 200 }); // Return 200 to prevent Razorpay retries
       }
 
       if (transaction.status === TransactionStatus.PENDING) {
         // Process transaction capture in a Prisma transaction block
-        await prisma.$transaction(async (tx: any) => {
-          // 1. Atomic update to prevent race conditions if multiple webhooks fire
+        try {
+          await prisma.$transaction(async (tx: any) => {
+            // 1. Atomic update to prevent race conditions if multiple webhooks fire
           const updateResult = await tx.transaction.updateMany({
             where: { 
               id: transaction.id, 
@@ -84,7 +86,7 @@ export async function POST(req: NextRequest) {
           
           if (updateResult.count === 0) {
             // Another thread already processed it
-            console.log(`[Razorpay Webhook] Transaction ${transaction.id} already processed or no longer PENDING by concurrent webhook.`);
+            logger.info(`Transaction ${transaction.id} already processed or no longer PENDING by concurrent webhook.`);
             return;
           }
           // 2. Create Escrow record (LOCKED status)
@@ -149,16 +151,20 @@ export async function POST(req: NextRequest) {
             },
           });
         });
+        } catch (txError: any) {
+          logger.error("Razorpay Webhook transaction failed", txError, { transactionId: transaction.id });
+          throw txError;
+        }
 
-        console.log(`[Razorpay Webhook] Successfully processed payment for transaction: ${transaction.id}`);
+        logger.info("Successfully processed payment for transaction", { transactionId: transaction.id });
       } else {
-        console.log(`[Razorpay Webhook] Transaction already processed: ${transaction.id} (Status: ${transaction.status})`);
+        logger.info("Transaction already processed", { transactionId: transaction.id, status: transaction.status });
       }
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[RAZORPAY_WEBHOOK_ERROR]", error);
+    logger.error("Razorpay webhook error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
