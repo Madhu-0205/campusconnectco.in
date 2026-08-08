@@ -13,6 +13,7 @@ interface IdentityCardProps {
     college?: string
     branch?: string
     year?: string
+    location?: string
     avatar?: string
     available?: boolean
     linkedin?: string
@@ -47,6 +48,12 @@ export const IdentityCard = ({ profile }: IdentityCardProps) => {
       
       <p className="text-muted-foreground font-medium text-sm mb-4">
         {profile.branch} · {profile.college} · {profile.year}
+        {profile.location && (
+          <>
+            <br />
+            <span className="text-xs text-muted-foreground/70">{profile.location}</span>
+          </>
+        )}
       </p>
 
       {profile.available && (

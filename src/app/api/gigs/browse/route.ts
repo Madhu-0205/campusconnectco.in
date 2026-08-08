@@ -20,6 +20,9 @@ export async function GET(request: NextRequest) {
         const budgetMin = parseFloat(searchParams.get("budgetMin") || "0");
         const budgetMax = parseFloat(searchParams.get("budgetMax") || "1000000");
         const location = searchParams.get("location") || "";
+        const collegeId = searchParams.get("collegeId") || "";
+        const city = searchParams.get("city") || "";
+        const state = searchParams.get("state") || "";
         const status = searchParams.get("status") || "";
         const sortBy = searchParams.get("sortBy") || "newest";
 
@@ -56,10 +59,24 @@ export async function GET(request: NextRequest) {
         }
 
         // Location filter (if provided)
-        // Note: This is a simple implementation. For production, use proper geospatial queries
         if (location) {
-            // You could add location-based filtering here
-            // For now, we'll skip it as it requires more complex setup
+            where.OR = [
+                ...(where.OR || []),
+                { city: { contains: location, mode: "insensitive" } },
+                { state: { contains: location, mode: "insensitive" } },
+            ];
+        }
+
+        if (city) {
+            where.city = { contains: city, mode: "insensitive" };
+        }
+        
+        if (state) {
+            where.state = { contains: state, mode: "insensitive" };
+        }
+        
+        if (collegeId) {
+            where.collegeId = collegeId;
         }
 
         // Build orderBy clause

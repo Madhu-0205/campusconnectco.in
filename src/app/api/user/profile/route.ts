@@ -22,6 +22,12 @@ const ProfileUpdateSchema = z.object({
     coverImage: z.string().max(1000).optional().nullable(),
     skills: z.union([z.string(), z.array(z.string())]).optional(),
     college: z.string().max(200).optional().nullable(),
+    collegeId: z.string().max(100).optional().nullable(),
+    city: z.string().max(100).optional().nullable(),
+    state: z.string().max(100).optional().nullable(),
+    country: z.string().max(100).optional().nullable(),
+    latitude: z.number().optional().nullable(),
+    longitude: z.number().optional().nullable(),
     branch: z.string().max(100).optional().nullable(),
     year: z.string().max(20).optional().nullable(),
     careerGoal: z.string().max(200).optional().nullable(),
@@ -371,6 +377,12 @@ export async function PATCH(req: Request) {
         const avatar_url = data.avatar_url !== undefined ? (data.avatar_url ? sanitizeInput(data.avatar_url) : null) : undefined;
         const coverImage = data.coverImage !== undefined ? (data.coverImage ? sanitizeInput(data.coverImage) : null) : undefined;
         const college = data.college !== undefined ? (data.college ? sanitizeInput(data.college) : null) : undefined;
+        const collegeId = data.collegeId !== undefined ? (data.collegeId ? sanitizeInput(data.collegeId) : null) : undefined;
+        const city = data.city !== undefined ? (data.city ? sanitizeInput(data.city) : null) : undefined;
+        const state = data.state !== undefined ? (data.state ? sanitizeInput(data.state) : null) : undefined;
+        const country = data.country !== undefined ? (data.country ? sanitizeInput(data.country) : null) : undefined;
+        const latitude = data.latitude !== undefined ? data.latitude : undefined;
+        const longitude = data.longitude !== undefined ? data.longitude : undefined;
         const branch = data.branch !== undefined ? (data.branch ? sanitizeInput(data.branch) : null) : undefined;
         const year = data.year !== undefined ? (data.year ? sanitizeInput(data.year) : null) : undefined;
         const careerGoal = data.careerGoal !== undefined ? (data.careerGoal ? sanitizeInput(data.careerGoal) : null) : undefined;
@@ -408,6 +420,12 @@ export async function PATCH(req: Request) {
         }
         if (coverImage !== undefined) updateData.coverImage = coverImage;
         if (college !== undefined) updateData.college = college;
+        if (collegeId !== undefined) updateData.collegeId = collegeId;
+        if (city !== undefined) updateData.city = city;
+        if (state !== undefined) updateData.state = state;
+        if (country !== undefined) updateData.country = country;
+        if (latitude !== undefined) updateData.latitude = latitude;
+        if (longitude !== undefined) updateData.longitude = longitude;
         if (branch !== undefined) updateData.branch = branch;
         if (year !== undefined) updateData.year = year;
         if (careerGoal !== undefined) updateData.careerGoal = careerGoal;

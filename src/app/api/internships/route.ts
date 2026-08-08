@@ -39,11 +39,26 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const recommended = searchParams.get("recommended") === "true";
     const trending = searchParams.get("trending") === "true";
+    const location = searchParams.get("location") || "";
+    const collegeId = searchParams.get("collegeId") || "";
+    const city = searchParams.get("city") || "";
+    const state = searchParams.get("state") || "";
     const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 50);
 
     try {
         // Base query — only OPEN internships for students
-        const baseWhere = { status: "OPEN" };
+        const baseWhere: any = { status: "OPEN" };
+
+        if (location) {
+            baseWhere.OR = [
+                ...(baseWhere.OR || []),
+                { city: { contains: location, mode: "insensitive" } },
+                { state: { contains: location, mode: "insensitive" } },
+            ];
+        }
+        if (city) baseWhere.city = { contains: city, mode: "insensitive" };
+        if (state) baseWhere.state = { contains: state, mode: "insensitive" };
+        if (collegeId) baseWhere.collegeId = collegeId;
 
         if (trending) {
             // Trending = sorted by (applyCount * 3 + views) desc in last 30 days

@@ -13,6 +13,7 @@ interface EditableFieldProps {
   placeholder?: string
   type?: "text" | "textarea" | "select"
   options?: string[]
+  renderInput?: (value: string, onChange: (val: string) => void) => React.ReactNode
 }
 
 export function EditableField({
@@ -21,7 +22,8 @@ export function EditableField({
   initialValue,
   placeholder,
   type = "text",
-  options
+  options,
+  renderInput
 }: EditableFieldProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(initialValue)
@@ -73,7 +75,7 @@ export function EditableField({
       <div className="relative">
         {isEditing ? (
           <div className="space-y-3">
-            {type === "textarea" ? (
+                {type === "textarea" ? (
               <textarea
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
@@ -94,6 +96,8 @@ export function EditableField({
                   <option key={opt} value={opt}>{opt}</option>
                 ))}
               </select>
+            ) : renderInput ? (
+              renderInput(value, setValue)
             ) : (
               <input
                 type="text"

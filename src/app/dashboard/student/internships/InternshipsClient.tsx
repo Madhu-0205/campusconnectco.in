@@ -10,6 +10,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback} from "react";
 import { toast } from "sonner";
+import { useMapContext } from "@/components/v2/maps/MapContext";
 
 interface Internship {
     id: string;
@@ -28,6 +29,8 @@ interface Internship {
     views: number;
     applyCount: number;
     createdAt: string;
+    latitude?: number | null;
+    longitude?: number | null;
 }
 
 interface EngagementState {
@@ -103,6 +106,7 @@ function InternshipCard({
     // Actually, for "Closing Soon" we can just check if it's within 7 days.
     const now = new Date().getTime();
     const isExpiring = deadline && (deadline.getTime() - now) < 7 * 24 * 60 * 60 * 1000;
+    const { setHoveredId } = useMapContext();
 
     return (
         <motion.div
@@ -111,6 +115,8 @@ function InternshipCard({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
             whileHover={{ y: -2 }}
+            onMouseEnter={() => setHoveredId(internship.id)}
+            onMouseLeave={() => setHoveredId(null)}
             className={`bg-(--surface) rounded-2xl border transition-all shadow-sm hover:shadow-lg group cursor-pointer overflow-hidden ${internship.isFeatured ? "border-orange-400/50 ring-1 ring-orange-400/20 hover:ring-orange-400/40" : "border-white/10 hover:border-orange-400/30" }`}
             onClick={onOpen}
         >
@@ -246,6 +252,7 @@ export default function InternshipsClient({
     const [locationFilter, setLocationFilter] = useState("");
     const [engagement, setEngagement] = useState<EngagementState>({});
     const router = useRouter();
+    const { setMarkers } = useMapContext();
 
     const fetchInternships = useCallback(async () => {
         // Only run if we need to refresh (optional)
@@ -337,6 +344,20 @@ export default function InternshipsClient({
             : activeTab === "recommended" ? filterAndSearch(recommended)
                 : activeTab === "saved" ? filterAndSearch(savedList)
                     : filterAndSearch(internships);
+
+    useEffect(() => {
+        const validMarkers = displayList
+            .filter((i) => i.latitude && i.longitude)
+            .map((i) => ({
+                id: i.id,
+                type: "internship" as const,
+                lat: i.latitude!,
+                lng: i.longitude!,
+                title: i.title,
+                subtitle: i.company,
+            }));
+        setMarkers(validMarkers);
+    }, [displayList, setMarkers]);
 
     const tabDef: { id: typeof activeTab; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
         { id: "all", label: "All", icon: GraduationCap },

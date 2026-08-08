@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
-import { Clock, MapPin, DollarSign,  ArrowRight } from "lucide-react"
+import { Clock, MapPin, DollarSign, ArrowRight, GraduationCap } from "lucide-react"
 import React, { MouseEvent } from "react"
 
 import { HoverMagnetic } from "@/components/ui/motion/HoverMagnetic"
@@ -18,6 +18,7 @@ interface GigCardProps {
   href: string
   className?: string
   isFeatured?: boolean
+  collegeId?: string | null
 }
 
 import Image from "next/image"
@@ -32,7 +33,8 @@ export const GigCard = ({
   logoUrl,
   href,
   className,
-  isFeatured
+  isFeatured,
+  collegeId
 }: GigCardProps) => {
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -71,6 +73,12 @@ export const GigCard = ({
       {/* Glow Effect for Featured */}
       {isFeatured && (
         <div className="absolute -right-20 -top-20 -z-10 h-40 w-40 rounded-full bg-primary/20 blur-[60px]" />
+      )}
+
+      {collegeId && (
+        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-400 backdrop-blur-md flex items-center gap-1">
+          <GraduationCap size={12} /> Campus Opportunity
+        </div>
       )}
 
       <div className="flex items-start justify-between">

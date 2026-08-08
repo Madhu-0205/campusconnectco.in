@@ -18,6 +18,7 @@ interface InternshipCardProps {
   href: string
   className?: string
   isUrgent?: boolean
+  collegeId?: string | null
 }
 
 import Image from "next/image"
@@ -32,7 +33,8 @@ export const InternshipCard = ({
   logoUrl,
   href,
   className,
-  isUrgent
+  isUrgent,
+  collegeId
 }: InternshipCardProps) => {
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -67,11 +69,15 @@ export const InternshipCard = ({
           opacity: 0.08,
         }}
       />
-      {isUrgent && (
+      {isUrgent ? (
         <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-error/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-error backdrop-blur-md">
           Urgent Hiring
         </div>
-      )}
+      ) : collegeId ? (
+        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-400 backdrop-blur-md flex items-center gap-1">
+          <GraduationCap size={12} /> Campus Opportunity
+        </div>
+      ) : null}
 
       <div className="flex gap-5">
         <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm overflow-hidden p-2">

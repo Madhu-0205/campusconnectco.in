@@ -6,9 +6,11 @@ import {
   CheckCircle2, Github, Linkedin, Globe, 
   Loader2, Search, ChevronDown, Compass
 } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
+
+import { LocationMap } from "@/components/ui/LocationMap"
 
 import { ReferralTracker } from "@/components/growth/ReferralTracker"
 import { ResumeUploader } from "@/components/resume/ResumeUploader"
@@ -16,40 +18,50 @@ import SkillSelector from "@/components/SkillSelector"
 import { VerificationBadge } from "@/components/ui/VerificationBadge"
 import { Skill, SKILLS_DATASET } from "@/lib/skills-dataset"
 
-// ── Indian colleges list ─────────────────────────────────────────────────────
-const COLLEGES = [
-  "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kanpur", "IIT Kharagpur",
-  "IIT Roorkee", "IIT Guwahati", "IIT Hyderabad", "IIT BHU", "IIT Patna",
-  "NIT Trichy", "NIT Warangal", "NIT Surathkal", "NIT Calicut", "NIT Rourkela",
-  "BITS Pilani", "BITS Goa", "BITS Hyderabad", "BITS Pilani (Pilani Campus)",
-  "IIIT Hyderabad", "IIIT Bangalore", "IIIT Allahabad",
-  "VIT Vellore", "VIT Chennai", "VIT Bhopal", "VIT-AP",
-  "SRM Institute of Science and Technology", "Manipal Institute of Technology",
-  "PSG College of Technology", "Amrita School of Engineering",
-  "Jadavpur University", "Anna University", "Osmania University",
-  "Delhi Technological University", "NSUT Delhi", "IGDTUW",
-  "PES University", "RV College of Engineering", "BMS College of Engineering",
-  "SASTRA University", "Vellore Institute of Technology", "Sri Sivasubramaniya Nadar College",
-  "Karpagam Academy of Higher Education", "Kumaraguru College of Technology",
-  "Thiagarajar College of Engineering", "Coimbatore Institute of Technology",
-  "Birla Institute of Technology Mesra", "Thapar Institute of Engineering",
-  "Chandigarh University", "LPU (Lovely Professional University)",
-  "KIIT University", "Kalinga Institute of Industrial Technology",
-  "Other College / University",
-]
-
-// ── Searchable College Dropdown ──────────────────────────────────────────────
+// ── Searchable College Dropdown (API-driven) ─────────────────────────────────
 function CollegeDropdown({
-  value, onChange
-}: { value: string; onChange: (v: string) => void }) {
+  value,
+  onChange,
+  onCollegeId,
+  city,
+  state
+}: { 
+  value: string; 
+  onChange: (v: string) => void;
+  onCollegeId?: (id: string) => void;
+  city?: string;
+  state?: string;
+}) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
+  const [colleges, setColleges] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const filtered = COLLEGES.filter(c =>
-    c.toLowerCase().includes(search.toLowerCase())
-  )
+  useEffect(() => {
+    async function fetchColleges() {
+      setLoading(true)
+      try {
+        const params = new URLSearchParams()
+        if (search) params.set("q", search)
+        if (!search && state) params.set("state", state)
+        const res = await fetch(`/api/colleges?${params.toString()}`)
+        const data = await res.json()
+        setColleges(data.colleges || [])
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    const timeoutId = setTimeout(() => {
+      if (open) fetchColleges()
+    }, 300)
+    
+    return () => clearTimeout(timeoutId)
+  }, [search, open, state])
 
   useEffect(() => {
     function handleOut(e: MouseEvent) {
@@ -95,19 +107,42 @@ function CollegeDropdown({
               />
             </div>
             <ul className="max-h-52 overflow-y-auto py-1">
-              {filtered.length === 0 ? (
-                <li className="px-4 py-3 text-center text-sm text-slate-500">No colleges found</li>
-              ) : filtered.map(college => (
-                <li key={college}>
+              {loading ? (
+                <li className="px-4 py-3 text-center text-sm text-slate-500 flex items-center justify-center gap-2"><Loader2 size={14} className="animate-spin" /> Fetching...</li>
+              ) : colleges.length === 0 ? (
+                <li className="px-4 py-3 text-center text-sm text-slate-500">No colleges found. Type to add manually.</li>
+              ) : colleges.map(college => (
+                <li key={college.id}>
                   <button
                     type="button"
-                    onClick={() => { onChange(college); setOpen(false); setSearch("") }}
-                    className={`w-full px-4 py-2 text-left text-sm transition-colors hover:bg-violet-600/20 hover:text-white ${value === college ? "bg-violet-600/20 text-white font-bold" : "text-slate-400"}`}
+                    onClick={() => { 
+                      onChange(college.name); 
+                      if (onCollegeId) onCollegeId(college.id);
+                      setOpen(false); 
+                      setSearch(""); 
+                    }}
+                    className={`w-full px-4 py-2 text-left text-sm transition-colors hover:bg-violet-600/20 hover:text-white ${value === college.name ? "bg-violet-600/20 text-white font-bold" : "text-slate-400"}`}
                   >
-                    {college}
+                    <div className="font-medium text-white">{college.name}</div>
+                    <div className="text-xs text-slate-500">{college.city}, {college.state}</div>
                   </button>
                 </li>
               ))}
+              {search && colleges.length === 0 && (
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => { 
+                      onChange(search); 
+                      if (onCollegeId) onCollegeId("");
+                      setOpen(false); 
+                    }}
+                    className="w-full px-4 py-3 text-left text-sm bg-violet-600/10 text-violet-400 font-medium hover:bg-violet-600/20 transition-colors"
+                  >
+                    Add "{search}" manually
+                  </button>
+                </li>
+              )}
             </ul>
           </motion.div>
         )}
@@ -116,10 +151,13 @@ function CollegeDropdown({
   )
 }
 
+
 // ── Main Component ───────────────────────────────────────────────────────────
 export default function OnboardingPage() {
   const router = useRouter()
-  const [step, setStep] = useState(1)
+  const searchParams = useSearchParams()
+  const initialStep = parseInt(searchParams.get("step") || "1", 10)
+  const [step, setStep] = useState(initialStep)
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [isVerified, setIsVerified] = useState(false)
@@ -128,6 +166,12 @@ export default function OnboardingPage() {
   const [form, setForm] = useState({
     name: "",
     college: "",
+    collegeId: "",
+    city: "",
+    state: "",
+    country: "",
+    latitude: 0,
+    longitude: 0,
     branch: "",
     year: "1st",
     bio: "",
@@ -138,10 +182,36 @@ export default function OnboardingPage() {
   })
 
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([])
+  const [locLoading, setLocLoading] = useState(false)
 
   // AI Resume parsing state
   const [fileUrl, setFileUrl] = useState("")
   const [parseStatus, setParseStatus] = useState<'idle' | 'processing' | 'done'>('idle')
+
+  const handleLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser")
+      return
+    }
+    setLocLoading(true)
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try {
+        const res = await fetch(`/api/colleges/reverse-geocode?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
+        const data = await res.json()
+        if (data.city || data.state) {
+          setForm(prev => ({ ...prev, city: data.city, state: data.state, country: data.country }))
+          toast.success("Location detected!")
+        }
+      } catch (err) {
+        toast.error("Failed to detect location")
+      } finally {
+        setLocLoading(false)
+      }
+    }, () => {
+      toast.error("Location permission denied. Please enter manually.")
+      setLocLoading(false)
+    })
+  }
 
   // Load existing profile parameters
   useEffect(() => {
@@ -164,6 +234,12 @@ export default function OnboardingPage() {
         setForm({
           name: data.full_name || data.name || "",
           college: data.college || "",
+          collegeId: data.collegeId || "",
+          city: data.city || "",
+          state: data.state || "",
+          country: data.country || "",
+          latitude: data.latitude || 0,
+          longitude: data.longitude || 0,
           branch: data.branch || "",
           year: data.year || "1st",
           bio: data.bio || "",
@@ -396,17 +472,18 @@ export default function OnboardingPage() {
             {/* Top Wizard Steps Tracker */}
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-violet-400 font-mono">Step {step} of 4</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-violet-400 font-mono">Step {step} of 5</span>
                 <h2 className="text-xl font-black text-white mt-0.5">
-                  {step === 1 && "Academic Identity"}
-                  {step === 2 && "Core Capabilities"}
-                  {step === 3 && "AI Resume Integration"}
-                  {step === 4 && "Social Credibility"}
+                  {step === 1 && "Location & Proximity"}
+                  {step === 2 && "Academic Identity"}
+                  {step === 3 && "Core Capabilities"}
+                  {step === 4 && "AI Resume Integration"}
+                  {step === 5 && "Social Credibility"}
                 </h2>
               </div>
               
               <div className="flex items-center gap-1.5">
-                {[1, 2, 3, 4].map(idx => (
+                {[1, 2, 3, 4, 5].map(idx => (
                   <div 
                     key={idx} 
                     className={`h-1.5 rounded-full transition-all duration-300 ${idx === step ? "w-6 bg-violet-500" : idx < step ? "w-2 bg-emerald-500" : "w-2 bg-white/10"}`} 
@@ -426,8 +503,51 @@ export default function OnboardingPage() {
                   transition={{ duration: 0.25 }}
                 >
                   
-                  {/* Step 1: Academic Identity */}
+                  {/* Step 1: Location */}
                   {step === 1 && (
+                    <div className="space-y-5">
+                      <p className="text-sm text-slate-400 font-medium">Connect your location to find campus-specific opportunities, nearby startups, and relevant internships.</p>
+                      
+                      <LocationMap 
+                        initialLat={form.latitude || undefined}
+                        initialLng={form.longitude || undefined}
+                        onLocationSelect={(loc) => {
+                          setForm(prev => ({ 
+                            ...prev, 
+                            city: loc.city, 
+                            state: loc.state, 
+                            country: loc.country,
+                            latitude: loc.latitude,
+                            longitude: loc.longitude 
+                          }))
+                        }}
+                      />
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">City</label>
+                          <input 
+                            placeholder="e.g. Hyderabad"
+                            value={form.city}
+                            onChange={e => setForm({ ...form, city: e.target.value })}
+                            className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all font-medium text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">State</label>
+                          <input 
+                            placeholder="e.g. Telangana"
+                            value={form.state}
+                            onChange={e => setForm({ ...form, state: e.target.value })}
+                            className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all font-medium text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 2: Academic Identity */}
+                  {step === 2 && (
                     <div className="space-y-5">
                       <p className="text-sm text-slate-400 font-medium">Verify your enrollment details so startups and clients can find you based on college filters.</p>
                       
@@ -444,7 +564,13 @@ export default function OnboardingPage() {
 
                         <div>
                           <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Current College/University</label>
-                          <CollegeDropdown value={form.college} onChange={val => setForm({ ...form, college: val })} />
+                          <CollegeDropdown 
+                            value={form.college} 
+                            city={form.city}
+                            state={form.state}
+                            onChange={val => setForm({ ...form, college: val })} 
+                            onCollegeId={id => setForm({ ...form, collegeId: id })}
+                          />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -475,8 +601,8 @@ export default function OnboardingPage() {
                     </div>
                   )}
 
-                  {/* Step 2: Core Skills */}
-                  {step === 2 && (
+                  {/* Step 3: Core Skills */}
+                  {step === 3 && (
                     <div className="space-y-5">
                       <p className="text-sm text-slate-400 font-medium">Select at least 3 core technical capabilities. Startups matching skills via AI SmartMatch will prioritize profiles with verified tags.</p>
                       
@@ -495,8 +621,8 @@ export default function OnboardingPage() {
                     </div>
                   )}
 
-                  {/* Step 3: AI Resume Auto-Fill */}
-                  {step === 3 && (
+                  {/* Step 4: AI Resume Auto-Fill */}
+                  {step === 4 && (
                     <div className="space-y-5">
                       <p className="text-sm text-slate-400 font-medium">Upload your resume PDF. The AI parser will automatically index your career level, extract achievements, and pre-populate your bio.</p>
                       
@@ -528,8 +654,8 @@ export default function OnboardingPage() {
                     </div>
                   )}
 
-                  {/* Step 4: Social Credibility */}
-                  {step === 4 && (
+                  {/* Step 5: Social Credibility */}
+                  {step === 5 && (
                     <div className="space-y-5">
                       <p className="text-sm text-slate-400 font-medium">Link your professional accounts. Connecting verified GitHub profiles ensures transparency for tech recruiters.</p>
                       
@@ -607,11 +733,11 @@ export default function OnboardingPage() {
               <div /> // Spacer
             )}
 
-            {step < 4 ? (
+            {step < 5 ? (
               <button
                 type="button"
                 onClick={() => setStep(prev => prev + 1)}
-                disabled={step === 1 && (!form.name.trim() || !form.college.trim()) || step === 2 && selectedSkills.length < 3}
+                disabled={step === 1 && (!form.city.trim() || !form.state.trim()) || step === 2 && (!form.name.trim() || !form.college.trim()) || step === 3 && selectedSkills.length < 3}
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm transition-all"
               >
                 Continue <ArrowRight size={16} />

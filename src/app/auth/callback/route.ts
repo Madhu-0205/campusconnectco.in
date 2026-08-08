@@ -105,12 +105,26 @@ export async function GET(request: Request) {
                 },
                 select: {
                     role: true,
+                    city: true,
+                    collegeId: true,
+                    latitude: true,
                 },
             });
 
             if (profile?.role) {
                 userRole = profile.role;
                 console.log("[OAuth Callback] Database upsert succeeded", { userRole });
+                
+                // Location onboarding check
+                if (userRole === "STUDENT") {
+                    if (!profile.city && !profile.collegeId) {
+                        redirectPath = "/onboarding";
+                    } else if (!profile.city && profile.collegeId) {
+                        redirectPath = "/onboarding?step=1";
+                    } else if (profile.city && !profile.collegeId) {
+                        redirectPath = "/onboarding?step=2";
+                    }
+                }
             }
         } catch (dbError) {
             console.error("[OAuth Callback] Database operations failed:", dbError);

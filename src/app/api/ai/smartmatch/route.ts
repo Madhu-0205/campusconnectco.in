@@ -74,7 +74,7 @@ export async function POST(req: Request) {
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { skills: true, bio: true, careerGoal: true, branch: true, year: true },
+            select: { skills: true, bio: true, careerGoal: true, branch: true, year: true, city: true, state: true, collegeId: true },
         });
 
         if (!user) {
@@ -100,21 +100,24 @@ export async function POST(req: Request) {
             careerGoal: user.careerGoal || '',
             branch:     user.branch     || '',
             year:       user.year       || '',
+            city:       user.city       || '',
+            state:      user.state      || '',
+            collegeId:  user.collegeId  || '',
         };
 
         // 4. Fetch active opportunities with timing
         const [activeInternships, activeGigs] = await Promise.all([
             prisma.internship.findMany({
                 where: { status: 'OPEN' },
-                take: 10,
+                take: 15,
                 orderBy: { createdAt: 'desc' },
-                select: { id: true, title: true, description: true, skills: true, stipend: true },
+                select: { id: true, title: true, description: true, skills: true, stipend: true, location: true, city: true, state: true, collegeId: true },
             }),
             prisma.gig.findMany({
                 where: { status: 'active' },   // Gig.status defaults to "active" (lowercase)
-                take: 10,
+                take: 15,
                 orderBy: { createdAt: 'desc' },
-                select: { id: true, title: true, description: true, required_skills: true, budget: true },
+                select: { id: true, title: true, description: true, required_skills: true, budget: true, city: true, state: true, collegeId: true },
             }),
         ]);
 

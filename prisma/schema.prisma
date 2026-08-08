@@ -35,6 +35,10 @@ model User {
   branch               String?
   careerGoal           String?
   college              String?
+  collegeId            String?
+  city                 String?
+  state                String?
+  country              String?
   company_name         String?
   full_name            String?
   last_seen            DateTime?           @default(now())
@@ -141,35 +145,39 @@ model Project {
 }
 
 model Gig {
-  id               String        @id(map: "Gig_pkey") @default(uuid()) @db.Uuid
+  id               String    @id(map: "Gig_pkey") @default(uuid()) @db.Uuid
   title            String
   description      String
   budget           Float
   deadline         DateTime?
-  status           String        @default("active")
+  status           String    @default("active")
   tags             String?
   latitude         Float?
   longitude        Float?
-  ownerConfirmed   Boolean       @default(false)
-  studentConfirmed Boolean       @default(false)
-  posted_by        String        @db.Uuid
+  city             String?
+  state            String?
+  country          String?
+  collegeId        String?
+  ownerConfirmed   Boolean   @default(false)
+  studentConfirmed Boolean   @default(false)
+  posted_by        String    @db.Uuid
 
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  completedAt      DateTime?
-  savedGigs        SavedGig[]
-  isPremium        Boolean       @default(false)
-  expires_at       DateTime      @default(now())
-  required_skills  Json?
-  views            Int           @default(0)
-  work_mode        String        @default("remote")
-  escrows          Escrow[]
-  gigEmbedding     GigEmbedding?
-  gigSkills        GigSkill[]
-  reviews          Review[]
-  transactions     Transaction[]
-  applications     Application[]
-  poster           User          @relation("PostedGigs", fields: [posted_by], references: [id], map: "Gig_posted_by_fkey")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  completedAt     DateTime?
+  savedGigs       SavedGig[]
+  isPremium       Boolean       @default(false)
+  expires_at      DateTime      @default(now())
+  required_skills Json?
+  views           Int           @default(0)
+  work_mode       String        @default("remote")
+  escrows         Escrow[]
+  gigEmbedding    GigEmbedding?
+  gigSkills       GigSkill[]
+  reviews         Review[]
+  transactions    Transaction[]
+  applications    Application[]
+  poster          User          @relation("PostedGigs", fields: [posted_by], references: [id], map: "Gig_posted_by_fkey")
 
   @@index([posted_by], map: "idx_gigs_posted_by")
   @@map("gigs")
@@ -385,6 +393,12 @@ model Internship {
   stipend         Float?
   duration        String?
   location        String?
+  city            String?
+  state           String?
+  country         String?
+  latitude        Float?
+  longitude       Float?
+  collegeId       String?
   deadline        DateTime?
   status          String            @default("OPEN")
   isFeatured      Boolean           @default(false)
@@ -500,17 +514,17 @@ model Startup {
 }
 
 model ResumeAnalysis {
-  id             String   @id @default(uuid()) @db.Uuid
-  userId         String   @db.Uuid
-  score          Int
-  grade          String   @default("N/A")
-  resumeSnippet  String?  // First 200 chars of resume text for history preview
-  wordCount      Int      @default(0)
-  result         Json?    // Full structured AI output (score, strengths, suggestions, etc.)
-  feedback       Json?    // Legacy field — kept for backward compatibility
-  fileName       String?
-  createdAt      DateTime @default(now())
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  score         Int
+  grade         String   @default("N/A")
+  resumeSnippet String? // First 200 chars of resume text for history preview
+  wordCount     Int      @default(0)
+  result        Json? // Full structured AI output (score, strengths, suggestions, etc.)
+  feedback      Json? // Legacy field — kept for backward compatibility
+  fileName      String?
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt(sort: Desc)])
 }
@@ -523,7 +537,7 @@ model Analytics {
   data      Json?
   createdAt DateTime @default(now())
 
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([event, createdAt])
   @@index([userId, event])
@@ -866,21 +880,21 @@ enum DriveStatus {
 // Stores user-submitted colleges for admin approval.
 // Approved colleges are synced from AISHE/UGC/AICTE datasets.
 model College {
-  id         String   @id @default(uuid()) @db.Uuid
-  name       String
-  city       String
-  district   String
-  state      String
-  latitude   Float?
-  longitude  Float?
-  type       String   @default("Engineering")
-  approved   Boolean  @default(false)
-  verified   Boolean  @default(false)
-  website    String?
-  logo       String?
-  createdBy  String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  city      String
+  district  String
+  state     String
+  latitude  Float?
+  longitude Float?
+  type      String   @default("Engineering")
+  approved  Boolean  @default(false)
+  verified  Boolean  @default(false)
+  website   String?
+  logo      String?
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([state, city])
   @@index([approved])

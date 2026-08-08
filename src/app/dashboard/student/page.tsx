@@ -16,6 +16,10 @@ import { protectPage } from "@/lib/auth-checks"
 import prisma from "@/lib/prisma"
 import { getPersonalizedRecommendations } from "@/lib/recommendation-engine"
 
+import { ContextualMapLayout } from "@/components/v2/maps/ContextualMapLayout"
+import { MapDataSync } from "@/components/v2/maps/MapDataSync"
+import { MarkerData } from "@/components/v2/maps/MapContext"
+
 // Add a standard widget skeleton
 const WidgetSkeleton = ({ height = "h-64" }: { height?: string }) => (
   <div className={`w-full ${height} rounded-2xl bg-surface-2 animate-pulse border border-border`} />
@@ -33,18 +37,25 @@ async function WelcomeSection({ userId }: { userId: string }) {
     where: { applicantId: userId, status: "ACCEPTED", gig: { status: "COMPLETED" } } 
   })
   
-  const fields = [dbUser?.bio, dbUser?.portfolio, dbUser?.linkedin, dbUser?.userSkills?.length, dbUser?.image]
+  const fields = [dbUser?.bio, dbUser?.portfolio, dbUser?.linkedin, dbUser?.userSkills?.length, dbUser?.image, dbUser?.city, dbUser?.collegeId]
   const profileCompleteness = Math.round((fields.filter(Boolean).length / fields.length) * 100)
   
   // Calculate a combined career score
   const careerScore = Math.min(1000, 100 + (completedGigsCount * 50) + (profileCompleteness * 2) + ((dbUser?.userSkills?.length || 0) * 10))
 
+  const userLocation = dbUser?.latitude && dbUser?.longitude 
+    ? { lat: dbUser.latitude, lng: dbUser.longitude } 
+    : null
+
   return (
-    <WorkspaceWelcome 
-      userName={userName}
-      focusText="Profile & Portfolio Building"
-      careerScore={careerScore}
-    />
+    <>
+      <MapDataSync userLocation={userLocation} />
+      <WorkspaceWelcome 
+        userName={userName}
+        focusText="Profile & Portfolio Building"
+        careerScore={careerScore}
+      />
+    </>
   )
 }
 
@@ -58,7 +69,11 @@ async function AICopilotSection({ userId }: { userId: string }) {
   let actionLabel = "Find Opportunities"
   let actionHref = "/gigs/find"
 
-  if (!dbUser?.bio || !dbUser?.portfolio) {
+  if (!dbUser?.city || !dbUser?.collegeId) {
+    insight = "Add your college and location to unlock campus-specific opportunities."
+    actionLabel = "Add Location"
+    actionHref = "/dashboard/student/settings"
+  } else if (!dbUser?.bio || !dbUser?.portfolio) {
     insight = "Your profile is missing a bio or portfolio. Completing it increases your match rate by 3x."
     actionLabel = "Update Profile"
     actionHref = "/dashboard/student/profile"
@@ -120,7 +135,9 @@ async function OpportunitiesSection({ userId }: { userId: string }) {
         title: r.opportunity.title,
         company: r.opportunity.company || "Campus Client",
         matchScore: r.matchScore,
-        type: r.type
+        type: r.type,
+        lat: r.opportunity.latitude || null,
+        lng: r.opportunity.longitude || null
       }))
     } else {
       // Fallback to trending
@@ -134,14 +151,32 @@ async function OpportunitiesSection({ userId }: { userId: string }) {
         title: t.title,
         company: t.company,
         matchScore: 85,
-        type: "INTERNSHIP"
+        type: "INTERNSHIP",
+        lat: t.latitude || null,
+        lng: t.longitude || null
       }))
     }
   } catch(e) {
     console.error(e)
   }
 
-  return <OpportunitiesWidget opportunities={mappedOpps} />
+  const markers: MarkerData[] = mappedOpps
+    .filter(o => o.lat && o.lng)
+    .map(o => ({
+      id: o.id,
+      type: o.type.toLowerCase() === "gig" ? "gig" : "internship",
+      lat: o.lat,
+      lng: o.lng,
+      title: o.title,
+      subtitle: o.company
+    }))
+
+  return (
+    <>
+      <MapDataSync markers={markers} />
+      <OpportunitiesWidget opportunities={mappedOpps} />
+    </>
+  )
 }
 
 async function NetworkSection({ userId }: { userId: string }) {
@@ -167,7 +202,7 @@ async function CareerProgressSection({ userId }: { userId: string }) {
     include: { userSkills: true }
   })
   
-  const fields = [dbUser?.bio, dbUser?.portfolio, dbUser?.linkedin, dbUser?.userSkills?.length, dbUser?.image]
+  const fields = [dbUser?.bio, dbUser?.portfolio, dbUser?.linkedin, dbUser?.userSkills?.length, dbUser?.image, dbUser?.city, dbUser?.collegeId]
   const profileCompletion = Math.round((fields.filter(Boolean).length / fields.length) * 100)
   const skillsCount = dbUser?.userSkills?.length || 0
   const badgesEarned = Math.floor(skillsCount / 2) + (profileCompletion === 100 ? 1 : 0)
@@ -188,86 +223,88 @@ export default async function CareerWorkspace() {
   }
 
   return (
-    <DesignNode
-      metadata={{
-        name: "CareerWorkspacePage",
-        tokens: ['bg-background', 'text-foreground'],
-        typography: "Inter (Sans)",
-        motionPreset: "None (Handled by WorkspaceGrid)",
-        borderRadius: "none",
-        elevation: "none",
-        colors: "background, foreground",
-        spacing: "p-6",
-        accessibilityNotes: "Root container for dashboard"
-      }}
-    >
-      <div className="min-h-screen bg-background text-foreground pb-24">
-        
-        {/* Workspace Header / ToolBar Space (Optional) */}
-        <div className="sticky top-16 z-30 py-6 border-b border-border bg-background/80 backdrop-blur-xl mb-8">
-          <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-            <h1 className="text-xl font-bold tracking-tight">Career Workspace</h1>
-            <QualityGate 
-              componentName="CareerWorkspace"
-              checks={{ 
-                accessibility: true, 
-                responsive: true, 
-                darkMode: true, 
-                lightMode: true,
-                keyboardNavigation: true,
-                motion: true,
-                loadingState: true,
-                emptyState: true,
-                errorState: true,
-                performance: true
-              }} 
-            />
+    <ContextualMapLayout>
+      <DesignNode
+        metadata={{
+          name: "CareerWorkspacePage",
+          tokens: ['bg-background', 'text-foreground'],
+          typography: "Inter (Sans)",
+          motionPreset: "None (Handled by WorkspaceGrid)",
+          borderRadius: "none",
+          elevation: "none",
+          colors: "background, foreground",
+          spacing: "p-6",
+          accessibilityNotes: "Root container for dashboard"
+        }}
+      >
+        <div className="min-h-screen bg-background text-foreground pb-24">
+          
+          {/* Workspace Header / ToolBar Space (Optional) */}
+          <div className="sticky top-16 z-30 py-6 border-b border-border bg-background/80 backdrop-blur-xl mb-8">
+            <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+              <h1 className="text-xl font-bold tracking-tight">Career Workspace</h1>
+              <QualityGate 
+                componentName="CareerWorkspace"
+                checks={{ 
+                  accessibility: true, 
+                  responsive: true, 
+                  darkMode: true, 
+                  lightMode: true,
+                  keyboardNavigation: true,
+                  motion: true,
+                  loadingState: true,
+                  emptyState: true,
+                  errorState: true,
+                  performance: true
+                }} 
+              />
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-6">
+            <WorkspaceGrid>
+              {/* 1. Welcome Section */}
+              <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                <Suspense fallback={<WidgetSkeleton height="h-[120px]" />}>
+                  <WelcomeSection userId={user.id} />
+                </Suspense>
+              </div>
+
+              {/* 2. AI Copilot */}
+              <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                <Suspense fallback={<WidgetSkeleton height="h-[100px]" />}>
+                  <AICopilotSection userId={user.id} />
+                </Suspense>
+              </div>
+
+              {/* 3. Row 1: Active Pursuits, Opportunities, Deadlines */}
+              <Suspense fallback={<WidgetSkeleton />}>
+                <ActivePursuitsSection userId={user.id} />
+              </Suspense>
+
+              <Suspense fallback={<WidgetSkeleton />}>
+                <OpportunitiesSection userId={user.id} />
+              </Suspense>
+              
+              <Suspense fallback={<WidgetSkeleton />}>
+                <DeadlinesWidget deadlines={[]} />
+              </Suspense>
+
+              {/* 4. Row 2: Network, Career Progress, Quick Actions */}
+              <Suspense fallback={<WidgetSkeleton />}>
+                <NetworkSection userId={user.id} />
+              </Suspense>
+
+              <Suspense fallback={<WidgetSkeleton />}>
+                <CareerProgressSection userId={user.id} />
+              </Suspense>
+
+              <QuickActionsWidget />
+
+            </WorkspaceGrid>
           </div>
         </div>
-
-        <div className="max-w-7xl mx-auto px-6">
-          <WorkspaceGrid>
-            {/* 1. Welcome Section */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-3">
-              <Suspense fallback={<WidgetSkeleton height="h-[120px]" />}>
-                <WelcomeSection userId={user.id} />
-              </Suspense>
-            </div>
-
-            {/* 2. AI Copilot */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-3">
-              <Suspense fallback={<WidgetSkeleton height="h-[100px]" />}>
-                <AICopilotSection userId={user.id} />
-              </Suspense>
-            </div>
-
-            {/* 3. Row 1: Active Pursuits, Opportunities, Deadlines */}
-            <Suspense fallback={<WidgetSkeleton />}>
-              <ActivePursuitsSection userId={user.id} />
-            </Suspense>
-
-            <Suspense fallback={<WidgetSkeleton />}>
-              <OpportunitiesSection userId={user.id} />
-            </Suspense>
-            
-            <Suspense fallback={<WidgetSkeleton />}>
-              <DeadlinesWidget deadlines={[]} />
-            </Suspense>
-
-            {/* 4. Row 2: Network, Career Progress, Quick Actions */}
-            <Suspense fallback={<WidgetSkeleton />}>
-              <NetworkSection userId={user.id} />
-            </Suspense>
-
-            <Suspense fallback={<WidgetSkeleton />}>
-              <CareerProgressSection userId={user.id} />
-            </Suspense>
-
-            <QuickActionsWidget />
-
-          </WorkspaceGrid>
-        </div>
-      </div>
-    </DesignNode>
+      </DesignNode>
+    </ContextualMapLayout>
   )
 }

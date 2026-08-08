@@ -7,12 +7,16 @@ import { toast } from "sonner";
 import EmptyState from "@/components/ui/EmptyState";
 import { GigCard } from "@/components/v2/GigCard";
 import { InternshipCard } from "@/components/v2/InternshipCard";
+import { ContextualMapLayout } from "@/components/v2/maps/ContextualMapLayout";
+import { MapDataSync } from "@/components/v2/maps/MapDataSync";
+import { useMapContext, MarkerData } from "@/components/v2/maps/MapContext";
 
-export default function SavedOpportunitiesPage() {
+function SavedOpportunitiesContent() {
     const [loading, setLoading] = useState(true);
     const [savedGigs, setSavedGigs] = useState<any[]>([]);
     const [savedInternships, setSavedInternships] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState<"all" | "gigs" | "internships">("all");
+    const { setHoveredId } = useMapContext();
 
     useEffect(() => {
         const fetchSaved = async () => {
@@ -44,8 +48,35 @@ export default function SavedOpportunitiesPage() {
     const displayGigs = activeTab === "all" || activeTab === "gigs";
     const displayInternships = activeTab === "all" || activeTab === "internships";
 
+    const markers: MarkerData[] = [];
+    if (displayGigs) {
+        savedGigs.filter(g => g.latitude && g.longitude).forEach(g => {
+            markers.push({
+                id: g.id,
+                type: "gig",
+                lat: g.latitude,
+                lng: g.longitude,
+                title: g.title,
+                subtitle: g.company || "CampusConnect"
+            });
+        });
+    }
+    if (displayInternships) {
+        savedInternships.filter(i => i.latitude && i.longitude).forEach(i => {
+            markers.push({
+                id: i.id,
+                type: "internship",
+                lat: i.latitude,
+                lng: i.longitude,
+                title: i.title,
+                subtitle: i.companyName || "Unknown Company"
+            });
+        });
+    }
+
     return (
         <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+            <MapDataSync markers={markers} />
             <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                     <span className="w-8 h-1 bg-primary rounded-full" />
@@ -103,7 +134,12 @@ export default function SavedOpportunitiesPage() {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {savedGigs.map(gig => (
-                                        <div key={gig.id} className="relative group">
+                                        <div 
+                                            key={gig.id} 
+                                            className="relative group"
+                                            onMouseEnter={() => setHoveredId(gig.id)}
+                                            onMouseLeave={() => setHoveredId(null)}
+                                        >
                                             <button 
                                                 onClick={() => handleUnsave(gig.id, "gig")}
                                                 className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur rounded-full text-blue-600 hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm"
@@ -143,7 +179,12 @@ export default function SavedOpportunitiesPage() {
                             ) : (
                                 <div className="grid grid-cols-1 gap-4">
                                     {savedInternships.map(internship => (
-                                        <div key={internship.id} className="relative group">
+                                        <div 
+                                            key={internship.id} 
+                                            className="relative group"
+                                            onMouseEnter={() => setHoveredId(internship.id)}
+                                            onMouseLeave={() => setHoveredId(null)}
+                                        >
                                             <button 
                                                 onClick={() => handleUnsave(internship.id, "internship")}
                                                 className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur rounded-full text-emerald-600 hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm"
@@ -178,5 +219,13 @@ export default function SavedOpportunitiesPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function SavedOpportunitiesPage() {
+    return (
+        <ContextualMapLayout>
+            <SavedOpportunitiesContent />
+        </ContextualMapLayout>
     );
 }

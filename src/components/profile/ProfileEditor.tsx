@@ -20,6 +20,10 @@ import { VerificationBadge } from "@/components/ui/VerificationBadge"
 import { AvatarUpload } from "./AvatarUpload"
 import { EditableField } from "./EditableField"
 import { SkillsEditor } from "./SkillsEditor"
+import { CollegeDropdown } from "@/components/ui/CollegeDropdown"
+import { LocationMap } from "@/components/ui/LocationMap"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
 interface ProfileEditorProps {
   profile: {
@@ -30,6 +34,12 @@ interface ProfileEditorProps {
     bio: string | null
     skills: string[]
     college: string | null
+    collegeId?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    latitude?: number | null
+    longitude?: number | null
     branch: string | null
     year: string | null
     github: string | null
@@ -51,6 +61,40 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
     { id: "links", label: "Connect", icon: Link2 },
     { id: "skills", label: "Capabilities", icon: Sparkles },
   ]
+
+  const [locationState, setLocationState] = useState({
+    city: profile.city,
+    state: profile.state,
+    country: profile.country,
+    latitude: profile.latitude,
+    longitude: profile.longitude,
+  })
+  const [isEditingLocation, setIsEditingLocation] = useState(false)
+  const [isSavingLocation, setIsSavingLocation] = useState(false)
+
+  const handleSaveLocation = async () => {
+    setIsSavingLocation(true)
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          city: locationState.city,
+          state: locationState.state,
+          country: locationState.country,
+          latitude: locationState.latitude,
+          longitude: locationState.longitude,
+        })
+      })
+      if (!res.ok) throw new Error("Failed to save location")
+      toast.success("Location updated successfully")
+      setIsEditingLocation(false)
+    } catch (error) {
+      toast.error("Failed to update location")
+    } finally {
+      setIsSavingLocation(false)
+    }
+  }
 
   // Calculate profile completion
   const completionFields = [
@@ -110,6 +154,18 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
                 </div>
                 <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">{profile.email}</p>
                 {profile.username && <p className="text-xs font-bold">@{profile.username}</p>}
+                {(locationState.city || locationState.state) && (
+                  <div className="flex items-center gap-1 text-xs font-medium text-slate-400 mt-1 bg-white/5 px-2.5 py-1 rounded-full">
+                    <MapPin size={12} />
+                    {locationState.city}{locationState.city && locationState.state ? ", " : ""}{locationState.state}
+                  </div>
+                )}
+                {profile.college && (
+                  <div className="flex items-center gap-1 text-xs font-medium text-slate-400 mt-1 bg-white/5 px-2.5 py-1 rounded-full text-center">
+                    <GraduationCap size={12} className="shrink-0" />
+                    <span className="line-clamp-1">{profile.college}</span>
+                  </div>
+                )}
               </div>
 
               <div className="w-full h-px bg-accent" />
@@ -201,6 +257,88 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
                     initialValue={profile.careerGoal || ""}
                     placeholder="e.g. Backend Developer at a high-growth SaaS"
                   />
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="font-bold text-muted-foreground uppercase tracking-widest text-sm">
+                        Location
+                      </label>
+                      {!isEditingLocation ? (
+                        <button
+                          onClick={() => setIsEditingLocation(true)}
+                          className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center gap-1.5"
+                        >
+                          Change Location
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setIsEditingLocation(false)}
+                            className="px-3 py-1.5 hover:text-white text-xs font-bold transition-all text-slate-400"
+                            disabled={isSavingLocation}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleSaveLocation}
+                            disabled={isSavingLocation}
+                            className="px-4 py-1.5 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-xs font-black transition-all flex items-center gap-1.5"
+                          >
+                            {isSavingLocation ? <Loader2 size={12} className="animate-spin" /> : null}
+                            Save
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {isEditingLocation ? (
+                      <div className="bg-[#111116] border border-border p-4 rounded-2xl">
+                        <LocationMap 
+                          initialLat={locationState.latitude || undefined}
+                          initialLng={locationState.longitude || undefined}
+                          onLocationSelect={(loc) => {
+                            setLocationState(prev => ({
+                              ...prev,
+                              city: loc.city,
+                              state: loc.state,
+                              country: loc.country,
+                              latitude: loc.latitude,
+                              longitude: loc.longitude,
+                            }))
+                          }}
+                        />
+                        <div className="grid grid-cols-2 gap-4 mt-4">
+                          <div>
+                            <label className="text-xs font-bold text-slate-500 mb-1 block uppercase">Detected City</label>
+                            <input 
+                              disabled 
+                              value={locationState.city || ""} 
+                              className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-sm text-slate-300"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold text-slate-500 mb-1 block uppercase">Detected State</label>
+                            <input 
+                              disabled 
+                              value={locationState.state || ""} 
+                              className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-sm text-slate-300"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div 
+                        onClick={() => setIsEditingLocation(true)}
+                        className="w-full bg-white/2 border border-transparent hover:border-white/5 hover:bg-white/4 rounded-xl px-4 py-3 transition-all cursor-pointer flex items-center"
+                      >
+                        <p className={`text-sm ${!(locationState.city || locationState.state) ? 'text-muted-foreground italic' : 'text-foreground'}`}>
+                          {locationState.city || locationState.state 
+                            ? `${locationState.city ? locationState.city + ', ' : ''}${locationState.state || ''}`
+                            : "No location added yet."}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                </div>
             </div>
           )}
@@ -213,7 +351,14 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
                     label="University / College"
                     field="college"
                     initialValue={profile.college || ""}
-                    placeholder="e.g. IIT Delhi, BITS Pilani..."
+                    renderInput={(value, setValue) => (
+                      <CollegeDropdown
+                        value={value}
+                        onChange={setValue}
+                        city={locationState.city || ""}
+                        state={locationState.state || ""}
+                      />
+                    )}
                   />
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

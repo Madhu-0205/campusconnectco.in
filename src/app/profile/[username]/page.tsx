@@ -29,7 +29,7 @@ export async function generateMetadata({
   try {
     const user = await prisma.user.findUnique({
       where: { username },
-      select: { name: true, full_name: true, bio: true, college: true, skills: true, isVerified: true },
+      select: { name: true, full_name: true, bio: true, college: true, skills: true, isVerified: true, city: true, state: true },
     })
     if (user) {
       displayName = user.full_name ?? user.name ?? username
@@ -122,6 +122,7 @@ export default async function PublicProfilePage({
     branch: user.branch || "Add Branch",
     year: user.year || "Add Year",
     bio: user.bio || "",
+    location: user.city && user.state ? `${user.city}, ${user.state}` : user.city || user.state || undefined,
     avatar: user.avatar_url || user.image,
     available: true,
     linkedin: user.linkedin,

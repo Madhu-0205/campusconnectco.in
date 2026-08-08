@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useCallback } from "react";
+import { useMapContext } from "@/components/v2/maps/MapContext";
 
 interface Gig {
     id: string;
@@ -26,6 +27,8 @@ interface Gig {
     status: string;
     tags: string | null;
     createdAt: Date;
+    latitude?: number | null;
+    longitude?: number | null;
     _count?: {
         applications: number;
     };
@@ -61,11 +64,14 @@ function StatCard({ icon: Icon, label, value }: { icon: React.ComponentType<{ si
 }
 
 function GigCard({ gig, viewMode }: { gig: Gig; viewMode: "grid" | "list" }) {
+    const { setHoveredId } = useMapContext();
     if (viewMode === "list") {
         return (
             <Link href={`/gigs/${gig.id}`}>
                 <motion.div
                     whileHover={{ scale: 1.01 }}
+                    onMouseEnter={() => setHoveredId(gig.id)}
+                    onMouseLeave={() => setHoveredId(null)}
                     className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-lg transition-all cursor-pointer"
                 >
                     <div className="flex items-start justify-between gap-4">
@@ -103,6 +109,8 @@ function GigCard({ gig, viewMode }: { gig: Gig; viewMode: "grid" | "list" }) {
         <Link href={`/gigs/${gig.id}`}>
             <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
+                onMouseEnter={() => setHoveredId(gig.id)}
+                onMouseLeave={() => setHoveredId(null)}
                 transition={{ duration: 0.25 }}
                 className="bg-card rounded-2xl p-6 shadow-sm border border-border hover:shadow-2xl transition-all cursor-pointer h-full flex flex-col"
             >
@@ -180,6 +188,7 @@ export default function BrowseGigsContent() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { setMarkers } = useMapContext();
 
     const [gigs, setGigs] = useState<Gig[]>([]);
     const [loading, setLoading] = useState(true);
@@ -192,7 +201,18 @@ export default function BrowseGigsContent() {
             return gigDate.toDateString() === today.toDateString();
         }).length;
         setNewTodayCount(count);
-    }, [gigs]);
+        
+        // Sync to map
+        const validMarkers = gigs.filter(g => g.latitude && g.longitude).map(g => ({
+            id: g.id,
+            type: "gig" as const,
+            lat: g.latitude!,
+            lng: g.longitude!,
+            title: g.title,
+            subtitle: g.tags?.split(",")[0] || ""
+        }));
+        setMarkers(validMarkers);
+    }, [gigs, setMarkers]);
     const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
     const [showFilters, setShowFilters] = useState(false);
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
