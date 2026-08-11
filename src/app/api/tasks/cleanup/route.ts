@@ -1,18 +1,37 @@
 import { NextResponse } from "next/server";
 
+import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { safeCompare } from "@/lib/security/crypto";
 
-// This route can be called periodically by Vercel Cron, GitHub Actions, or a simple interval.
-// To ensure it's not maliciously triggered, we could add a basic secret check, but for this instance we allow any trusted runner to ping it.
+// This route can be called periodically by Vercel Cron.
 export const maxDuration = 60; // 1 min max
 
 export async function GET(req: Request) {
     try {
+        const authHeader = req.headers.get("authorization");
         const url = new URL(req.url);
-        const secret = url.searchParams.get("secret");
-        if (!process.env.CRON_SECRET || !secret || !safeCompare(secret, process.env.CRON_SECRET)) {
-            return NextResponse.json({ error: "Unauthorized cron agent" }, { status: 401 });
+        const urlSecret = url.searchParams.get("secret");
+        
+        let isCronAuthorized = false;
+        
+        if (process.env.CRON_SECRET) {
+            // Check Vercel Cron Auth Header (Bearer <CRON_SECRET>)
+            if (authHeader === `Bearer ${process.env.CRON_SECRET}`) {
+                isCronAuthorized = true;
+            } 
+            // Fallback to URL parameter
+            else if (urlSecret && safeCompare(urlSecret, process.env.CRON_SECRET)) {
+                isCronAuthorized = true;
+            }
+        }
+        
+        // If not a valid cron request, fallback to checking if it's an ADMIN user
+        if (!isCronAuthorized) {
+            const auth = await protectApi(["ADMIN"]);
+            if (auth.errorResponse) {
+                return NextResponse.json({ error: "Unauthorized cron agent" }, { status: 401 });
+            }
         }
 
         // Calculate the threshold time: 1 hour ago

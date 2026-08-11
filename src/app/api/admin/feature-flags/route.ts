@@ -13,7 +13,7 @@ export async function GET() {
         const auth = await protectApi(["FOUNDER"]);
         if (auth.errorResponse) return auth.errorResponse;
 
-        const settings = await prisma.platformSetting.findMany({
+        const settings = await prisma.platformSetting.findMany({ take: 50,
             where: {
                 key: { startsWith: "flag:" }
             }

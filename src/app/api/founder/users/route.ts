@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 // GET - Fetch users with stats and pagination
 export async function GET(req: Request) {
     try {
-        const auth = await protectApi(["FOUNDER"]);
+        const auth = await protectApi(["ADMIN"]);
         if (auth.errorResponse) return auth.errorResponse;
 
         const searchParams = new URL(req.url).searchParams;

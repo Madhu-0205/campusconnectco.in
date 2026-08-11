@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-    const { errorResponse } = await protectApi(["FOUNDER"]);
+    const { errorResponse } = await protectApi(["ADMIN"]);
     if (errorResponse) return errorResponse;
 
     try {

@@ -62,6 +62,7 @@ export async function updateSession(request: NextRequest) {
     const isPublicRoute =
         path === '/' ||
         path === '/about' ||
+        path === '/our-story' ||
         path === '/leaderboard' ||
         path === '/success-stories' ||
         path === '/ambassador' ||
@@ -73,6 +74,7 @@ export async function updateSession(request: NextRequest) {
         path.startsWith('/api/auth') ||
         path === '/api/stats' ||
         path.startsWith('/api/skills') ||
+        path.startsWith('/api/colleges') ||
         path.startsWith('/api/ai/resume-analyze') ||
         path.startsWith('/api/internal/import-internship') ||
         path.startsWith('/api/internal/opportunities') ||
@@ -82,6 +84,8 @@ export async function updateSession(request: NextRequest) {
         path.startsWith('/browse-gigs') ||
         path.startsWith('/gigs/') ||
         path === '/marketplace' ||
+        path === '/internships' ||
+        path.startsWith('/internships/') ||
         path === '/terms' ||
         path === '/privacy' ||
         path === '/community-guidelines' ||

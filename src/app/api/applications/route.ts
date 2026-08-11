@@ -68,9 +68,10 @@ export async function POST(req: Request) {
         }
 
         const { gigId } = await req.json()
+        const { z } = require("zod");
 
-        if (!gigId) {
-            return NextResponse.json({ error: "gigId is required" }, { status: 400 })
+        if (!gigId || !z.string().uuid().safeParse(gigId).success) {
+            return NextResponse.json({ error: "Valid gigId UUID is required" }, { status: 400 })
         }
 
         // Fetch user to check role

@@ -38,7 +38,7 @@ export async function GET(req: Request) {
         const searchLng = lng ?? dbUser.longitude ?? 0
 
         if (type === "gigs") {
-            const gigs = await prisma.gig.findMany({
+            const gigs = await prisma.gig.findMany({ take: 50,
                 where: { status: "OPEN" },
                 include: {
                     poster: {
@@ -58,8 +58,11 @@ export async function GET(req: Request) {
                 // Hybrid Formula: 70% skill match, 30% proximity
                 const finalScore = (skillScore * 0.7) + (radiusScore * 100 * 0.3)
 
+                // Strip sensitive coordinates before returning to client
+                const { latitude, longitude, ...safeGig } = gig;
+
                 return {
-                    ...gig,
+                    ...safeGig,
                     distance,
                     matchScore: Math.round(finalScore)
                 }
@@ -69,7 +72,7 @@ export async function GET(req: Request) {
             return NextResponse.json(ratedGigs.slice(0, 10))
         } else {
             // Recommendation for Talent
-            const talent = await prisma.user.findMany({
+            const talent = await prisma.user.findMany({ take: 50,
                 where: {
                     role: "STUDENT",
                     id: { not: dbUser.id }
@@ -90,8 +93,11 @@ export async function GET(req: Request) {
                     ? calculateDistance(searchLat, searchLng, t.latitude, t.longitude)
                     : null
 
+                // Strip sensitive coordinates before returning to client
+                const { latitude, longitude, ...safeTalent } = t;
+
                 return {
-                    ...t,
+                    ...safeTalent,
                     distance,
                     matchScore: 0
                 }

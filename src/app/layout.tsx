@@ -95,13 +95,15 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
   },
   manifest: "/site.webmanifest",
-  verification: {
-    google: "google-site-verification=YOUR_GOOGLE_VERIFICATION_CODE",
-    yandex: "yandex=YOUR_YANDEX_VERIFICATION_CODE",
-    other: {
-      "msvalidate.01": "bing-site-verification=YOUR_BING_VERIFICATION_CODE",
+  ...(process.env.GOOGLE_SITE_VERIFICATION || process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? {
+    verification: {
+      google: (process.env.GOOGLE_SITE_VERIFICATION || process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION)!,
+      ...(process.env.YANDEX_VERIFICATION ? { yandex: process.env.YANDEX_VERIFICATION } : {}),
+      ...(process.env.BING_SITE_VERIFICATION ? {
+        other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION },
+      } : {}),
     },
-  },
+  } : {}),
   robots: {
     index: true,
     follow: true,

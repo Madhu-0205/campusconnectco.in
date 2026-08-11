@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
-import { createClient } from "@/lib/supabase/server";
 
 const GigActionSchema = z.object({
     action: z.enum(["approve", "reject", "flag", "close"]),
@@ -15,28 +15,8 @@ export async function PATCH(
 ) {
     const params = await props.params;
     try {
-        const supabase = await createClient();
-        const {
-            data: { user },
-            error: authError,
-        } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        // Verify user is a founder
-        const currentUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { role: true },
-        });
-
-        if (currentUser?.role !== "FOUNDER") {
-            return NextResponse.json(
-                { error: "Forbidden - Founder access only" },
-                { status: 403 }
-            );
-        }
+        const auth = await protectApi(["ADMIN"]);
+        if (auth.errorResponse) return auth.errorResponse;
 
         const gigId = params.id;
         
@@ -130,28 +110,8 @@ export async function DELETE(
 ) {
     const params = await props.params;
     try {
-        const supabase = await createClient();
-        const {
-            data: { user },
-            error: authError,
-        } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        // Verify user is a founder
-        const currentUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { role: true },
-        });
-
-        if (currentUser?.role !== "FOUNDER") {
-            return NextResponse.json(
-                { error: "Forbidden - Founder access only" },
-                { status: 403 }
-            );
-        }
+        const auth = await protectApi(["ADMIN"]);
+        if (auth.errorResponse) return auth.errorResponse;
 
         const gigId = params.id;
 

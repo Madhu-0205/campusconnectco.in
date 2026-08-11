@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { z } from "zod";
 
 import { NextResponse } from 'next/server';
 
@@ -45,13 +46,30 @@ function errorResponse(
 // Route handler
 // ---------------------------------------------------------------------------
 
-export async function POST(req: Request) {
-    const requestId = randomUUID();
-    const totalStart = performance.now();
 
-    // 1. Rate Limiting — checked BEFORE auth to protect against DoS
-    const ip = (req.headers.get('x-forwarded-for') || 'unknown').split(',')[0].trim();
-    try {
+const SmartMatchSchema = z.object({
+    internships: z.array(z.object({
+        id: z.string(),
+        title: z.string(),
+        description: z.string(),
+        matchScore: z.number()
+    })).optional(),
+    gigs: z.array(z.object({
+        id: z.string(),
+        title: z.string(),
+        description: z.string(),
+        matchScore: z.number()
+    })).optional(),
+    skillsToLearn: z.array(z.string()).optional(),
+    roadmap: z.array(z.string()).optional()
+});
+
+export async function POST(req: Request) {
+  try {
+const requestId = randomUUID();
+const totalStart = performance.now();
+const ip = (req.headers.get('x-forwarded-for') || 'unknown').split(',')[0].trim();
+try {
         if (!(await aiLimiter.check(ip))) {
             logger.warn('SmartMatch: rate limit exceeded', { requestId, ip });
             return errorResponse(429, 'Rate limited. Please try again later.', requestId);
@@ -61,8 +79,7 @@ export async function POST(req: Request) {
         logger.warn('SmartMatch: rate limiter threw, allowing request', { requestId, ip });
         logger.error('SmartMatch: rate limiter error', rlError, { requestId });
     }
-
-    try {
+try {
         // 2. Auth Check
         const auth = await protectApi(['FOUNDER', 'STUDENT']);
         if (auth.errorResponse) return auth.errorResponse;
@@ -114,7 +131,7 @@ export async function POST(req: Request) {
                 select: { id: true, title: true, description: true, skills: true, stipend: true, location: true, city: true, state: true, collegeId: true },
             }),
             prisma.gig.findMany({
-                where: { status: 'active' },   // Gig.status defaults to "active" (lowercase)
+                where: { status: 'OPEN' },
                 take: 15,
                 orderBy: { createdAt: 'desc' },
                 select: { id: true, title: true, description: true, required_skills: true, budget: true, city: true, state: true, collegeId: true },
@@ -146,7 +163,13 @@ export async function POST(req: Request) {
         logger.info('SmartMatch: AI generation started', { requestId, userId });
 
         const opportunitiesContext = { internships: activeInternships, gigs: activeGigs };
-        const result = await AIService.getSmartMatch(userProfile, opportunitiesContext);
+        const rawResult = await AIService.getSmartMatch(userProfile, opportunitiesContext);
+        const parseResult = SmartMatchSchema.safeParse(rawResult);
+        if (!parseResult.success) {
+            logger.error('SmartMatch: Zod validation failed', parseResult.error);
+            return errorResponse(422, 'AI returned an invalid structure.', requestId);
+        }
+        const result = parseResult.data;
 
         const aiMs = Math.round(performance.now() - aiStart);
         const totalMs = Math.round(performance.now() - totalStart);
@@ -161,13 +184,13 @@ export async function POST(req: Request) {
         // 7. Annotate results with type for frontend routing
         if (result?.internships) {
             result.internships = result.internships.map(
-                (i: Record<string, unknown>) => ({ ...i, type: 'Internship' }),
-            );
+                (i: any) => ({ ...i, type: 'Internship' }),
+            ) as any;
         }
         if (result?.gigs) {
             result.gigs = result.gigs.map(
-                (g: Record<string, unknown>) => ({ ...g, type: 'Gig' }),
-            );
+                (g: any) => ({ ...g, type: 'Gig' }),
+            ) as any;
         }
 
         return NextResponse.json({
@@ -221,4 +244,8 @@ export async function POST(req: Request) {
             process.env.NODE_ENV === 'development' ? normalized : undefined,
         );
     }
+  } catch (error) {
+    console.error("API Error in src/app/api/ai/smartmatch/route.ts:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

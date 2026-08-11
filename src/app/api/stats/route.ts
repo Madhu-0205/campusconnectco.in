@@ -15,7 +15,7 @@ export async function GET() {
     ])
 
     // Count distinct non-null colleges
-    const collegeRows = await prisma.user.findMany({
+    const collegeRows = await prisma.user.findMany({ take: 50,
       select: { college: true },
       distinct: ['college'],
       where: { college: { not: null } },

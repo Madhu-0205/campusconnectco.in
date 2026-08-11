@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // GET /api/founder/disputes - List all disputes with full context
 export async function GET(req: Request) {
   try {
-    const auth = await protectApi(["FOUNDER"]);
+    const auth = await protectApi(["ADMIN"]);
     if (auth.errorResponse) return auth.errorResponse;
 
     const url = new URL(req.url);
@@ -60,7 +60,7 @@ const resolveSchema = z.object({
 // POST /api/founder/disputes - Resolve a dispute
 export async function POST(req: Request) {
   try {
-    const auth = await protectApi(["FOUNDER"]);
+    const auth = await protectApi(["ADMIN"]);
     if (auth.errorResponse) return auth.errorResponse;
     const { user } = auth;
 

@@ -19,122 +19,127 @@ export async function proxy(request: NextRequest) {
 
     const ip = (request as any).ip || request.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
 
-    // Apply strict rate limiting to authentication routes/endpoints
-    const isAuthRoute = path.startsWith('/auth') || path.startsWith('/api/user/profile') || path.startsWith('/api/founder/verify-role');
-    if (isAuthRoute) {
-        const ok = await authLimiter.check(ip);
-        if (!ok) {
-            console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
-                timestamp: new Date().toISOString(),
-                event: "RATE_LIMIT_TRIGGERED",
-                ipAddress: ip,
-                requestId,
-                correlationId,
-                metadata: { path, context: "auth-limiter" }
-            })}`);
+    const isDev = process.env.NODE_ENV === 'development';
 
-            return new NextResponse(
-                JSON.stringify({ error: 'Too many authentication attempts. Please try again later.' }),
-                { status: 429, headers: { 'Content-Type': 'application/json' } }
-            );
+    if (!isDev) {
+        // Apply strict rate limiting to authentication routes/endpoints
+        const isAuthRoute = path.startsWith('/auth') || path.startsWith('/api/user/profile') || path.startsWith('/api/founder/verify-role');
+        if (isAuthRoute) {
+            const ok = await authLimiter.check(ip);
+            if (!ok) {
+                console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    event: "RATE_LIMIT_TRIGGERED",
+                    ipAddress: ip,
+                    requestId,
+                    correlationId,
+                    metadata: { path, context: "auth-limiter" }
+                })}`);
+
+                return new NextResponse(
+                    JSON.stringify({ error: 'Too many authentication attempts. Please try again later.' }),
+                    { status: 429, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
         }
-    }
 
-    // Apply strict rate limiting to file parser endpoints (heavy resources)
-    if (path === '/api/ai/parse-resume' || path === '/api/ai/parse-file') {
-        const ok = await resumeParseLimiter.check(ip);
-        if (!ok) {
-            console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
-                timestamp: new Date().toISOString(),
-                event: "RATE_LIMIT_TRIGGERED",
-                ipAddress: ip,
-                requestId,
-                correlationId,
-                metadata: { path, context: "resume-parser-limiter" }
-            })}`);
+        // Apply strict rate limiting to file parser endpoints (heavy resources)
+        if (path === '/api/ai/parse-resume' || path === '/api/ai/parse-file') {
+            const ok = await resumeParseLimiter.check(ip);
+            if (!ok) {
+                console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    event: "RATE_LIMIT_TRIGGERED",
+                    ipAddress: ip,
+                    requestId,
+                    correlationId,
+                    metadata: { path, context: "resume-parser-limiter" }
+                })}`);
 
-            return new NextResponse(
-                JSON.stringify({ error: 'Daily file upload limit reached. Please try again tomorrow.' }),
-                { status: 429, headers: { 'Content-Type': 'application/json' } }
-            );
+                return new NextResponse(
+                    JSON.stringify({ error: 'Daily file upload limit reached. Please try again tomorrow.' }),
+                    { status: 429, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
         }
-    }
 
-    // Apply strict rate limiting to AI endpoints (costly resources)
-    if (path.startsWith('/api/ai') && path !== '/api/ai/parse-resume' && path !== '/api/ai/parse-file') {
-        const ok = await aiLimiter.check(ip);
-        if (!ok) {
-            console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
-                timestamp: new Date().toISOString(),
-                event: "RATE_LIMIT_TRIGGERED",
-                ipAddress: ip,
-                requestId,
-                correlationId,
-                metadata: { path, context: "ai-limiter" }
-            })}`);
+        // Apply strict rate limiting to AI endpoints (costly resources)
+        if (path.startsWith('/api/ai') && path !== '/api/ai/parse-resume' && path !== '/api/ai/parse-file') {
+            const ok = await aiLimiter.check(ip);
+            if (!ok) {
+                console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    event: "RATE_LIMIT_TRIGGERED",
+                    ipAddress: ip,
+                    requestId,
+                    correlationId,
+                    metadata: { path, context: "ai-limiter" }
+                })}`);
 
-            return new NextResponse(
-                JSON.stringify({ error: 'Too many AI requests. Please try again later.' }),
-                { status: 429, headers: { 'Content-Type': 'application/json' } }
-            );
+                return new NextResponse(
+                    JSON.stringify({ error: 'Too many AI requests. Please try again later.' }),
+                    { status: 429, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
         }
-    }
 
-    // Apply strict rate limiting to search endpoints (scraping protection)
-    if (path.startsWith('/api/search')) {
-        const ok = await searchLimiter.check(ip);
-        if (!ok) {
-            console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
-                timestamp: new Date().toISOString(),
-                event: "RATE_LIMIT_TRIGGERED",
-                ipAddress: ip,
-                requestId,
-                correlationId,
-                metadata: { path, context: "search-limiter" }
-            })}`);
+        // Apply strict rate limiting to search endpoints (scraping protection) and colleges API
+        if (path.startsWith('/api/search') || path.startsWith('/api/colleges')) {
+            const ok = await searchLimiter.check(ip);
+            if (!ok) {
+                console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    event: "RATE_LIMIT_TRIGGERED",
+                    ipAddress: ip,
+                    requestId,
+                    correlationId,
+                    metadata: { path, context: "search-limiter" }
+                })}`);
 
-            return new NextResponse(
-                JSON.stringify({ error: 'Too many search requests. Please try again later.' }),
-                { status: 429, headers: { 'Content-Type': 'application/json' } }
-            );
+                return new NextResponse(
+                    JSON.stringify({ error: 'Too many search requests. Please try again later.' }),
+                    { status: 429, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
         }
-    }
 
-    // Apply strict rate limiting to file uploads/applications (abuse prevention)
-    if (path.startsWith('/api/applications/apply') || path.startsWith('/api/internal/import-internship')) {
-        const ok = await uploadLimiter.check(ip);
-        if (!ok) {
-            console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
-                timestamp: new Date().toISOString(),
-                event: "RATE_LIMIT_TRIGGERED",
-                ipAddress: ip,
-                requestId,
-                correlationId,
-                metadata: { path, context: "upload-limiter" }
-            })}`);
+        // Apply strict rate limiting to file uploads/applications (abuse prevention)
+        if (path.startsWith('/api/applications/apply') || path.startsWith('/api/internal/import-internship')) {
+            const ok = await uploadLimiter.check(ip);
+            if (!ok) {
+                console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    event: "RATE_LIMIT_TRIGGERED",
+                    ipAddress: ip,
+                    requestId,
+                    correlationId,
+                    metadata: { path, context: "upload-limiter" }
+                })}`);
 
-            return new NextResponse(
-                JSON.stringify({ error: 'Too many file uploads or operations. Please try again later.' }),
-                { status: 429, headers: { 'Content-Type': 'application/json' } }
-            );
+                return new NextResponse(
+                    JSON.stringify({ error: 'Too many file uploads or operations. Please try again later.' }),
+                    { status: 429, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
         }
-    }
 
-    // Apply rate limiting to general API routes (excluding health checks, status checks, and specialized API routes)
-    const isSpecializedApi = 
-        isAuthRoute || 
-        path.startsWith('/api/ai') || 
-        path.startsWith('/api/search') || 
-        path.startsWith('/api/applications/apply') || 
-        path.startsWith('/api/internal/import-internship');
+        // Apply rate limiting to general API routes (excluding health checks, status checks, and specialized API routes)
+        const isSpecializedApi = 
+            isAuthRoute || 
+            path.startsWith('/api/ai') || 
+            path.startsWith('/api/search') || 
+            path.startsWith('/api/applications/apply') || 
+            path.startsWith('/api/internal/import-internship') ||
+            path.startsWith('/api/colleges');
 
-    if (path.startsWith('/api') && path !== '/api/health' && path !== '/api/ready' && path !== '/api/live' && !isSpecializedApi) {
-        const ok = await generalApiLimiter.check(ip);
-        if (!ok) {
-            return new NextResponse(
-                JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-                { status: 429, headers: { 'Content-Type': 'application/json' } }
-            );
+        if (path.startsWith('/api') && path !== '/api/health' && path !== '/api/ready' && path !== '/api/live' && !isSpecializedApi) {
+            const ok = await generalApiLimiter.check(ip);
+            if (!ok) {
+                return new NextResponse(
+                    JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+                    { status: 429, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
         }
     }
 
@@ -148,8 +153,6 @@ export async function proxy(request: NextRequest) {
     const response = await updateSession(request);
 
     // 3. Construct Content-Security-Policy (CSP)
-    const isDev = process.env.NODE_ENV === 'development';
-
     const cspElements = [
         "default-src 'none'",
         "manifest-src 'self'",

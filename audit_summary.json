@@ -1,0 +1,602 @@
+[
+  {
+    "name": "User",
+    "indexes": [],
+    "relations": [
+      "connectionsReceived  ConnectionRequest[] @relation(\"ConnectionReceiver\")",
+      "connectionsSent      ConnectionRequest[] @relation(\"ConnectionSender\")",
+      "conversations1       Conversation[]      @relation(\"User1Conv\")",
+      "conversations2       Conversation[]      @relation(\"User2Conv\")",
+      "endorsementsReceived Endorsement[]       @relation(\"EndorsementsReceived\")",
+      "endorsementsGiven    Endorsement[]       @relation(\"EndorsementsGiven\")",
+      "clientEscrows        Escrow[]            @relation(\"ClientEscrow\")",
+      "workerEscrows        Escrow[]            @relation(\"WorkerEscrow\")",
+      "following            Follows[]           @relation(\"follower\")",
+      "followedBy           Follows[]           @relation(\"following\")",
+      "referralsReceived    Referral?           @relation(\"ReferralReceiver\")",
+      "referralsSent        Referral[]          @relation(\"ReferralSender\")",
+      "reviewsReceived      Review[]            @relation(\"ReviewsReceived\")",
+      "reviewsGiven         Review[]            @relation(\"ReviewsGiven\")",
+      "buyerTransactions    Transaction[]       @relation(\"BuyerTransactions\")",
+      "sellerTransactions   Transaction[]       @relation(\"SellerTransactions\")",
+      "gigsPosted           Gig[]               @relation(\"PostedGigs\")"
+    ],
+    "foreignKeys": [
+      "upiId                String?",
+      "collegeId            String?"
+    ]
+  },
+  {
+    "name": "Follows",
+    "indexes": [],
+    "relations": [
+      "follower    User     @relation(\"follower\", fields: [followerId], references: [id])",
+      "following   User     @relation(\"following\", fields: [followingId], references: [id])"
+    ],
+    "foreignKeys": [
+      "followerId  String   @db.Uuid",
+      "followingId String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "ConnectionRequest",
+    "indexes": [
+      "@@index([senderId])",
+      "@@index([receiverId])",
+      "@@index([status])",
+      "@@index([receiverId], map: \"idx_connection_request_receiver\")",
+      "@@index([senderId], map: \"idx_connection_request_sender\")"
+    ],
+    "relations": [
+      "receiver    User      @relation(\"ConnectionReceiver\", fields: [receiverId], references: [id], onDelete: Cascade)",
+      "sender      User      @relation(\"ConnectionSender\", fields: [senderId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "senderId    String    @db.Uuid",
+      "receiverId  String    @db.Uuid"
+    ]
+  },
+  {
+    "name": "Notification",
+    "indexes": [],
+    "relations": [
+      "user      User?    @relation(fields: [userId], references: [id])"
+    ],
+    "foreignKeys": [
+      "userId    String?  @db.Uuid"
+    ]
+  },
+  {
+    "name": "Project",
+    "indexes": [
+      "@@index([userId])"
+    ],
+    "relations": [
+      "user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId      String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "Gig",
+    "indexes": [
+      "@@index([posted_by], map: \"idx_gigs_posted_by\")"
+    ],
+    "relations": [
+      "poster          User          @relation(\"PostedGigs\", fields: [posted_by], references: [id], map: \"Gig_posted_by_fkey\")"
+    ],
+    "foreignKeys": [
+      "collegeId        String?"
+    ]
+  },
+  {
+    "name": "Application",
+    "indexes": [
+      "@@index([applicantId], map: \"Application_applicantId_idx\")",
+      "@@index([gigId], map: \"Application_gigId_idx\")",
+      "@@index([applicantId], map: \"idx_applications_applicantid\")",
+      "@@index([gigId], map: \"idx_applications_gigid\")"
+    ],
+    "relations": [
+      "applicant   User     @relation(fields: [applicantId], references: [id], onDelete: Cascade, map: \"Application_applicantId_fkey\")",
+      "gig         Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade, map: \"Application_gigId_fkey\")"
+    ],
+    "foreignKeys": [
+      "gigId       String   @db.Uuid",
+      "applicantId String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "Escrow",
+    "indexes": [
+      "@@index([gigId])",
+      "@@index([clientId])",
+      "@@index([workerId])",
+      "@@index([clientId, status])"
+    ],
+    "relations": [
+      "client         User         @relation(\"ClientEscrow\", fields: [clientId], references: [id])",
+      "gig            Gig          @relation(fields: [gigId], references: [id], onDelete: Cascade)",
+      "worker         User         @relation(\"WorkerEscrow\", fields: [workerId], references: [id])"
+    ],
+    "foreignKeys": [
+      "gigId          String       @db.Uuid",
+      "clientId       String       @db.Uuid",
+      "workerId       String       @db.Uuid"
+    ]
+  },
+  {
+    "name": "Transaction",
+    "indexes": [
+      "@@index([buyerId])",
+      "@@index([sellerId])",
+      "@@index([status])",
+      "@@index([releaseAt])"
+    ],
+    "relations": [
+      "buyer           User               @relation(\"BuyerTransactions\", fields: [buyerId], references: [id])",
+      "gig             Gig?               @relation(fields: [gigId], references: [id])",
+      "post            Post?              @relation(fields: [postId], references: [id])",
+      "seller          User               @relation(\"SellerTransactions\", fields: [sellerId], references: [id])"
+    ],
+    "foreignKeys": [
+      "gigId           String?            @db.Uuid",
+      "buyerId         String             @db.Uuid",
+      "paymentId       String?            @unique",
+      "paymentIntentId String?            @unique",
+      "postId          String?            @db.Uuid",
+      "sellerId        String             @db.Uuid",
+      "webhookEventId  String?            @unique"
+    ]
+  },
+  {
+    "name": "TransactionAudit",
+    "indexes": [
+      "@@index([transactionId])"
+    ],
+    "relations": [
+      "transaction   Transaction @relation(fields: [transactionId], references: [id])"
+    ],
+    "foreignKeys": [
+      "transactionId String      @db.Uuid"
+    ]
+  },
+  {
+    "name": "Dispute",
+    "indexes": [],
+    "relations": [
+      "transaction   Transaction   @relation(fields: [transactionId], references: [id])"
+    ],
+    "foreignKeys": [
+      "transactionId String        @unique @db.Uuid"
+    ]
+  },
+  {
+    "name": "Post",
+    "indexes": [
+      "@@index([authorId])"
+    ],
+    "relations": [
+      "author       User          @relation(fields: [authorId], references: [id])"
+    ],
+    "foreignKeys": [
+      "authorId     String        @db.Uuid"
+    ]
+  },
+  {
+    "name": "PostLike",
+    "indexes": [],
+    "relations": [
+      "post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)",
+      "user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "postId    String   @db.Uuid",
+      "userId    String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "Conversation",
+    "indexes": [
+      "@@index([participant_1])",
+      "@@index([participant_2])"
+    ],
+    "relations": [
+      "user1           User      @relation(\"User1Conv\", fields: [participant_1], references: [id], onDelete: Cascade)",
+      "user2           User      @relation(\"User2Conv\", fields: [participant_2], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": []
+  },
+  {
+    "name": "Message",
+    "indexes": [
+      "@@index([conversation_id, created_at], map: \"Message_conversation_id_created_at_idx\")",
+      "@@index([sender_id], map: \"Message_sender_id_idx\")",
+      "@@index([conversation_id], map: \"idx_messages_conversation_id\")"
+    ],
+    "relations": [
+      "conversation    Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade, map: \"Message_conversation_id_fkey\")",
+      "sender          User         @relation(fields: [sender_id], references: [id], onDelete: Cascade, map: \"Message_sender_id_fkey\")"
+    ],
+    "foreignKeys": [
+      "sender_id       String       @db.Uuid",
+      "conversation_id String       @db.Uuid"
+    ]
+  },
+  {
+    "name": "Skill",
+    "indexes": [
+      "@@index([name])",
+      "@@index([category])",
+      "@@index([name, category])"
+    ],
+    "relations": [
+      "endorsements Endorsement[] @relation(\"SkillEndorsements\")"
+    ],
+    "foreignKeys": []
+  },
+  {
+    "name": "UserSkill",
+    "indexes": [],
+    "relations": [
+      "skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)",
+      "user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId  String @db.Uuid",
+      "skillId String @db.Uuid"
+    ]
+  },
+  {
+    "name": "GigSkill",
+    "indexes": [],
+    "relations": [
+      "gig     Gig    @relation(fields: [gigId], references: [id], onDelete: Cascade)",
+      "skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "gigId   String @db.Uuid",
+      "skillId String @db.Uuid"
+    ]
+  },
+  {
+    "name": "Internship",
+    "indexes": [],
+    "relations": [],
+    "foreignKeys": [
+      "collegeId       String?",
+      "externalId      String?           @unique"
+    ]
+  },
+  {
+    "name": "SavedInternship",
+    "indexes": [
+      "@@index([userId])",
+      "@@index([internshipId])"
+    ],
+    "relations": [
+      "internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)",
+      "user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId       String     @db.Uuid",
+      "internshipId String     @db.Uuid",
+      "internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)"
+    ]
+  },
+  {
+    "name": "SavedGig",
+    "indexes": [
+      "@@index([userId])",
+      "@@index([gigId])"
+    ],
+    "relations": [
+      "gig       Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)",
+      "user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId    String   @db.Uuid",
+      "gigId     String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "Announcement",
+    "indexes": [],
+    "relations": [],
+    "foreignKeys": []
+  },
+  {
+    "name": "PlatformSetting",
+    "indexes": [],
+    "relations": [],
+    "foreignKeys": []
+  },
+  {
+    "name": "Review",
+    "indexes": [
+      "@@index([gigId])",
+      "@@index([reviewerId])",
+      "@@index([revieweeId])"
+    ],
+    "relations": [
+      "gig        Gig      @relation(fields: [gigId], references: [id])",
+      "reviewee   User     @relation(\"ReviewsReceived\", fields: [revieweeId], references: [id])",
+      "reviewer   User     @relation(\"ReviewsGiven\", fields: [reviewerId], references: [id])"
+    ],
+    "foreignKeys": [
+      "gigId      String   @db.Uuid",
+      "reviewerId String   @db.Uuid",
+      "revieweeId String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "Endorsement",
+    "indexes": [],
+    "relations": [
+      "endorsee   User     @relation(\"EndorsementsReceived\", fields: [endorseeId], references: [id])",
+      "endorser   User     @relation(\"EndorsementsGiven\", fields: [endorserId], references: [id])",
+      "skill      Skill    @relation(\"SkillEndorsements\", fields: [skillId], references: [id])"
+    ],
+    "foreignKeys": [
+      "endorserId String   @db.Uuid",
+      "endorseeId String   @db.Uuid",
+      "skillId    String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "Task",
+    "indexes": [
+      "@@index([userId])"
+    ],
+    "relations": [
+      "user        User      @relation(fields: [userId], references: [id])"
+    ],
+    "foreignKeys": [
+      "userId      String    @db.Uuid"
+    ]
+  },
+  {
+    "name": "Startup",
+    "indexes": [],
+    "relations": [
+      "founder     User     @relation(fields: [founderId], references: [id])"
+    ],
+    "foreignKeys": [
+      "founderId   String   @unique @db.Uuid"
+    ]
+  },
+  {
+    "name": "ResumeAnalysis",
+    "indexes": [
+      "@@index([userId, createdAt(sort: Desc)])"
+    ],
+    "relations": [
+      "user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId        String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "Analytics",
+    "indexes": [
+      "@@index([event, createdAt])",
+      "@@index([userId, event])",
+      "@@index([sessionId])"
+    ],
+    "relations": [
+      "user User? @relation(fields: [userId], references: [id], onDelete: SetNull)"
+    ],
+    "foreignKeys": [
+      "userId    String?  @db.Uuid",
+      "sessionId String?"
+    ]
+  },
+  {
+    "name": "CareerRoadmap",
+    "indexes": [
+      "@@index([userId])"
+    ],
+    "relations": [
+      "user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId        String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "UserEmbedding",
+    "indexes": [],
+    "relations": [
+      "user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId    String   @unique @db.Uuid"
+    ]
+  },
+  {
+    "name": "GigEmbedding",
+    "indexes": [],
+    "relations": [
+      "gig       Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "gigId     String   @unique @db.Uuid"
+    ]
+  },
+  {
+    "name": "Organization",
+    "indexes": [],
+    "relations": [],
+    "foreignKeys": []
+  },
+  {
+    "name": "Member",
+    "indexes": [],
+    "relations": [
+      "organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)",
+      "user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId         String       @db.Uuid",
+      "organizationId String       @db.Uuid"
+    ]
+  },
+  {
+    "name": "Subscription",
+    "indexes": [],
+    "relations": [
+      "organization       Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "organizationId     String             @unique @db.Uuid"
+    ]
+  },
+  {
+    "name": "CampusDrive",
+    "indexes": [],
+    "relations": [
+      "organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "organizationId String       @db.Uuid"
+    ]
+  },
+  {
+    "name": "MockInterview",
+    "indexes": [
+      "@@index([userId])"
+    ],
+    "relations": [
+      "user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId      String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "CopilotSession",
+    "indexes": [
+      "@@index([userId])"
+    ],
+    "relations": [
+      "user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId    String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "UserGamification",
+    "indexes": [],
+    "relations": [
+      "user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId           String      @unique @db.Uuid"
+    ]
+  },
+  {
+    "name": "XpEvent",
+    "indexes": [],
+    "relations": [
+      "gamification   UserGamification @relation(fields: [gamificationId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "gamificationId String           @db.Uuid"
+    ]
+  },
+  {
+    "name": "Badge",
+    "indexes": [],
+    "relations": [],
+    "foreignKeys": []
+  },
+  {
+    "name": "UserBadge",
+    "indexes": [],
+    "relations": [
+      "badge          Badge            @relation(fields: [badgeId], references: [id])",
+      "gamification   UserGamification @relation(fields: [gamificationId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId         String           @db.Uuid",
+      "badgeId        String           @db.Uuid",
+      "gamificationId String           @db.Uuid"
+    ]
+  },
+  {
+    "name": "CampusLeaderboard",
+    "indexes": [
+      "@@index([college, period])",
+      "@@index([period, smartScore])"
+    ],
+    "relations": [],
+    "foreignKeys": [
+      "userId      String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "Referral",
+    "indexes": [
+      "@@index([referrerId])",
+      "@@index([referralCode])",
+      "@@index([status])"
+    ],
+    "relations": [
+      "referee        User?     @relation(\"ReferralReceiver\", fields: [refereeId], references: [id])",
+      "referrer       User      @relation(\"ReferralSender\", fields: [referrerId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "referrerId     String    @db.Uuid",
+      "refereeId      String?   @unique @db.Uuid"
+    ]
+  },
+  {
+    "name": "Ambassador",
+    "indexes": [
+      "@@index([college])",
+      "@@index([tier])"
+    ],
+    "relations": [
+      "user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId                  String   @unique @db.Uuid"
+    ]
+  },
+  {
+    "name": "ShareCard",
+    "indexes": [
+      "@@index([userId, type])"
+    ],
+    "relations": [
+      "user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)"
+    ],
+    "foreignKeys": [
+      "userId      String   @db.Uuid"
+    ]
+  },
+  {
+    "name": "GrowthEvent",
+    "indexes": [
+      "@@index([type, createdAt])",
+      "@@index([college, createdAt])"
+    ],
+    "relations": [],
+    "foreignKeys": [
+      "userId    String?  @db.Uuid"
+    ]
+  },
+  {
+    "name": "College",
+    "indexes": [
+      "@@index([state, city])",
+      "@@index([approved])",
+      "@@index([name])"
+    ],
+    "relations": [],
+    "foreignKeys": []
+  }
+]

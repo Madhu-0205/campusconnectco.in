@@ -80,6 +80,19 @@ export async function GET(request: Request) {
         let redirectPath = "/dashboard/student";
         let userRole = "STUDENT";
 
+        // Validate collegeId if present
+        let validatedCollegeId = user.user_metadata?.collegeId || null;
+        if (validatedCollegeId) {
+            const collegeExists = await prisma.college.findUnique({
+                where: { id: validatedCollegeId },
+                select: { id: true }
+            });
+            if (!collegeExists) {
+                console.warn(`[OAuth Callback] Invalid collegeId ${validatedCollegeId} for user ${user.id}, ignoring.`);
+                validatedCollegeId = null;
+            }
+        }
+
         // Upsert the user into our DB (handles Google signup automatically) and fetch role
         try {
             console.log("[OAuth Callback] Upserting user into database...", { userId: user.id });
@@ -99,6 +112,7 @@ export async function GET(request: Request) {
                         ? "FOUNDER" 
                         : (user.user_metadata?.role || roleParam || "STUDENT"),
                     college: user.user_metadata?.college || null,
+                    collegeId: validatedCollegeId,
                     acceptedTerms: true,
                     acceptedTermsAt: new Date(),
                     acceptedTermsVersion: "1.0",

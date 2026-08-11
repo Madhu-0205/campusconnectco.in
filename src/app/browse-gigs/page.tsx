@@ -3,7 +3,6 @@
 import { Suspense } from "react";
 
 import BrowseGigsContent from "@/components/gigs/BrowseGigsContent";
-
 import { ContextualMapLayout } from "@/components/v2/maps/ContextualMapLayout";
 
 export default function BrowseGigsPage() {

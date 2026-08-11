@@ -13,7 +13,7 @@ export async function GET() {
         }
 
         // Fetch applications for ALL gigs posted by the current user
-        const applications = await prisma.application.findMany({
+        const applications = await prisma.application.findMany({ take: 50,
             where: {
                 gig: {
                     posted_by: user.id

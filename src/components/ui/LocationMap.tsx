@@ -1,19 +1,22 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
 import * as maplibregl from "maplibre-gl"
+import React, { useEffect, useRef, useState } from "react"
+
 import "maplibre-gl/dist/maplibre-gl.css"
 import { reverseGeocode, geocodeLocation, GeoLocation } from "@/lib/maps/geocoding"
+
 import { Search, Navigation, MapPin } from "lucide-react"
 
 interface LocationMapProps {
   initialLat?: number
   initialLng?: number
   onLocationSelect: (location: GeoLocation) => void
+  onGeocodeFailed?: () => void
   className?: string
 }
 
-export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLocationSelect, className = "" }: LocationMapProps) {
+export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLocationSelect, onGeocodeFailed, className = "" }: LocationMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maplibregl.Map | null>(null)
   const marker = useRef<maplibregl.Marker | null>(null)
@@ -21,15 +24,32 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
+  const updateLocation = async (lat: number, lng: number) => {
+    setIsLoading(true)
+    setError("")
+    const location = await reverseGeocode(lat, lng)
+    if (location) {
+      onLocationSelect(location)
+      setSearchQuery(location.city || location.district || location.state || "")
+    } else {
+      setError("We couldn't identify this location. You can type your city below.")
+      onGeocodeFailed?.()
+    }
+    setIsLoading(false)
+  }
+
   useEffect(() => {
-    if (!mapContainer.current || map.current) return
+    if (map.current || !mapContainer.current) return
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json", // Free OSM based style
+      style: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
       center: [initialLng, initialLat],
-      zoom: initialLat === 20.5937 ? 4 : 12 // Zoom out for India, zoom in for specific
+      zoom: 12,
+      attributionControl: false,
     })
+
+    map.current.addControl(new maplibregl.NavigationControl(), "bottom-right")
 
     marker.current = new maplibregl.Marker({
       draggable: true,
@@ -59,19 +79,6 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
     }
   }, [initialLat, initialLng])
 
-  const updateLocation = async (lat: number, lng: number) => {
-    setIsLoading(true)
-    setError("")
-    const location = await reverseGeocode(lat, lng)
-    if (location) {
-      onLocationSelect(location)
-      setSearchQuery(location.city || location.district || location.state || "")
-    } else {
-      setError("Failed to identify location. Please try again.")
-    }
-    setIsLoading(false)
-  }
-
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!searchQuery.trim()) return
@@ -85,7 +92,8 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
       marker.current.setLngLat([location.longitude, location.latitude])
       onLocationSelect(location)
     } else {
-      setError("Location not found.")
+      setError("Location not found. Try typing your city and state below.")
+      onGeocodeFailed?.()
     }
     setIsLoading(false)
   }
@@ -93,6 +101,7 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser")
+      onGeocodeFailed?.()
       return
     }
 
@@ -107,7 +116,8 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
         await updateLocation(latitude, longitude)
       },
       () => {
-        setError("Unable to retrieve your location. Please check permissions.")
+        setError("Location permission denied. You can type your city and state below.")
+        onGeocodeFailed?.()
         setIsLoading(false)
       }
     )

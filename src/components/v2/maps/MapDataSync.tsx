@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+
 import { useMapContext, MarkerData } from "./MapContext"
 
 export function MapDataSync({ 

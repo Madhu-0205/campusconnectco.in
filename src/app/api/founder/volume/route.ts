@@ -5,10 +5,10 @@ import prisma from "@/lib/prisma"
 
 export async function GET() {
     try {
-        const auth = await protectApi(["FOUNDER"]);
+        const auth = await protectApi(["ADMIN"]);
         if (auth.errorResponse) return auth.errorResponse;
 
-        const transactions = await prisma.transaction.findMany({
+        const transactions = await prisma.transaction.findMany({ take: 50,
             where: {
                 status: { in: ["PAID", "COMPLETED", "RELEASED"] },
             },

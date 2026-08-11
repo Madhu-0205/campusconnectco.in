@@ -25,9 +25,56 @@ export async function getUserRoleFromDb(userId: string) {
             where: { id: userId },
             select: { role: true }
         });
-        return dbUser?.role ?? null;
+        if (dbUser) return dbUser.role;
+
+        // Auto-create profile in DB if user is authenticated but DB record is missing
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user && user.id === userId) {
+            const isFounder = user.email === "madhuvalurouthu52@gmail.com";
+            const isAcademicEmail = typeof user.email === "string" && (
+                user.email.endsWith(".edu") || 
+                user.email.endsWith(".edu.in") || 
+                user.email.endsWith(".res.in")
+            );
+            const userMetadataRole = user.user_metadata?.role || "STUDENT";
+            const finalRole = isFounder ? "ADMIN" : userMetadataRole;
+            const autoVerify = isAcademicEmail || isFounder;
+
+            console.log(`[getUserRoleFromDb] Auto-creating missing user profile in database for ${user.email}`);
+            try {
+                const newProfile = await prisma.user.create({
+                    data: {
+                        id: user.id,
+                        email: user.email || "",
+                        name: user.user_metadata?.name || null,
+                        full_name: user.user_metadata?.name || null,
+                        role: finalRole,
+                        isVerified: autoVerify,
+                        college: user.user_metadata?.college || null,
+                        acceptedTerms: true,
+                        acceptedTermsAt: new Date(),
+                        acceptedTermsVersion: "1.0",
+                    },
+                    select: { role: true }
+                });
+                return newProfile.role;
+            } catch (createErr: any) {
+                if (createErr.code === "P2002") {
+                    console.log(`[getUserRoleFromDb] Profile for ${user.email} was created concurrently. Fetching...`);
+                    const dbUserRetry = await prisma.user.findUnique({
+                        where: { id: userId },
+                        select: { role: true }
+                    });
+                    return dbUserRetry?.role ?? finalRole;
+                }
+                throw createErr;
+            }
+        }
+        return null;
     } catch (error) {
-        console.error("Role fetch failed:", error);
+        console.error("[getUserRoleFromDb] Role fetch/auto-creation failed:", error);
         return null;
     }
 }
@@ -35,7 +82,7 @@ export async function getUserRoleFromDb(userId: string) {
 /**
  * Protects an API route by validating session and role from database
  */
-export async function protectApi(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
+export async function protectApi(allowedRoles: ("ADMIN" | "FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
     const user = await getSession();
 
     if (!user) {
@@ -68,7 +115,7 @@ export async function protectApi(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP
 /**
  * Protects a Server Component/Action
  */
-export async function protectPage(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
+export async function protectPage(allowedRoles: ("ADMIN" | "FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
     const user = await getSession();
 
     if (!user) {
@@ -112,7 +159,7 @@ export async function requireUser() {
 /**
  * Ensures user has a specific role, returning the user and role or an error Response
  */
-export async function requireRole(allowedRoles: ("FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
+export async function requireRole(allowedRoles: ("ADMIN" | "FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[]) {
     const { errorResponse, user } = await requireUser();
     if (errorResponse) return { errorResponse, user: null, role: null };
 
@@ -147,10 +194,10 @@ export async function requireFounder() {
 }
 
 /**
- * Ensures user is an Administrator (Founder in CampusConnect)
+ * Ensures user is an Administrator
  */
 export async function requireAdmin() {
-    return requireRole(["FOUNDER"]);
+    return requireRole(["ADMIN"]);
 }
 
 /**

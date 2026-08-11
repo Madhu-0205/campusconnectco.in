@@ -1,0 +1,142 @@
+[
+  {
+    "file": "src/app/api/admin/feature-flags/route.ts",
+    "line": 16,
+    "code": "const settings = await prisma.platformSetting.findMany({"
+  },
+  {
+    "file": "src/app/api/ai/copilot/sessions/route.ts",
+    "line": 15,
+    "code": "const sessions = await prisma.copilotSession.findMany({"
+  },
+  {
+    "file": "src/app/api/ai/mock-interview/route.ts",
+    "line": 16,
+    "code": "const interviews = await prisma.mockInterview.findMany({"
+  },
+  {
+    "file": "src/app/api/analytics/revenue/route.ts",
+    "line": 37,
+    "code": "const escrows = await prisma.escrow.findMany({"
+  },
+  {
+    "file": "src/app/api/applications/route.ts",
+    "line": 22,
+    "code": "prisma.application.findMany({"
+  },
+  {
+    "file": "src/app/api/career-roadmap/route.ts",
+    "line": 20,
+    "code": "const roadmaps = await getRoadmap().findMany({"
+  },
+  {
+    "file": "src/app/api/client-hub/applicants/route.ts",
+    "line": 16,
+    "code": "const applications = await prisma.application.findMany({"
+  },
+  {
+    "file": "src/app/api/conversations/[id]/route.ts",
+    "line": 39,
+    "code": "const messages = await prisma.message.findMany({"
+  },
+  {
+    "file": "src/app/api/conversations/route.ts",
+    "line": 40,
+    "code": "prisma.conversation.findMany({"
+  },
+  {
+    "file": "src/app/api/employer/drives/route.ts",
+    "line": 88,
+    "code": "const drives = await (prisma as any).campusDrive.findMany({"
+  },
+  {
+    "file": "src/app/api/employer/talent-search/route.ts",
+    "line": 18,
+    "code": "const candidates = await prisma.user.findMany({"
+  },
+  {
+    "file": "src/app/api/founder/announcements/route.ts",
+    "line": 11,
+    "code": "const announcements = await prisma.announcement.findMany({"
+  },
+  {
+    "file": "src/app/api/founder/escrow/route.ts",
+    "line": 20,
+    "code": "prisma.escrow.findMany({"
+  },
+  {
+    "file": "src/app/api/founder/gigs/route.ts",
+    "line": 13,
+    "code": "const gigs = await prisma.gig.findMany({"
+  },
+  {
+    "file": "src/app/api/founder/internships/route.ts",
+    "line": 12,
+    "code": "prisma.internship.findMany({"
+  },
+  {
+    "file": "src/app/api/founder/settings/route.ts",
+    "line": 27,
+    "code": "const records = await prisma.platformSetting.findMany();"
+  },
+  {
+    "file": "src/app/api/founder/users/route.ts",
+    "line": 18,
+    "code": "prisma.user.findMany({"
+  },
+  {
+    "file": "src/app/api/founder/volume/route.ts",
+    "line": 11,
+    "code": "const transactions = await prisma.transaction.findMany({"
+  },
+  {
+    "file": "src/app/api/gigs/route.ts",
+    "line": 289,
+    "code": "const followers = await prisma.follows.findMany({"
+  },
+  {
+    "file": "src/app/api/growth/referral/route.ts",
+    "line": 27,
+    "code": "const allReferrals: any[] = await (prisma as any).referral.findMany({"
+  },
+  {
+    "file": "src/app/api/network/users/route.ts",
+    "line": 15,
+    "code": "const users = await prisma.user.findMany({"
+  },
+  {
+    "file": "src/app/api/recommendations/route.ts",
+    "line": 41,
+    "code": "const gigs = await prisma.gig.findMany({"
+  },
+  {
+    "file": "src/app/api/recommendations/route.ts",
+    "line": 75,
+    "code": "const talent = await prisma.user.findMany({"
+  },
+  {
+    "file": "src/app/api/search/route.ts",
+    "line": 42,
+    "code": "const gigs = await prisma.gig.findMany({"
+  },
+  {
+    "file": "src/app/api/search/route.ts",
+    "line": 91,
+    "code": "const users = await prisma.user.findMany({"
+  },
+  {
+    "file": "src/app/api/stats/route.ts",
+    "line": 18,
+    "code": "const collegeRows = await prisma.user.findMany({"
+  },
+  {
+    "file": "src/app/api/user/saved/route.ts",
+    "line": 21,
+    "code": "const savedInternships = await prisma.savedInternship.findMany({"
+  },
+  {
+    "file": "src/app/api/user/saved/route.ts",
+    "line": 30,
+    "code": "const savedGigs = await prisma.savedGig.findMany({"
+  }
+]

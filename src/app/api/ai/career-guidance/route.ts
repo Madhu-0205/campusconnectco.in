@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { NextResponse } from 'next/server';
 
 import { getOpenAI } from '@/lib/ai/client';
@@ -5,6 +6,14 @@ import prisma from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 
 export const maxDuration = 60;
+
+
+const CareerRoadmapSchema = z.object({
+    roadmapSteps: z.array(z.string()).optional(),
+    learningPath: z.array(z.string()).optional(),
+    projects: z.array(z.string()).optional(),
+    jobPrepTips: z.array(z.string()).optional()
+});
 
 export async function POST(req: Request) {
     try {

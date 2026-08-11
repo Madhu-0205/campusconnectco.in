@@ -20,6 +20,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
         redirect("/auth/sign-in");
     }
 
+    // Force location + college onboarding for students if profile details are missing
+    if (role === "STUDENT") {
+        const { prisma } = await import("@/lib/prisma");
+        const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { city: true, collegeId: true }
+        });
+        if (!dbUser?.city || !dbUser?.collegeId) {
+            redirect("/onboarding");
+        }
+    }
+
     const cookieStore = await cookies();
     const isPreviewMode = (await cookieStore).get('admin_preview_mode')?.value === 'true';
 

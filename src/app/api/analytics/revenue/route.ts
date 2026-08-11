@@ -34,7 +34,7 @@ export async function GET() {
         const thirtyDaysAgo = new Date()
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-        const escrows = await prisma.escrow.findMany({
+        const escrows = await prisma.escrow.findMany({ take: 50,
             where: {
                 ...(isAdmin ? { platformFee: { gt: 0 } } : { OR: [{ clientId: dbUser.id }, { workerId: dbUser.id }] }),
                 status: "RELEASED",

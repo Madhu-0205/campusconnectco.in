@@ -12,7 +12,7 @@ export function useProfileField({ field, onSuccess }: UseProfileFieldOptions) {
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const save = useCallback(async (value: unknown) => {
+  const save = useCallback(async (value: unknown, extraData?: Record<string, any>) => {
     setSaving(true)
     setSaved(false)
     setError(null)
@@ -21,7 +21,7 @@ export function useProfileField({ field, onSuccess }: UseProfileFieldOptions) {
       const res = await fetch("/api/user/profile", {
          method: "PATCH",
          headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ [field]: value }),
+         body: JSON.stringify({ [field]: value, ...(extraData || {}) }),
       })
 
       if (!res.ok) {

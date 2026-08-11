@@ -1,0 +1,110 @@
+src/app/messages/page.tsx:23:      const results = await prisma.conversation.findMany({
+src/app/employer/talent-search/page.tsx:23:    const candidates = await prisma.user.findMany({
+src/app/employer/drives/page.tsx:47:    return await (prisma as any).campusDrive.findMany({
+src/app/colleges/[slug]/page.tsx:87:  const students = await prisma.user.findMany({
+src/app/colleges/[slug]/page.tsx:112:  const gigs = await prisma.gig.findMany({
+src/app/gigs/city/[city]/page.tsx:74:  const gigs = await prisma.gig.findMany({
+src/app/gigs/city/[city]/page.tsx:93:  const students = await prisma.user.findMany({
+src/app/internships/category/[category]/page.tsx:63:  const internships = await prisma.internship.findMany({
+src/app/internships/category/[category]/page.tsx:77:  const students = await prisma.user.findMany({
+src/app/internships/[city]/page.tsx:75:  const internships = await prisma.internship.findMany({
+src/app/internships/[city]/page.tsx:86:  const students = await prisma.user.findMany({
+src/app/careers/[slug]/page.tsx:63:  const internships = await prisma.internship.findMany({
+src/app/client-hub/page.tsx:40:            prisma.gig.findMany({
+src/app/client-hub/page.tsx:54:            prisma.application.findMany({
+src/app/dashboard/founder/ai-insights/page.tsx:19:        prisma.gig.findMany({ select: { createdAt: true, title: true, status: true }, orderBy: { createdAt: "desc" }, take: 100 }),
+src/app/dashboard/founder/ai-insights/page.tsx:21:        prisma.escrow.findMany({ select: { createdAt: true, amount: true, status: true }, take: 100, orderBy: { createdAt: "desc" } })
+src/app/dashboard/founder/applications/page.tsx:18:    const applications = await prisma.application.findMany({
+src/app/dashboard/founder/escrow/page.tsx:16:        const escrows = await prisma.escrow.findMany({
+src/app/dashboard/founder/revenue/page.tsx:17:        const escrows = await prisma.escrow.findMany({
+src/app/dashboard/founder/revenue/page.tsx:28:        const transactions = await prisma.transaction.findMany({
+src/app/dashboard/founder/page.tsx:85:            prisma.gig.findMany({ take: 4, orderBy: { createdAt: "desc" }, select: { title: true, budget: true, createdAt: true, poster: { select: { name: true } } } }),
+src/app/dashboard/founder/page.tsx:86:            prisma.application.findMany({ take: 4, orderBy: { createdAt: "desc" }, select: { gig: { select: { title: true } }, applicant: { select: { name: true } }, createdAt: true } })
+src/app/dashboard/student/internships/page.tsx:12:        prisma.internship.findMany({ 
+src/app/dashboard/student/internships/page.tsx:17:        prisma.internship.findMany({ 
+src/app/dashboard/student/internships/page.tsx:22:        prisma.internship.findMany({ 
+src/app/dashboard/student/page.tsx:104:  const activeApps = await prisma.application.findMany({
+src/app/dashboard/student/page.tsx:144:      const trending = await prisma.internship.findMany({
+src/app/sitemap.ts:69:    const openGigs = await prisma.gig.findMany({
+src/app/sitemap.ts:129:    const profiles = await prisma.user.findMany({
+src/app/api/founder/settings/route.ts:27:        const records = await prisma.platformSetting.findMany();
+src/app/api/founder/disputes/route.ts:20:    const disputes = await prisma.dispute.findMany({
+src/app/api/founder/announcements/route.ts:11:        const announcements = await prisma.announcement.findMany({
+src/app/api/founder/gigs/route.ts:13:        const gigs = await prisma.gig.findMany({
+src/app/api/founder/internships/route.ts:12:            prisma.internship.findMany({
+src/app/api/founder/audit/route.ts:8:interface AuditDelegate { findMany: (args: unknown) => Promise<unknown[]>; }
+src/app/api/founder/audit/route.ts:25:        getAudit().findMany({
+src/app/api/founder/audit/route.ts:45:    const logs = await getAudit().findMany({
+src/app/api/founder/users/route.ts:18:            prisma.user.findMany({
+src/app/api/founder/escrow/route.ts:20:            prisma.escrow.findMany({
+src/app/api/founder/approvals/route.ts:14:            prisma.gig.findMany({
+src/app/api/founder/approvals/route.ts:19:            prisma.internship.findMany({
+src/app/api/founder/approvals/route.ts:23:            prisma.user.findMany({
+src/app/api/founder/volume/route.ts:11:        const transactions = await prisma.transaction.findMany({
+src/app/api/posts/route.ts:35:            prisma.post.findMany({
+src/app/api/gamification/leaderboard/route.ts:19:    const records: any[] = await (prisma as any).userGamification.findMany({
+src/app/api/employer/talent-search/route.ts:18:    const candidates = await prisma.user.findMany({
+src/app/api/employer/drives/route.ts:88:    const drives = await (prisma as any).campusDrive.findMany({
+src/app/api/network/connections/route.ts:22:      prisma.connectionRequest.findMany({
+src/app/api/network/users/route.ts:15:        const users = await prisma.user.findMany({
+src/app/api/admin/audit-logs/route.ts:17:        const logs = await prisma.analytics.findMany({
+src/app/api/admin/moderation-events/route.ts:13:    const events = await prisma.analytics.findMany({
+src/app/api/admin/feature-flags/route.ts:16:        const settings = await prisma.platformSetting.findMany({
+src/app/api/user/saved/route.ts:21:            const savedInternships = await prisma.savedInternship.findMany({
+src/app/api/user/saved/route.ts:30:            const savedGigs = await prisma.savedGig.findMany({
+src/app/api/user/resume-history/route.ts:15:        const analyses = await prisma.resumeAnalysis.findMany({
+src/app/api/user/resume-history/route.ts:21:        const roadmaps = await prisma.careerRoadmap.findMany({
+src/app/api/gigs/route.ts:137:            const rawGigs = await prisma.gig.findMany({
+src/app/api/gigs/route.ts:153:                prisma.gig.findMany({
+src/app/api/gigs/route.ts:289:            const followers = await prisma.follows.findMany({
+src/app/api/gigs/browse/route.ts:111:            prisma.gig.findMany({
+src/app/api/internships/route.ts:65:            const internships = await prisma.internship.findMany({
+src/app/api/internships/route.ts:99:            const all = await prisma.internship.findMany({
+src/app/api/internships/route.ts:126:        const internships = await prisma.internship.findMany({
+src/app/api/recommendations/route.ts:41:            const gigs = await prisma.gig.findMany({
+src/app/api/recommendations/route.ts:75:            const talent = await prisma.user.findMany({
+src/app/api/growth/referral/route.ts:27:      const allReferrals: any[] = await (prisma as any).referral.findMany({
+src/app/api/search/route.ts:42:            const gigs = await prisma.gig.findMany({
+src/app/api/search/route.ts:91:            const users = await prisma.user.findMany({
+src/app/api/search/route.ts:136:            const allSkills = await prisma.user.findMany({
+src/app/api/client-hub/applicants/route.ts:16:        const applications = await prisma.application.findMany({
+src/app/api/public/gigs/trending/route.ts:7:        const gigs = await prisma.gig.findMany({
+src/app/api/career-roadmap/route.ts:10:    findMany: (args: unknown) => Promise<unknown>;
+src/app/api/career-roadmap/route.ts:20:        const roadmaps = await getRoadmap().findMany({
+src/app/api/conversations/route.ts:40:            prisma.conversation.findMany({
+src/app/api/conversations/[id]/route.ts:39:        const messages = await prisma.message.findMany({
+src/app/api/ai/copilot/sessions/route.ts:15:        const sessions = await prisma.copilotSession.findMany({
+src/app/api/ai/smartmatch/route.ts:110:            prisma.internship.findMany({
+src/app/api/ai/smartmatch/route.ts:116:            prisma.gig.findMany({
+src/app/api/ai/mock-interview/route.ts:16:        const interviews = await prisma.mockInterview.findMany({
+src/app/api/ai/resume-analyze/route.ts:156:    const analyses = await prisma.resumeAnalysis.findMany({
+src/app/api/applications/route.ts:22:            prisma.application.findMany({
+src/app/api/skills/suggestions/route.ts:31://   • Prisma $transaction([count, findMany]) issues both queries over the same
+src/app/api/skills/suggestions/route.ts:101:            prisma.skill.findMany({
+src/app/api/college/students/route.ts:22:        const students = await prisma.user.findMany({
+src/app/api/notifications/route.ts:16:        const notifications = await prisma.notification.findMany({
+src/app/api/stats/route.ts:18:    const collegeRows = await prisma.user.findMany({
+src/app/api/cron/release-payments/route.ts:24:    const eligible = await prisma.transaction.findMany({
+src/app/api/analytics/revenue/route.ts:37:        const escrows = await prisma.escrow.findMany({
+src/app/skills/[skill]/page.tsx:73:      prisma.user.findMany({
+src/app/skills/[skill]/page.tsx:97:      prisma.gig.findMany({
+src/app/notifications/page.tsx:22:  const notifications = await prisma.notification.findMany({
+src/app/companies/[slug]/page.tsx:63:  const internships = await prisma.internship.findMany({
+src/app/companies/[slug]/page.tsx:73:  const students = await prisma.user.findMany({
+src/components/gigs/GigList.tsx:44:        gigs = await prisma.gig.findMany({
+src/__tests__/checkout-payouts.test.ts:60:        findMany: mockTransactionFindMany,
+src/__tests__/checkout-payouts.test.ts:208:      vi.mocked(prisma.transaction.findMany).mockResolvedValue(mockEligibleTx as any);
+src/lib/analytics.ts:64:  const clicks = await prisma.analytics.findMany({
+src/lib/analytics.ts:120:  const activeSessions = await prisma.analytics.findMany({
+src/lib/recommendation-engine/service.ts:30:    prisma.gig.findMany({
+src/lib/recommendation-engine/service.ts:35:    prisma.internship.findMany({
+src/lib/ai/rankGigs.ts:11:    const gigs = await prisma.gig.findMany({
+src/lib/ai/rankGigs.ts:16:    const gigEmbeddings = await (prisma as any).gigEmbedding.findMany({
+src/lib/ai/trendingEngine.ts:49:    prisma.gig.findMany({
+src/lib/ai/trendingEngine.ts:102:  const skills = await prisma.skill.findMany({
+src/lib/ai/trendingEngine.ts:130:  const gigs = await prisma.gig.findMany({
+src/lib/ai/rankStudents.ts:12:    const users = await prisma.user.findMany({
+src/lib/ai/rankStudents.ts:16:    const userEmbeddings = await (prisma as any).userEmbedding.findMany({
+src/lib/ai/feedAssembler.ts:59:  const posts = await prisma.post.findMany({
+src/lib/ai/feedAssembler.ts:110:  const gigs = await prisma.gig.findMany({
+src/lib/ai/feedAssembler.ts:132:  const gigEmbeddings = await (prisma as any).gigEmbedding.findMany({

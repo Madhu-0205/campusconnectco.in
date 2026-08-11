@@ -8,7 +8,7 @@ import { INDIAN_STATES } from "@/lib/colleges-dataset"
 
 interface ManualCollegeFormProps {
   onBack: () => void
-  onSuccess: (collegeName: string) => void
+  onSuccess: (collegeName: string, id: string) => void
   userId?: string
 }
 
@@ -56,7 +56,7 @@ export default function ManualCollegeForm({
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Failed to submit college")
       setSubmitted(true)
-      setTimeout(() => onSuccess(form.name.trim()), 1800)
+      setTimeout(() => onSuccess(form.name.trim(), data.college.id), 1800)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong")
     } finally {

@@ -1,0 +1,701 @@
+src/app/api/ready/route.ts:12:        // Evaluate Redis configuration status
+src/app/api/ready/route.ts:36:            status: "ready",
+src/app/api/ready/route.ts:47:                status: "not_ready",
+src/app/api/ready/route.ts:51:            { status: 503 }
+src/app/api/founder/monetize/route.ts:16:            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+src/app/api/founder/monetize/route.ts:34:            return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+src/app/api/founder/monetize/route.ts:40:        return NextResponse.json({ error: "Failed to apply promotion" }, { status: 500 });
+src/app/api/founder/settings/route.ts:35:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/settings/route.ts:61:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/disputes/route.ts:18:    const status = url.searchParams.get("status") || undefined;
+src/app/api/founder/disputes/route.ts:21:      where: status ? { status: status as Prisma.DisputeWhereInput['status'] } : undefined,
+src/app/api/founder/disputes/route.ts:40:      open: disputes.filter((d: any) => d.status === "OPEN").length,
+src/app/api/founder/disputes/route.ts:41:      inReview: disputes.filter((d: any) => d.status === "UNDER_REVIEW").length,
+src/app/api/founder/disputes/route.ts:42:      resolved: disputes.filter((d: any) => d.status === "RESOLVED_SELLER").length,
+src/app/api/founder/disputes/route.ts:43:      refunded: disputes.filter((d: any) => d.status === "RESOLVED_BUYER").length,
+src/app/api/founder/disputes/route.ts:50:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/founder/disputes/route.ts:77:      if (dispute.status === "RESOLVED_BUYER" || dispute.status === "RESOLVED_SELLER") {
+src/app/api/founder/disputes/route.ts:81:      // Map dispute resolution to transaction status
+src/app/api/founder/disputes/route.ts:82:      let txStatus = dispute.transaction.status;
+src/app/api/founder/disputes/route.ts:91:          status: resolution as Prisma.DisputeUpdateInput['status'],
+src/app/api/founder/disputes/route.ts:101:          status: txStatus as Prisma.TransactionUpdateInput['status'],
+src/app/api/founder/disputes/route.ts:111:          previousState: dispute.transaction.status,
+src/app/api/founder/disputes/route.ts:133:      { status: 400 }
+src/app/api/founder/announcements/route.ts:17:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/announcements/route.ts:30:            return NextResponse.json({ error: "Title and body are required" }, { status: 400 });
+src/app/api/founder/announcements/route.ts:42:        return NextResponse.json({ announcement }, { status: 201 });
+src/app/api/founder/announcements/route.ts:45:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/announcements/[id]/route.ts:30:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/announcements/[id]/route.ts:47:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/gigs/route.ts:20:                status: true,
+src/app/api/founder/gigs/route.ts:43:            open: gigs.filter((g: any) => g.status === "OPEN").length,
+src/app/api/founder/gigs/route.ts:44:            closed: gigs.filter((g: any) => g.status === "CLOSED").length,
+src/app/api/founder/gigs/route.ts:45:            pending: gigs.filter((g: any) => g.status === "PENDING").length,
+src/app/api/founder/gigs/route.ts:53:            { status: 500 }
+src/app/api/founder/gigs/[id]/route.ts:25:            return NextResponse.json({ error: "Invalid gig ID format" }, { status: 400 });
+src/app/api/founder/gigs/[id]/route.ts:32:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/founder/gigs/[id]/route.ts:39:                { status: 400 }
+src/app/api/founder/gigs/[id]/route.ts:51:            return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+src/app/api/founder/gigs/[id]/route.ts:58:                    data: { status: "OPEN" },
+src/app/api/founder/gigs/[id]/route.ts:67:                    data: { status: "REJECTED" },
+src/app/api/founder/gigs/[id]/route.ts:76:                    data: { status: "FLAGGED" },
+src/app/api/founder/gigs/[id]/route.ts:85:                    data: { status: "CLOSED" },
+src/app/api/founder/gigs/[id]/route.ts:94:                    { status: 400 }
+src/app/api/founder/gigs/[id]/route.ts:101:            { status: 500 }
+src/app/api/founder/gigs/[id]/route.ts:120:            return NextResponse.json({ error: "Invalid gig ID format" }, { status: 400 });
+src/app/api/founder/gigs/[id]/route.ts:135:            { status: 500 }
+src/app/api/founder/internships/route.ts:16:            prisma.internship.count({ where: { status: "OPEN" } }),
+src/app/api/founder/internships/route.ts:17:            prisma.internship.count({ where: { status: "OPEN" } }),
+src/app/api/founder/internships/route.ts:24:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/internships/route.ts:34:        const { title, description, company, skills, stipend, duration, location, deadline, status, isFeatured, applicationLink, tags } = body;
+src/app/api/founder/internships/route.ts:37:            return NextResponse.json({ error: "Title, description, and company are required" }, { status: 400 });
+src/app/api/founder/internships/route.ts:52:                status: status || "PENDING_APPROVAL",
+src/app/api/founder/internships/route.ts:57:        return NextResponse.json({ internship }, { status: 201 });
+src/app/api/founder/internships/route.ts:60:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/internships/[id]/route.ts:22:  status: z.string().max(20).optional(),
+src/app/api/founder/internships/[id]/route.ts:40:            return NextResponse.json({ error: "Invalid internship ID format" }, { status: 400 });
+src/app/api/founder/internships/[id]/route.ts:47:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/founder/internships/[id]/route.ts:54:                { status: 400 }
+src/app/api/founder/internships/[id]/route.ts:63:            data = { status: "OPEN" };
+src/app/api/founder/internships/[id]/route.ts:65:            data = { status: "CLOSED" };
+src/app/api/founder/internships/[id]/route.ts:79:            if (updateData.status !== undefined) data.status = updateData.status;
+src/app/api/founder/internships/[id]/route.ts:93:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/internships/[id]/route.ts:109:            return NextResponse.json({ error: "Invalid internship ID format" }, { status: 400 });
+src/app/api/founder/internships/[id]/route.ts:112:        // Soft delete via status
+src/app/api/founder/internships/[id]/route.ts:115:            data: { status: "DELETED" },
+src/app/api/founder/internships/[id]/route.ts:121:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/audit/route.ts:53:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/founder/users/route.ts:68:            { status: 500 }
+src/app/api/founder/users/[id]/route.ts:23:            return NextResponse.json({ error: "Invalid user ID format" }, { status: 400 });
+src/app/api/founder/users/[id]/route.ts:30:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/founder/users/[id]/route.ts:37:                { status: 400 }
+src/app/api/founder/users/[id]/route.ts:45:            return NextResponse.json({ error: "User not found" }, { status: 404 });
+src/app/api/founder/users/[id]/route.ts:83:                return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+src/app/api/founder/users/[id]/route.ts:87:        return NextResponse.json({ error: "Failed to perform action" }, { status: 500 });
+src/app/api/founder/users/[id]/route.ts:103:            return NextResponse.json({ error: "Invalid user ID format" }, { status: 400 });
+src/app/api/founder/users/[id]/route.ts:108:            return NextResponse.json({ error: "Cannot delete your own account" }, { status: 400 });
+src/app/api/founder/users/[id]/route.ts:120:        return NextResponse.json({ error: "Failed to delete user" }, { status: 500 });
+src/app/api/founder/escrow/route.ts:28:            prisma.escrow.count({ where: { status: "LOCKED" } }),
+src/app/api/founder/escrow/route.ts:29:            prisma.escrow.count({ where: { status: "RELEASED" } }),
+src/app/api/founder/escrow/route.ts:30:            prisma.escrow.count({ where: { status: "REFUNDED" } }),
+src/app/api/founder/escrow/route.ts:31:            prisma.escrow.aggregate({ where: { status: "LOCKED" }, _sum: { amount: true } }),
+src/app/api/founder/escrow/route.ts:32:            prisma.escrow.aggregate({ where: { status: "RELEASED" }, _sum: { payout: true } }),
+src/app/api/founder/escrow/route.ts:33:            prisma.escrow.aggregate({ where: { status: "REFUNDED" }, _sum: { amount: true } }),
+src/app/api/founder/escrow/route.ts:49:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/preview/route.ts:20:        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+src/app/api/founder/preview/route.ts:28:        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+src/app/api/founder/approvals/route.ts:15:                where: { status: "OPEN" },
+src/app/api/founder/approvals/route.ts:20:                where: { status: "OPEN" },
+src/app/api/founder/approvals/route.ts:60:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/founder/approvals/route.ts:72:            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+src/app/api/founder/approvals/route.ts:76:            const status = action === "APPROVE" ? "OPEN" : "REJECTED";
+src/app/api/founder/approvals/route.ts:79:                data: { status }
+src/app/api/founder/approvals/route.ts:82:            const status = action === "APPROVE" ? "OPEN" : "REJECTED";
+src/app/api/founder/approvals/route.ts:85:                data: { status }
+src/app/api/founder/approvals/route.ts:94:            return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+src/app/api/founder/approvals/route.ts:100:        return NextResponse.json({ error: "Failed to process approval action" }, { status: 500 });
+src/app/api/founder/volume/route.ts:13:                status: { in: ["PAID", "COMPLETED", "RELEASED"] },
+src/app/api/founder/volume/route.ts:30:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/payments/escrow/verify/route.ts:13:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/payments/escrow/verify/route.ts:19:            return NextResponse.json({ error: "Missing verification parameters" }, { status: 400 });
+src/app/api/payments/escrow/verify/route.ts:32:            return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
+src/app/api/payments/escrow/verify/route.ts:39:                where: { gigId, clientId: user.id, status: "PENDING" },
+src/app/api/payments/escrow/verify/route.ts:40:                data: { status: "LOCKED" }
+src/app/api/payments/escrow/verify/route.ts:45:                where: { paymentId: razorpay_order_id, buyerId: user.id, status: "PENDING" },
+src/app/api/payments/escrow/verify/route.ts:47:                    status: "PAID",
+src/app/api/payments/escrow/verify/route.ts:56:                data: { status: "IN_PROGRESS" }
+src/app/api/payments/escrow/verify/route.ts:59:            // 4. Update the Application status for the worker
+src/app/api/payments/escrow/verify/route.ts:64:                    data: { status: "ACCEPTED" }
+src/app/api/payments/escrow/verify/route.ts:75:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/payments/escrow/release/route.ts:12:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/payments/escrow/release/route.ts:18:            return NextResponse.json({ error: "gigId is required" }, { status: 400 });
+src/app/api/payments/escrow/release/route.ts:21:        // Validate Escrow status
+src/app/api/payments/escrow/release/route.ts:23:            where: { gigId, clientId: user.id, status: "LOCKED" }
+src/app/api/payments/escrow/release/route.ts:27:            return NextResponse.json({ error: "Escrow not found or not in LOCKED state" }, { status: 404 });
+src/app/api/payments/escrow/release/route.ts:37:                where: { id: escrow.id, status: "LOCKED" },
+src/app/api/payments/escrow/release/route.ts:38:                data: { status: "RELEASED" }
+src/app/api/payments/escrow/release/route.ts:47:                where: { gigId, buyerId: user.id, status: "PAID" },
+src/app/api/payments/escrow/release/route.ts:49:                    status: "COMPLETED",
+src/app/api/payments/escrow/release/route.ts:55:            // 3. Update Gig status
+src/app/api/payments/escrow/release/route.ts:58:                data: { status: "COMPLETED", completedAt: new Date() }
+src/app/api/payments/escrow/release/route.ts:90:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/payments/escrow/create-order/route.ts:11:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/payments/escrow/create-order/route.ts:16:            return NextResponse.json({ error: "gigId and workerId are required" }, { status: 400 });
+src/app/api/payments/escrow/create-order/route.ts:21:        if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+src/app/api/payments/escrow/create-order/route.ts:22:        if (gig.posted_by !== user.id) return NextResponse.json({ error: "Unauthorized. You are not the gig poster." }, { status: 403 });
+src/app/api/payments/escrow/create-order/route.ts:62:                    status: "PENDING"
+src/app/api/payments/escrow/create-order/route.ts:76:                    status: "PENDING",
+src/app/api/payments/escrow/create-order/route.ts:85:        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+src/app/api/endorsement/route.ts:13:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/endorsement/route.ts:19:            return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+src/app/api/endorsement/route.ts:23:            return NextResponse.json({ error: "Cannot endorse yourself" }, { status: 400 });
+src/app/api/endorsement/route.ts:28:        if (!skill) return NextResponse.json({ error: "Skill not found" }, { status: 404 });
+src/app/api/endorsement/route.ts:61:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/tasks/cleanup/route.ts:33:                return NextResponse.json({ error: "Unauthorized cron agent" }, { status: 401 });
+src/app/api/tasks/cleanup/route.ts:44:                status: "COMPLETED",
+src/app/api/tasks/cleanup/route.ts:54:                status: "COMPLETED",
+src/app/api/tasks/cleanup/route.ts:71:        return NextResponse.json({ error: "Failed to run automated cleanup system" }, { status: 500 });
+src/app/api/messages/route.ts:26:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/messages/route.ts:33:                { status: 400 }
+src/app/api/messages/route.ts:41:            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+src/app/api/messages/route.ts:71:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/posts/route.ts:16:    status: z.enum(["OPEN", "COMPLETED", "PENDING_REVIEW"]),
+src/app/api/posts/route.ts:25:        return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+src/app/api/posts/route.ts:36:                where: { status: "OPEN" },
+src/app/api/posts/route.ts:45:            prisma.post.count({ where: { status: "OPEN" } }),
+src/app/api/posts/route.ts:59:        return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
+src/app/api/posts/route.ts:73:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/posts/route.ts:80:                { status: 400 }
+src/app/api/posts/route.ts:91:                { status: 422 }
+src/app/api/posts/route.ts:99:                status: modResult.action === 'FLAG' ? 'PENDING_REVIEW' : 'OPEN'
+src/app/api/posts/route.ts:106:        return NextResponse.json(post, { status: 201 });
+src/app/api/posts/route.ts:109:        return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
+src/app/api/posts/route.ts:122:        if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
+src/app/api/posts/route.ts:126:            return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+src/app/api/posts/route.ts:133:        if (!post) return NextResponse.json({ error: "Post not found" }, { status: 404 });
+src/app/api/posts/route.ts:137:            return NextResponse.json({ error: "Unauthorized to delete this post" }, { status: 403 });
+src/app/api/posts/route.ts:147:        return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
+src/app/api/posts/route.ts:151:// PATCH - Update post status (e.g. mark as completed)
+src/app/api/posts/route.ts:161:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/posts/route.ts:168:                { status: 400 }
+src/app/api/posts/route.ts:172:        const { id, status } = parseResult.data;
+src/app/api/posts/route.ts:175:        if (!post) return NextResponse.json({ error: "Post not found" }, { status: 404 });
+src/app/api/posts/route.ts:178:            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+src/app/api/posts/route.ts:181:        const completedAt = status === "COMPLETED" ? new Date() : null;
+src/app/api/posts/route.ts:186:                status,
+src/app/api/posts/route.ts:194:        return NextResponse.json({ error: "Failed to update post" }, { status: 500 });
+src/app/api/gamification/leaderboard/route.ts:80:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/gamification/profile/route.ts:13:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/gamification/profile/route.ts:70:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/gamification/profile/route.ts:78:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/gamification/profile/route.ts:82:      return NextResponse.json({ error: "Invalid XP event type" }, { status: 400 })
+src/app/api/gamification/profile/route.ts:156:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/employer/organization/route.ts:16:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/employer/organization/route.ts:22:      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+src/app/api/employer/organization/route.ts:29:        { status: 400 }
+src/app/api/employer/organization/route.ts:38:    if (existing) return NextResponse.json({ error: "Already in an organization" }, { status: 409 })
+src/app/api/employer/organization/route.ts:56:    return NextResponse.json(org, { status: 201 })
+src/app/api/employer/organization/route.ts:59:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/employer/organization/[id]/route.ts:27:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/employer/organization/[id]/route.ts:33:      return NextResponse.json({ error: "Invalid organization ID format" }, { status: 400 });
+src/app/api/employer/organization/[id]/route.ts:41:      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+src/app/api/employer/organization/[id]/route.ts:48:      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+src/app/api/employer/organization/[id]/route.ts:55:        { status: 400 }
+src/app/api/employer/organization/[id]/route.ts:99:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/employer/talent-search/route.ts:57:          where: { status: "COMPLETED" },
+src/app/api/employer/talent-search/route.ts:88:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/employer/drives/route.ts:21:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/employer/drives/route.ts:27:      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+src/app/api/employer/drives/route.ts:34:        { status: 400 }
+src/app/api/employer/drives/route.ts:48:      return NextResponse.json({ error: "Forbidden: Not a member of this organization" }, { status: 403 })
+src/app/api/employer/drives/route.ts:60:        status: "UPCOMING",
+src/app/api/employer/drives/route.ts:64:    return NextResponse.json(drive, { status: 201 })
+src/app/api/employer/drives/route.ts:67:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/employer/drives/route.ts:75:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/employer/drives/route.ts:96:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/health/route.ts:14:        checks.database = { status: "healthy" };
+src/app/api/health/route.ts:16:        checks.database = { status: "unhealthy", error: err.message };
+src/app/api/health/route.ts:32:                checks.redis = { status: data.result === "PONG" ? "healthy" : "unhealthy" };
+src/app/api/health/route.ts:34:                checks.redis = { status: "unhealthy", statusCode: res.status };
+src/app/api/health/route.ts:37:            checks.redis = { status: "unhealthy", error: err.message };
+src/app/api/health/route.ts:40:        checks.redis = { status: "not_configured" };
+src/app/api/health/route.ts:46:        checks.storage = { status: "healthy", bucket: "avatars" };
+src/app/api/health/route.ts:48:        checks.storage = { status: "unhealthy", error: err.message };
+src/app/api/health/route.ts:58:            checks.email = { status: res.ok ? "healthy" : "unhealthy", statusCode: res.status };
+src/app/api/health/route.ts:60:            checks.email = { status: "unhealthy", error: err.message };
+src/app/api/health/route.ts:63:        checks.email = { status: "not_configured" };
+src/app/api/health/route.ts:91:        status: missing.length === 0 ? "healthy" : "degraded",
+src/app/api/health/route.ts:95:    const statusCode = isHealthy ? 200 : 503;
+src/app/api/health/route.ts:98:        status: isHealthy ? "healthy" : "unhealthy",
+src/app/api/health/route.ts:101:    }, { status: statusCode });
+src/app/api/network/status/route.ts:7: * GET /api/network/status?userId=<uuid>
+src/app/api/network/status/route.ts:8: * Returns the connection status between the current user and the target user.
+src/app/api/network/status/route.ts:9: * Response: { status: 'none' | 'pending_sent' | 'pending_received' | 'accepted' | 'blocked', connectionId?: string }
+src/app/api/network/status/route.ts:13:  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/network/status/route.ts:19:    return NextResponse.json({ error: "userId is required" }, { status: 400 });
+src/app/api/network/status/route.ts:23:    return NextResponse.json({ status: "self" });
+src/app/api/network/status/route.ts:37:        status: true,
+src/app/api/network/status/route.ts:42:      return NextResponse.json({ status: "none" });
+src/app/api/network/status/route.ts:45:    // Map DB status + direction to UI status
+src/app/api/network/status/route.ts:46:    const dbStatus = connection.status;
+src/app/api/network/status/route.ts:62:      status: uiStatus,
+src/app/api/network/status/route.ts:66:    console.error("[connection status]", error);
+src/app/api/network/status/route.ts:67:    return NextResponse.json({ error: "Failed to check status" }, { status: 500 });
+src/app/api/network/connections/route.ts:7: * GET /api/network/connections?status=ACCEPTED|PENDING
+src/app/api/network/connections/route.ts:15:  const status = searchParams.get("status") || "ACCEPTED";
+src/app/api/network/connections/route.ts:25:            { senderId: user.id, status },
+src/app/api/network/connections/route.ts:26:            { receiverId: user.id, status },
+src/app/api/network/connections/route.ts:52:            { senderId: user.id, status },
+src/app/api/network/connections/route.ts:53:            { receiverId: user.id, status },
+src/app/api/network/connections/route.ts:64:        status: conn.status,
+src/app/api/network/connections/route.ts:84:    return NextResponse.json({ error: "Failed to fetch connections" }, { status: 500 });
+src/app/api/network/connections/route.ts:102:      return NextResponse.json({ error: "receiverId is required" }, { status: 400 });
+src/app/api/network/connections/route.ts:105:      return NextResponse.json({ error: "Cannot connect with yourself" }, { status: 400 });
+src/app/api/network/connections/route.ts:119:      if (existing.status === "BLOCKED") {
+src/app/api/network/connections/route.ts:120:        return NextResponse.json({ error: "Cannot connect with this user" }, { status: 403 });
+src/app/api/network/connections/route.ts:122:      if (existing.status === "REJECTED") {
+src/app/api/network/connections/route.ts:130:            { status: 429 }
+src/app/api/network/connections/route.ts:137:          { error: "Connection request already exists", status: existing.status },
+src/app/api/network/connections/route.ts:138:          { status: 409 }
+src/app/api/network/connections/route.ts:148:        status: "PENDING",
+src/app/api/network/connections/route.ts:163:    return NextResponse.json({ connection }, { status: 201 });
+src/app/api/network/connections/route.ts:166:      return NextResponse.json({ error: "Connection request already exists" }, { status: 409 });
+src/app/api/network/connections/route.ts:169:    return NextResponse.json({ error: "Failed to send connection request" }, { status: 500 });
+src/app/api/network/connections/route.ts:186:      return NextResponse.json({ error: "connectionId and action are required" }, { status: 400 });
+src/app/api/network/connections/route.ts:194:      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+src/app/api/network/connections/route.ts:200:        return NextResponse.json({ error: "Only the receiver can accept/reject" }, { status: 403 });
+src/app/api/network/connections/route.ts:204:        return NextResponse.json({ error: "Only the sender can cancel" }, { status: 403 });
+src/app/api/network/connections/route.ts:207:      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+src/app/api/network/connections/route.ts:210:    const statusMap: Record<string, string> = {
+src/app/api/network/connections/route.ts:222:      if (del.count === 0) return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+src/app/api/network/connections/route.ts:233:        status: statusMap[action],
+src/app/api/network/connections/route.ts:239:      return NextResponse.json({ error: "Not authorized or not found" }, { status: 403 });
+src/app/api/network/connections/route.ts:259:    return NextResponse.json({ error: "Failed to update connection" }, { status: 500 });
+src/app/api/network/users/route.ts:10:        if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/network/users/route.ts:50:        return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+src/app/api/colleges/submit/route.ts:24:        { status: 400 }
+src/app/api/colleges/submit/route.ts:68:    return NextResponse.json({ error: "Server error" }, { status: 500 })
+src/app/api/colleges/reverse-geocode/route.ts:13:    return NextResponse.json({ error: "Invalid coordinates" }, { status: 400 })
+src/app/api/colleges/reverse-geocode/route.ts:19:    return NextResponse.json({ error: "Failed to geocode" }, { status: 500 })
+src/app/api/admin/audit-logs/route.ts:30:        return NextResponse.json({ error: "Failed to list audit logs" }, { status: 500 });
+src/app/api/admin/moderation-events/route.ts:21:    return NextResponse.json({ error: e.message }, { status: 500 });
+src/app/api/admin/moderation-events/route.ts:33:      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+src/app/api/admin/moderation-events/route.ts:39:        await prisma.gig.update({ where: { id: contentId }, data: { status: 'OPEN' } });
+src/app/api/admin/moderation-events/route.ts:41:        await prisma.post.update({ where: { id: contentId }, data: { status: 'OPEN' } });
+src/app/api/admin/moderation-events/route.ts:46:        await prisma.gig.update({ where: { id: contentId }, data: { status: 'REJECTED' } });
+src/app/api/admin/moderation-events/route.ts:48:        await prisma.post.update({ where: { id: contentId }, data: { status: 'REMOVED' } });
+src/app/api/admin/moderation-events/route.ts:57:    return NextResponse.json({ error: e.message }, { status: 500 });
+src/app/api/admin/feature-flags/route.ts:31:        return NextResponse.json({ error: "Failed to list feature flags" }, { status: 500 });
+src/app/api/admin/feature-flags/route.ts:46:            return NextResponse.json({ error: "Invalid payload parameters" }, { status: 400 });
+src/app/api/admin/feature-flags/route.ts:61:        return NextResponse.json({ error: "Failed to update feature flag" }, { status: 500 });
+src/app/api/internal/opportunities/route.ts:22:  status: z.string().optional().default("OPEN"),
+src/app/api/internal/opportunities/route.ts:55:      return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+src/app/api/internal/opportunities/route.ts:61:      return NextResponse.json({ error: "Content-Type must be application/json" }, { status: 400 });
+src/app/api/internal/opportunities/route.ts:67:      return NextResponse.json({ error: "Payload too large" }, { status: 400 });
+src/app/api/internal/opportunities/route.ts:81:      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/internal/opportunities/route.ts:86:      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/internal/opportunities/route.ts:94:      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/internal/opportunities/route.ts:103:      return NextResponse.json({ error: "Malformed payload" }, { status: 400 });
+src/app/api/internal/opportunities/route.ts:111:        { status: 400 }
+src/app/api/internal/opportunities/route.ts:132:        status: data.status,
+src/app/api/internal/opportunities/route.ts:148:        status: data.status,
+src/app/api/internal/opportunities/route.ts:161:        { status: 201 }
+src/app/api/internal/opportunities/route.ts:167:        { status: 200 }
+src/app/api/internal/opportunities/route.ts:175:      { status: 500 }
+src/app/api/internal/import-internship/route.ts:13:                { status: 401 }
+src/app/api/internal/import-internship/route.ts:60:                status: "OPEN",
+src/app/api/internal/import-internship/route.ts:79:            { status: 500 }
+src/app/api/resumes/[userId]/[fileName]/route.ts:16:            return errorResponse || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/resumes/[userId]/[fileName]/route.ts:22:            return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+src/app/api/resumes/[userId]/[fileName]/route.ts:56:            return NextResponse.json({ error: "Forbidden: You do not have permission to view this resume" }, { status: 403 });
+src/app/api/resumes/[userId]/[fileName]/route.ts:71:            return NextResponse.json({ error: "Failed to generate access URL" }, { status: 500 });
+src/app/api/resumes/[userId]/[fileName]/route.ts:79:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/user/saved/route.ts:41:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/user/saved/route.ts:56:            return NextResponse.json({ error: "Missing required fields or invalid ID format" }, { status: 400 });
+src/app/api/user/saved/route.ts:84:            return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+src/app/api/user/saved/route.ts:90:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/user/delete/route.ts:22:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/user/delete/route.ts:26:            return NextResponse.json({ error: "Invalid confirmation string" }, { status: 400 });
+src/app/api/user/delete/route.ts:62:        return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
+src/app/api/user/follow/route.ts:14:        if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/user/follow/route.ts:18:        if (!followingId) return NextResponse.json({ error: "Missing followingId" }, { status: 400 });
+src/app/api/user/follow/route.ts:22:            return NextResponse.json({ error: "Cannot follow yourself" }, { status: 400 });
+src/app/api/user/follow/route.ts:57:        return NextResponse.json({ error: "Already following or failed" }, { status: 400 });
+src/app/api/user/follow/route.ts:65:        if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/user/follow/route.ts:69:        if (!followingId) return NextResponse.json({ error: "Missing followingId" }, { status: 400 });
+src/app/api/user/follow/route.ts:84:        return NextResponse.json({ error: "Failed to unfollow" }, { status: 500 });
+src/app/api/user/projects/route.ts:24:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/user/projects/route.ts:31:                { status: 400 }
+src/app/api/user/projects/route.ts:53:        return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
+src/app/api/user/projects/route.ts:66:            return NextResponse.json({ error: "Project ID required" }, { status: 400 });
+src/app/api/user/projects/route.ts:71:            return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+src/app/api/user/projects/route.ts:83:            return NextResponse.json({ error: "Unauthorized or not found" }, { status: 403 });
+src/app/api/user/projects/route.ts:89:        return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
+src/app/api/user/profile/route.ts:119:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/user/profile/route.ts:126:            return NextResponse.json({ error: "id and email are required" }, { status: 400 });
+src/app/api/user/profile/route.ts:130:            return NextResponse.json({ error: "You must accept the Terms & Conditions and Privacy Policy." }, { status: 400 });
+src/app/api/user/profile/route.ts:135:            return NextResponse.json({ error: "Forbidden: Cannot modify another user's profile" }, { status: 403 });
+src/app/api/user/profile/route.ts:143:                { status: 400 }
+src/app/api/user/profile/route.ts:179:        return NextResponse.json(user, { status: 201 });
+src/app/api/user/profile/route.ts:182:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/user/profile/route.ts:194:            return NextResponse.json({ error: "Unauthorized: No User ID" }, { status: 401 });
+src/app/api/user/profile/route.ts:223:                    status: "RELEASED"
+src/app/api/user/profile/route.ts:230:                where: { applicantId: user.id, status: "ACCEPTED" }
+src/app/api/user/profile/route.ts:376:                                status: "ACTIVE",
+src/app/api/user/profile/route.ts:443:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/user/profile/route.ts:457:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/user/profile/route.ts:464:                { status: 400 }
+src/app/api/user/profile/route.ts:610:                return NextResponse.json({ error: "Username is already taken. Please choose another one." }, { status: 400 });
+src/app/api/user/profile/route.ts:613:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/user/resume-history/route.ts:12:            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+src/app/api/user/resume-history/route.ts:33:        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+src/app/api/gigs/route.ts:31:    status: z.string().min(1, "Status cannot be empty").max(20, "Status is too long").trim(),
+src/app/api/gigs/route.ts:107:            status: "OPEN",
+src/app/api/gigs/route.ts:182:            { status: 500 }
+src/app/api/gigs/route.ts:196:        return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+src/app/api/gigs/route.ts:203:            return NextResponse.json({ error: "Cannot post gigs in Preview Mode" }, { status: 403 });
+src/app/api/gigs/route.ts:218:                { status: 400 }
+src/app/api/gigs/route.ts:255:                { status: 422 }
+src/app/api/gigs/route.ts:273:                status: initialStatus,
+src/app/api/gigs/route.ts:310:            status: 201,
+src/app/api/gigs/route.ts:317:            { status: 500 }
+src/app/api/gigs/route.ts:322:// PATCH - Update Gig status (e.g. mark as completed)
+src/app/api/gigs/route.ts:327:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/gigs/route.ts:336:                { status: 400 }
+src/app/api/gigs/route.ts:340:        const { id, status } = parseResult.data;
+src/app/api/gigs/route.ts:343:        if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+src/app/api/gigs/route.ts:349:                return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+src/app/api/gigs/route.ts:353:        const completedAt = status === "COMPLETED" ? new Date() : null;
+src/app/api/gigs/route.ts:358:                status,
+src/app/api/gigs/route.ts:366:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/gigs/route.ts:375:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/gigs/route.ts:379:        if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+src/app/api/gigs/route.ts:383:            return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+src/app/api/gigs/route.ts:387:        if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+src/app/api/gigs/route.ts:392:                return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+src/app/api/gigs/route.ts:400:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/gigs/browse/route.ts:26:        const status = searchParams.get("status") || "";
+src/app/api/gigs/browse/route.ts:57:        if (status) {
+src/app/api/gigs/browse/route.ts:58:            where.status = status;
+src/app/api/gigs/browse/route.ts:147:            { status: 500 }
+src/app/api/internships/route.ts:29:    status: z.enum(["OPEN", "CLOSED", "ARCHIVED"]).optional(),
+src/app/api/internships/route.ts:50:        const baseWhere: any = { status: "OPEN" };
+src/app/api/internships/route.ts:135:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/internships/route.ts:143:        return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+src/app/api/internships/route.ts:153:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/internships/route.ts:160:                { status: 400 }
+src/app/api/internships/route.ts:189:                status: "OPEN"
+src/app/api/internships/route.ts:192:        return NextResponse.json(internship, { status: 201 });
+src/app/api/internships/route.ts:195:        return NextResponse.json({ error: "Failed to create internship" }, { status: 500 });
+src/app/api/internships/route.ts:199:// PATCH - Update internship details or status
+src/app/api/internships/route.ts:209:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/internships/route.ts:216:                { status: 400 }
+src/app/api/internships/route.ts:235:        if (data.status !== undefined) updateData.status = data.status;
+src/app/api/internships/route.ts:244:        return NextResponse.json({ error: "Failed to update internship" }, { status: 500 });
+src/app/api/internships/route.ts:256:        if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+src/app/api/internships/route.ts:260:            return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+src/app/api/internships/route.ts:267:        return NextResponse.json({ error: "Failed to delete internship" }, { status: 500 });
+src/app/api/internships/[id]/engage/route.ts:32:        return NextResponse.json({ error: "Invalid internship ID format" }, { status: 400 });
+src/app/api/internships/[id]/engage/route.ts:39:        return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/internships/[id]/engage/route.ts:46:            { status: 400 }
+src/app/api/internships/[id]/engage/route.ts:102:        return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+src/app/api/internships/[id]/engage/route.ts:105:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/internships/[id]/engage/route.ts:121:        return NextResponse.json({ error: "Invalid internship ID format" }, { status: 400 });
+src/app/api/internships/[id]/engage/route.ts:135:            return NextResponse.json({ error: "Not found" }, { status: 404 });
+src/app/api/internships/[id]/engage/route.ts:145:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/internships/[id]/route.ts:15:      return NextResponse.json({ error: "Invalid internship ID format" }, { status: 400 });
+src/app/api/internships/[id]/route.ts:24:    return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+src/app/api/internships/[id]/route.ts:26:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/checkout/webhook/route.ts:29:        return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+src/app/api/checkout/webhook/route.ts:35:        return NextResponse.json({ error: "Unauthorized - Signature validation required in production" }, { status: 401 });
+src/app/api/checkout/webhook/route.ts:44:        return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+src/app/api/checkout/webhook/route.ts:57:        return NextResponse.json({ error: "Order ID not found in payload" }, { status: 400 });
+src/app/api/checkout/webhook/route.ts:67:        return NextResponse.json({ message: "Transaction not found" }, { status: 200 }); // Return 200 to prevent Razorpay retries
+src/app/api/checkout/webhook/route.ts:70:      if (transaction.status === TransactionStatus.PENDING) {
+src/app/api/checkout/webhook/route.ts:78:              status: TransactionStatus.PENDING 
+src/app/api/checkout/webhook/route.ts:81:              status: TransactionStatus.PAID,
+src/app/api/checkout/webhook/route.ts:92:          // 2. Create Escrow record (LOCKED status)
+src/app/api/checkout/webhook/route.ts:102:              status: EscrowStatus.LOCKED,
+src/app/api/checkout/webhook/route.ts:106:          // 3. Update Gig status to IN_PROGRESS
+src/app/api/checkout/webhook/route.ts:110:              status: "IN_PROGRESS",
+src/app/api/checkout/webhook/route.ts:114:          // 4. Update the accepted Application status
+src/app/api/checkout/webhook/route.ts:126:                status: "ACCEPTED",
+src/app/api/checkout/webhook/route.ts:161:        logger.info("Transaction already processed", { transactionId: transaction.id, status: transaction.status });
+src/app/api/checkout/webhook/route.ts:168:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/checkout/dispute/route.ts:22:      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/checkout/dispute/route.ts:28:      return NextResponse.json({ error: "Invalid parameters", details: parseResult.error.format() }, { status: 400 });
+src/app/api/checkout/dispute/route.ts:41:      return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
+src/app/api/checkout/dispute/route.ts:46:      return NextResponse.json({ error: "Unauthorized to dispute this transaction" }, { status: 403 });
+src/app/api/checkout/dispute/route.ts:51:      transaction.status !== TransactionStatus.PAID && 
+src/app/api/checkout/dispute/route.ts:52:      transaction.status !== TransactionStatus.IN_PROGRESS
+src/app/api/checkout/dispute/route.ts:54:      return NextResponse.json({ error: `Cannot dispute transaction in status: ${transaction.status}` }, { status: 400 });
+src/app/api/checkout/dispute/route.ts:63:      return NextResponse.json({ error: "A dispute already exists for this transaction" }, { status: 409 });
+src/app/api/checkout/dispute/route.ts:75:          status: DisputeStatus.OPEN,
+src/app/api/checkout/dispute/route.ts:79:      // Update transaction status
+src/app/api/checkout/dispute/route.ts:83:          status: TransactionStatus.DISPUTED,
+src/app/api/checkout/dispute/route.ts:87:      // Update gig status to hold it
+src/app/api/checkout/dispute/route.ts:92:            status: "DISPUTED", // Assuming DISPUTED exists as a valid status, if not we can use another string like HOLD
+src/app/api/checkout/dispute/route.ts:102:          previousState: transaction.status,
+src/app/api/checkout/dispute/route.ts:131:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/checkout/create-order/route.ts:20:      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/checkout/create-order/route.ts:26:      return NextResponse.json({ error: "Invalid parameters", details: parseResult.error.format() }, { status: 400 });
+src/app/api/checkout/create-order/route.ts:37:      return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+src/app/api/checkout/create-order/route.ts:41:      return NextResponse.json({ error: "Forbidden: You do not own this gig" }, { status: 403 });
+src/app/api/checkout/create-order/route.ts:49:      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+src/app/api/checkout/create-order/route.ts:70:          status: "PENDING",
+src/app/api/checkout/create-order/route.ts:99:    // Create a transaction in pending status
+src/app/api/checkout/create-order/route.ts:109:        status: "PENDING",
+src/app/api/checkout/create-order/route.ts:125:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/checkout/refund/route.ts:22:      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/checkout/refund/route.ts:28:      return NextResponse.json({ error: "Invalid parameters", details: parseResult.error.format() }, { status: 400 });
+src/app/api/checkout/refund/route.ts:40:      return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
+src/app/api/checkout/refund/route.ts:46:      return NextResponse.json({ error: "Unauthorized to refund this transaction" }, { status: 403 });
+src/app/api/checkout/refund/route.ts:51:      transaction.status !== TransactionStatus.PAID && 
+src/app/api/checkout/refund/route.ts:52:      transaction.status !== TransactionStatus.IN_PROGRESS &&
+src/app/api/checkout/refund/route.ts:53:      transaction.status !== TransactionStatus.DISPUTED
+src/app/api/checkout/refund/route.ts:55:      return NextResponse.json({ error: `Cannot refund transaction in status: ${transaction.status}` }, { status: 400 });
+src/app/api/checkout/refund/route.ts:72:        return NextResponse.json({ error: "Failed to process refund with payment provider" }, { status: 502 });
+src/app/api/checkout/refund/route.ts:81:      // Update transaction status
+src/app/api/checkout/refund/route.ts:85:          status: TransactionStatus.REFUNDED,
+src/app/api/checkout/refund/route.ts:89:      // Update escrow status if exists
+src/app/api/checkout/refund/route.ts:98:            status: EscrowStatus.REFUNDED,
+src/app/api/checkout/refund/route.ts:103:      // Update Gig status to OPEN or CANCELLED based on your logic, here we set to OPEN 
+src/app/api/checkout/refund/route.ts:108:          status: "OPEN",
+src/app/api/checkout/refund/route.ts:117:          previousState: transaction.status,
+src/app/api/checkout/refund/route.ts:131:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/recommendations/route.ts:13:            return new NextResponse("Unauthorized", { status: 401 })
+src/app/api/recommendations/route.ts:33:            return new NextResponse("User profile not found", { status: 404 })
+src/app/api/recommendations/route.ts:42:                where: { status: "OPEN" },
+src/app/api/recommendations/route.ts:112:        return new NextResponse("Internal Server Error", { status: 500 })
+src/app/api/growth/referral/lookup/route.ts:13:      return NextResponse.json({ error: "Code is required" }, { status: 400 })
+src/app/api/growth/referral/lookup/route.ts:32:      return NextResponse.json({ error: "Invalid referral code" }, { status: 404 })
+src/app/api/growth/referral/lookup/route.ts:42:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/growth/referral/register/route.ts:14:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/growth/referral/register/route.ts:18:      return NextResponse.json({ error: "Referral code is required" }, { status: 400 })
+src/app/api/growth/referral/register/route.ts:44:      return NextResponse.json({ error: "Invalid referral code" }, { status: 404 })
+src/app/api/growth/referral/register/route.ts:49:      return NextResponse.json({ error: "You cannot refer yourself" }, { status: 400 })
+src/app/api/growth/referral/register/route.ts:60:        status: "SIGNED_UP",
+src/app/api/growth/referral/register/route.ts:86:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/growth/referral/route.ts:17:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/growth/referral/route.ts:34:        signedUp: allReferrals.filter((r: any) => r.status !== "PENDING").length,
+src/app/api/growth/referral/route.ts:35:        converted: allReferrals.filter((r: any) => r.status === "CONVERTED" || r.status === "REWARDED").length,
+src/app/api/growth/referral/route.ts:36:        rewarded: allReferrals.filter((r: any) => r.status === "REWARDED").length,
+src/app/api/growth/referral/route.ts:39:          ? Math.round((allReferrals.filter((r: any) => r.status === "CONVERTED" || r.status === "REWARDED").length / allReferrals.length) * 100)
+src/app/api/growth/referral/route.ts:63:        status: "PENDING",
+src/app/api/growth/referral/route.ts:75:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/growth/referral/route.ts:83:    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/growth/referral/route.ts:100:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/growth/share-card/route.ts:14:    if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 })
+src/app/api/growth/share-card/route.ts:21:    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 })
+src/app/api/growth/share-card/route.ts:101:    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/search/route.ts:12:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/search/route.ts:29:            }, { status: 400 });
+src/app/api/search/route.ts:64:                    status: "OPEN"
+src/app/api/search/route.ts:178:        }, { status: 500 });
+src/app/api/client-hub/applicants/route.ts:12:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/client-hub/applicants/route.ts:30:                            select: { applications: { where: { status: "ACCEPTED" } } }
+src/app/api/client-hub/applicants/route.ts:39:                        status: true,
+src/app/api/client-hub/applicants/route.ts:41:                            select: { status: true }
+src/app/api/client-hub/applicants/route.ts:54:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/public/gigs/trending/route.ts:9:                status: { in: ["OPEN", "PENDING_APPROVAL"] },
+src/app/api/public/gigs/trending/route.ts:55:            { status: 500 }
+src/app/api/career-roadmap/route.ts:28:        return NextResponse.json({ error: msg }, { status: 500 });
+src/app/api/career-roadmap/route.ts:40:            return NextResponse.json({ error: "Target career is required." }, { status: 400 });
+src/app/api/career-roadmap/route.ts:61:            return NextResponse.json({ error: "AI service is not configured correctly." }, { status: 503 });
+src/app/api/career-roadmap/route.ts:64:            return NextResponse.json({ error: "AI quota exceeded. Please try again later." }, { status: 429 });
+src/app/api/career-roadmap/route.ts:70:            { status: 500 }
+src/app/api/conversations/route.ts:21:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/conversations/route.ts:30:            return NextResponse.json({ error: "Invalid session." }, { status: 400 });
+src/app/api/conversations/route.ts:106:        return NextResponse.json({ error: "Failed to fetch conversations" }, { status: 500 });
+src/app/api/conversations/route.ts:117:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/conversations/route.ts:125:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/conversations/route.ts:132:                { status: 400 }
+src/app/api/conversations/route.ts:140:            return NextResponse.json({ error: "Cannot start a conversation with yourself" }, { status: 400 });
+src/app/api/conversations/route.ts:190:        return NextResponse.json({ error: "Failed to create conversation" }, { status: 500 });
+src/app/api/conversations/[id]/route.ts:22:            return NextResponse.json({ error: "Invalid conversation ID format" }, { status: 400 });
+src/app/api/conversations/[id]/route.ts:62:        return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
+src/app/api/conversations/[id]/route.ts:83:            return NextResponse.json({ error: "Invalid conversation ID format" }, { status: 400 });
+src/app/api/conversations/[id]/route.ts:87:            return NextResponse.json({ error: "Message content is required" }, { status: 400 });
+src/app/api/conversations/[id]/route.ts:120:        return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+src/app/api/conversations/[id]/route.ts:139:            return NextResponse.json({ error: "Invalid conversation ID format" }, { status: 400 });
+src/app/api/conversations/[id]/route.ts:158:        return NextResponse.json({ error: "Failed to mark messages as read" }, { status: 500 });
+src/app/api/ai/cover-letter/route.ts:13:      return NextResponse.json({ error: 'Rate limit exceeded. Try again later.' }, { status: 429 });
+src/app/api/ai/cover-letter/route.ts:20:      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+src/app/api/ai/cover-letter/route.ts:33:      return NextResponse.json({ error: 'gigId required' }, { status: 400 });
+src/app/api/ai/cover-letter/route.ts:48:    if (!gig) return NextResponse.json({ error: 'Gig not found' }, { status: 404 });
+src/app/api/ai/cover-letter/route.ts:49:    if (!profile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+src/app/api/ai/cover-letter/route.ts:71:    return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
+src/app/api/ai/embed/user/route.ts:12:        if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 });
+src/app/api/ai/embed/user/route.ts:16:            return NextResponse.json({ error: 'Forbidden: Cannot compute embedding for other user' }, { status: 403 });
+src/app/api/ai/embed/user/route.ts:22:        return NextResponse.json({ error: e.message }, { status: 500 });
+src/app/api/ai/embed/gig/route.ts:12:        if (!gigId) return NextResponse.json({ error: 'gigId required' }, { status: 400 });
+src/app/api/ai/embed/gig/route.ts:16:        return NextResponse.json({ error: e.message }, { status: 500 });
+src/app/api/ai/chat/route.ts:12:      return new Response('Rate limit exceeded', { status: 429 });
+src/app/api/ai/chat/route.ts:19:      return new Response('Unauthorized', { status: 401 });
+src/app/api/ai/chat/route.ts:26:      return new Response('messages array required', { status: 400 });
+src/app/api/ai/chat/route.ts:56:    return new Response(e.message || 'Internal Server Error', { status: 500 });
+src/app/api/ai/copilot/chat/route.ts:23:    return new Response(JSON.stringify({ error: "Failed to generate response." }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+src/app/api/ai/copilot/sessions/route.ts:13:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/ai/copilot/sessions/route.ts:23:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/ai/copilot/sessions/route.ts:32:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/ai/copilot/sessions/route.ts:38:            return NextResponse.json({ error: "messages array is required" }, { status: 400 });
+src/app/api/ai/copilot/sessions/route.ts:73:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/ai/copilot/sessions/route.ts:82:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/ai/copilot/sessions/route.ts:88:            return NextResponse.json({ error: "Session ID is required" }, { status: 400 });
+src/app/api/ai/copilot/sessions/route.ts:98:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/ai/match/gigs/route.ts:9:        if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 });
+src/app/api/ai/match/gigs/route.ts:20:        return NextResponse.json({ error: e.message }, { status: 500 });
+src/app/api/ai/match/students/route.ts:9:        if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 });
+src/app/api/ai/match/students/route.ts:19:        return NextResponse.json({ error: e.message }, { status: 500 });
+src/app/api/ai/skill-gap/route.ts:14:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/ai/skill-gap/route.ts:20:            return NextResponse.json({ error: "targetRole is required" }, { status: 400 });
+src/app/api/ai/skill-gap/route.ts:80:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/ai/moderate/route.ts:13:      return NextResponse.json({ error: 'Rate limit exceeded.' }, { status: 429 });
+src/app/api/ai/moderate/route.ts:20:      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+src/app/api/ai/moderate/route.ts:31:      return NextResponse.json({ error: 'content and contentType are required' }, { status: 400 });
+src/app/api/ai/moderate/route.ts:62:    return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
+src/app/api/ai/parse-file/route.ts:26:        { status: 400 }
+src/app/api/ai/parse-file/route.ts:34:        { status: 400 }
+src/app/api/ai/parse-file/route.ts:50:        { status: 400 }
+src/app/api/ai/parse-file/route.ts:90:          { status: 400 }
+src/app/api/ai/parse-file/route.ts:101:          { status: 422 }
+src/app/api/ai/parse-file/route.ts:119:        { status: 500 }
+src/app/api/ai/parse-file/route.ts:127:      { status: 500 }
+src/app/api/ai/route.ts:22:            { status: 429 }
+src/app/api/ai/route.ts:36:            return NextResponse.json({ error: "Invalid request data format." }, { status: 400 });
+src/app/api/ai/route.ts:71:            return NextResponse.json({ error: "AI service is not configured. Contact Admin." }, { status: 503 });
+src/app/api/ai/route.ts:75:            return NextResponse.json({ error: "AI quota exceeded. Please try again later." }, { status: 429 });
+src/app/api/ai/route.ts:79:            return NextResponse.json({ error: "AI returned an invalid response. Please try again." }, { status: 422 });
+src/app/api/ai/route.ts:85:            { status: 500 }
+src/app/api/ai/feed/route.ts:13:      return NextResponse.json({ error: 'Rate limit exceeded.' }, { status: 429 });
+src/app/api/ai/feed/route.ts:20:      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+src/app/api/ai/feed/route.ts:28:    return NextResponse.json({ error: e.message }, { status: 500 });
+src/app/api/ai/trending/route.ts:12:      return NextResponse.json({ error: 'Rate limit exceeded.' }, { status: 429 });
+src/app/api/ai/trending/route.ts:41:    return NextResponse.json({ error: e.message }, { status: 500 });
+src/app/api/ai/smartmatch/route.ts:15:// Response helpers — consistent shape across all status codes
+src/app/api/ai/smartmatch/route.ts:28:    status: number,
+src/app/api/ai/smartmatch/route.ts:41:    return NextResponse.json(body, { status });
+src/app/api/ai/smartmatch/route.ts:111:                where: { status: 'OPEN' },
+src/app/api/ai/smartmatch/route.ts:117:                where: { status: 'OPEN' },
+src/app/api/ai/smartmatch/route.ts:184:        // Map typed AI errors to correct HTTP status codes
+src/app/api/ai/mock-interview/route.ts:14:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/ai/mock-interview/route.ts:24:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/ai/mock-interview/route.ts:33:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/ai/mock-interview/route.ts:39:            return NextResponse.json({ error: "roleTitle and difficulty are required" }, { status: 400 });
+src/app/api/ai/mock-interview/route.ts:76:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/ai/mock-interview/route.ts:85:        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/ai/mock-interview/route.ts:91:            return NextResponse.json({ error: "interviewId and answer are required" }, { status: 400 });
+src/app/api/ai/mock-interview/route.ts:99:            return NextResponse.json({ error: "Interview session not found" }, { status: 404 });
+src/app/api/ai/mock-interview/route.ts:145:                status: "ongoing",
+src/app/api/ai/mock-interview/route.ts:208:                status: "completed",
+src/app/api/ai/mock-interview/route.ts:214:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/ai/career-guidance/route.ts:15:            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+src/app/api/ai/career-guidance/route.ts:28:            return NextResponse.json({ error: 'No parsed resume found to generate guidance. Please upload your resume first.' }, { status: 400 });
+src/app/api/ai/career-guidance/route.ts:87:        return NextResponse.json({ status: 'completed', result: guidanceData });
+src/app/api/ai/career-guidance/route.ts:90:        return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
+src/app/api/ai/parse-resume/route.ts:15:            return NextResponse.json({ error: 'Rate limit exceeded. Max 3 parses per day.' }, { status: 429 });
+src/app/api/ai/parse-resume/route.ts:22:            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+src/app/api/ai/parse-resume/route.ts:29:            return NextResponse.json({ error: 'fileUrl is required' }, { status: 400 });
+src/app/api/ai/parse-resume/route.ts:38:            return NextResponse.json({ error: err.message || 'Failed to parse resume' }, { status: 422 });
+src/app/api/ai/parse-resume/route.ts:67:            return NextResponse.json({ error: 'Failed to save resume data to database' }, { status: 500 });
+src/app/api/ai/parse-resume/route.ts:70:        return NextResponse.json({ status: 'completed', result: resumeData, message: 'Resume processed successfully' });
+src/app/api/ai/parse-resume/route.ts:73:        return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
+src/app/api/ai/resume-analyze/route.ts:36:      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+src/app/api/ai/resume-analyze/route.ts:43:        { status: 400 }
+src/app/api/ai/resume-analyze/route.ts:92:      return NextResponse.json({ error: "AI returned invalid JSON", raw }, { status: 500 });
+src/app/api/ai/resume-analyze/route.ts:123:      status?: number;
+src/app/api/ai/resume-analyze/route.ts:128:      return NextResponse.json({ error: "AI service not configured" }, { status: 503 });
+src/app/api/ai/resume-analyze/route.ts:130:    if (err?.status === 401) {
+src/app/api/ai/resume-analyze/route.ts:131:      return NextResponse.json({ error: "Invalid AI API key" }, { status: 503 });
+src/app/api/ai/resume-analyze/route.ts:133:    if (err?.status === 429) {
+src/app/api/ai/resume-analyze/route.ts:134:      return NextResponse.json({ error: "AI rate limit reached. Try again shortly." }, { status: 429 });
+src/app/api/ai/resume-analyze/route.ts:136:    if (err?.status === 503) {
+src/app/api/ai/resume-analyze/route.ts:137:      return NextResponse.json({ error: "AI service temporarily unavailable" }, { status: 503 });
+src/app/api/ai/resume-analyze/route.ts:142:      { status: 500 }
+src/app/api/ai/resume-analyze/route.ts:174:    return NextResponse.json({ error: "Failed to fetch analysis history" }, { status: 500 });
+src/app/api/review/route.ts:24:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/review/route.ts:31:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/review/route.ts:38:                { status: 400 }
+src/app/api/review/route.ts:46:            return NextResponse.json({ error: "Cannot review yourself" }, { status: 400 });
+src/app/api/review/route.ts:52:            include: { applications: { where: { status: "ACCEPTED" } }, poster: true }
+src/app/api/review/route.ts:55:        if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+src/app/api/review/route.ts:56:        if (gig.status !== "COMPLETED") return NextResponse.json({ error: "Gig is not completed yet" }, { status: 400 });
+src/app/api/review/route.ts:60:        if (!acceptedApp) return NextResponse.json({ error: "No accepted application" }, { status: 400 });
+src/app/api/review/route.ts:66:            return NextResponse.json({ error: "You are not involved in this gig" }, { status: 403 });
+src/app/api/review/route.ts:71:            return NextResponse.json({ error: "You can only review the student who completed the gig" }, { status: 400 });
+src/app/api/review/route.ts:75:            return NextResponse.json({ error: "You can only review the client of the gig" }, { status: 400 });
+src/app/api/review/route.ts:102:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/live/route.ts:6:    return NextResponse.json({ status: "live", timestamp: new Date().toISOString() });
+src/app/api/applications/apply/route.ts:24:            return NextResponse.json({ error: "Cannot submit applications in Preview Mode" }, { status: 403 });
+src/app/api/applications/apply/route.ts:35:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/applications/apply/route.ts:45:            return NextResponse.json({ error: "Invalid session. Please sign out and sign in again." }, { status: 400 });
+src/app/api/applications/apply/route.ts:52:            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+src/app/api/applications/apply/route.ts:59:                { status: 400 }
+src/app/api/applications/apply/route.ts:71:                status: true,
+src/app/api/applications/apply/route.ts:77:            return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+src/app/api/applications/apply/route.ts:80:        if (gig.status !== "OPEN") {
+src/app/api/applications/apply/route.ts:81:            return NextResponse.json({ error: "This gig is no longer accepting applications" }, { status: 400 });
+src/app/api/applications/apply/route.ts:86:            return NextResponse.json({ error: "You cannot apply to your own gig" }, { status: 400 });
+src/app/api/applications/apply/route.ts:98:            return NextResponse.json({ error: "You have already applied to this gig" }, { status: 400 });
+src/app/api/applications/apply/route.ts:107:                status: "PENDING",
+src/app/api/applications/apply/route.ts:128:                status: application.status,
+src/app/api/applications/apply/route.ts:136:            { status: 500 }
+src/app/api/applications/route.ts:13:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/applications/route.ts:30:                            status: true,
+src/app/api/applications/route.ts:56:        return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/applications/route.ts:67:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+src/app/api/applications/route.ts:74:            return NextResponse.json({ error: "Valid gigId UUID is required" }, { status: 400 })
+src/app/api/applications/route.ts:81:            return NextResponse.json({ error: "Only students can apply to gigs" }, { status: 403 })
+src/app/api/applications/route.ts:90:            return NextResponse.json({ error: "Already applied" }, { status: 409 })
+src/app/api/applications/route.ts:94:            data: { gigId, applicantId: user.id, status: "PENDING" },
+src/app/api/applications/route.ts:97:        return NextResponse.json(application, { status: 201 })
+src/app/api/applications/route.ts:100:        return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+src/app/api/applications/[id]/route.ts:22:            return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 });
+src/app/api/applications/[id]/route.ts:27:        const { status } = body;
+src/app/api/applications/[id]/route.ts:29:        if (!status || !["ACCEPTED", "REJECTED", "PENDING"].includes(status)) {
+src/app/api/applications/[id]/route.ts:31:                { error: "Invalid status. Must be ACCEPTED, REJECTED, or PENDING" },
+src/app/api/applications/[id]/route.ts:32:                { status: 400 }
+src/app/api/applications/[id]/route.ts:56:            return NextResponse.json({ error: "Application not found" }, { status: 404 });
+src/app/api/applications/[id]/route.ts:59:        // Check if user is the gig poster (only poster can update status)
+src/app/api/applications/[id]/route.ts:62:                { error: "Only the gig poster can update application status" },
+src/app/api/applications/[id]/route.ts:63:                { status: 403 }
+src/app/api/applications/[id]/route.ts:74:                data: { status },
+src/app/api/applications/[id]/route.ts:78:        // We do NOT update the gig status to IN_PROGRESS here.
+src/app/api/applications/[id]/route.ts:86:                    message: `Your application for ${application.gig.title} has been ${status.toLowerCase()}.`,
+src/app/api/applications/[id]/route.ts:97:            message: "Application status updated successfully",
+src/app/api/applications/[id]/route.ts:98:            application: { id: applicationId, status },
+src/app/api/applications/[id]/route.ts:103:            { error: "Failed to update application status" },
+src/app/api/applications/[id]/route.ts:104:            { status: 500 }
+src/app/api/applications/[id]/route.ts:122:            return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 });
+src/app/api/applications/[id]/route.ts:135:                        status: true,
+src/app/api/applications/[id]/route.ts:153:            return NextResponse.json({ error: "Application not found" }, { status: 404 });
+src/app/api/applications/[id]/route.ts:160:                { status: 403 }
+src/app/api/applications/[id]/route.ts:169:            { status: 500 }
+src/app/api/applications/[id]/route.ts:188:            return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 });
+src/app/api/applications/[id]/route.ts:196:                status: true,
+src/app/api/applications/[id]/route.ts:201:            return NextResponse.json({ error: "Application not found" }, { status: 404 });
+src/app/api/applications/[id]/route.ts:208:                { status: 403 }
+src/app/api/applications/[id]/route.ts:217:                status: { not: "ACCEPTED" } // Ensure we don't withdraw accepted apps
+src/app/api/applications/[id]/route.ts:224:                { status: 400 }
+src/app/api/applications/[id]/route.ts:235:            { status: 500 }
+src/app/api/skills/suggestions/route.ts:152:            status: 200,
+src/app/api/skills/suggestions/route.ts:165:            { status: 500 },
+src/app/api/skills/categories/route.ts:34:                status: 200,
+src/app/api/skills/categories/route.ts:48:            { status: 500 },
+src/app/api/application/pending-count/route.ts:13:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/application/pending-count/route.ts:19:                status: "PENDING"
+src/app/api/application/pending-count/route.ts:26:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/college/students/route.ts:19:            return NextResponse.json({ error: "College name not set in profile" }, { status: 400 });
+src/app/api/college/students/route.ts:42:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/college/analytics/route.ts:19:            return NextResponse.json({ error: "College name not set in profile" }, { status: 400 });
+src/app/api/college/analytics/route.ts:40:        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+src/app/api/notifications/route.ts:12:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/notifications/route.ts:31:        }, { status: 500 });
+src/app/api/notifications/route.ts:41:            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/notifications/route.ts:61:        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/stats/route.ts:13:      prisma.gig.count({ where: { status: 'OPEN' } }),
+src/app/api/stats/route.ts:14:      prisma.internship.count({ where: { status: 'OPEN' } }),
+src/app/api/upload/route.ts:11:            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+src/app/api/upload/route.ts:18:            return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+src/app/api/upload/route.ts:24:            return NextResponse.json({ error: 'File size exceeds 5MB limit' }, { status: 400 });
+src/app/api/upload/route.ts:30:            return NextResponse.json({ error: 'Unsupported file format. Please upload a PDF or DOCX file.' }, { status: 400 });
+src/app/api/upload/route.ts:37:            return NextResponse.json({ error: 'Invalid file extension' }, { status: 400 });
+src/app/api/upload/route.ts:53:            return NextResponse.json({ error: 'Failed to upload file to storage' }, { status: 500 });
+src/app/api/upload/route.ts:63:        return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
+src/app/api/cron/weekly-report/route.ts:11:      // return new NextResponse("Unauthorized", { status: 401 });
+src/app/api/cron/weekly-report/route.ts:56:    return new NextResponse("Internal Server Error", { status: 500 });
+src/app/api/cron/release-payments/route.ts:20:      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+src/app/api/cron/release-payments/route.ts:26:        status: TransactionStatus.COMPLETED,
+src/app/api/cron/release-payments/route.ts:38:        // 3. Robust release logic with optimistic status locking
+src/app/api/cron/release-payments/route.ts:40:          // Re-verify status inside transaction (lock the row if possible or use status check)
+src/app/api/cron/release-payments/route.ts:43:            select: { status: true },
+src/app/api/cron/release-payments/route.ts:46:          if (!current || current.status !== TransactionStatus.COMPLETED) {
+src/app/api/cron/release-payments/route.ts:47:            logger.warn(`Transaction ${transaction.id} status changed, skipping.`);
+src/app/api/cron/release-payments/route.ts:183:              status: TransactionStatus.RELEASED,
+src/app/api/cron/release-payments/route.ts:224:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/analytics/track/route.ts:11:      return NextResponse.json({ error: "Missing event name" }, { status: 400 });
+src/app/api/analytics/track/route.ts:19:    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+src/app/api/analytics/platform/route.ts:34:        const totalGigsCompleted = await prisma.gig.count({ where: { status: "COMPLETED" } });
+src/app/api/analytics/platform/route.ts:36:            where: { status: "COMPLETED", completedAt: { gte: thirtyDaysAgo } }
+src/app/api/analytics/platform/route.ts:70:        return NextResponse.json({ error: "Failed to generate platform analytics" }, { status: 500 });
+src/app/api/analytics/revenue/route.ts:40:                status: "RELEASED",

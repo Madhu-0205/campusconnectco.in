@@ -1,0 +1,9 @@
+src/app/checkout/CheckoutClient.tsx:125:                  id: `pay_mock_${Math.random().toString(36).substring(2, 9)}`,
+src/app/api/checkout/webhook/route.ts:83:              paymentId: paymentEntity?.id || `pay_mock_${Math.random().toString(36).substring(2, 9)}`,
+src/app/api/checkout/create-order/route.ts:59:      const mockOrderId = `order_mock_${Math.random().toString(36).substring(2, 11)}`;
+src/components/messages/MessagesLayout.tsx:207:    const tempId = Math.random().toString()
+src/components/profile/AvatarUpload.tsx:48:      const fileName = `${userId}-${Math.random()}.${fileExt}`
+src/components/Analytics/AnalyticsProvider.tsx:35:      currentSessionId = Math.random().toString(36).substring(2, 15);
+src/lib/recommendation-engine/engine.ts:99:    const experienceMatch = Math.random() * 20 + 80; // 80-100%
+src/lib/recommendation-engine/engine.ts:100:    const educationMatch = Math.random() * 20 + 80; // 80-100%
+src/lib/rate-limit.ts:69:        if (this.requests.size > 1000 || Math.random() < 0.05) {

@@ -40,17 +40,20 @@ export async function DELETE(req: Request) {
         // but if we don't have it exposed here, the Prisma cascading delete is sufficient 
         // to anonymize the application state. The JWT will just fail subsequent queries.
         
-        // Ideally we do: const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
-        // If NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY exist in .env:
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-        
-        if (supabaseUrl && supabaseServiceKey) {
-            const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-            const supabaseAdmin = createSupabaseClient(supabaseUrl, supabaseServiceKey, {
-                auth: { autoRefreshToken: false, persistSession: false }
-            });
+        const { createAdminClient } = await import("@/lib/supabase/admin");
+        try {
+            const supabaseAdmin = createAdminClient();
+            
+            // Delete all user resumes from storage
+            const { data: files } = await supabaseAdmin.storage.from('resumes').list(user.id);
+            if (files && files.length > 0) {
+                const pathsToRemove = files.map(x => `${user.id}/${x.name}`);
+                await supabaseAdmin.storage.from('resumes').remove(pathsToRemove);
+            }
+            
             await supabaseAdmin.auth.admin.deleteUser(user.id);
+        } catch (e) {
+            console.error("Supabase Admin cleanup failed:", e);
         }
 
         return NextResponse.json({ success: true, message: "Account deleted successfully" });

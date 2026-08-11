@@ -13,7 +13,7 @@ export async function GET() {
         const { user } = auth;
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const interviews = await prisma.mockInterview.findMany({
+        const interviews = await prisma.mockInterview.findMany({ take: 50,
             where: { userId: user.id },
             orderBy: { createdAt: "desc" },
         });
@@ -201,6 +201,24 @@ No preamble. Return ONLY a valid JSON object.`
                     score: parsedData.score || 70,
                     feedback: parsedData.feedback || {},
                 }
+            });
+
+            // 3C-1: Seamlessly write session summary into User.resumeData (JSON)
+            const userRecord = await prisma.user.findUnique({ where: { id: user.id } });
+            let resumeData: any = typeof userRecord?.resumeData === 'object' ? userRecord?.resumeData : {};
+            if (!resumeData) resumeData = {};
+            if (!resumeData.mockInterviews) resumeData.mockInterviews = [];
+            
+            resumeData.mockInterviews.push({
+                id: updatedInterview.id,
+                roleTitle: updatedInterview.roleTitle,
+                score: updatedInterview.score,
+                date: new Date().toISOString()
+            });
+
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { resumeData: resumeData }
             });
 
             return NextResponse.json({

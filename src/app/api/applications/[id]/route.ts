@@ -2,8 +2,8 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { requireUser } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
-import { createClient } from "@/lib/supabase/server";
 
 export async function PATCH(
     request: NextRequest,
@@ -11,16 +11,8 @@ export async function PATCH(
 ) {
     const params = await props.params;
     try {
-        // Get authenticated user
-        const supabase = await createClient();
-        const {
-            data: { user },
-            error: authError,
-        } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         const userId = user.id;
         const applicationId = params.id;
@@ -74,14 +66,12 @@ export async function PATCH(
 
         // Prepare transaction operations
         const operations: Prisma.PrismaPromise<unknown>[] = [
-            prisma.application.update({
-                where: { id: applicationId },
-                data: { status },
-                select: {
-                    id: true,
-                    status: true,
-                    updatedAt: true,
+            prisma.application.updateMany({
+                where: { 
+                    id: applicationId,
+                    gig: { posted_by: userId } 
                 },
+                data: { status },
             })
         ];
 
@@ -101,11 +91,11 @@ export async function PATCH(
         );
 
         // Execute sequentially in transaction
-        const [updatedApplication] = await prisma.$transaction(operations);
+        await prisma.$transaction(operations);
 
         return NextResponse.json({
             message: "Application status updated successfully",
-            application: updatedApplication,
+            application: { id: applicationId, status },
         });
     } catch (error) {
         console.error("Error updating application:", error);
@@ -122,16 +112,8 @@ export async function GET(
 ) {
     const params = await props.params;
     try {
-        // Get authenticated user
-        const supabase = await createClient();
-        const {
-            data: { user },
-            error: authError,
-        } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         const applicationId = params.id;
 
@@ -195,16 +177,8 @@ export async function DELETE(
 ) {
     const params = await props.params;
     try {
-        // Get authenticated user
-        const supabase = await createClient();
-        const {
-            data: { user },
-            error: authError,
-        } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         const userId = user.id;
         const applicationId = params.id;
@@ -235,18 +209,21 @@ export async function DELETE(
             );
         }
 
-        // Don't allow withdrawal of accepted applications
-        if (application.status === "ACCEPTED") {
+        // Delete application atomically with ownership scope
+        const deleteResult = await prisma.application.deleteMany({
+            where: { 
+                id: applicationId,
+                applicantId: userId,
+                status: { not: "ACCEPTED" } // Ensure we don't withdraw accepted apps
+            },
+        });
+
+        if (deleteResult.count === 0) {
             return NextResponse.json(
-                { error: "Cannot withdraw an accepted application" },
+                { error: "Application could not be withdrawn or already accepted" },
                 { status: 400 }
             );
         }
-
-        // Delete application
-        await prisma.application.delete({
-            where: { id: applicationId },
-        });
 
         return NextResponse.json({
             message: "Application withdrawn successfully",

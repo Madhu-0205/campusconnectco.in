@@ -16,7 +16,7 @@ type Radius = typeof RADII[number]
 
 interface CollegeSearchListProps {
   selectedValue: string
-  onSelect: (name: string) => void
+  onSelect: (name: string, id: string) => void
   onCantFind: () => void
   hasLocation: boolean
   userLat?: number
@@ -215,7 +215,7 @@ export default function CollegeSearchList({
                 key={c.id}
                 college={c}
                 isSelected={selectedValue === c.name}
-                onClick={() => onSelect(c.name)}
+                onClick={() => onSelect(c.name, c.id)}
                 index={i}
               />
             ))

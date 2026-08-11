@@ -1,9 +1,9 @@
 "use client"
 
 import { User, Bell, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"

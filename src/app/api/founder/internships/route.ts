@@ -4,12 +4,12 @@ import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 
 export async function GET() {
-    const { errorResponse } = await protectApi(["FOUNDER"]);
+    const { errorResponse } = await protectApi(["ADMIN"]);
     if (errorResponse) return errorResponse;
 
     try {
         const [internships, total, open, pending, featured] = await Promise.all([
-            prisma.internship.findMany({
+            prisma.internship.findMany({ take: 50,
                 orderBy: { createdAt: "desc" },
             }),
             prisma.internship.count(),
@@ -26,7 +26,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-    const { errorResponse } = await protectApi(["FOUNDER"]);
+    const { errorResponse } = await protectApi(["ADMIN"]);
     if (errorResponse) return errorResponse;
 
     try {

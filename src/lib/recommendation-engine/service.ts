@@ -28,7 +28,7 @@ export async function getPersonalizedRecommendations(userId: string) {
   // Fetching a broad sample to rank (in production, we'd use vector search or pre-filtered sets)
   const [gigs, internships] = await Promise.all([
     prisma.gig.findMany({
-      where: { status: "active" },
+      where: { status: "OPEN" },
       orderBy: { createdAt: "desc" },
       take: 20
     }),

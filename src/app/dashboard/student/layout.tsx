@@ -21,6 +21,18 @@ export default async function StudentLayout({ children }: { children: React.Reac
         }
     }
 
+    // Force location + college onboarding for students if profile details are missing
+    if (role === "STUDENT" && user) {
+        const { prisma } = await import("@/lib/prisma");
+        const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { city: true, collegeId: true }
+        });
+        if (!dbUser?.city || !dbUser?.collegeId) {
+            redirect("/onboarding");
+        }
+    }
+
     // Founders can only access student routes in preview mode
     if (role === "FOUNDER") {
         const cookieStore = await cookies();

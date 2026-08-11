@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion"
 import { Info, Save, DollarSign, Bell, Shield, Palette, Globe, Trash2, Plus, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/Button"
 

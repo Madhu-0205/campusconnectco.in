@@ -12,18 +12,18 @@ import {
    
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ShieldCheck, ArrowLeft, MoreHorizontal, Sparkles
-} from "lucide-react"
+, Loader2 } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
+import { CollegeDropdown } from "@/components/ui/CollegeDropdown"
+import { LocationMap } from "@/components/ui/LocationMap"
 import { VerificationBadge } from "@/components/ui/VerificationBadge"
 
 import { AvatarUpload } from "./AvatarUpload"
 import { EditableField } from "./EditableField"
 import { SkillsEditor } from "./SkillsEditor"
-import { CollegeDropdown } from "@/components/ui/CollegeDropdown"
-import { LocationMap } from "@/components/ui/LocationMap"
-import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+
 
 interface ProfileEditorProps {
   profile: {
@@ -71,6 +71,7 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
   })
   const [isEditingLocation, setIsEditingLocation] = useState(false)
   const [isSavingLocation, setIsSavingLocation] = useState(false)
+  const [selectedCollegeId, setSelectedCollegeId] = useState<string | null>(profile.collegeId || null)
 
   const handleSaveLocation = async () => {
     setIsSavingLocation(true)
@@ -129,7 +130,7 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
             <button
               key={id}
               onClick={() => setActiveSection(id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${ activeSection === id ? "bg-foreground text-background/10 text-foreground border" : "text-muted-foreground hover:text-muted-foreground hover:bg-accent border border-transparent" }`}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${ activeSection === id ? "bg-foreground text-background border" : "text-muted-foreground hover:text-muted-foreground hover:bg-accent border border-transparent" }`}
             >
               <Icon size={14} /> {label}
             </button>
@@ -351,10 +352,12 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
                     label="University / College"
                     field="college"
                     initialValue={profile.college || ""}
+                    extraData={{ collegeId: selectedCollegeId }}
                     renderInput={(value, setValue) => (
                       <CollegeDropdown
                         value={value}
                         onChange={setValue}
+                        onCollegeId={setSelectedCollegeId}
                         city={locationState.city || ""}
                         state={locationState.state || ""}
                       />

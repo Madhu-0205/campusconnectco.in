@@ -1,9 +1,8 @@
 import { Suspense } from 'react'
-
 import { DesignNode } from '@/components/v2/inspector/DesignNode'
 import { OpportunityDiscoveryClient } from '@/components/v2/OpportunityDiscoveryClient'
 import { QualityGate } from '@/components/v2/QualityGate'
-import { createClient } from '@/lib/supabase/server'
+import prisma from '@/lib/prisma'
 
 interface PageProps {
   searchParams: Promise<{
@@ -18,62 +17,74 @@ interface PageProps {
 }
 
 export default async function FindGigsPage({ searchParams }: PageProps) {
-  const supabase = await createClient()
   const params = await searchParams
+  
+  const where: any = { status: 'OPEN' }
 
-  // Build query — start with ALL active gigs, no hidden defaults
-  let query = supabase
-    .from('gigs')
-    .select(`
-      *,
-      posted_by_user:User!posted_by (
-        id,
-        full_name,
-        company_name,
-        avatar_url,
-        image,
-        college
-      )
-    `, { count: 'exact' })
-
-  // Apply filters ONLY if settings are present
   if (params.q?.trim()) {
-    query = query.or(
-      `title.ilike.%${params.q}%,description.ilike.%${params.q}%`
-    )
+    where.OR = [
+      { title: { contains: params.q, mode: 'insensitive' } },
+      { description: { contains: params.q, mode: 'insensitive' } }
+    ]
   }
 
   if (params.category && params.category !== 'all') {
-    query = query.eq('category', params.category)
+    where.tags = { contains: params.category, mode: 'insensitive' }
   }
 
   if (params.budget_min) {
-    query = query.gte('budget', parseInt(params.budget_min))
+    where.budget = { ...where.budget, gte: parseInt(params.budget_min) }
   }
 
   if (params.budget_max) {
-    query = query.lte('budget', parseInt(params.budget_max))
+    where.budget = { ...where.budget, lte: parseInt(params.budget_max) }
   }
 
   if (params.mode && params.mode !== 'all') {
-    query = query.eq('work_mode', params.mode)
+    where.work_mode = params.mode
   }
 
-  // Sort logic
+  let orderBy: any = { createdAt: 'desc' }
   const sortBy = params.sort || 'newest'
-  if (sortBy === 'budget_high') query = query.order('budget', { ascending: false })
-  else if (sortBy === 'budget_low') query = query.order('budget', { ascending: true })
-  else query = query.order('created_at', { ascending: false })
+  if (sortBy === 'budget_high') orderBy = { budget: 'desc' }
+  else if (sortBy === 'budget_low') orderBy = { budget: 'asc' }
 
-  // Pagination
   const page = parseInt(params.page ?? '0')
-  query = query.range(page * 20, page * 20 + 19)
+  
+  const [gigs, totalCount] = await Promise.all([
+    prisma.gig.findMany({
+      where,
+      orderBy,
+      skip: page * 20,
+      take: 20,
+      include: {
+        poster: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            college: true
+          }
+        }
+      }
+    }),
+    prisma.gig.count({ where })
+  ])
 
-  const { data: gigs, error, count: totalCount } = await query
-
-  if (error) console.error('[FindGigs] Supabase query error:', error.message)
-
-  const safeGigs = gigs ?? []
+  // Transform Prisma response to match what the client expects (snake_case if needed, or adjust client)
+  // The OpportunityDiscoveryClient probably expects poster info in `posted_by_user`.
+  // Let's pass it exactly as we fetched it, we might need to adjust the client or map it here.
+  const mappedGigs = gigs.map(gig => ({
+    ...gig,
+    posted_by_user: {
+      id: gig.poster?.id,
+      full_name: gig.poster?.name,
+      company_name: null, // No company on user
+      avatar_url: gig.poster?.image,
+      image: gig.poster?.image,
+      college: gig.poster?.college
+    }
+  }))
 
   return (
     <DesignNode
@@ -93,7 +104,6 @@ export default async function FindGigsPage({ searchParams }: PageProps) {
         
         {/* Visual Header */}
         <div className="sticky top-16 z-30 py-12 overflow-hidden border-b border-border bg-background/80 backdrop-blur-xl">
-          {/* Ambient Background Glows */}
           <div className="pointer-events-none absolute left-0 top-0 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]" />
           <div className="pointer-events-none absolute right-0 top-0 h-125 w-125 translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/5 blur-[100px]" />
           
@@ -144,7 +154,7 @@ export default async function FindGigsPage({ searchParams }: PageProps) {
                 </div>
               </div>
             }>
-              <OpportunityDiscoveryClient gigs={safeGigs} />
+              <OpportunityDiscoveryClient gigs={mappedGigs as any} />
             </Suspense>
           </div>
         </div>

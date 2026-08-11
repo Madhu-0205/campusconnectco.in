@@ -14,6 +14,7 @@ interface EditableFieldProps {
   type?: "text" | "textarea" | "select"
   options?: string[]
   renderInput?: (value: string, onChange: (val: string) => void) => React.ReactNode
+  extraData?: Record<string, any>
 }
 
 export function EditableField({
@@ -23,18 +24,19 @@ export function EditableField({
   placeholder,
   type = "text",
   options,
-  renderInput
+  renderInput,
+  extraData
 }: EditableFieldProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(initialValue)
   const { save, saving, saved } = useProfileField({ field })
 
   const handleSave = async () => {
-    if (value === initialValue) {
+    if (value === initialValue && !extraData) {
       setIsEditing(false)
       return
     }
-    const success = await save(value)
+    const success = await save(value, extraData)
     if (success) setIsEditing(false)
   }
 
@@ -134,7 +136,7 @@ export function EditableField({
         ) : (
           <div 
             onClick={() => setIsEditing(true)}
-            className="w-full bg-white/2 border border-transparent hover:border-white/5 hover:bg-white/4 rounded-xl px-4 py-3 transition-all cursor-pointer min-h-[46px] flex items-center"
+            className="w-full bg-white/2 border border-transparent hover:border-white/5 hover:bg-white/4 rounded-xl px-4 py-3 transition-all cursor-pointer min-h-11.5 flex items-center"
           >
             <p className={`text-sm ${!value ? 'text-muted-foreground italic' : 'text-foreground'}`}>
               {value || `No ${label.toLowerCase()} added yet.`}

@@ -43,6 +43,9 @@ export function getOpenAI(): OpenAI {
   const isPlaceholder = apiKey === "" || apiKey.includes("placeholder") || apiKey.includes("your_");
 
   if (isPlaceholder) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("SERVER CONFIGURATION ERROR: AI API keys are missing in production environment.");
+    }
     return new Proxy({}, {
       get(target, prop) {
         if (prop === 'chat') {
@@ -110,6 +113,7 @@ export function getOpenAI(): OpenAI {
     _client = new OpenAI({
       apiKey: apiKey,
       baseURL: process.env.GEMINI_API_KEY ? "https://generativelanguage.googleapis.com/v1beta/openai/" : undefined,
+      timeout: 8000, // 8-second timeout to prevent Edge functions from hanging
     });
   }
   return _client;

@@ -4,11 +4,11 @@ import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 
 export async function GET() {
-    const { errorResponse } = await protectApi(["FOUNDER"]);
+    const { errorResponse } = await protectApi(["ADMIN"]);
     if (errorResponse) return errorResponse;
 
     try {
-        const announcements = await prisma.announcement.findMany({
+        const announcements = await prisma.announcement.findMany({ take: 50,
             orderBy: { createdAt: "desc" },
         });
         return NextResponse.json({ announcements });
@@ -19,7 +19,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-    const { errorResponse } = await protectApi(["FOUNDER"]);
+    const { errorResponse } = await protectApi(["ADMIN"]);
     if (errorResponse) return errorResponse;
 
     try {

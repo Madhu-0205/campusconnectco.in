@@ -24,7 +24,7 @@ export async function GET() {
 
     if (existing) {
        
-      const allReferrals: any[] = await (prisma as any).referral.findMany({
+      const allReferrals: any[] = await (prisma as any).referral.findMany({ take: 50,
         where: { referrerId: user.id },
         orderBy: { createdAt: "desc" },
       })

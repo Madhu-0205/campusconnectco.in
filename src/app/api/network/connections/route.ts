@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getSession } from "@/lib/auth-checks";
+import { requireUser } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 
 /**
@@ -8,8 +8,8 @@ import prisma from "@/lib/prisma";
  * Returns connections for the current user
  */
 export async function GET(req: NextRequest) {
-  const user = await getSession();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { user, errorResponse } = await requireUser();
+  if (errorResponse) return errorResponse;
 
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status") || "ACCEPTED";
@@ -91,8 +91,8 @@ export async function GET(req: NextRequest) {
  * Body: { receiverId: string, message?: string }
  */
 export async function POST(req: NextRequest) {
-  const user = await getSession();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { user, errorResponse } = await requireUser();
+  if (errorResponse) return errorResponse;
 
   try {
     const body = await req.json();
@@ -176,8 +176,8 @@ export async function POST(req: NextRequest) {
  * Body: { connectionId: string, action: 'accept' | 'reject' | 'cancel' | 'block' }
  */
 export async function PATCH(req: NextRequest) {
-  const user = await getSession();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { user, errorResponse } = await requireUser();
+  if (errorResponse) return errorResponse;
 
   try {
     const { connectionId, action } = await req.json();
@@ -215,18 +215,29 @@ export async function PATCH(req: NextRequest) {
     };
 
     if (action === "cancel") {
-      // Delete instead of update for cancellation
-      await prisma.connectionRequest.delete({ where: { id: connectionId } });
+      // Delete instead of update for cancellation, with atomic ownership check
+      const del = await prisma.connectionRequest.deleteMany({ 
+        where: { id: connectionId, senderId: user.id } 
+      });
+      if (del.count === 0) return NextResponse.json({ error: "Not authorized" }, { status: 403 });
       return NextResponse.json({ success: true, action: "cancelled" });
     }
 
-    const updated = await prisma.connectionRequest.update({
-      where: { id: connectionId },
+    const whereClause = action === "block" 
+      ? { id: connectionId, OR: [{ senderId: user.id }, { receiverId: user.id }] }
+      : { id: connectionId, receiverId: user.id };
+
+    const updated = await prisma.connectionRequest.updateMany({
+      where: whereClause,
       data: {
         status: statusMap[action],
         respondedAt: new Date(),
       },
     });
+
+    if (updated.count === 0) {
+      return NextResponse.json({ error: "Not authorized or not found" }, { status: 403 });
+    }
 
     // Notify the other party
     if (action === "accept") {

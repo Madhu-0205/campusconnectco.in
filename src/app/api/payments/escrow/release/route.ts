@@ -32,11 +32,15 @@ export async function POST(req: NextRequest) {
         // E.g. await razorpay.transfers.create({ account: workerAccount, amount: escrow.payout * 100, currency: "INR" });
 
         await prisma.$transaction(async (tx: any) => {
-            // 1. Release Escrow
-            await tx.escrow.update({
-                where: { id: escrow.id },
+            // 1. Release Escrow Atomically
+            const updateResult = await tx.escrow.updateMany({
+                where: { id: escrow.id, status: "LOCKED" },
                 data: { status: "RELEASED" }
             });
+
+            if (updateResult.count === 0) {
+                throw new Error("Escrow is no longer in LOCKED state");
+            }
 
             // 2. Mark Transaction as COMPLETED
             await tx.transaction.updateMany({
@@ -60,8 +64,8 @@ export async function POST(req: NextRequest) {
                 await tx.userGamification.update({
                     where: { userId: escrow.workerId },
                     data: {
-                        totalEarned: gamif.totalEarned + escrow.payout,
-                        gigsCompleted: gamif.gigsCompleted + 1,
+                        totalEarned: { increment: escrow.payout },
+                        gigsCompleted: { increment: 1 },
                         ...(gamif.firstEarningAt ? {} : { firstEarningAt: new Date() }),
                     }
                 });

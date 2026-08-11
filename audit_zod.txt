@@ -1,0 +1,34 @@
+src/app/api/founder/disputes/route.ts:54:const resolveSchema = z.object({
+src/app/api/founder/gigs/[id]/route.ts:7:const GigActionSchema = z.object({
+src/app/api/founder/internships/[id]/route.ts:8:const FounderInternshipUpdateSchema = z.object({
+src/app/api/founder/users/[id]/route.ts:7:const UserActionSchema = z.object({
+src/app/api/messages/route.ts:8:const MessageCreateSchema = z.object({
+src/app/api/posts/route.ts:10:const PostCreateSchema = z.object({
+src/app/api/posts/route.ts:14:const PostPatchSchema = z.object({
+src/app/api/employer/organization/route.ts:8:const OrgCreateSchema = z.object({
+src/app/api/employer/organization/[id]/route.ts:8:const OrgUpdateSchema = z.object({
+src/app/api/employer/drives/route.ts:8:const DriveCreateSchema = z.object({
+src/app/api/colleges/submit/route.ts:6:const submitSchema = z.object({
+src/app/api/internal/opportunities/route.ts:11:const opportunitySchema = z.object({
+src/app/api/user/projects/route.ts:8:const ProjectCreateSchema = z.object({
+src/app/api/user/profile/route.ts:11:const ATSCategoryScoresSchema = z.object({
+src/app/api/user/profile/route.ts:24:const ATSScoreSchema = z.object({
+src/app/api/user/profile/route.ts:31:const ResumeImprovementSchema = z.object({
+src/app/api/user/profile/route.ts:43:const ResumeDataSchema = z.object({
+src/app/api/user/profile/route.ts:44:    personalInfo: z.object({
+src/app/api/user/profile/route.ts:55:    education: z.array(z.object({
+src/app/api/user/profile/route.ts:62:    projects: z.array(z.object({
+src/app/api/user/profile/route.ts:68:    experience: z.array(z.object({
+src/app/api/user/profile/route.ts:83:const ProfileUpdateSchema = z.object({
+src/app/api/gigs/route.ts:18:const GigCreateSchema = z.object({
+src/app/api/gigs/route.ts:29:const GigPatchSchema = z.object({
+src/app/api/gigs/route.ts:34:const GigQuerySchema = z.object({
+src/app/api/internships/route.ts:9:const InternshipCreateSchema = z.object({
+src/app/api/internships/[id]/engage/route.ts:16:const EngageSchema = z.object({
+src/app/api/checkout/dispute/route.ts:10:const DisputeSchema = z.object({
+src/app/api/checkout/create-order/route.ts:9:const CreateOrderSchema = z.object({
+src/app/api/checkout/refund/route.ts:11:const RefundSchema = z.object({
+src/app/api/conversations/route.ts:8:const ConversationCreateSchema = z.object({
+src/app/api/ai/route.ts:8:const aiRequestSchema = z.object({
+src/app/api/review/route.ts:11:const ReviewSchema = z.object({
+src/app/api/applications/apply/route.ts:11:const ApplySchema = z.object({

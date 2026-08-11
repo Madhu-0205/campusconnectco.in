@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 
+import { ContextualMapLayout } from "@/components/v2/maps/ContextualMapLayout";
 import { prisma } from "@/lib/prisma";
 
 import InternshipsClient from "./InternshipsClient";
 
-import { ContextualMapLayout } from "@/components/v2/maps/ContextualMapLayout";
 
 export default async function Page() {
     // 1. Concurrent fetching logic as per 🔧 STEP 7

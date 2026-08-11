@@ -2,6 +2,9 @@ import { redirect } from "next/navigation"
 import React, { Suspense } from "react"
 
 import { DesignNode } from "@/components/v2/inspector/DesignNode"
+import { ContextualMapLayout } from "@/components/v2/maps/ContextualMapLayout"
+import { MarkerData } from "@/components/v2/maps/MapContext"
+import { MapDataSync } from "@/components/v2/maps/MapDataSync"
 import { QualityGate } from "@/components/v2/QualityGate"
 import { ActivePursuitsWidget } from "@/components/v2/workspace/ActivePursuitsWidget"
 import { AICopilotWidget } from "@/components/v2/workspace/AICopilotWidget"
@@ -16,9 +19,6 @@ import { protectPage } from "@/lib/auth-checks"
 import prisma from "@/lib/prisma"
 import { getPersonalizedRecommendations } from "@/lib/recommendation-engine"
 
-import { ContextualMapLayout } from "@/components/v2/maps/ContextualMapLayout"
-import { MapDataSync } from "@/components/v2/maps/MapDataSync"
-import { MarkerData } from "@/components/v2/maps/MapContext"
 
 // Add a standard widget skeleton
 const WidgetSkeleton = ({ height = "h-64" }: { height?: string }) => (
@@ -107,7 +107,7 @@ async function ActivePursuitsSection({ userId }: { userId: string }) {
       status: { in: ["ACCEPTED", "PENDING"] },
       gig: { status: { not: "COMPLETED" } } 
     },
-    include: { gig: true },
+    include: { gig: { include: { poster: true } } },
     take: 4,
     orderBy: { updatedAt: 'desc' }
   })
@@ -115,7 +115,7 @@ async function ActivePursuitsSection({ userId }: { userId: string }) {
   const mappedPursuits = activeApps.map(app => ({
     id: app.id,
     title: app.gig.title,
-    company: "Campus Client", // In a real scenario, fetch company/creator name
+    company: (app.gig as any).poster?.name || "Campus Client",
     status: app.status === "ACCEPTED" ? "WORKING" : "PENDING" as any,
     deadline: app.gig.deadline,
     href: `/dashboard/student/applications`
@@ -188,10 +188,14 @@ async function NetworkSection({ userId }: { userId: string }) {
     } 
   })
 
+  const pendingConnections = await prisma.connectionRequest.count({
+    where: { receiverId: userId, status: "PENDING" }
+  })
+
   return (
     <NetworkWidget 
       unreadMessages={unreadMessagesCount}
-      pendingConnections={0} // To be implemented in network system
+      pendingConnections={pendingConnections}
     />
   )
 }

@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
     }
 
      
-    const drives = await (prisma as any).campusDrive.findMany({
+    const drives = await (prisma as any).campusDrive.findMany({ take: 50,
       where: { organizationId: membership.organizationId },
       orderBy: { createdAt: "desc" },
     })

@@ -1,10 +1,12 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
-import dynamic from "next/dynamic"
-import { MapProvider } from "./MapContext"
-import { Map as MapIcon, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { Map as MapIcon, X } from "lucide-react"
+import dynamic from "next/dynamic"
+import React, { useState, useEffect } from "react"
+
+import { MapProvider } from "./MapContext"
+
 
 // Dynamically import the MapLibre component to avoid SSR issues
 const ContextualMap = dynamic(() => import("./ContextualMap"), {

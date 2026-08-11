@@ -144,7 +144,15 @@ export default async function PublicProfilePage({
       date: e.createdAt.toLocaleString('default', { month: 'short', year: 'numeric' }),
       type: "CampusGig",
       skills: ["Freelance", "Gig"],
-    })) || []
+    })) || [],
+    stats: {
+      gigsCompleted: user.workerEscrows?.filter((e: any) => e.status === "RELEASED").length || 0,
+      totalEarned: user.workerEscrows?.filter((e: any) => e.status === "RELEASED").reduce((sum: number, e: any) => sum + (e.payout || e.amount || 0), 0) || 0,
+      avgRating: user.reviewsReceived?.length > 0 
+        ? (user.reviewsReceived.reduce((sum: number, r: any) => sum + r.rating, 0) / user.reviewsReceived.length).toFixed(1) 
+        : "5.0",
+      responseRate: 100
+    }
   }
 
   const personData = {

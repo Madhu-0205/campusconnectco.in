@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { requireUser, requireConversationParticipant } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
-import { createClient } from "@/lib/supabase/server";
 
 // GET - Fetch messages for a conversation
 export async function GET(
@@ -11,37 +11,32 @@ export async function GET(
 ) {
     const params = await props.params;
     try {
-        const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse: authErrorResponse } = await requireUser();
+        if (authErrorResponse) return authErrorResponse;
 
         const userId = user.id;
         const conversation_id = params.id;
 
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(conversation_id).success) {
+            return NextResponse.json({ error: "Invalid conversation ID format" }, { status: 400 });
+        }
+
         // Verify user is part of this conversation
-        const conversation = await prisma.conversation.findFirst({
-            where: {
-                id: conversation_id,
-                OR: [
-                    { participant_1: userId },
-                    { participant_2: userId },
-                ],
-            },
+        const { conversation, errorResponse: convError } = await requireConversationParticipant(userId, conversation_id);
+        if (convError) return convError;
+
+        // Ensure we fetch with the required includes
+        const fullConversation = await prisma.conversation.findUnique({
+            where: { id: conversation_id },
             include: {
                 user1: { select: { id: true, name: true, full_name: true, email: true, image: true, avatar_url: true } },
                 user2: { select: { id: true, name: true, full_name: true, email: true, image: true, avatar_url: true } },
             },
         });
 
-        if (!conversation) {
-            return NextResponse.json({ error: "Conversation not found or access denied" }, { status: 404 });
-        }
-
         // Fetch messages
-        const messages = await prisma.message.findMany({
+        const messages = await prisma.message.findMany({ take: 50,
             where: { conversation_id: conversation_id },
             include: {
                 sender: {
@@ -61,7 +56,7 @@ export async function GET(
             data: { read_at: new Date() },
         });
 
-        return NextResponse.json({ conversation, messages });
+        return NextResponse.json({ conversation: fullConversation, messages });
     } catch (error) {
         console.error("Error fetching messages:", error);
         return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
@@ -75,36 +70,26 @@ export async function POST(
 ) {
     const params = await props.params;
     try {
-        const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse: authErrorResponse } = await requireUser();
+        if (authErrorResponse) return authErrorResponse;
 
         const userId = user.id;
         const conversation_id = params.id;
         const { text, content: bodyContent } = await request.json();
         const messageContent = text || bodyContent;
 
+        // Validate UUID format to prevent DB casting crashes
+        if (!z.string().uuid().safeParse(conversation_id).success) {
+            return NextResponse.json({ error: "Invalid conversation ID format" }, { status: 400 });
+        }
+
         if (!messageContent || messageContent.trim().length === 0) {
             return NextResponse.json({ error: "Message content is required" }, { status: 400 });
         }
 
         // Verify user is part of this conversation
-        const conversation = await prisma.conversation.findFirst({
-            where: {
-                id: conversation_id,
-                OR: [
-                    { participant_1: userId },
-                    { participant_2: userId },
-                ],
-            },
-        });
-
-        if (!conversation) {
-            return NextResponse.json({ error: "Conversation not found or access denied" }, { status: 404 });
-        }
+        const { errorResponse: convError } = await requireConversationParticipant(userId, conversation_id);
+        if (convError) return convError;
 
         // Create message and update conversation last_message
         const [message] = await prisma.$transaction([
@@ -143,12 +128,8 @@ export async function PATCH(
 ) {
     const params = await props.params;
     try {
-        const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse: authErrorResponse } = await requireUser();
+        if (authErrorResponse) return authErrorResponse;
 
         const userId = user.id;
         const conversation_id = params.id;
@@ -159,19 +140,8 @@ export async function PATCH(
         }
 
         // Verify user is part of this conversation
-        const conversation = await prisma.conversation.findFirst({
-            where: {
-                id: conversation_id,
-                OR: [
-                    { participant_1: userId },
-                    { participant_2: userId },
-                ],
-            },
-        });
-
-        if (!conversation) {
-            return NextResponse.json({ error: "Conversation not found or access denied" }, { status: 404 });
-        }
+        const { errorResponse: convError } = await requireConversationParticipant(userId, conversation_id);
+        if (convError) return convError;
 
         const result = await prisma.message.updateMany({
             where: {

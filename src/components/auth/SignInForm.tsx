@@ -42,7 +42,7 @@ export default function SignInForm() {
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) router.replace("/dashboard/student")
+      if (user) router.replace("/dashboard")
     }
     checkUser()
   }, [supabase, router])

@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { filterAndRankGigs } from "@/lib/ai/filterAndRank";
 import { moderateGig } from "@/lib/ai/moderator";
+import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
 import { sanitizeInput } from "@/lib/security/sanitization";
@@ -161,9 +162,11 @@ export async function GET(req: Request) {
             gigs = items;
             total = count;
         }
+        // Strip coordinates before returning
+        const safeGigs = gigs.map(({ latitude, longitude, ...rest }) => rest);
 
         return NextResponse.json({
-            gigs,
+            gigs: safeGigs,
             page,
             pageSize,
             totalItems: total,
@@ -199,24 +202,11 @@ export async function POST(req: Request) {
         if (isPreview) {
             return NextResponse.json({ error: "Cannot post gigs in Preview Mode" }, { status: 403 });
         }
-        const supabase = await createClient();
-        const { data: { user }, error } =
-            await supabase.auth.getUser();
-
-        if (error || !user) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
-        // ðŸ›¡ï¸ UUID Guard â€” prevent P2023 from invalid Supabase user IDs
-        try {
-            validateSessionUserId(user.id, "POST /api/gigs");
-        } catch (uuidErr) {
-            console.error("[P2023 Guard]", uuidErr);
-            return NextResponse.json({ error: "Invalid session identity. Please sign out and sign in again." }, { status: 400 });
-        }
+        
+        const auth = await protectApi(["FOUNDER", "STARTUP", "ADMIN", "CLIENT"]);
+        if (auth.errorResponse) return auth.errorResponse;
+        
+        const user = auth.user;
 
         const body = await req.json();
         
@@ -296,7 +286,7 @@ export async function POST(req: Request) {
         // NOTIFICATIONS: Notify followers
         // Note: Using try-catch to prevent blocking the response if notification fails
         try {
-            const followers = await prisma.follows.findMany({
+            const followers = await prisma.follows.findMany({ take: 50,
                 where: { followingId: dbUser.id },
                 select: { followerId: true }
             });
@@ -355,7 +345,7 @@ export async function PATCH(req: Request) {
         // Only poster or founder
         if (gig.posted_by !== user.id) {
             const dbUser = await prisma.user.findUnique({ where: { id: user.id }, select: { role: true } });
-            if (dbUser?.role !== "FOUNDER") {
+            if (dbUser?.role !== "ADMIN") {
                 return NextResponse.json({ error: "Forbidden" }, { status: 403 });
             }
         }
@@ -398,7 +388,7 @@ export async function DELETE(req: Request) {
 
         if (gig.posted_by !== user.id) {
             const dbUser = await prisma.user.findUnique({ where: { id: user.id }, select: { role: true } });
-            if (dbUser?.role !== "FOUNDER") {
+            if (dbUser?.role !== "ADMIN") {
                 return NextResponse.json({ error: "Forbidden" }, { status: 403 });
             }
         }

@@ -18,7 +18,7 @@ export async function GET(req: Request) {
         let gigs: any[] = [];
 
         if (type === "all" || type === "internships") {
-            const savedInternships = await prisma.savedInternship.findMany({
+            const savedInternships = await prisma.savedInternship.findMany({ take: 50,
                 where: { userId: user.id },
                 include: { internship: true },
                 orderBy: { createdAt: "desc" }
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
         }
 
         if (type === "all" || type === "gigs") {
-            const savedGigs = await prisma.savedGig.findMany({
+            const savedGigs = await prisma.savedGig.findMany({ take: 50,
                 where: { userId: user.id },
                 include: { gig: true },
                 orderBy: { createdAt: "desc" }
@@ -51,8 +51,9 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { id, type, action } = body; // action: 'save' | 'unsave'
 
-        if (!id || !type || !action) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        const { z } = require("zod");
+        if (!id || !type || !action || !z.string().uuid().safeParse(id).success) {
+            return NextResponse.json({ error: "Missing required fields or invalid ID format" }, { status: 400 });
         }
 
         if (type === "internship") {

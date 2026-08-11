@@ -6,11 +6,11 @@ import prisma from "@/lib/prisma";
 // GET - Fetch all gigs for moderation
 export async function GET() {
     try {
-        const auth = await protectApi(["FOUNDER"]);
+        const auth = await protectApi(["ADMIN"]);
         if (auth.errorResponse) return auth.errorResponse;
 
         // Fetch all gigs with poster info and application count
-        const gigs = await prisma.gig.findMany({
+        const gigs = await prisma.gig.findMany({ take: 50,
             select: {
                 id: true,
                 title: true,

@@ -30,8 +30,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unsupported file format. Please upload a PDF or DOCX file.' }, { status: 400 });
         }
 
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        const originalExt = file.name.split('.').pop() || '';
+        // Sanitize extension: allow only alphanumeric characters
+        const safeExt = originalExt.replace(/[^a-zA-Z0-9]/g, '');
+        if (!safeExt) {
+            return NextResponse.json({ error: 'Invalid file extension' }, { status: 400 });
+        }
+        
+        const fileName = `${crypto.randomUUID()}.${safeExt}`;
         const filePath = `${user.id}/${fileName}`;
 
         // Upload to Supabase Storage
@@ -47,12 +53,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Failed to upload file to storage' }, { status: 500 });
         }
 
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-            .from('resumes')
-            .getPublicUrl(filePath);
+        // Return the secure proxy URL instead of a direct public URL
+        const secureUrl = `/api/resumes/${filePath}`;
 
-        return NextResponse.json({ url: publicUrl });
+        return NextResponse.json({ url: secureUrl });
 
     } catch (e: any) {
         console.error('[Upload API Route Error]:', e);

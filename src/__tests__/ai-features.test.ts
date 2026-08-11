@@ -34,6 +34,9 @@ vi.mock("@/lib/prisma", () => {
       user: {
         update: vi.fn().mockResolvedValue({}),
       },
+      resumeAnalysis: {
+        create: vi.fn().mockResolvedValue({}),
+      },
     },
   };
 });

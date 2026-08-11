@@ -20,11 +20,11 @@ const DEFAULT_SETTINGS = {
 };
 
 export async function GET() {
-    const { errorResponse } = await protectApi(["FOUNDER"]);
+    const { errorResponse } = await protectApi(["ADMIN"]);
     if (errorResponse) return errorResponse;
 
     try {
-        const records = await prisma.platformSetting.findMany();
+        const records = await prisma.platformSetting.findMany({ take: 50 });
         const settings: Record<string, string> = { ...DEFAULT_SETTINGS };
         for (const rec of records) {
             settings[rec.key] = rec.value;
@@ -37,7 +37,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: NextRequest) {
-    const { errorResponse } = await protectApi(["FOUNDER"]);
+    const { errorResponse } = await protectApi(["ADMIN"]);
     if (errorResponse) return errorResponse;
 
     try {

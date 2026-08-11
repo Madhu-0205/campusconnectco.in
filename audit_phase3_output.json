@@ -1,0 +1,273 @@
+{
+  "mockedOrStatic": [
+    {
+      "file": "src/components/Analytics/AnalyticsProvider.tsx",
+      "reason": "Dummy Data"
+    },
+    {
+      "file": "src/app/checkout/CheckoutClient.tsx",
+      "reason": "Random/Fake Metrics"
+    },
+    {
+      "file": "src/app/api/checkout/webhook/route.ts",
+      "reason": "Random/Fake Metrics"
+    },
+    {
+      "file": "src/app/api/checkout/create-order/route.ts",
+      "reason": "Random/Fake Metrics"
+    },
+    {
+      "file": "src/components/messages/MessagesLayout.tsx",
+      "reason": "Random/Fake Metrics"
+    },
+    {
+      "file": "src/components/profile/AvatarUpload.tsx",
+      "reason": "Random/Fake Metrics"
+    },
+    {
+      "file": "src/components/Analytics/AnalyticsProvider.tsx",
+      "reason": "Random/Fake Metrics"
+    }
+  ],
+  "missingErrorHandling": [
+    {
+      "file": "src/app/api/ready/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/founder/gigs/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/founder/verify-role/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/founder/verify-role/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/founder/users/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/founder/preview/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/payments/escrow/release/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/payments/escrow/create-order/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/endorsement/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/health/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/health/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/colleges/submit/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/colleges/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/colleges/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/colleges/reverse-geocode/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/admin/moderation-events/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/internal/import-internship/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/user/resume-history/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/gigs/browse/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/internships/[id]/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/recommendations/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/client-hub/applicants/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/public/gigs/trending/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/public/gigs/trending/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/career-roadmap/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/cover-letter/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/embed/user/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/embed/gig/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/chat/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/chat/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/ai/copilot/chat/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/ai/copilot/sessions/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/match/gigs/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/match/students/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/skill-gap/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/moderate/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/parse-file/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/parse-file/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/ai/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/feed/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/trending/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/smartmatch/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/smartmatch/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/ai/mock-interview/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/career-guidance/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/ai/parse-resume/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/review/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/live/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/live/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/applications/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/skills/suggestions/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/skills/suggestions/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/skills/categories/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/skills/categories/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/stats/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/stats/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/upload/route.ts",
+      "reason": "Missing global try/catch block"
+    },
+    {
+      "file": "src/app/api/cron/weekly-report/route.ts",
+      "reason": "Missing JSON error response"
+    },
+    {
+      "file": "src/app/api/analytics/revenue/route.ts",
+      "reason": "Missing JSON error response"
+    }
+  ],
+  "hardcodedValues": [],
+  "deadCode": [],
+  "inconsistentStates": []
+}

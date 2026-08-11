@@ -37,7 +37,7 @@ export async function GET(req: Request) {
         },
       },
       ...(college
-        ? { where: { user: { college: { contains: college, mode: "insensitive" } } } }
+        ? { where: { user: { college: { equals: college, mode: "insensitive" } } } }
         : {}),
     })
 

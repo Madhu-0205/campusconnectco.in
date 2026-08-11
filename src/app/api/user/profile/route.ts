@@ -8,6 +8,78 @@ import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
 import { isValidUUID } from "@/lib/uuid-utils";
 
+const ATSCategoryScoresSchema = z.object({
+    structure: z.number().optional(),
+    formatting: z.number().optional(),
+    skills: z.number().optional(),
+    projects: z.number().optional(),
+    experience: z.number().optional(),
+    education: z.number().optional(),
+    keywords: z.number().optional(),
+    readability: z.number().optional(),
+    contactInformation: z.number().optional(),
+    grammar: z.number().optional(),
+}).optional().nullable();
+
+const ATSScoreSchema = z.object({
+    overallScore: z.number().optional(),
+    categoryScores: ATSCategoryScoresSchema,
+    strengths: z.array(z.string()).optional(),
+    weaknesses: z.array(z.string()).optional(),
+}).optional().nullable();
+
+const ResumeImprovementSchema = z.object({
+    summary: z.string().optional(),
+    bulletPoints: z.array(z.string()).optional(),
+    projectDescriptions: z.array(z.string()).optional(),
+    missingSkills: z.array(z.string()).optional(),
+    suggestedActionVerbs: z.array(z.string()).optional(),
+    betterKeywords: z.array(z.string()).optional(),
+    removedWeakSections: z.array(z.string()).optional(),
+    missingProjects: z.array(z.string()).optional(),
+    certifications: z.array(z.string()).optional(),
+}).optional().nullable();
+
+const ResumeDataSchema = z.object({
+    personalInfo: z.object({
+        name: z.string().optional(),
+        email: z.string().optional(),
+        phone: z.string().optional(),
+        linkedin: z.string().optional(),
+        github: z.string().optional(),
+        portfolio: z.string().optional(),
+    }).optional().nullable(),
+    skills: z.array(z.string()).optional().nullable(),
+    tools: z.array(z.string()).optional().nullable(),
+    domains: z.array(z.string()).optional().nullable(),
+    education: z.array(z.object({
+        degree: z.string().optional(),
+        field: z.string().optional(),
+        college: z.string().optional(),
+        year: z.string().optional(),
+        cgpa: z.string().optional(),
+    })).optional().nullable(),
+    projects: z.array(z.object({
+        name: z.string().optional(),
+        description: z.string().optional(),
+        techStack: z.array(z.string()).optional(),
+        url: z.string().optional(),
+    })).optional().nullable(),
+    experience: z.array(z.object({
+        role: z.string().optional(),
+        company: z.string().optional(),
+        duration: z.string().optional(),
+        description: z.string().optional(),
+    })).optional().nullable(),
+    languages: z.array(z.string()).optional().nullable(),
+    certifications: z.array(z.string()).optional().nullable(),
+    keywords: z.array(z.string()).optional().nullable(),
+    experienceLevel: z.enum(['fresher', 'junior', 'intermediate', 'senior']).optional().nullable(),
+    summary: z.string().optional().nullable(),
+    atsScore: ATSScoreSchema,
+    improvements: ResumeImprovementSchema,
+}).optional().nullable();
+
 const ProfileUpdateSchema = z.object({
     username: z.string().regex(/^[a-zA-Z0-9_-]*$/, "Invalid username format").max(30).optional().nullable(),
     name: z.string().max(100).optional().nullable(),
@@ -32,6 +104,7 @@ const ProfileUpdateSchema = z.object({
     year: z.string().max(20).optional().nullable(),
     careerGoal: z.string().max(200).optional().nullable(),
     company_name: z.string().max(100).optional().nullable(),
+    resumeData: ResumeDataSchema,
 });
 
 export const dynamic = "force-dynamic";
@@ -200,36 +273,66 @@ export async function GET() {
             const userMetadataRole = user.user_metadata?.role || "STUDENT";
             const finalRole = isFounder ? "FOUNDER" : userMetadataRole;
             const autoVerify = isAcademicEmail || isFounder;
-            profile = await prisma.user.create({
-                data: {
-                    id: user.id,
-                    email: user.email || "",
-                    name: user.user_metadata?.name || null,
-                    full_name: user.user_metadata?.name || null,
-                    role: finalRole,
-                    isVerified: autoVerify,
-                    college: user.user_metadata?.college || null,
-                },
-                include: {
-                    projects: true,
-                    userSkills: true,
-                    memberships: {
+            try {
+                profile = await prisma.user.create({
+                    data: {
+                        id: user.id,
+                        email: user.email || "",
+                        name: user.user_metadata?.name || null,
+                        full_name: user.user_metadata?.name || null,
+                        role: finalRole,
+                        isVerified: autoVerify,
+                        college: user.user_metadata?.college || null,
+                    },
+                    include: {
+                        projects: true,
+                        userSkills: true,
+                        memberships: {
+                            include: {
+                                organization: {
+                                    include: {
+                                        subscription: true
+                                    }
+                                }
+                            }
+                        },
+                        _count: {
+                            select: {
+                                gigsPosted: true,
+                                applications: true,
+                            }
+                        }
+                    }
+                }) as ProfileWithCounts;
+            } catch (createErr: any) {
+                if (createErr.code === "P2002") {
+                    console.log(`[GET /api/user/profile] Profile for ${user.email} was created concurrently. Fetching...`);
+                    profile = await prisma.user.findUnique({
+                        where: { id: user.id },
                         include: {
-                            organization: {
+                            projects: true,
+                            userSkills: true,
+                            memberships: {
                                 include: {
-                                    subscription: true
+                                    organization: {
+                                        include: {
+                                            subscription: true
+                                        }
+                                    }
+                                }
+                            },
+                            _count: {
+                                select: {
+                                    gigsPosted: true,
+                                    applications: true,
                                 }
                             }
                         }
-                    },
-                    _count: {
-                        select: {
-                            gigsPosted: true,
-                            applications: true,
-                        }
-                    }
+                    }) as ProfileWithCounts;
+                } else {
+                    throw createErr;
                 }
-            }) as ProfileWithCounts;
+            }
         } else if (!profile.isVerified && isAcademicEmail) {
             const updated = await prisma.user.update({
                 where: { id: profile.id },
@@ -389,11 +492,12 @@ export async function PATCH(req: Request) {
         const company_name = data.company_name !== undefined ? (data.company_name ? sanitizeInput(data.company_name) : null) : undefined;
 
         let formattedSkills: string | null | undefined = undefined;
+        let skillsArr: string[] = [];
         if (data.skills !== undefined) {
             if (data.skills === null) {
                 formattedSkills = null;
             } else {
-                const skillsArr = Array.isArray(data.skills) ? data.skills : data.skills.split(",");
+                skillsArr = Array.isArray(data.skills) ? data.skills : data.skills.split(",");
                 formattedSkills = skillsArr.map(s => sanitizeInput(s)).join(",");
             }
         }
@@ -421,8 +525,26 @@ export async function PATCH(req: Request) {
         if (coverImage !== undefined) updateData.coverImage = coverImage;
         if (college !== undefined) updateData.college = college;
         if (collegeId !== undefined) updateData.collegeId = collegeId;
+        const currentUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { city: true, state: true }
+        });
+
         if (city !== undefined) updateData.city = city;
         if (state !== undefined) updateData.state = state;
+        
+        // Location Privacy: If city or state changes, explicitly clear old coordinates
+        // unless the request explicitly provided a newly validated coordinate pair.
+        if (currentUser) {
+            const cityChanged = city !== undefined && city !== currentUser.city;
+            const stateChanged = state !== undefined && state !== currentUser.state;
+            
+            if ((cityChanged || stateChanged) && (latitude === undefined || longitude === undefined)) {
+                updateData.latitude = null;
+                updateData.longitude = null;
+            }
+        }
+
         if (country !== undefined) updateData.country = country;
         if (latitude !== undefined) updateData.latitude = latitude;
         if (longitude !== undefined) updateData.longitude = longitude;
@@ -430,13 +552,54 @@ export async function PATCH(req: Request) {
         if (year !== undefined) updateData.year = year;
         if (careerGoal !== undefined) updateData.careerGoal = careerGoal;
         if (company_name !== undefined) updateData.company_name = company_name;
-        if (body.resumeData !== undefined) updateData.resumeData = body.resumeData;
+        if (data.resumeData !== undefined) updateData.resumeData = data.resumeData;
         if (formattedSkills !== undefined) updateData.skills = formattedSkills;
 
         const updatedProfile = await prisma.user.update({
             where: { id: user.id },
             data: updateData,
         });
+
+        // 3B-2: Skill Dual-Write
+        if (data.skills !== undefined) {
+            (async () => {
+                try {
+                    // Start by clearing old relational skills to ensure exact parity
+                    await prisma.userSkill.deleteMany({ where: { userId: user.id } });
+                    
+                    if (skillsArr.length > 0) {
+                        // Upsert the skills into the global dictionary safely
+                        const distinctSkills = [...new Set(skillsArr.map(s => sanitizeInput(s)).filter(Boolean))];
+                        for (const s of distinctSkills) {
+                            await prisma.skill.upsert({
+                                where: { name: s },
+                                update: {},
+                                create: { name: s, category: 'General' }
+                            });
+                        }
+                        
+                        // Fetch the UUIDs of the skills
+                        const skillRecords = await prisma.skill.findMany({
+                            where: { name: { in: distinctSkills } }
+                        });
+                        
+                        // Map them to the user
+                        if (skillRecords.length > 0) {
+                            await prisma.userSkill.createMany({
+                                data: skillRecords.map(sr => ({
+                                    userId: user.id,
+                                    skillId: sr.id
+                                })),
+                                skipDuplicates: true
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error("[Profile Update] Background skill dual-write failed:", e);
+                    // Swallowing error per migration rules
+                }
+            })();
+        }
 
         // B2B SaaS: Update owner organization record if mapping parameters match
         const userWithOrg = await prisma.user.findUnique({

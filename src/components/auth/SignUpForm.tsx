@@ -63,6 +63,7 @@ export default function SignUpForm() {
     password: "",
     role: initialRole,
     college: "",
+    collegeId: "",
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -133,7 +134,7 @@ export default function SignUpForm() {
         email: form.email,
         password: form.password,
         options: {
-          data: { name: form.name, role: form.role, college: form.college },
+          data: { name: form.name, role: form.role, college: form.college, collegeId: form.collegeId },
         },
       })
 
@@ -150,6 +151,7 @@ export default function SignUpForm() {
             name: form.name,
             role: form.role,
             college: form.college,
+            collegeId: form.collegeId,
             acceptedTerms,
             marketingConsent,
           }),
@@ -157,7 +159,13 @@ export default function SignUpForm() {
 
         if (!res.ok) throw new Error("Failed to create profile")
 
-        router.replace(form.role === "CLIENT" ? "/dashboard" : "/dashboard/student")
+        if (form.role === "STUDENT") {
+          router.replace("/onboarding?step=1")
+        } else if (form.role === "CLIENT") {
+          router.replace("/client-hub")
+        } else {
+          router.replace("/dashboard/student")
+        }
         router.refresh()
       } else {
         setSuccess(true)
@@ -301,7 +309,7 @@ export default function SignUpForm() {
                   <label className="block font-black text-muted-foreground uppercase tracking-widest mb-2">Your College</label>
                   <CollegePicker
                     value={form.college}
-                    onChange={(v) => setForm({ ...form, college: v })}
+                    onChange={(v, id) => setForm({ ...form, college: v, collegeId: id })}
                   />
                 </div>
               )}

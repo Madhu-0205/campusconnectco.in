@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { requireUser, requireConversationParticipant } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/security/sanitization";
-import { createClient } from "@/lib/supabase/server";
 
 const MessageCreateSchema = z.object({
     conversationId: z.string().uuid("Invalid Conversation ID format"),
@@ -14,12 +14,8 @@ const MessageCreateSchema = z.object({
 
 export async function POST(request: NextRequest) {
     try {
-        const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         const userId = user.id;
         
@@ -46,19 +42,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Verify conversation belongs to user
-        const conversation = await prisma.conversation.findFirst({
-            where: {
-                id: conversationId,
-                OR: [
-                    { participant_1: userId },
-                    { participant_2: userId },
-                ]
-            }
-        });
-
-        if (!conversation) {
-            return NextResponse.json({ error: "Conversation not found or unauthorized" }, { status: 403 });
-        }
+        const { conversation, errorResponse: convError } = await requireConversationParticipant(userId, conversationId);
+        if (convError) return convError;
 
         // Create message and update conversation's last_message in a transaction
         const [newMessage] = await prisma.$transaction([

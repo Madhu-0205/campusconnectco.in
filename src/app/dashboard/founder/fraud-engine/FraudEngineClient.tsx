@@ -35,6 +35,7 @@ export default function FraudEngineClient() {
     const statsRef = useRef<HTMLDivElement>(null)
     const [mounted, setMounted] = useState(false)
     const [activeTab, setActiveTab] = useState("live")
+    const [events, setEvents] = useState<any[]>([])
 
     const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] })
     const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
@@ -42,6 +43,15 @@ export default function FraudEngineClient() {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true)
+
+        fetch("/api/admin/moderation-events")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.events) {
+                    setEvents(data.events)
+                }
+            })
+            .catch(err => console.error("Failed to load moderation events:", err))
 
         // GSAP Premium Scroll Animations
         if (statsRef.current) {
@@ -125,18 +135,20 @@ export default function FraudEngineClient() {
                         { title: "Auto-Blocked", value: "248 TX", trend: "+45", icon: XOctagon, color: "#ff4d1c" },
                         { title: "Avg Resolution", value: "400ms", trend: "0ms", icon: Zap, color: "#eab308" }
                     ].map((stat, i) => (
-                        <div key={i} className="stat-card bg-[#0f0f16]/80 backdrop-blur-xl border border-white/5 p-6 rounded-[24px] relative overflow-hidden group hover:border-white/15 transition-colors">
-                            <div className="absolute top-0 right-0 w-32 h-32 opacity-10 blur-2xl pointer-events-none group-hover:opacity-20 transition-opacity duration-700" style={{ backgroundColor: stat.color }} />
-                            <div className="flex justify-between items-start mb-6">
-                                <div className="p-3 rounded-xl bg-white/5 border border-white/5 text-white/80">
-                                    <stat.icon size={20} style={{ color: stat.color }} />
+                        <div key={i} className="stat-card bg-[#0f0f16]/80 backdrop-blur-xl border border-white/5 p-6 rounded-3xl relative overflow-hidden group hover:border-white/15 transition-colors">
+                            <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="p-3 rounded-xl bg-white/5 border border-white/5 text-white/80">
+                                        <stat.icon size={20} style={{ color: stat.color }} />
+                                    </div>
+                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full bg-white/5 ${stat.trend.startsWith('+') && stat.title !== "Auto-Blocked" ? 'text-green-400' : 'text-slate-400'}`}>
+                                        {stat.trend}
+                                    </span>
                                 </div>
-                                <span className={`text-xs font-bold px-2.5 py-1 rounded-full bg-white/5 ${stat.trend.startsWith('+') && stat.title !== "Auto-Blocked" ? 'text-green-400' : 'text-slate-400'}`}>
-                                    {stat.trend}
-                                </span>
+                                <h3 className="text-sm font-bold uppercase tracking-wider mb-1">{stat.title}</h3>
+                                <div className="font-black text-white" style={{ fontFamily: "'Syne', sans-serif" }}>{stat.value}</div>
                             </div>
-                            <h3 className="text-sm font-bold uppercase tracking-wider mb-1">{stat.title}</h3>
-                            <div className="font-black text-white" style={{ fontFamily: "'Syne', sans-serif" }}>{stat.value}</div>
                         </div>
                     ))}
                 </div>
@@ -151,11 +163,11 @@ export default function FraudEngineClient() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -40 }}
                         transition={{ duration: 0.5 }}
-                        className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8"
+                        className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
                     >
                         {/* Feed List */}
-                        <div className="lg:col-span-2 bg-[#0f0f16]/90 backdrop-blur-2xl border border-white/5 rounded-[32px] overflow-hidden shadow-2xl">
-                            <div className="p-4 md:p-8 border-white/5 flex items-center justify-between">
+                        <div className="lg:col-span-2 bg-[#0f0f16]/90 backdrop-blur-2xl border border-white/5 rounded-4xl overflow-hidden shadow-2xl">
+                            <div className="p-6 md:p-8 flex items-center justify-between border-b border-white/5 bg-white/[0.02]">
                                 <h2 className="font-black text-white flex items-center gap-3">
                                     <Activity className="text-[#ff4d1c]" /> Transaction Stream
                                 </h2>
@@ -165,7 +177,7 @@ export default function FraudEngineClient() {
                                 </div>
                             </div>
                             <div className="divide-y divide-white/5">
-                                {RISK_FEED.map((tx, i) => (
+                                {events.map((tx, i) => (
                                     <motion.div 
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
@@ -174,29 +186,29 @@ export default function FraudEngineClient() {
                                         className="p-6 flex items-center gap-6 hover:bg-white/2 transition-colors cursor-pointer group"
                                     >
                                         <div className="shrink-0 flex flex-col items-center justify-center w-14 h-14 rounded-2xl bg-black border border-white/5 font-bold text-[#8f8f9d] group-hover:border-white/15">
-                                            {tx.risk > 80 ? <ShieldAlert className="text-red-500 mb-1" size={18}/> : tx.risk > 40 ? <AlertTriangle className="text-yellow-500 mb-1" size={18}/> : <ShieldCheck className="text-green-500 mb-1" size={18}/>}
-                                            {tx.risk}%
+                                            {tx.riskScore > 0.8 ? <ShieldAlert className="text-red-500 mb-1" size={18}/> : tx.riskScore > 0.4 ? <AlertTriangle className="text-yellow-500 mb-1" size={18}/> : <ShieldCheck className="text-green-500 mb-1" size={18}/>}
+                                            {Math.round((tx.riskScore || 0) * 100)}%
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="font-bold text-lg">{tx.user}</span>
-                                                    <span className="px-2 py-0.5 rounded uppercase font-black tracking-wider bg-white/5 text-[#8f8f9d]">{tx.id}</span>
+                                                    <span className="font-bold text-lg">{tx.entityId.substring(0, 8)}</span>
+                                                    <span className="px-2 py-0.5 rounded uppercase font-black tracking-wider bg-white/5 text-[#8f8f9d]">{tx.id.substring(0, 8)}</span>
                                                 </div>
-                                                <span className="font-extrabold text-white font-mono">{tx.amount}</span>
+                                                <span className="font-extrabold text-white font-mono">{tx.entityType}</span>
                                             </div>
                                             <div className="flex items-center gap-4 font-medium text-[#6b6b80]">
-                                                <span className="flex items-center gap-1.5"><TrendingUp size={14} className="text-[#00c9a7]"/> {tx.type}</span>
+                                                <span className="flex items-center gap-1.5"><TrendingUp size={14} className="text-[#00c9a7]"/> {tx.reason || "Flagged"}</span>
                                                 <span>•</span>
-                                                <span>{tx.time}</span>
+                                                <span>{new Date(tx.createdAt).toLocaleTimeString()}</span>
                                             </div>
                                         </div>
                                         <div className="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border" style={{
-                                            backgroundColor: tx.status === 'blocked' ? 'rgba(239,68,68,0.1)' : tx.status === 'cleared' ? 'rgba(34,197,94,0.1)' : 'rgba(234,179,8,0.1)',
-                                            borderColor: tx.status === 'blocked' ? 'rgba(239,68,68,0.2)' : tx.status === 'cleared' ? 'rgba(34,197,94,0.2)' : 'rgba(234,179,8,0.2)',
-                                            color: tx.status === 'blocked' ? '#ef4444' : tx.status === 'cleared' ? '#22c55e' : '#eab308'
+                                            backgroundColor: tx.action === 'REJECT' ? 'rgba(239,68,68,0.1)' : tx.action === 'APPROVE' ? 'rgba(34,197,94,0.1)' : 'rgba(234,179,8,0.1)',
+                                            borderColor: tx.action === 'REJECT' ? 'rgba(239,68,68,0.2)' : tx.action === 'APPROVE' ? 'rgba(34,197,94,0.2)' : 'rgba(234,179,8,0.2)',
+                                            color: tx.action === 'REJECT' ? '#ef4444' : tx.action === 'APPROVE' ? '#22c55e' : '#eab308'
                                         }}>
-                                            {tx.status}
+                                            {tx.action}
                                         </div>
                                     </motion.div>
                                 ))}
@@ -204,12 +216,12 @@ export default function FraudEngineClient() {
                         </div>
 
                         {/* ML Inspector Panel */}
-                        <div className="flex flex-col gap-4 md:gap-8">
-                            <div className="bg-linear-to-b from-[#2a133f] to-[#100b1a] rounded-[32px] p-px shadow-2xl relative overflow-hidden group">
-                                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-30 mix-blend-overlay pointer-events-none" />
+                        <div className="flex flex-col gap-6">
+                            <div className="bg-linear-to-b from-[#2a133f] to-[#100b1a] rounded-4xl p-px shadow-2xl relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(168,85,247,0.15),transparent_50%)]" />
                                 <div className="bg-[#0f0f16]/95 backdrop-blur-3xl rounded-[31px] p-4 md:p-8 h-full">
                                     <div className="flex items-center gap-3 mb-8">
-                                        <div className="p-2.5 rounded-xl bg-[#c084fc]/20 text-[#c084fc] shadow-[0_0_15px_rgba(192,132,252,0.3)]">
+                                        <div className="p-3 bg-purple-500/10 text-purple-400 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.2)]">
                                             <BrainCircuit size={20} />
                                         </div>
                                         <h3 className="font-black text-lg">Isolation Forest</h3>
@@ -244,9 +256,13 @@ export default function FraudEngineClient() {
                                 </div>
                             </div>
 
-                            <div className="bg-[#0f0f16]/90 border border-white/5 backdrop-blur-xl rounded-[32px] p-4 md:p-8 shadow-2xl flex flex-col justify-center items-center text-center relative overflow-hidden">
-                                <Network className="text-white/10 w-32 h-32 absolute -right-10 -bottom-10" />
-                                <Lock size={32} className="text-[#ff4d1c] mb-4" />
+                            <div className="bg-[#0f0f16]/90 border border-white/5 backdrop-blur-xl rounded-4xl p-4 md:p-8 shadow-2xl flex flex-col justify-center items-center text-center relative overflow-hidden">
+                                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(99,102,241,0.05),transparent_50%)] pointer-events-none" />
+                                <div className="flex items-center gap-3 mb-6 relative z-10">
+                                    <div className="p-4 bg-indigo-500/10 text-indigo-400 rounded-3xl shadow-[0_0_30px_rgba(99,102,241,0.2)] ring-1 ring-white/10 flex items-center justify-center">
+                                        <Lock size={32} />
+                                    </div>
+                                </div>
                                 <h3 className="font-black text-white mb-2" style={{ fontFamily: "'Syne', sans-serif" }}>Secure Enclave Active</h3>
                                 <p className="font-medium text-[#8f8f9d] mb-6">All transactions pass through GNN behavioral tracking before escrow generation.</p>
                                 <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold text-sm transition-all flex items-center gap-2 z-10 relative">

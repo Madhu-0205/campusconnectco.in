@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useCallback } from "react";
+
 import { useMapContext } from "@/components/v2/maps/MapContext";
 
 interface Gig {

@@ -1,3 +1,4 @@
+import prisma from '@/lib/prisma';
 import { getOpenAI } from './client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -48,13 +49,13 @@ const SOFT_FLAG_PATTERNS = [
 // ─── Core Moderation Function ─────────────────────────────────────────────────
 
 export async function moderateContent(input: ModerationInput): Promise<ModerationResult> {
-  const { content, contentType } = input;
+  const { content, contentType, authorId, contentId } = input;
   const text = content.trim();
 
   // 1. Custom hard-block rules (synchronous, instant)
   const hardBlockHit = HARD_BLOCK_PATTERNS.find(p => p.test(text));
   if (hardBlockHit) {
-    return {
+    const result: ModerationResult = {
       safe: false,
       flagged: true,
       autoReject: true,
@@ -63,6 +64,23 @@ export async function moderateContent(input: ModerationInput): Promise<Moderatio
       reason: 'Content contains contact info, external platform references, or prohibited material.',
       action: 'REJECT',
     };
+    
+    // Log event safely
+    try {
+        await prisma.moderationEvent.create({
+            data: {
+                entityId: contentId || authorId || 'unknown',
+                entityType: contentType,
+                action: result.action,
+                reason: result.reason || 'Hard block',
+                riskScore: result.score
+            }
+        });
+    } catch (e) {
+        console.error('[moderator] Failed to log hard block', e);
+    }
+    
+    return result;
   }
 
   // 2. Soft flag check (accumulate count)
@@ -118,7 +136,7 @@ export async function moderateContent(input: ModerationInput): Promise<Moderatio
     action = 'APPROVE';
   }
 
-  return {
+  const result: ModerationResult = {
     safe: action === 'APPROVE',
     flagged: action !== 'APPROVE',
     autoReject: action === 'REJECT',
@@ -132,6 +150,24 @@ export async function moderateContent(input: ModerationInput): Promise<Moderatio
       : undefined,
     action,
   };
+
+  if (action !== 'APPROVE') {
+    try {
+        await prisma.moderationEvent.create({
+            data: {
+                entityId: contentId || authorId || 'unknown',
+                entityType: contentType,
+                action: result.action,
+                reason: result.reason || 'Flagged',
+                riskScore: result.score
+            }
+        });
+    } catch (e) {
+        console.error('[moderator] Failed to log moderation event', e);
+    }
+  }
+
+  return result;
 }
 
 // ─── Batch moderation (for use during gig creation) ──────────────────────────

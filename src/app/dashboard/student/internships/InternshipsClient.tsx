@@ -10,6 +10,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback} from "react";
 import { toast } from "sonner";
+
 import { useMapContext } from "@/components/v2/maps/MapContext";
 
 interface Internship {

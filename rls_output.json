@@ -1,0 +1,510 @@
+=== PUBLIC RLS POLICIES ===
+[
+  {
+    "table_name": "Ambassador",
+    "policy_name": "ambassador_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Announcement",
+    "policy_name": "announcement_read_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Badge",
+    "policy_name": "badge_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "CampusDrive",
+    "policy_name": "drive_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "CareerRoadmap",
+    "policy_name": "roadmap_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "CareerRoadmap",
+    "policy_name": "roadmap_select_policy",
+    "command": "r",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "ConnectionRequest",
+    "policy_name": "connection_delete_policy",
+    "command": "d",
+    "qual": "(auth.uid() = \"senderId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "ConnectionRequest",
+    "policy_name": "connection_insert_policy",
+    "command": "a",
+    "qual": null,
+    "with_check": "(auth.uid() = \"senderId\")"
+  },
+  {
+    "table_name": "ConnectionRequest",
+    "policy_name": "connection_select_policy",
+    "command": "r",
+    "qual": "((auth.uid() = \"senderId\") OR (auth.uid() = \"receiverId\"))",
+    "with_check": null
+  },
+  {
+    "table_name": "ConnectionRequest",
+    "policy_name": "connection_update_policy",
+    "command": "w",
+    "qual": "((auth.uid() = \"senderId\") OR (auth.uid() = \"receiverId\"))",
+    "with_check": "((auth.uid() = \"senderId\") OR (auth.uid() = \"receiverId\"))"
+  },
+  {
+    "table_name": "ConnectionRequest",
+    "policy_name": "connection_update_receiver_policy",
+    "command": "w",
+    "qual": "(auth.uid() = \"receiverId\")",
+    "with_check": "((auth.uid() = \"receiverId\") AND (status = ANY (ARRAY['ACCEPTED'::text, 'REJECTED'::text])))"
+  },
+  {
+    "table_name": "ConnectionRequest",
+    "policy_name": "connection_update_sender_policy",
+    "command": "w",
+    "qual": "(auth.uid() = \"senderId\")",
+    "with_check": "((auth.uid() = \"senderId\") AND (status = 'CANCELLED'::text))"
+  },
+  {
+    "table_name": "Conversation",
+    "policy_name": "conversation_insert_policy",
+    "command": "a",
+    "qual": null,
+    "with_check": "((auth.uid() = participant_1) OR (auth.uid() = participant_2))"
+  },
+  {
+    "table_name": "Conversation",
+    "policy_name": "conversation_select_policy",
+    "command": "r",
+    "qual": "((auth.uid() = participant_1) OR (auth.uid() = participant_2))",
+    "with_check": null
+  },
+  {
+    "table_name": "CopilotSession",
+    "policy_name": "copilot_session_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "CopilotSession",
+    "policy_name": "copilot_session_select_policy",
+    "command": "r",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "Dispute",
+    "policy_name": "dispute_select_policy",
+    "command": "r",
+    "qual": "(EXISTS ( SELECT 1\n   FROM \"Transaction\"\n  WHERE ((\"Transaction\".id = \"Dispute\".\"transactionId\") AND ((\"Transaction\".\"buyerId\" = auth.uid()) OR (\"Transaction\".\"sellerId\" = auth.uid())))))",
+    "with_check": null
+  },
+  {
+    "table_name": "Endorsement",
+    "policy_name": "endorsement_delete_policy",
+    "command": "d",
+    "qual": "(auth.uid() = \"endorserId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "Endorsement",
+    "policy_name": "endorsement_insert_policy",
+    "command": "a",
+    "qual": null,
+    "with_check": "(auth.uid() = \"endorserId\")"
+  },
+  {
+    "table_name": "Endorsement",
+    "policy_name": "endorsement_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Escrow",
+    "policy_name": "escrow_select_policy",
+    "command": "r",
+    "qual": "((auth.uid() = \"clientId\") OR (auth.uid() = \"workerId\"))",
+    "with_check": null
+  },
+  {
+    "table_name": "GigEmbedding",
+    "policy_name": "gig_embedding_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "GigSkill",
+    "policy_name": "gigskill_modify_policy",
+    "command": "*",
+    "qual": "(EXISTS ( SELECT 1\n   FROM gigs\n  WHERE ((gigs.id = \"GigSkill\".\"gigId\") AND (gigs.posted_by = auth.uid()))))",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM gigs\n  WHERE ((gigs.id = \"GigSkill\".\"gigId\") AND (gigs.posted_by = auth.uid()))))"
+  },
+  {
+    "table_name": "GigSkill",
+    "policy_name": "gigskill_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "GrowthEvent",
+    "policy_name": "growth_event_select_policy",
+    "command": "r",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "Internship",
+    "policy_name": "internship_read_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Member",
+    "policy_name": "member_select_policy",
+    "command": "r",
+    "qual": "((auth.uid() = \"userId\") OR (EXISTS ( SELECT 1\n   FROM \"Member\" m\n  WHERE ((m.\"organizationId\" = \"Member\".\"organizationId\") AND (m.\"userId\" = auth.uid())))))",
+    "with_check": null
+  },
+  {
+    "table_name": "MockInterview",
+    "policy_name": "mock_interview_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "MockInterview",
+    "policy_name": "mock_interview_select_policy",
+    "command": "r",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "Notification",
+    "policy_name": "notification_select_policy",
+    "command": "r",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "Organization",
+    "policy_name": "organization_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "PlatformSetting",
+    "policy_name": "settings_read_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Post",
+    "policy_name": "post_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"authorId\")",
+    "with_check": "(auth.uid() = \"authorId\")"
+  },
+  {
+    "table_name": "Post",
+    "policy_name": "post_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "PostLike",
+    "policy_name": "post_like_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "PostLike",
+    "policy_name": "post_like_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Project",
+    "policy_name": "project_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "Project",
+    "policy_name": "project_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Referral",
+    "policy_name": "referral_select_policy",
+    "command": "r",
+    "qual": "((auth.uid() = \"referrerId\") OR (auth.uid() = \"refereeId\"))",
+    "with_check": null
+  },
+  {
+    "table_name": "ResumeAnalysis",
+    "policy_name": "resume_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "ResumeAnalysis",
+    "policy_name": "resume_select_policy",
+    "command": "r",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "Review",
+    "policy_name": "review_insert_policy",
+    "command": "a",
+    "qual": null,
+    "with_check": "(auth.uid() = \"reviewerId\")"
+  },
+  {
+    "table_name": "Review",
+    "policy_name": "review_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "SavedInternship",
+    "policy_name": "saved_internship_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "SavedInternship",
+    "policy_name": "saved_internship_select_policy",
+    "command": "r",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "ShareCard",
+    "policy_name": "share_card_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "ShareCard",
+    "policy_name": "share_card_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Skill",
+    "policy_name": "skill_read_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Startup",
+    "policy_name": "startup_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"founderId\")",
+    "with_check": "(auth.uid() = \"founderId\")"
+  },
+  {
+    "table_name": "Startup",
+    "policy_name": "startup_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "Subscription",
+    "policy_name": "subscription_select_policy",
+    "command": "r",
+    "qual": "(EXISTS ( SELECT 1\n   FROM \"Member\"\n  WHERE ((\"Member\".\"organizationId\" = \"Subscription\".\"organizationId\") AND (\"Member\".\"userId\" = auth.uid()))))",
+    "with_check": null
+  },
+  {
+    "table_name": "Task",
+    "policy_name": "task_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "Task",
+    "policy_name": "task_select_policy",
+    "command": "r",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "Transaction",
+    "policy_name": "transaction_select_policy",
+    "command": "r",
+    "qual": "((auth.uid() = \"buyerId\") OR (auth.uid() = \"sellerId\"))",
+    "with_check": null
+  },
+  {
+    "table_name": "TransactionAudit",
+    "policy_name": "audit_select_policy",
+    "command": "r",
+    "qual": "(EXISTS ( SELECT 1\n   FROM \"Transaction\"\n  WHERE ((\"Transaction\".id = \"TransactionAudit\".\"transactionId\") AND ((\"Transaction\".\"buyerId\" = auth.uid()) OR (\"Transaction\".\"sellerId\" = auth.uid())))))",
+    "with_check": null
+  },
+  {
+    "table_name": "User",
+    "policy_name": "user_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = id)",
+    "with_check": "(auth.uid() = id)"
+  },
+  {
+    "table_name": "User",
+    "policy_name": "user_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "UserBadge",
+    "policy_name": "user_badge_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "UserEmbedding",
+    "policy_name": "user_embedding_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "UserGamification",
+    "policy_name": "gamification_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "UserSkill",
+    "policy_name": "userskill_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = \"userId\")",
+    "with_check": "(auth.uid() = \"userId\")"
+  },
+  {
+    "table_name": "UserSkill",
+    "policy_name": "userskill_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "XpEvent",
+    "policy_name": "xp_event_select_policy",
+    "command": "r",
+    "qual": "(EXISTS ( SELECT 1\n   FROM \"UserGamification\"\n  WHERE ((\"UserGamification\".id = \"XpEvent\".\"gamificationId\") AND (\"UserGamification\".\"userId\" = auth.uid()))))",
+    "with_check": null
+  },
+  {
+    "table_name": "applications",
+    "policy_name": "applicant_update_policy",
+    "command": "w",
+    "qual": "(auth.uid() = \"applicantId\")",
+    "with_check": "((auth.uid() = \"applicantId\") AND (status = 'PENDING'::text))"
+  },
+  {
+    "table_name": "applications",
+    "policy_name": "application_delete_policy",
+    "command": "d",
+    "qual": "(auth.uid() = \"applicantId\")",
+    "with_check": null
+  },
+  {
+    "table_name": "applications",
+    "policy_name": "application_insert_policy",
+    "command": "a",
+    "qual": null,
+    "with_check": "(auth.uid() = \"applicantId\")"
+  },
+  {
+    "table_name": "applications",
+    "policy_name": "application_select_policy",
+    "command": "r",
+    "qual": "((auth.uid() = \"applicantId\") OR (EXISTS ( SELECT 1\n   FROM gigs\n  WHERE ((gigs.id = applications.\"gigId\") AND (gigs.posted_by = auth.uid())))))",
+    "with_check": null
+  },
+  {
+    "table_name": "applications",
+    "policy_name": "application_update_policy",
+    "command": "w",
+    "qual": "((auth.uid() = \"applicantId\") OR (EXISTS ( SELECT 1\n   FROM gigs\n  WHERE ((gigs.id = applications.\"gigId\") AND (gigs.posted_by = auth.uid())))))",
+    "with_check": null
+  },
+  {
+    "table_name": "gigs",
+    "policy_name": "gig_modify_policy",
+    "command": "*",
+    "qual": "(auth.uid() = posted_by)",
+    "with_check": "(auth.uid() = posted_by)"
+  },
+  {
+    "table_name": "gigs",
+    "policy_name": "gig_select_policy",
+    "command": "r",
+    "qual": "true",
+    "with_check": null
+  },
+  {
+    "table_name": "messages",
+    "policy_name": "message_insert_policy",
+    "command": "a",
+    "qual": null,
+    "with_check": "((auth.uid() = sender_id) AND (EXISTS ( SELECT 1\n   FROM \"Conversation\"\n  WHERE ((\"Conversation\".id = messages.conversation_id) AND ((\"Conversation\".participant_1 = auth.uid()) OR (\"Conversation\".participant_2 = auth.uid()))))))"
+  },
+  {
+    "table_name": "messages",
+    "policy_name": "message_select_policy",
+    "command": "r",
+    "qual": "(EXISTS ( SELECT 1\n   FROM \"Conversation\"\n  WHERE ((\"Conversation\".id = messages.conversation_id) AND ((\"Conversation\".participant_1 = auth.uid()) OR (\"Conversation\".participant_2 = auth.uid())))))",
+    "with_check": null
+  }
+]
+
+=== STORAGE BUCKETS ===
+[]

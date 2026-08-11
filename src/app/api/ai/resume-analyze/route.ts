@@ -43,6 +43,12 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (resumeText.length > 25000) {
+      return NextResponse.json(
+        { error: "resumeText is too long. Maximum allowed length is 25000 characters." },
+        { status: 400 }
+      );
+    }
 
     const model = process.env.OPENAI_API_KEY?.startsWith("gsk_")
       ? "llama-3.3-70b-versatile"

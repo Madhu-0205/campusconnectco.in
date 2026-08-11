@@ -12,7 +12,7 @@ export async function GET() {
         const { user } = auth;
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const sessions = await prisma.copilotSession.findMany({
+        const sessions = await prisma.copilotSession.findMany({ take: 50,
             where: { userId: user.id },
             orderBy: { updatedAt: "desc" },
         });

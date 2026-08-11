@@ -17,7 +17,7 @@ export async function GET() {
         const auth = await protectApi(["FOUNDER", "STUDENT"]);
         if (auth.errorResponse) return auth.errorResponse;
 
-        const roadmaps = await getRoadmap().findMany({
+        const roadmaps = await getRoadmap().findMany({ take: 50,
             where: { userId: auth.user!.id },
             orderBy: { createdAt: 'desc' }
         });

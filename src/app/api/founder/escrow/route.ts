@@ -4,7 +4,7 @@ import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 
 export async function GET() {
-    const { errorResponse } = await protectApi(["FOUNDER"]);
+    const { errorResponse } = await protectApi(["ADMIN"]);
     if (errorResponse) return errorResponse;
 
     try {
@@ -17,7 +17,7 @@ export async function GET() {
             releasedAmount,
             refundedAmount,
         ] = await Promise.all([
-            prisma.escrow.findMany({
+            prisma.escrow.findMany({ take: 50,
                 include: {
                     gig: { select: { title: true } },
                     client: { select: { name: true, email: true } },

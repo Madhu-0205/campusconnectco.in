@@ -43,6 +43,11 @@ export async function GET() {
         const premiumGigs = await prisma.gig.count({ where: { isPremium: true } });
         const featuredInternships = await prisma.internship.count({ where: { isFeatured: true } });
 
+        // Calculate live platform revenue (sum of all platform fees)
+        const escrowRev = await prisma.escrow.aggregate({ _sum: { platformFee: true } });
+        const txRev = await prisma.transaction.aggregate({ _sum: { platformFee: true } });
+        const estimatedRevenue = Number(escrowRev._sum.platformFee || 0) + Number(txRev._sum.platformFee || 0);
+
         return NextResponse.json({
             growth: {
                 totalUsers,
@@ -61,7 +66,7 @@ export async function GET() {
             monetization: {
                 premiumGigs,
                 featuredInternships,
-                estimatedRevenue: (premiumGigs * 499) + (featuredInternships * 999) // arbitrary estimation for UI
+                estimatedRevenue: Number(estimatedRevenue.toFixed(2))
             }
         });
 

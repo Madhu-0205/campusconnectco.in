@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { requireUser } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/security/sanitization";
-import { createClient } from "@/lib/supabase/server";
 
 const ProjectCreateSchema = z.object({
     title: z.string().min(2, "Title must be at least 2 characters").max(100, "Title is too long").trim(),
@@ -14,12 +14,8 @@ const ProjectCreateSchema = z.object({
 
 export async function POST(req: Request) {
     try {
-        const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         let body;
         try {
@@ -60,12 +56,8 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
     try {
-        const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         const { searchParams } = new URL(req.url);
         const projectId = searchParams.get("id");
@@ -79,18 +71,17 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
         }
 
-        // Verify ownership
-        const project = await prisma.project.findUnique({
-            where: { id: projectId }
+        // Verify ownership and delete atomically
+        const result = await prisma.project.deleteMany({
+            where: { 
+                id: projectId,
+                userId: user.id
+            }
         });
 
-        if (!project || project.userId !== user.id) {
+        if (result.count === 0) {
             return NextResponse.json({ error: "Unauthorized or not found" }, { status: 403 });
         }
-
-        await prisma.project.delete({
-            where: { id: projectId }
-        });
 
         return NextResponse.json({ success: true });
     } catch (error) {

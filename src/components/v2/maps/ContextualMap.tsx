@@ -1,11 +1,14 @@
 "use client"
 
+import * as maplibregl from "maplibre-gl"
 import React, { useEffect, useRef, useState } from "react"
 import { createRoot, Root } from "react-dom/client"
-import * as maplibregl from "maplibre-gl"
+
 import "maplibre-gl/dist/maplibre-gl.css"
-import { useMapContext, MarkerData } from "./MapContext"
 import { MAP_CONFIG } from "@/lib/maps/map-config"
+
+import { useMapContext, MarkerData } from "./MapContext"
+
 import { MapPin, Briefcase, GraduationCap, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 

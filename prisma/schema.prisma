@@ -112,8 +112,6 @@ model ConnectionRequest {
   sender      User      @relation("ConnectionSender", fields: [senderId], references: [id], onDelete: Cascade)
 
   @@unique([senderId, receiverId])
-  @@index([senderId])
-  @@index([receiverId])
   @@index([status])
   @@index([receiverId], map: "idx_connection_request_receiver")
   @@index([senderId], map: "idx_connection_request_sender")
@@ -180,6 +178,8 @@ model Gig {
   poster          User          @relation("PostedGigs", fields: [posted_by], references: [id], map: "Gig_posted_by_fkey")
 
   @@index([posted_by], map: "idx_gigs_posted_by")
+  @@index([status])
+  @@index([collegeId])
   @@map("gigs")
 }
 
@@ -196,8 +196,8 @@ model Application {
 
   @@index([applicantId], map: "Application_applicantId_idx")
   @@index([gigId], map: "Application_gigId_idx")
-  @@index([applicantId], map: "idx_applications_applicantid")
-  @@index([gigId], map: "idx_applications_gigid")
+  @@index([status])
+  @@unique([applicantId, gigId])
   @@map("applications")
 }
 
@@ -561,6 +561,7 @@ model UserEmbedding {
   userId    String   @unique @db.Uuid
   hash      String
   vector    Float[]
+  vector_pg Unsupported("vector(768)")?
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -570,6 +571,7 @@ model GigEmbedding {
   gigId     String   @unique @db.Uuid
   hash      String
   vector    Float[]
+  vector_pg Unsupported("vector(768)")?
   updatedAt DateTime @updatedAt
   gig       Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)
 }
@@ -900,4 +902,14 @@ model College {
   @@index([approved])
   @@index([name])
   @@map("colleges")
+}
+
+model ModerationEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  entityId   String
+  entityType String
+  action     String   // "FLAG", "REJECT", "APPROVE"
+  reason     String
+  riskScore  Float?
+  createdAt  DateTime @default(now())
 }

@@ -14,16 +14,15 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60; // Groq is fast, but we'll set it for the full logic
 
 export async function POST(req: Request) {
-    // 1. Rate Limiting (20 requests / 10 minutes)
-    const ip = (req.headers.get("x-forwarded-for") || "unknown").split(",")[0].trim();
-    if (!(await aiLimiter.check(ip))) {
+  try {
+const ip = (req.headers.get("x-forwarded-for") || "unknown").split(",")[0].trim();
+if (!(await aiLimiter.check(ip))) {
         return NextResponse.json(
             { error: "Too many AI requests. AI resources are limited. Please try again in 10 minutes." },
             { status: 429 }
         );
     }
-
-    try {
+try {
         // 2. Auth Check
         const auth = await protectApi(["FOUNDER", "STUDENT"]);
         if (auth.errorResponse) return auth.errorResponse;
@@ -85,4 +84,8 @@ export async function POST(req: Request) {
             { status: 500 }
         );
     }
+  } catch (error) {
+    console.error("API Error in src/app/api/ai/route.ts:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

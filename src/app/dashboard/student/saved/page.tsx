@@ -8,8 +8,8 @@ import EmptyState from "@/components/ui/EmptyState";
 import { GigCard } from "@/components/v2/GigCard";
 import { InternshipCard } from "@/components/v2/InternshipCard";
 import { ContextualMapLayout } from "@/components/v2/maps/ContextualMapLayout";
-import { MapDataSync } from "@/components/v2/maps/MapDataSync";
 import { useMapContext, MarkerData } from "@/components/v2/maps/MapContext";
+import { MapDataSync } from "@/components/v2/maps/MapDataSync";
 
 function SavedOpportunitiesContent() {
     const [loading, setLoading] = useState(true);

@@ -10,11 +10,11 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 
-import { LocationMap } from "@/components/ui/LocationMap"
 
 import { ReferralTracker } from "@/components/growth/ReferralTracker"
 import { ResumeUploader } from "@/components/resume/ResumeUploader"
 import SkillSelector from "@/components/SkillSelector"
+import { LocationMap } from "@/components/ui/LocationMap"
 import { VerificationBadge } from "@/components/ui/VerificationBadge"
 import { Skill, SKILLS_DATASET } from "@/lib/skills-dataset"
 
@@ -139,7 +139,7 @@ function CollegeDropdown({
                     }}
                     className="w-full px-4 py-3 text-left text-sm bg-violet-600/10 text-violet-400 font-medium hover:bg-violet-600/20 transition-colors"
                   >
-                    Add "{search}" manually
+                    Add &quot;{search}&quot; manually
                   </button>
                 </li>
               )}
@@ -182,35 +182,33 @@ export default function OnboardingPage() {
   })
 
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([])
-  const [locLoading, setLocLoading] = useState(false)
+  // 'idle' = no attempt yet, 'detected' = geocode succeeded, 'failed' = geocode failed, 'manual' = user chose manual entry
+  const [locationStatus, setLocationStatus] = useState<'idle' | 'detecting' | 'detected' | 'failed' | 'manual'>('idle')
 
   // AI Resume parsing state
   const [fileUrl, setFileUrl] = useState("")
   const [parseStatus, setParseStatus] = useState<'idle' | 'processing' | 'done'>('idle')
 
-  const handleLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser")
-      return
-    }
-    setLocLoading(true)
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      try {
-        const res = await fetch(`/api/colleges/reverse-geocode?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
-        const data = await res.json()
-        if (data.city || data.state) {
-          setForm(prev => ({ ...prev, city: data.city, state: data.state, country: data.country }))
-          toast.success("Location detected!")
-        }
-      } catch (err) {
-        toast.error("Failed to detect location")
-      } finally {
-        setLocLoading(false)
-      }
-    }, () => {
-      toast.error("Location permission denied. Please enter manually.")
-      setLocLoading(false)
-    })
+  // Called by LocationMap when reverse geocoding succeeds (marker drag / map click / GPS)
+  const handleLocationSelected = (loc: { city: string; state: string; country: string; latitude: number; longitude: number }) => {
+    setForm(prev => ({ ...prev, city: loc.city, state: loc.state, country: loc.country, latitude: loc.latitude, longitude: loc.longitude }))
+    setLocationStatus('detected')
+  }
+
+  // Called by LocationMap when it can't geocode (network/CSP failure)
+  const handleGeocodeFailed = () => {
+    setLocationStatus('failed')
+  }
+
+  // When user edits city/state after auto-detection, clear coordinates (stale coordinate guard)
+  const handleCityChange = (val: string) => {
+    setForm(prev => ({ ...prev, city: val, latitude: 0, longitude: 0 }))
+    if (locationStatus === 'detected') setLocationStatus('manual')
+  }
+
+  const handleStateChange = (val: string) => {
+    setForm(prev => ({ ...prev, state: val, latitude: 0, longitude: 0 }))
+    if (locationStatus === 'detected') setLocationStatus('manual')
   }
 
   // Load existing profile parameters
@@ -508,37 +506,63 @@ export default function OnboardingPage() {
                     <div className="space-y-5">
                       <p className="text-sm text-slate-400 font-medium">Connect your location to find campus-specific opportunities, nearby startups, and relevant internships.</p>
                       
-                      <LocationMap 
-                        initialLat={form.latitude || undefined}
-                        initialLng={form.longitude || undefined}
-                        onLocationSelect={(loc) => {
-                          setForm(prev => ({ 
-                            ...prev, 
-                            city: loc.city, 
-                            state: loc.state, 
-                            country: loc.country,
-                            latitude: loc.latitude,
-                            longitude: loc.longitude 
-                          }))
-                        }}
-                      />
+                      {/* Map — only rendered when not in pure manual mode */}
+                      {locationStatus !== 'manual' && (
+                        <LocationMap 
+                          initialLat={form.latitude || undefined}
+                          initialLng={form.longitude || undefined}
+                          onLocationSelect={handleLocationSelected}
+                          onGeocodeFailed={handleGeocodeFailed}
+                        />
+                      )}
 
+                      {/* Geocode failure banner — auto-switches to manual input */}
+                      {(locationStatus === 'failed' || locationStatus === 'manual') && (
+                        <div className="flex items-start gap-3 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/8">
+                          <span className="text-amber-400 mt-0.5">⚠</span>
+                          <p className="text-amber-300 text-xs font-medium leading-relaxed">
+                            {locationStatus === 'failed'
+                              ? "We couldn't detect your location automatically. Please type your city and state below."
+                              : "You're entering location manually. Coordinates will be re-resolved when you save."}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Detected badge + edit toggle */}
+                      {locationStatus === 'detected' && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+                            <span>✓</span> Location detected from your device
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setLocationStatus('manual')}
+                            className="text-xs text-slate-400 hover:text-white underline underline-offset-2 transition-colors"
+                          >
+                            Edit location
+                          </button>
+                        </div>
+                      )}
+
+                      {/* City / State inputs — always rendered and editable */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">City</label>
                           <input 
+                            name="city"
                             placeholder="e.g. Hyderabad"
                             value={form.city}
-                            onChange={e => setForm({ ...form, city: e.target.value })}
+                            onChange={e => handleCityChange(e.target.value)}
                             className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all font-medium text-sm"
                           />
                         </div>
                         <div>
                           <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">State</label>
                           <input 
+                            name="state"
                             placeholder="e.g. Telangana"
                             value={form.state}
-                            onChange={e => setForm({ ...form, state: e.target.value })}
+                            onChange={e => handleStateChange(e.target.value)}
                             className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all font-medium text-sm"
                           />
                         </div>

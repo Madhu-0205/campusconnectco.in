@@ -13,7 +13,7 @@ type PickerState = "idle" | "permission" | "locating" | "list" | "manual"
 
 interface CollegePickerProps {
   value: string
-  onChange: (name: string) => void
+  onChange: (name: string, id: string) => void
   userId?: string
 }
 
@@ -66,8 +66,8 @@ export default function CollegePicker({ value, onChange, userId }: CollegePicker
   }, [])
 
   const handleSelect = useCallback(
-    (name: string) => {
-      onChange(name)
+    (name: string, id: string) => {
+      onChange(name, id)
       setOpen(false)
       setState("list") // keep list ready for next open
     },
@@ -75,8 +75,8 @@ export default function CollegePicker({ value, onChange, userId }: CollegePicker
   )
 
   const handleManualSuccess = useCallback(
-    (name: string) => {
-      onChange(name)
+    (name: string, id: string) => {
+      onChange(name, id)
       setTimeout(() => {
         setOpen(false)
         setState("list")
@@ -87,7 +87,7 @@ export default function CollegePicker({ value, onChange, userId }: CollegePicker
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation()
-    onChange("")
+    onChange("", "")
   }
 
   return (

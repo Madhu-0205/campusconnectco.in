@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, ChevronDown, Loader2 } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
 
 export function CollegeDropdown({
   value,
@@ -124,7 +124,7 @@ export function CollegeDropdown({
                     }}
                     className="w-full px-4 py-3 text-left text-sm bg-violet-600/10 text-violet-400 font-medium hover:bg-violet-600/20 transition-colors"
                   >
-                    Add "{search}" manually
+                    Add &quot;{search}&quot; manually
                   </button>
                 </li>
               )}
