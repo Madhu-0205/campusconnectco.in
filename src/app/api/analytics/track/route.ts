@@ -4,7 +4,12 @@ import { trackEvent } from "@/lib/analytics";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
     const { event, data, userId, sessionId } = body;
 
     if (!event) {

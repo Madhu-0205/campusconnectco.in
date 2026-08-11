@@ -175,7 +175,7 @@ export default function SignInForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-[14px] text-muted-foreground hover:text-white transition-colors"
+                className="absolute right-4 top-3.5 text-muted-foreground hover:text-white transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

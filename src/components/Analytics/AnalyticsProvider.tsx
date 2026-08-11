@@ -54,7 +54,9 @@ export function AnalyticsProvider({ children, userId }: { children: React.ReactN
         sessionId: currentSessionId,
         data: { url: window.location.href }
       });
-      navigator.sendBeacon("/api/analytics/track", payload);
+      // Use Blob to ensure application/json content type for sendBeacon
+      const blob = new Blob([payload], { type: "application/json" });
+      navigator.sendBeacon("/api/analytics/track", blob);
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);

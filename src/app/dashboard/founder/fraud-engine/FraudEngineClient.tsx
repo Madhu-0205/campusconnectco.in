@@ -22,13 +22,6 @@ import { useState, useEffect, useRef } from "react"
 gsap.registerPlugin(ScrollTrigger)
 
 // --- MOCK DATA FOR DEMO ---
-const RISK_FEED = [
-    { id: "TX-9921", user: "Vikram S.", amount: "₹45,000", risk: 94, type: "Velocity", status: "blocked", time: "2 min ago" },
-    { id: "TX-9920", user: "Neha R.", amount: "₹1,200", risk: 12, type: "Normal", status: "cleared", time: "5 min ago" },
-    { id: "TX-9919", user: "Arjun K.", amount: "₹8,500", risk: 82, type: "Graph Anomaly", status: "flagged", time: "12 min ago" },
-    { id: "TX-9918", user: "Priya M.", amount: "₹3,400", risk: 45, type: "Device ID", status: "review", time: "18 min ago" },
-    { id: "TX-9917", user: "Rahul T.", amount: "₹120,000", risk: 98, type: "Ring Struct", status: "blocked", time: "1 hr ago" },
-]
 
 export default function FraudEngineClient() {
     const containerRef = useRef<HTMLDivElement>(null)
@@ -167,7 +160,7 @@ export default function FraudEngineClient() {
                     >
                         {/* Feed List */}
                         <div className="lg:col-span-2 bg-[#0f0f16]/90 backdrop-blur-2xl border border-white/5 rounded-4xl overflow-hidden shadow-2xl">
-                            <div className="p-6 md:p-8 flex items-center justify-between border-b border-white/5 bg-white/[0.02]">
+                            <div className="p-6 md:p-8 flex items-center justify-between border-b border-white/5 bg-white/2">
                                 <h2 className="font-black text-white flex items-center gap-3">
                                     <Activity className="text-[#ff4d1c]" /> Transaction Stream
                                 </h2>
