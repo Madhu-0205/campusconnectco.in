@@ -1,13 +1,11 @@
-"use client";
-
 import { Suspense } from "react";
 
 import OnboardingClient from "./OnboardingClient";
 
-export default function Page(props: any) {
+export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <OnboardingClient {...props} />
+      <OnboardingClient />
     </Suspense>
   );
 }

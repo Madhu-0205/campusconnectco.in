@@ -55,6 +55,8 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
       map.current.on('error', (e) => {
         console.warn('MapLibre error encountered:', e);
         setMapError(true);
+        // Notify parent so it can switch to manual entry
+        onGeocodeFailed?.();
       });
 
       map.current.addControl(new maplibregl.NavigationControl(), "bottom-right")
@@ -82,7 +84,10 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
       })
     } catch (err) {
       console.warn('MapLibre initialization failed:', err);
-      setTimeout(() => setMapError(true), 0);
+      setTimeout(() => {
+        setMapError(true);
+        onGeocodeFailed?.();
+      }, 0);
     }
 
     return () => {
@@ -162,12 +167,19 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
 
       <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
         {mapError ? (
-          <div className="absolute inset-0 bg-[#1A1A24] flex flex-col items-center justify-center text-center p-6 border border-dashed border-white/10 rounded-2xl">
-            <MapIcon className="w-12 h-12 text-muted-foreground/50 mb-4" />
-            <h3 className="text-sm font-medium text-white mb-2">Map Preview Unavailable</h3>
-            <p className="text-xs text-muted-foreground max-w-[250px]">
-              We couldn&apos;t load the interactive map right now, but your location is safely recorded. You can still search for a city above.
+          <div className="absolute inset-0 bg-[#1A1A24] flex flex-col items-center justify-center text-center p-6 border border-dashed border-white/10 rounded-2xl gap-3">
+            <MapIcon className="w-12 h-12 text-muted-foreground/50" />
+            <h3 className="text-sm font-medium text-white">Map Preview Unavailable</h3>
+            <p className="text-xs text-muted-foreground max-w-[260px]">
+              The interactive map couldn&apos;t load. Use the search bar above or detect your location via GPS below.
             </p>
+            <button
+              type="button"
+              onClick={useCurrentLocation}
+              className="mt-1 flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white text-xs font-bold transition-all"
+            >
+              <Navigation className="w-3.5 h-3.5" /> Detect via GPS
+            </button>
           </div>
         ) : (
           <>
