@@ -4,7 +4,7 @@ console.log('🔍 Validating Prisma schema and database sync status...');
 
 // Determine if a valid DATABASE_URL is available for live database checks
 const dbUrl = process.env.DATABASE_URL || '';
-const hasValidDbUrl = (dbUrl.startsWith('postgresql://') || dbUrl.startsWith('postgres://')) && !dbUrl.includes('placeholder') && !dbUrl.includes('ci_dummy');
+const hasValidDbUrl = (dbUrl.startsWith('postgresql://') || dbUrl.startsWith('postgres://') || dbUrl.startsWith('prisma://')) && !dbUrl.includes('placeholder') && !dbUrl.includes('ci_dummy');
 
 // Step 1: Validate schema syntax (no live DB connection required)
 // Prisma validate still requires a parseable URL in the env var, so provide a
