@@ -360,7 +360,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                             value={coverLetter}
                                             onChange={(e) => setCoverLetter(e.target.value)}
                                             placeholder="Tell the poster why you're the best fit for this gig..."
-                                            className="w-full px-4 py-3 bg-card border border-slate-300 border-border rounded-xl text-foreground focus:ring-2 focus:ring-violet-500/50 outline-none min-h-30"
+                                            className="w-full px-4 py-3 bg-card border border-border rounded-xl text-foreground focus:ring-2 focus:ring-violet-500/50 outline-none min-h-30"
                                             maxLength={1000}
                                         />
                                         <p className="text-muted-foreground mt-1">
@@ -449,7 +449,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                                         .map((skill, idx) => (
                                                             <span
                                                                 key={idx}
-                                                                className="px-2 py-0.5 bg-white bg-accent text-muted-foreground text-xs rounded"
+                                                                className="px-2 py-0.5 bg-accent text-muted-foreground text-xs rounded"
                                                             >
                                                                 {skill.trim()}
                                                             </span>
@@ -586,7 +586,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                             </h3>
                             <div className="relative border-border ml-3 space-y-6 pt-2 pb-2">
                                 <div className="relative">
-                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status !== 'OPEN' ? 'bg-emerald-500' : 'bg-slate-300 bg-accent'}`}>
+                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status !== 'OPEN' ? 'bg-emerald-500' : 'bg-accent'}`}>
                                         <CheckCircle size={12} className="text-foreground" />
                                     </div>
                                     <div className="pl-6">
@@ -595,7 +595,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                     </div>
                                 </div>
                                 <div className="relative">
-                                    <div className={`absolute -left-5.25 p-1 rounded-full ${['IN_PROGRESS', 'COMPLETED'].includes(gig.status) ? 'bg-emerald-500' : 'bg-slate-300 bg-accent'}`}>
+                                    <div className={`absolute -left-5.25 p-1 rounded-full ${['IN_PROGRESS', 'COMPLETED'].includes(gig.status) ? 'bg-emerald-500' : 'bg-accent'}`}>
                                         <Clock size={12} className="text-foreground" />
                                     </div>
                                     <div className="pl-6">
@@ -604,7 +604,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                     </div>
                                 </div>
                                 <div className="relative">
-                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-slate-300 bg-accent'}`}>
+                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-accent'}`}>
                                         <FileText size={12} className="text-foreground" />
                                     </div>
                                     <div className="pl-6">
@@ -613,7 +613,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                     </div>
                                 </div>
                                 <div className="relative">
-                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-slate-300 bg-accent'}`}>
+                                    <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-accent'}`}>
                                         <DollarSign size={12} className="text-foreground" />
                                     </div>
                                     <div className="pl-6">

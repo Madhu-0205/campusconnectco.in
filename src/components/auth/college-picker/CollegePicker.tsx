@@ -93,13 +93,20 @@ export default function CollegePicker({ value, onChange, userId }: CollegePicker
   return (
     <div className="relative" id="college-picker-container">
       {/* Trigger button */}
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={openPicker}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            openPicker()
+          }
+        }}
         id="college-picker-trigger"
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="w-full flex items-center gap-2 text-left p-3.5 rounded-xl border outline-none transition-all focus-visible:ring-2 focus-visible:ring-[#7C3AED]/50"
+        className="w-full flex items-center gap-2 text-left p-3.5 rounded-xl border outline-none transition-all focus-visible:ring-2 focus-visible:ring-[#7C3AED]/50 cursor-pointer"
         style={{
           background: "rgba(255,255,255,0.03)",
           borderColor: value ? "rgba(124,58,237,0.4)" : "rgba(255,255,255,0.08)",
@@ -131,7 +138,7 @@ export default function CollegePicker({ value, onChange, userId }: CollegePicker
             style={{ color: "#475569" }}
           />
         )}
-      </button>
+      </div>
 
       {/* Dropdown panel */}
       <AnimatePresence>

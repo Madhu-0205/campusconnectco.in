@@ -72,15 +72,6 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
     const isStudentPath = pathname?.startsWith("/dashboard/student")
     const isFounderPath = pathname?.startsWith("/dashboard/founder")
     const isClientPath = pathname?.startsWith("/dashboard") && !isStudentPath && !isFounderPath
-
-    // Dynamic Header Title
-    const getNavigationItems = () => {
-        if (role === "STUDENT") return studentItems
-        if (role === "CLIENT") return clientItems
-        if (role === "FOUNDER") return founderItems
-        if (role === "COLLEGE") return collegeItems
-        return []
-    }
     
     const getHeaderTitle = () => {
         if (pathname === "/dashboard/student") return "Student Overview"

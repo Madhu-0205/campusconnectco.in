@@ -5,8 +5,9 @@ import React, { useEffect, useRef, useState } from "react"
 
 import "maplibre-gl/dist/maplibre-gl.css"
 import { reverseGeocode, geocodeLocation, GeoLocation } from "@/lib/maps/geocoding"
+import { MAP_CONFIG } from "@/lib/maps/map-config"
 
-import { Search, Navigation, MapPin } from "lucide-react"
+import { Search, Navigation, MapPin, Map as MapIcon } from "lucide-react"
 
 interface LocationMapProps {
   initialLat?: number
@@ -23,6 +24,7 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [mapError, setMapError] = useState(false)
 
   const updateLocation = async (lat: number, lng: number) => {
     setIsLoading(true)
@@ -39,45 +41,55 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
   }
 
   useEffect(() => {
-    if (map.current || !mapContainer.current) return
+    if (map.current || !mapContainer.current || mapError) return
 
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-      center: [initialLng, initialLat],
-      zoom: 12,
-      attributionControl: false,
-    })
+    try {
+      map.current = new maplibregl.Map({
+        container: mapContainer.current,
+        style: MAP_CONFIG.STYLE_URL_DARK,
+        center: [initialLng, initialLat],
+        zoom: MAP_CONFIG.DEFAULT_ZOOM,
+        attributionControl: false,
+      })
 
-    map.current.addControl(new maplibregl.NavigationControl(), "bottom-right")
+      map.current.on('error', (e) => {
+        console.warn('MapLibre error encountered:', e);
+        setMapError(true);
+      });
 
-    marker.current = new maplibregl.Marker({
-      draggable: true,
-      color: "#6366f1"
-    })
-      .setLngLat([initialLng, initialLat])
-      .addTo(map.current)
+      map.current.addControl(new maplibregl.NavigationControl(), "bottom-right")
 
-    // Handle marker drag
-    marker.current.on('dragend', async () => {
-      const lngLat = marker.current?.getLngLat()
-      if (lngLat) {
-        await updateLocation(lngLat.lat, lngLat.lng)
-      }
-    })
+      marker.current = new maplibregl.Marker({
+        draggable: true,
+        color: "#6366f1"
+      })
+        .setLngLat([initialLng, initialLat])
+        .addTo(map.current)
 
-    // Handle map click
-    map.current.on('click', async (e: maplibregl.MapMouseEvent) => {
-      const { lat, lng } = e.lngLat
-      marker.current?.setLngLat([lng, lat])
-      await updateLocation(lat, lng)
-    })
+      // Handle marker drag
+      marker.current.on('dragend', async () => {
+        const lngLat = marker.current?.getLngLat()
+        if (lngLat) {
+          await updateLocation(lngLat.lat, lngLat.lng)
+        }
+      })
+
+      // Handle map click
+      map.current.on('click', async (e: maplibregl.MapMouseEvent) => {
+        const { lat, lng } = e.lngLat
+        marker.current?.setLngLat([lng, lat])
+        await updateLocation(lat, lng)
+      })
+    } catch (err) {
+      console.warn('MapLibre initialization failed:', err);
+      setTimeout(() => setMapError(true), 0);
+    }
 
     return () => {
       map.current?.remove()
       map.current = null
     }
-  }, [initialLat, initialLng])
+  }, [initialLat, initialLng, mapError])
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -149,18 +161,30 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
       {error && <p className="text-red-400 text-sm font-medium">{error}</p>}
 
       <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-        <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
-        
-        {isLoading && (
-          <div className="absolute inset-0 bg-[#0A0A0F]/50 backdrop-blur-sm flex items-center justify-center z-10">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+        {mapError ? (
+          <div className="absolute inset-0 bg-[#1A1A24] flex flex-col items-center justify-center text-center p-6 border border-dashed border-white/10 rounded-2xl">
+            <MapIcon className="w-12 h-12 text-muted-foreground/50 mb-4" />
+            <h3 className="text-sm font-medium text-white mb-2">Map Preview Unavailable</h3>
+            <p className="text-xs text-muted-foreground max-w-[250px]">
+              We couldn&apos;t load the interactive map right now, but your location is safely recorded. You can still search for a city above.
+            </p>
           </div>
+        ) : (
+          <>
+            <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+            
+            {isLoading && (
+              <div className="absolute inset-0 bg-[#0A0A0F]/50 backdrop-blur-sm flex items-center justify-center z-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+              </div>
+            )}
+            
+            <div className="absolute top-4 left-4 z-10 bg-[#0A0A0F]/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-medium text-white flex items-center gap-2">
+              <MapPin size={14} className="text-indigo-400" />
+              Drag marker to adjust
+            </div>
+          </>
         )}
-        
-        <div className="absolute top-4 left-4 z-10 bg-[#0A0A0F]/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-medium text-white flex items-center gap-2">
-          <MapPin size={14} className="text-indigo-400" />
-          Drag marker to adjust
-        </div>
       </div>
     </div>
   )

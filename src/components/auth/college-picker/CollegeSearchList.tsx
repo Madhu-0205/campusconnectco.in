@@ -210,15 +210,23 @@ export default function CollegeSearchList({
           {!isLoading && colleges.length === 0 ? (
             <EmptyState key="empty" query={query} />
           ) : (
-            colleges.map((c, i) => (
-              <CollegeCard
-                key={c.id}
-                college={c}
-                isSelected={selectedValue === c.name}
-                onClick={() => onSelect(c.name, c.id)}
-                index={i}
-              />
-            ))
+            <motion.div
+              key="list"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-1.5"
+            >
+              {colleges.map((c, i) => (
+                <CollegeCard
+                  key={c.id}
+                  college={c}
+                  isSelected={selectedValue === c.name}
+                  onClick={() => onSelect(c.name, c.id)}
+                  index={i}
+                />
+              ))}
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
