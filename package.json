@@ -11,7 +11,9 @@
     "lint": "eslint",
     "type-check": "node scripts/check-casing.js && tsc --noEmit",
     "test": "vitest run",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "production:check": "node scripts/production-readiness-check.js",
+    "production:dns": "node scripts/check-email-dns.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
