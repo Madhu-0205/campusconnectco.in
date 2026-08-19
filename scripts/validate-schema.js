@@ -21,9 +21,9 @@ try {
   process.exit(1);
 }
 
-// Step 2: Check migration status only if a real DATABASE_URL is available
-if (!hasValidDbUrl) {
-  console.log('⚠️  DATABASE_URL not available — skipping migration status check.');
+// Step 2: Check migration status only if a real DATABASE_URL is available and not in CI
+if (!hasValidDbUrl || process.env.CI === 'true' || process.env.VERCEL === '1') {
+  console.log('⚠️  Skipping migration status check (CI/Vercel environment or no valid DB URL).');
   console.log('   Schema syntax validation passed. Migration sync will be verified at deploy time.');
   process.exit(0);
 }

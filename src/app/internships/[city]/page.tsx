@@ -174,8 +174,8 @@ export default async function CityInternshipsPage({ params }: Props) {
       </div>
 
       {/* Background gradients */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-500/8 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-10%] w-125 h-125 bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-125 h-125 bg-cyan-500/8 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-12 relative z-10">
         
@@ -285,7 +285,7 @@ export default async function CityInternshipsPage({ params }: Props) {
             )}
 
             {/* AI Career Box */}
-            <div className="bg-gradient-to-br from-violet-600/10 to-cyan-500/5 border border-violet-500/10 rounded-3xl p-5 space-y-2.5">
+            <div className="bg-linear-to-br from-violet-600/10 to-cyan-500/5 border border-violet-500/10 rounded-3xl p-5 space-y-2.5">
               <div className="flex items-center gap-2 text-amber-400">
                 <ShieldCheck size={16} />
                 <h4 className="font-black uppercase tracking-wider text-xs">AI SmartMatch</h4>
