@@ -13,7 +13,8 @@
     "test": "vitest run",
     "postinstall": "prisma generate",
     "production:check": "node scripts/production-readiness-check.js",
-    "production:dns": "node scripts/check-email-dns.js"
+    "production:dns": "node scripts/check-email-dns.js",
+    "production:verify": "node scripts/final-production-verification.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
