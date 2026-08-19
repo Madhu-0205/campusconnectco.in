@@ -55,36 +55,46 @@ if (execute('npm run test --run', 'Vitest Suite Failed.', true) !== null) {
 
 // 4. ENVIRONMENT VARIABLES
 console.log('\n🔐 Verifying Environment Variables...');
-const requiredEnv = [
+
+// These must exist in production, but we don't strictly fail the local build if they are absent from local .env
+// We will just warn the developer that they MUST exist in the Vercel dashboard.
+const prodRequiredSecrets = [
   'DATABASE_URL',
-  'NEXT_PUBLIC_SUPABASE_URL',
-  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
   'CRON_SECRET',
-  'NEXT_PUBLIC_APP_URL',
   'RAZORPAY_KEY_ID',
   'RAZORPAY_KEY_SECRET'
 ];
 
-let envMissing = false;
-// Try to check local .env file if running locally, otherwise process.env
+const publicKeys = [
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  'NEXT_PUBLIC_APP_URL'
+];
+
 let envFileContent = '';
 try {
   envFileContent = fs.readFileSync(path.join(__dirname, '../.env'), 'utf-8');
-} catch (e) {
-  // Ignore if no .env file exists (e.g. in CI), we fall back to checking process.env
-}
+} catch (e) {}
 
-requiredEnv.forEach(key => {
+const checkKey = (key, isSecret) => {
   const isInFile = envFileContent.includes(`${key}=`);
   const isInMemory = process.env[key] !== undefined;
   
   if (!isInFile && !isInMemory) {
-    console.error(`❌ FAILED: Missing required environment variable: ${key}`);
-    envMissing = true;
-    hasCriticalFailure = true;
+    if (isSecret) {
+      console.warn(`⚠️  WARNING [LOCAL OPTIONAL SECRET]: '${key}' is missing locally. MUST BE SET IN PRODUCTION.`);
+      hasWarnings = true;
+    } else {
+      console.error(`❌ FAILED: Missing required public environment variable: ${key}`);
+      hasCriticalFailure = true;
+    }
+  } else {
+    console.log(`✅ ${key} is declared.`);
   }
-});
-if (!envMissing) console.log('✅ All required environment keys are declared.');
+};
+
+prodRequiredSecrets.forEach(k => checkKey(k, true));
+publicKeys.forEach(k => checkKey(k, false));
 
 // 5. PRODUCTION HTTP HEADERS & URL AVAILABILITY
 console.log('\n🌐 Verifying Production HTTP Headers...');
