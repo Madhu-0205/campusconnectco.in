@@ -29,7 +29,7 @@ export async function GET() {
             return NextResponse.json([])
         }
 
-        const isAdmin = dbUser.role === "FOUNDER" || authUser.email === "madhuvalurouthu52@gmail.com"
+        const isAdmin = dbUser.role === "FOUNDER" || dbUser.role === "ADMIN"
 
         const thirtyDaysAgo = new Date()
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isPrivilegedEmail } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { isValidUUID } from "@/lib/uuid-utils";
@@ -93,6 +94,21 @@ export async function GET(request: Request) {
             }
         }
 
+        const isFounder = isPrivilegedEmail(user.email);
+        const validClientRoles = ["STUDENT", "CLIENT", "STARTUP"];
+        let requestedRole = roleParam || "STUDENT";
+        
+        // Active rejection of privileged roles for normal clients
+        if (!isFounder && (requestedRole === "FOUNDER" || requestedRole === "ADMIN")) {
+            console.warn(`[OAuth Callback] Blocked attempt to assign privileged role '${requestedRole}' to non-founder email.`);
+            return NextResponse.redirect(`${baseUrl}/auth/sign-in?error=invalid_role`);
+        }
+
+        // Silent fallback for completely unrecognized roles
+        if (!isFounder && !validClientRoles.includes(requestedRole)) {
+            requestedRole = "STUDENT";
+        }
+
         // Upsert the user into our DB (handles Google signup automatically) and fetch role
         try {
             console.log("[OAuth Callback] Upserting user into database...", { userId: user.id });
@@ -108,9 +124,7 @@ export async function GET(request: Request) {
                     email: user.email!,
                     name: user.user_metadata?.full_name || user.user_metadata?.name || null,
                     image: user.user_metadata?.avatar_url || null,
-                    role: user.email === "madhuvalurouthu52@gmail.com" 
-                        ? "FOUNDER" 
-                        : (user.user_metadata?.role || roleParam || "STUDENT"),
+                    role: isFounder ? "FOUNDER" : requestedRole,
                     college: user.user_metadata?.college || null,
                     collegeId: validatedCollegeId,
                     acceptedTerms: true,
@@ -143,7 +157,7 @@ export async function GET(request: Request) {
         } catch (dbError) {
             console.error("[OAuth Callback] Database operations failed:", dbError);
             // Best-effort fallback
-            userRole = user.email === "madhuvalurouthu52@gmail.com" ? "FOUNDER" : (roleParam || "STUDENT");
+            userRole = isFounder ? "FOUNDER" : requestedRole;
         }
 
         // Sync the user role back to Supabase metadata if different

@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
 
+  experimental: {
+    optimizePackageImports: ["lucide-react", "recharts", "framer-motion", "@react-three/drei", "@react-three/fiber"],
+  },
+
   // Keep heavy native modules out of the Next.js bundle so they run as plain
   // Node.js requires (avoids pdf-parse test-fixture crash and mammoth issues).
   serverExternalPackages: ["pdf-parse", "mammoth", "groq-sdk"],
@@ -36,6 +40,32 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
     formats: ["image/webp"],
+  },
+
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+    ];
   },
 
   compiler: {

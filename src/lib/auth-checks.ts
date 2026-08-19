@@ -4,6 +4,15 @@ import { prisma } from "@/lib/prisma"
 import { logSecurityEvent } from "@/lib/security/audit"
 import { createClient } from "@/lib/supabase/server"
 
+export const FOUNDER_EMAILS = [
+    "madhuvalurouthu52@gmail.com"
+];
+
+export function isPrivilegedEmail(email: string | null | undefined): boolean {
+    if (!email) return false;
+    return FOUNDER_EMAILS.includes(email.toLowerCase().trim());
+}
+
 /**
  * Server-side utility to get the current session user
  */
@@ -14,35 +23,34 @@ export async function getSession() {
 }
 
 /**
- * Fetches the user's role directly from the database (Requirement 8)
- * @param userId User UUID
+ * Fetches the user's role and suspension status directly from the database
  */
-export async function getUserRoleFromDb(userId: string) {
+export async function getAuthProfileFromDb(userId: string) {
     if (!userId) return null;
 
     try {
         const dbUser = await prisma.user.findUnique({
             where: { id: userId },
-            select: { role: true }
+            select: { role: true, isSuspended: true }
         });
-        if (dbUser) return dbUser.role;
+        if (dbUser) return dbUser;
 
         // Auto-create profile in DB if user is authenticated but DB record is missing
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user && user.id === userId) {
-            const isFounder = user.email === "madhuvalurouthu52@gmail.com";
+            const isFounder = isPrivilegedEmail(user.email);
             const isAcademicEmail = typeof user.email === "string" && (
                 user.email.endsWith(".edu") || 
                 user.email.endsWith(".edu.in") || 
                 user.email.endsWith(".res.in")
             );
-            const userMetadataRole = user.user_metadata?.role || "STUDENT";
-            const finalRole = isFounder ? "ADMIN" : userMetadataRole;
+            
+            const finalRole = isFounder ? "FOUNDER" : "STUDENT";
             const autoVerify = isAcademicEmail || isFounder;
 
-            console.log(`[getUserRoleFromDb] Auto-creating missing user profile in database for ${user.email}`);
+            console.log(`[getAuthProfileFromDb] Auto-creating missing user profile in database for ${user.email}`);
             try {
                 const newProfile = await prisma.user.create({
                     data: {
@@ -57,26 +65,35 @@ export async function getUserRoleFromDb(userId: string) {
                         acceptedTermsAt: new Date(),
                         acceptedTermsVersion: "1.0",
                     },
-                    select: { role: true }
+                    select: { role: true, isSuspended: true }
                 });
-                return newProfile.role;
+                return newProfile;
             } catch (createErr: any) {
                 if (createErr.code === "P2002") {
-                    console.log(`[getUserRoleFromDb] Profile for ${user.email} was created concurrently. Fetching...`);
+                    console.log(`[getAuthProfileFromDb] Profile for ${user.email} was created concurrently. Fetching...`);
                     const dbUserRetry = await prisma.user.findUnique({
                         where: { id: userId },
-                        select: { role: true }
+                        select: { role: true, isSuspended: true }
                     });
-                    return dbUserRetry?.role ?? finalRole;
+                    return dbUserRetry ?? { role: finalRole, isSuspended: false };
                 }
                 throw createErr;
             }
         }
         return null;
     } catch (error) {
-        console.error("[getUserRoleFromDb] Role fetch/auto-creation failed:", error);
+        console.error("[getAuthProfileFromDb] Role fetch/auto-creation failed:", error);
         return null;
     }
+}
+
+/**
+ * Fetches the user's role directly from the database
+ * Retained for backward compatibility
+ */
+export async function getUserRoleFromDb(userId: string) {
+    const profile = await getAuthProfileFromDb(userId);
+    return profile?.role || null;
 }
 
 /**
@@ -86,27 +103,29 @@ export async function protectApi(allowedRoles: ("ADMIN" | "FOUNDER" | "STUDENT" 
     const user = await getSession();
 
     if (!user) {
-        return { errorResponse: new NextResponse("Unauthorized", { status: 401 }), user: null };
+        return { errorResponse: NextResponse.json({ error: "Unauthorized" }, { status: 401 }), user: null };
     }
 
-    let role = await getUserRoleFromDb(user.id);
-    if (!role && user.user_metadata?.role) {
-        role = user.user_metadata.role;
+    const profile = await getAuthProfileFromDb(user.id);
+    
+    if (profile?.isSuspended) {
+        return { errorResponse: NextResponse.json({ error: "Account suspended" }, { status: 403 }), user, role: profile.role };
     }
-    const normalizedRole = role ? role.toUpperCase() : null;
+
+    const normalizedRole = profile?.role ? profile.role.toUpperCase() : null;
 
     if (!normalizedRole || !allowedRoles.includes(normalizedRole as (typeof allowedRoles)[number])) {
-        console.warn(`[AUTH] Unauthorized access attempt by ${user.email} (Role: ${normalizedRole || role}) to restricted API`);
+        console.warn(`[AUTH] Unauthorized access attempt by ${user.email} (Role: ${normalizedRole}) to restricted API`);
         logSecurityEvent("AUTH_LOGIN_FAILED", {
             userId: user.id,
             metadata: {
                 email: user.email,
-                attemptedRole: normalizedRole || role || "unknown",
+                attemptedRole: normalizedRole || "unknown",
                 allowedRoles,
                 context: "api"
             }
         }).catch(() => {});
-        return { errorResponse: new NextResponse("Forbidden", { status: 403 }), user, role: normalizedRole || role };
+        return { errorResponse: NextResponse.json({ error: "Forbidden" }, { status: 403 }), user, role: normalizedRole };
     }
 
     return { errorResponse: null, user, role: normalizedRole };
@@ -122,25 +141,26 @@ export async function protectPage(allowedRoles: ("ADMIN" | "FOUNDER" | "STUDENT"
         return { authorized: false, user: null };
     }
 
-    let role = await getUserRoleFromDb(user.id);
-    if (!role && user.user_metadata?.role) {
-        role = user.user_metadata.role;
+    const profile = await getAuthProfileFromDb(user.id);
+
+    if (profile?.isSuspended) {
+        return { authorized: false, user, role: profile.role };
     }
-    const normalizedRole = role ? role.toUpperCase() : null;
+
+    const normalizedRole = profile?.role ? profile.role.toUpperCase() : null;
 
     if (!normalizedRole || !allowedRoles.includes(normalizedRole as (typeof allowedRoles)[number])) {
         logSecurityEvent("AUTH_LOGIN_FAILED", {
             userId: user.id,
             metadata: {
                 email: user.email,
-                attemptedRole: normalizedRole || role || "unknown",
+                attemptedRole: normalizedRole || "unknown",
                 allowedRoles,
                 context: "page"
             }
         }).catch(() => {});
-        return { authorized: false, user, role: normalizedRole || role };
+        return { authorized: false, user, role: normalizedRole };
     }
-
 
     return { authorized: true, user, role: normalizedRole };
 }
@@ -151,9 +171,15 @@ export async function protectPage(allowedRoles: ("ADMIN" | "FOUNDER" | "STUDENT"
 export async function requireUser() {
     const user = await getSession();
     if (!user) {
-        return { errorResponse: NextResponse.json({ error: "Unauthorized" }, { status: 401 }), user: null };
+        return { errorResponse: NextResponse.json({ error: "Unauthorized" }, { status: 401 }), user: null, role: null };
     }
-    return { errorResponse: null, user };
+
+    const profile = await getAuthProfileFromDb(user.id);
+    if (profile?.isSuspended) {
+        return { errorResponse: NextResponse.json({ error: "Account suspended" }, { status: 403 }), user, role: profile.role };
+    }
+
+    return { errorResponse: null, user, role: profile?.role || null };
 }
 
 /**
@@ -163,19 +189,16 @@ export async function requireRole(allowedRoles: ("ADMIN" | "FOUNDER" | "STUDENT"
     const { errorResponse, user } = await requireUser();
     if (errorResponse) return { errorResponse, user: null, role: null };
 
-    let role = await getUserRoleFromDb(user!.id);
-    if (!role && user!.user_metadata?.role) {
-        role = user!.user_metadata.role;
-    }
-    const normalizedRole = role ? role.toUpperCase() : null;
+    const profile = await getAuthProfileFromDb(user!.id);
+    const normalizedRole = profile?.role ? profile.role.toUpperCase() : null;
 
     if (!normalizedRole || !allowedRoles.includes(normalizedRole as any)) {
-        console.warn(`[AUTH] Unauthorized access attempt by ${user!.email} (Role: ${normalizedRole || role}) to restricted API`);
+        console.warn(`[AUTH] Unauthorized access attempt by ${user!.email} (Role: ${normalizedRole}) to restricted API`);
         logSecurityEvent("AUTH_LOGIN_FAILED", {
             userId: user!.id,
             metadata: {
                 email: user!.email,
-                attemptedRole: normalizedRole || role || "unknown",
+                attemptedRole: normalizedRole || "unknown",
                 allowedRoles,
                 context: "api"
             }

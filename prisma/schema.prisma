@@ -88,6 +88,9 @@ model User {
   gigsPosted           Gig[]               @relation("PostedGigs")
   messages             Message[]
   analytics            Analytics[]
+
+  @@index([role, isVerified])
+  @@index([college])
 }
 
 model Follows {
@@ -179,6 +182,7 @@ model Gig {
 
   @@index([posted_by], map: "idx_gigs_posted_by")
   @@index([status])
+  @@index([status, city])
   @@index([collegeId])
   @@map("gigs")
 }
@@ -194,10 +198,10 @@ model Application {
   applicant   User     @relation(fields: [applicantId], references: [id], onDelete: Cascade, map: "Application_applicantId_fkey")
   gig         Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade, map: "Application_gigId_fkey")
 
+  @@unique([applicantId, gigId])
   @@index([applicantId], map: "Application_applicantId_idx")
   @@index([gigId], map: "Application_gigId_idx")
   @@index([status])
-  @@unique([applicantId, gigId])
   @@map("applications")
 }
 
@@ -411,6 +415,8 @@ model Internship {
   externalId      String?           @unique
   source          String?
   savedBy         SavedInternship[]
+
+  @@index([status])
 }
 
 model SavedInternship {
@@ -557,23 +563,23 @@ model CareerRoadmap {
 }
 
 model UserEmbedding {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @unique @db.Uuid
+  id        String                      @id @default(uuid()) @db.Uuid
+  userId    String                      @unique @db.Uuid
   hash      String
   vector    Float[]
   vector_pg Unsupported("vector(768)")?
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt DateTime                    @updatedAt
+  user      User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model GigEmbedding {
-  id        String   @id @default(uuid()) @db.Uuid
-  gigId     String   @unique @db.Uuid
+  id        String                      @id @default(uuid()) @db.Uuid
+  gigId     String                      @unique @db.Uuid
   hash      String
   vector    Float[]
   vector_pg Unsupported("vector(768)")?
-  updatedAt DateTime @updatedAt
-  gig       Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  updatedAt DateTime                    @updatedAt
+  gig       Gig                         @relation(fields: [gigId], references: [id], onDelete: Cascade)
 }
 
 model Organization {
@@ -908,7 +914,7 @@ model ModerationEvent {
   id         String   @id @default(uuid()) @db.Uuid
   entityId   String
   entityType String
-  action     String   // "FLAG", "REJECT", "APPROVE"
+  action     String // "FLAG", "REJECT", "APPROVE"
   reason     String
   riskScore  Float?
   createdAt  DateTime @default(now())

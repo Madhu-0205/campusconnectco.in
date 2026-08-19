@@ -12,7 +12,7 @@ try {
         await prisma.$queryRaw`SELECT 1`;
         checks.database = { status: "healthy" };
     } catch (err: any) {
-        checks.database = { status: "unhealthy", error: err.message };
+        checks.database = { status: "unhealthy", error: "Database connection failed" };
         isHealthy = false;
     }
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
@@ -31,7 +31,7 @@ if (redisUrl && redisToken) {
                 checks.redis = { status: "unhealthy", statusCode: res.status };
             }
         } catch (err: any) {
-            checks.redis = { status: "unhealthy", error: err.message };
+            checks.redis = { status: "unhealthy", error: "Redis connection failed" };
         }
     } else {
         checks.redis = { status: "not_configured" };
@@ -40,7 +40,7 @@ try {
         await prisma.$queryRaw`SELECT id FROM storage.buckets WHERE name = 'avatars' LIMIT 1`;
         checks.storage = { status: "healthy", bucket: "avatars" };
     } catch (err: any) {
-        checks.storage = { status: "unhealthy", error: err.message };
+        checks.storage = { status: "unhealthy", error: "Storage connection failed" };
     }
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 if (supabaseUrl) {
@@ -50,7 +50,7 @@ if (supabaseUrl) {
             });
             checks.email = { status: res.ok ? "healthy" : "unhealthy", statusCode: res.status };
         } catch (err: any) {
-            checks.email = { status: "unhealthy", error: err.message };
+            checks.email = { status: "unhealthy", error: "Supabase connection failed" };
         }
     } else {
         checks.email = { status: "not_configured" };

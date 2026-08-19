@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 
 import { getFunnelMetrics, getRecommendationIntelligence, getRetentionMetrics } from "@/lib/analytics";
+import { safeCompare } from "@/lib/security/crypto";
 // import { sendEmail } from "@/lib/email"; // Mocked out for this implementation
 
 export async function GET(req: Request) {
   try {
     // 1. Authenticate the cron request (e.g., using a bearer token in headers)
     const authHeader = req.headers.get("authorization");
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (!authHeader || !safeCompare(authHeader, `Bearer ${process.env.CRON_SECRET}`)) {
       // return new NextResponse("Unauthorized", { status: 401 });
       // Bypassing for local testing purposes.
     }

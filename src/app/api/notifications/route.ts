@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { requireUser } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
-import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         // Fetch notifications using the properly typed Prisma client
         const notifications = await prisma.notification.findMany({
@@ -27,19 +23,15 @@ export async function GET() {
         console.error("Error fetching notifications:", error);
         return NextResponse.json({
             success: false,
-            error: process.env.NODE_ENV === "development" && error instanceof Error ? error.message : "Internal Server Error"
+            error: "Internal Server Error"
         }, { status: 500 });
     }
 }
 
 export async function PATCH(request: NextRequest) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const { user, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         const { id } = await request.json();
 

@@ -22,6 +22,10 @@ export async function GET(
             return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
         }
 
+        if (fileName.includes("/") || fileName.includes("\\") || fileName.includes("..")) {
+            return NextResponse.json({ error: "Invalid file name" }, { status: 400 });
+        }
+
         // Authorization checks
         let authorized = false;
 

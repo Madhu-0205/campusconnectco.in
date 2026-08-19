@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { protectApi } from "@/lib/auth-checks";
+import { protectApi, isPrivilegedEmail } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
@@ -144,8 +144,21 @@ export async function POST(req: Request) {
             );
         }
 
-        const isFounder = authUser.email === "madhuvalurouthu52@gmail.com";
-        const finalRole = isFounder ? "FOUNDER" : (authUser.user_metadata?.role || role || "STUDENT");
+        const isFounder = isPrivilegedEmail(authUser.email);
+        const validClientRoles = ["STUDENT", "CLIENT", "STARTUP"];
+        let requestedRole = role || "STUDENT";
+        
+        // Active rejection of privileged roles for normal clients
+        if (!isFounder && (requestedRole === "FOUNDER" || requestedRole === "ADMIN")) {
+            return NextResponse.json({ error: "Invalid role specified. Privileged roles cannot be assigned during onboarding." }, { status: 403 });
+        }
+
+        // Silent fallback for completely unrecognized roles
+        if (!isFounder && !validClientRoles.includes(requestedRole)) {
+            requestedRole = "STUDENT";
+        }
+
+        const finalRole = isFounder ? "FOUNDER" : requestedRole;
         const isAcademicEmail = typeof authUser.email === "string" && (
             authUser.email.endsWith(".edu") || 
             authUser.email.endsWith(".edu.in") || 
@@ -261,7 +274,7 @@ export async function GET() {
         const completedGigs = results[2];
         const connections = results[3];
 
-        const isFounder = user.email === "madhuvalurouthu52@gmail.com";
+        const isFounder = isPrivilegedEmail(user.email);
         const isAcademicEmail = typeof user.email === "string" && (
             user.email.endsWith(".edu") || 
             user.email.endsWith(".edu.in") || 
@@ -270,8 +283,7 @@ export async function GET() {
         );
 
         if (!profile) {
-            const userMetadataRole = user.user_metadata?.role || "STUDENT";
-            const finalRole = isFounder ? "FOUNDER" : userMetadataRole;
+            const finalRole = isFounder ? "FOUNDER" : "STUDENT";
             const autoVerify = isAcademicEmail || isFounder;
             try {
                 profile = await prisma.user.create({

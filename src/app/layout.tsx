@@ -66,7 +66,6 @@ export const metadata: Metadata = {
   creator: "CampusConnect",
   publisher: "CampusConnect",
   alternates: {
-    canonical: "https://www.campusconnectco.in/",
     languages: {
       "en-IN": "https://www.campusconnectco.in/",
     },

@@ -1,5 +1,6 @@
 import { MapPin, Briefcase, Users, ArrowRight, ShieldCheck, ExternalLink } from "lucide-react"
 import type { Metadata } from "next"
+import { unstable_cache } from "next/cache"
 import { headers } from "next/headers"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -72,40 +73,50 @@ export default async function CityInternshipsPage({ params }: Props) {
   }
 
   // 1. Fetch matching local internships
-  const internships = await prisma.internship.findMany({
-    where: {
-      status: "OPEN",
-      location: { equals: decodedCity, mode: "insensitive" }
-    },
-    take: 12,
-    orderBy: { createdAt: "desc" }
-  })
+  const getInternships = unstable_cache(
+    async (decodedCity: string) => prisma.internship.findMany({
+      where: {
+        status: "OPEN",
+        location: { equals: decodedCity, mode: "insensitive" }
+      },
+      take: 12,
+      orderBy: { createdAt: "desc" }
+    }),
+    [`internships-city-${decodedCity}`],
+    { revalidate: 3600 }
+  )
+  const internships = await getInternships(decodedCity)
 
   // 2. Fetch matching local students via city name and college mappings
   const localColleges = getCollegesForCity(decodedCity)
-  const students = await prisma.user.findMany({
-    where: {
-      role: "STUDENT",
-      OR: [
-        { college: { contains: decodedCity, mode: 'insensitive' } },
-        ...(localColleges.length > 0 ? [{ college: { in: localColleges } }] : [])
-      ]
-    },
-    select: {
-      id: true,
-      name: true,
-      full_name: true,
-      username: true,
-      image: true,
-      avatar_url: true,
-      college: true,
-      branch: true,
-      year: true,
-      bio: true,
-      isVerified: true,
-    },
-    take: 12,
-  })
+  const getStudents = unstable_cache(
+    async (decodedCity: string, colleges: string[]) => prisma.user.findMany({
+      where: {
+        role: "STUDENT",
+        OR: [
+          { college: { contains: decodedCity, mode: 'insensitive' } },
+          ...(colleges.length > 0 ? [{ college: { in: colleges } }] : [])
+        ]
+      },
+      select: {
+        id: true,
+        name: true,
+        full_name: true,
+        username: true,
+        image: true,
+        avatar_url: true,
+        college: true,
+        branch: true,
+        year: true,
+        bio: true,
+        isVerified: true,
+      },
+      take: 12,
+    }),
+    [`internships-city-students-${decodedCity}`],
+    { revalidate: 3600 }
+  )
+  const students = await getStudents(decodedCity, localColleges)
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
   const breadcrumbItems = [

@@ -48,6 +48,10 @@ export async function POST(req: NextRequest) {
     if (!application) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
     }
+    
+    if (application.gigId !== gigId) {
+      return NextResponse.json({ error: "Forbidden: Application does not belong to this gig" }, { status: 403 });
+    }
 
     // Initialize Razorpay Client
     const keyId = process.env.RAZORPAY_KEY_ID || "";

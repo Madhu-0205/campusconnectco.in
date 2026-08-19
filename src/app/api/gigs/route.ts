@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { filterAndRankGigs } from "@/lib/ai/filterAndRank";
 import { moderateGig } from "@/lib/ai/moderator";
-import { protectApi } from "@/lib/auth-checks";
+import { protectApi, requireUser } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
 import { sanitizeInput } from "@/lib/security/sanitization";
@@ -322,9 +322,8 @@ export async function POST(req: Request) {
 // PATCH - Update Gig status (e.g. mark as completed)
 export async function PATCH(req: Request) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const { user, role, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         const body = await req.json();
         
@@ -342,10 +341,9 @@ export async function PATCH(req: Request) {
         const gig = await prisma.gig.findUnique({ where: { id } });
         if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
 
-        // Only poster or founder
+        // Only poster or founder/admin
         if (gig.posted_by !== user.id) {
-            const dbUser = await prisma.user.findUnique({ where: { id: user.id }, select: { role: true } });
-            if (dbUser?.role !== "ADMIN") {
+            if (role !== "ADMIN" && role !== "FOUNDER") {
                 return NextResponse.json({ error: "Forbidden" }, { status: 403 });
             }
         }
@@ -370,9 +368,8 @@ export async function PATCH(req: Request) {
 // DELETE - Remove a gig
 export async function DELETE(req: Request) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const { user, role, errorResponse } = await requireUser();
+        if (errorResponse) return errorResponse;
 
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
@@ -387,8 +384,7 @@ export async function DELETE(req: Request) {
         if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
 
         if (gig.posted_by !== user.id) {
-            const dbUser = await prisma.user.findUnique({ where: { id: user.id }, select: { role: true } });
-            if (dbUser?.role !== "ADMIN") {
+            if (role !== "ADMIN" && role !== "FOUNDER") {
                 return NextResponse.json({ error: "Forbidden" }, { status: 403 });
             }
         }

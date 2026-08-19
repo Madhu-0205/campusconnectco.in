@@ -6,7 +6,7 @@ test.describe("Authentication Forms Verification", () => {
     await page.goto("/auth/sign-in");
 
     // Verify title and essential forms
-    await expect(page.locator("h2, h1")).toContainText(/Sign In/i);
+    await expect(page.locator("h2, h1")).toContainText(/Welcome Back/i);
     await expect(page.locator("input[type='email']")).toBeVisible();
     await expect(page.locator("input[type='password']")).toBeVisible();
     await expect(page.locator("button[type='submit']")).toBeVisible();
@@ -18,16 +18,16 @@ test.describe("Authentication Forms Verification", () => {
   test("should render registration forms with role selections", async ({ page }) => {
     await page.goto("/auth/sign-up");
 
-    await expect(page.locator("h2, h1")).toContainText(/Join/i);
+    await expect(page.locator("h2, h1")).toContainText(/Create Account/i);
     // Role tabs check
     await expect(page.locator("button:has-text('Student')")).toBeVisible();
-    await expect(page.locator("button:has-text('Client')")).toBeVisible();
+    await expect(page.locator("button:has-text('Startup')")).toBeVisible();
   });
 
   test("should show validation errors on password reset form with invalid inputs", async ({ page }) => {
     await page.goto("/auth/forgot-password");
 
-    await expect(page.locator("h2, h1")).toContainText(/Reset/i);
+    await expect(page.locator("h2, h1")).toContainText(/Forgot your password\?/i);
     
     // Type invalid email address format
     await page.fill("input[type='email']", "invalid_email_format");

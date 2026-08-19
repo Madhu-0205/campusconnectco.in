@@ -1,5 +1,6 @@
 import { Award, Briefcase, Users, ArrowRight, ShieldCheck, ExternalLink } from "lucide-react"
 import type { Metadata } from "next"
+import { unstable_cache } from "next/cache"
 import { headers } from "next/headers"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -84,42 +85,52 @@ export default async function CollegeSEOPage({ params }: Props) {
   }
 
   // 1. Fetch matching students from database
-  const students = await prisma.user.findMany({
-    where: {
-      role: "STUDENT",
-      college: {
-        contains: collegeName,
-        mode: "insensitive"
-      }
-    },
-    select: {
-      id: true,
-      name: true,
-      full_name: true,
-      username: true,
-      image: true,
-      avatar_url: true,
-      college: true,
-      branch: true,
-      year: true,
-      bio: true,
-      isVerified: true,
-    },
-    take: 12,
-  })
+  const getStudents = unstable_cache(
+    async (name: string) => prisma.user.findMany({
+      where: {
+        role: "STUDENT",
+        college: {
+          contains: name,
+          mode: "insensitive"
+        }
+      },
+      select: {
+        id: true,
+        name: true,
+        full_name: true,
+        username: true,
+        image: true,
+        avatar_url: true,
+        college: true,
+        branch: true,
+        year: true,
+        bio: true,
+        isVerified: true,
+      },
+      take: 12,
+    }),
+    [`college-students-${slug}`],
+    { revalidate: 3600 }
+  )
+  const students = await getStudents(collegeName)
 
   // 2. Fetch active gigs containing matching text
-  const gigs = await prisma.gig.findMany({
-    where: {
-      status: "OPEN",
-      OR: [
-        { title: { contains: collegeName, mode: "insensitive" } },
-        { description: { contains: collegeName, mode: "insensitive" } }
-      ]
-    },
-    take: 10,
-    orderBy: { createdAt: "desc" }
-  })
+  const getGigs = unstable_cache(
+    async (name: string) => prisma.gig.findMany({
+      where: {
+        status: "OPEN",
+        OR: [
+          { title: { contains: name, mode: "insensitive" } },
+          { description: { contains: name, mode: "insensitive" } }
+        ]
+      },
+      take: 10,
+      orderBy: { createdAt: "desc" }
+    }),
+    [`college-gigs-${slug}`],
+    { revalidate: 3600 }
+  )
+  const gigs = await getGigs(collegeName)
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
   const breadcrumbItems = [

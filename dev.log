@@ -1,0 +1,30 @@
+
+> campusconnectco.in@0.1.0 predev
+> node scripts/check-casing.js && node scripts/validate-schema.js && node scripts/predev.js
+
+🔍 Scanning imports for filesystem casing anomalies...
+
+✅ Verification complete: All import paths match actual filesystem casing!
+🔍 Validating Prisma schema and database sync status...
+✅ Prisma schema syntax is valid.
+⚠️  DATABASE_URL not available — skipping migration status check.
+   Schema syntax validation passed. Migration sync will be verified at deploy time.
+=== Asynchronous Pre-dev Check ===
+✓ Port 3000 is clear
+✓ Removed stale .next/dev/lock file
+⚠ Unclean shutdown detected. Rebuilding Turbopack cache directory...
+✓ Turbopack cache cleared at .next/dev/cache
+
+> campusconnectco.in@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.119:3000
+- Environments: .env
+✓ Ready in 1209ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  · clientTraceMetadata
+
+[?25h
