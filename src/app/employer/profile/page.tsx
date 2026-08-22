@@ -117,7 +117,7 @@ export default async function EmployerProfilePage() {
               {/* Logo */}
               <div className="w-20 h-20 rounded-2xl border-4 border-[var(--color-surface)] overflow-hidden bg-[#7C3AED]/20 flex items-center justify-center shrink-0">
                 {org.logo ? (
-                  <Image src={org.logo} alt={org.name} width={80} height={80} className="object-cover" />
+                  <Image src={org.logo} alt={org.name} width={80} height={80} className="object-cover" priority />
                 ) : (
                   <Building2 size={28} className="text-[#A78BFA]" />
                 )}

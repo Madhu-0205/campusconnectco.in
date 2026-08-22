@@ -1,19 +1,52 @@
-# Razorpay Webhook E2E Verification
+# Razorpay Integration & E2E Webhook Architecture
 
-Validating the payment state machine requires confirming that the production environment can successfully receive, cryptographically verify, and process webhooks from Razorpay.
+CampusConnect handles payments via Razorpay. The system strictly isolates payment verification from business logic using Webhooks and HMAC signatures.
 
-## E2E Procedure (Test Mode)
+## Architecture & State Transitions
 
-1. **Enable Test Mode**: Log into the Razorpay Dashboard. Toggle the environment to **Test Mode**.
-2. **Configure Webhook**: Ensure the Webhook URL is set to `https://www.campusconnectco.in/api/payments/escrow/release` (or the relevant webhook route) with the correct `RAZORPAY_WEBHOOK_SECRET`.
-3. **Initiate Payment**: Through the CampusConnect UI, create a ₹1 (test card) escrow payment.
-4. **Complete Payment**: Enter the test card details and simulate a successful payment.
-5. **Dashboard Verification**: 
-   - Observe the `payment.captured` event firing in the Razorpay Webhooks tab.
-   - Verify the delivery status shows `HTTP 200`.
-6. **CampusConnect Verification**:
-   - Verify the Database state transition (e.g. Escrow marked as `FUNDED` or `RELEASED`).
-   - Re-send the *exact same webhook* from the Razorpay dashboard. Verify that CampusConnect returns an `HTTP 200` but gracefully skips processing due to idempotency checks (no duplicate funds released).
-   
-> [!CAUTION]
-> If the webhook returns a 401/400 during testing, the HMAC signature validation is failing. Verify `RAZORPAY_WEBHOOK_SECRET` strictly matches between Vercel and the Razorpay Dashboard.
+1. **Order Creation (`/api/checkout/create-order`)**
+   - Creates a transaction in the database with status `PENDING`.
+   - Calls Razorpay API to generate an `order_id`.
+   - Responds to the client to initialize the Razorpay checkout overlay.
+
+2. **Webhook Reception (`/api/checkout/webhook`)**
+   - Receives `order.paid` or `payment.captured` events.
+   - **Signature Verification:** Validates `x-razorpay-signature` using HMAC SHA256 and `RAZORPAY_WEBHOOK_SECRET`.
+   - **Idempotency & Concurrency Guard:** Uses `prisma.transaction.updateMany` targeting `status: PENDING`. If the row was already updated to `PAID` by a concurrent webhook or retry, `updateResult.count` will be 0, effectively preventing duplicate processing.
+   - **State Transition:** 
+     - Transaction `status` -> `PAID`.
+     - Creates `Escrow` record with status `LOCKED`.
+     - Updates `Gig` status to `IN_PROGRESS`.
+     - Logs the transition to `TransactionAudit`.
+
+## Testing the Webhook Locally
+
+Without external Dashboard access, you can securely verify webhook logic in a local or mock environment.
+
+### 1. Configure Secrets
+Ensure you have the following in your `.env.local`:
+```env
+RAZORPAY_KEY_ID="rzp_test_..."
+RAZORPAY_KEY_SECRET="..."
+RAZORPAY_WEBHOOK_SECRET="your_secure_local_secret"
+```
+
+### 2. Triggering Webhooks Locally
+If you are developing locally and want to test the full E2E flow without exposing your local server to the internet, use the Razorpay CLI or Stripe CLI (equivalent) or ngrok.
+
+```bash
+ngrok http 3000
+# Update Razorpay Webhook settings to point to https://<ngrok_url>/api/checkout/webhook
+```
+
+### 3. Automated Test Verification
+Run the regression suite to verify webhook signature validation:
+```bash
+npm run test -- src/__tests__/webhook.test.ts
+npm run test -- src/__tests__/checkout-payouts.test.ts
+```
+
+## Security Posture
+- **Never trust client-side success:** The system ignores frontend success callbacks for state changes. It relies strictly on the cryptographically signed webhook.
+- **Replay Attacks:** Addressed by the idempotent `status: PENDING` guard in Prisma. Even if an attacker replays the exact payload and signature, the state transition will be rejected.
+- **Data Scrubbing:** Logging strips sensitive PCI/payment instrument details. Only standard order entities and hashes are logged.

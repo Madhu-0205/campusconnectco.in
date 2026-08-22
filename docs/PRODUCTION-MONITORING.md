@@ -1,21 +1,27 @@
-# CampusConnect Production Monitoring Checklist
+# Production Uptime Monitoring Configuration
 
-This document details how to configure external uptime monitoring for the CampusConnect production deployment. External monitoring guarantees that if the Vercel Edge Network or the Supabase database goes completely offline, the on-call engineers are automatically alerted via PagerDuty/Slack.
+CampusConnect has a dedicated health endpoint at `https://www.campusconnectco.in/api/health`.
 
-## Endpoint Details
-**URL**: `https://www.campusconnectco.in/api/health`
-**Method**: `GET`
-**Expected Response**: `HTTP 200 OK`
-**Response Body**: Sanitized health status (e.g. `{"status":"ok"}`). No secrets or internal stack traces are returned.
+Since we do not have programmatic access to an uptime provider (like Better Uptime, Datadog, or Pingdom), you must configure this manually.
 
-## Setup Instructions (Better Uptime / Pingdom)
-1. Create a new HTTP(s) Monitor.
-2. Enter the URL: `https://www.campusconnectco.in/api/health`.
-3. Set the polling interval to **1 to 5 minutes**.
-4. Set the timeout threshold to **10 seconds**.
-5. Set the failure threshold to **2 consecutive failures** (prevents false positives during brief edge network blips).
-6. Assign the notification channel (e.g. `#engineering-alerts` on Slack, or the primary PagerDuty rotation).
-7. Configure a Recovery Notification so the team knows when the outage has resolved.
+## Configuration Steps
 
-> [!WARNING]
-> Do NOT hardcode third-party API keys or monitor configurations inside the CampusConnect repository. Monitoring is exclusively an external infrastructure responsibility.
+1. **Create a Monitor**
+   - **Type:** HTTP(S) GET
+   - **URL:** `https://www.campusconnectco.in/api/health`
+
+2. **Thresholds & Requirements**
+   - **Check Interval:** `1 minute` (highly recommended for production).
+   - **Timeout:** `<= 10 seconds` (The endpoint responds in ~300ms under normal conditions).
+   - **Expected Status:** `200 OK`.
+
+3. **Alerting & Escalation**
+   - Configure alerts to trigger after `2 consecutive failures` (to avoid flapping alerts).
+   - Route alerts to PagerDuty, Slack, or email for the operations team.
+   - Configure a recovery notification ("Monitor is UP").
+
+## Incident Runbook
+If the monitor alerts:
+1. Check Vercel logs to see if it's a platform issue or a database connection exhaustion issue.
+2. Manually verify `https://www.campusconnectco.in/api/health`.
+3. If database related, check Supabase connection pool usage.

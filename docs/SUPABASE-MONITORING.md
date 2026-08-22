@@ -1,17 +1,29 @@
-# Supabase Database Monitoring
+# Supabase Production Monitoring
 
-The primary bottleneck for Next.js Serverless architectures is PostgreSQL database connections.
+CampusConnect uses Supabase for PostgreSQL. Programmatic access to the Supabase CLI is currently not authenticated, requiring manual verification through the Supabase Dashboard.
 
-## 1. Connection Pool (PgBouncer) Saturation
-**Threshold:** Active connections > 80% of pool limit.
-- **Symptom:** Next.js throws `PrismaClientInitializationError` or timeout errors.
-- **Resolution:** Supabase uses PgBouncer on port 6543 natively. Ensure `DATABASE_URL` uses the pooler connection string with `?pgbouncer=true`. Monitor the "Active Connections" chart in Supabase under Database Health.
+## Connection Management & Prisma Guardrails
+The application is pre-configured with robust connection safeguards:
+- **Connection Limit Enforcement**: `DB_CONNECTION_LIMIT` restricts Prisma from exhausting the pgBouncer pool.
+- **Timeouts**: Configured for pool timeouts, connect timeouts, and keepalive metrics.
+- **Retry Logic**: Transient connection drops (e.g. `P1001`, `P1017`) are automatically retried via exponential backoff in `src/lib/prisma.ts`.
+- **Stateless Health Checks**: `/api/health` intentionally bypasses the database to avoid DDOSing the connection pool during high traffic monitoring.
 
-## 2. Compute (CPU & Memory)
-**Threshold:** > 75% sustained CPU.
-- **Symptom:** Database response latency skyrockets, causing Vercel 504s.
-- **Resolution:** This is usually caused by unoptimized queries (Missing Indexes). Check the Supabase "Query Performance" tab to find slow queries (e.g. filtering Gigs by unindexed strings).
+## Manual Verification Steps (Dashboard)
 
-## 3. Storage
-**Threshold:** > 85% of allocated disk size.
-- Ensure the database auto-scales or triggers a PagerDuty alert before 95%, as a full disk will corrupt the database and cause an unrecoverable crash requiring a PITR restore.
+### 1. PITR (Point-in-Time Recovery)
+PITR is crucial for recovering from accidental destructive migrations.
+**Action:** 
+1. Open Supabase Dashboard -> CampusConnect Project -> Database -> Backups.
+2. Verify PITR is **Enabled** (Requires Pro plan or higher).
+
+### 2. Daily Backups
+If PITR is not an option due to billing constraints, Daily Backups must be verified.
+**Action:** 
+1. In the Backups tab, verify the schedule and ensure recent backups have completed without errors.
+
+### 3. Resource & Connection Monitoring
+**Action:** 
+1. Go to the **Reports** tab -> **Database**.
+2. Monitor the active **Connections** against the max pool size. If the pool frequently hits maximum limits, consider increasing `DB_CONNECTION_LIMIT` locally or upgrading the instance size in Supabase.
+3. Keep an eye on memory and CPU to avoid unexpected OOM kills under load.

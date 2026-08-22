@@ -1,25 +1,23 @@
-# Sentry Verification Runbook
+# Sentry Configuration and Verification
 
-This document details the secure procedure for verifying that Sentry is actively ingesting live production errors from the Vercel Edge.
+Sentry has been integrated into the `campusconnectco.in` Next.js application using `@sentry/nextjs`.
 
-## 1. Triggering a Test Event
-To prevent malicious actors from artificially inflating your Sentry quota or triggering false-positive incidents, a secure test route is required.
+## Codebase Configuration
+The following items are handled programmatically in `sentry.client.config.ts`, `sentry.server.config.ts`, and `sentry.edge.config.ts`:
+- **DSN Configuration:** Automatically pulls from `SENTRY_DSN` or `NEXT_PUBLIC_SENTRY_DSN`.
+- **Environment Tagging:** Explicitly sets the `environment` context to `process.env.NODE_ENV`.
+- **Sensitive Data Scrubbing:** `beforeSend` securely strips `authorization` and `cookie` headers from all events.
+- **Session Replay (Client):** Masking is enabled for text and media to prevent PII leakage.
+- **Source Maps & Releases:** Handled seamlessly by the Sentry webpack plugin configured in `next.config.ts`.
 
-Run the following command against the production endpoint:
+## Manual Verification (EXTERNAL)
+Because there are no Sentry CLI credentials available, we cannot query the ingested events. 
 
-```bash
-curl -X GET "https://www.campusconnectco.in/api/test-error?token=YOUR_CRON_SECRET"
-```
-
-## 2. Validation
-- Open the Sentry Dashboard.
-- Navigate to the **Issues** tab.
-- Search for `Error: Sentry Live Ingestion Verification Test`.
-- Ensure the `environment` tag is strictly `production`.
-- Ensure the `release` tag accurately reflects `v1.0.0-production`.
-
-## 3. PII & Source Map Hygiene
-While viewing the error, verify:
-- No environment variables (e.g., `DATABASE_URL`) are visible in the context.
-- User IP addresses are scrubbed (if configured).
-- The stack trace points correctly to the TypeScript file (`src/app/api/test-error/route.ts`), proving that Vercel uploaded the source maps correctly during the build phase.
+To verify Sentry ingestion manually:
+1. Ensure the `SENTRY_DSN` and `SENTRY_AUTH_TOKEN` environment variables are correctly populated in Vercel.
+2. Trigger the test error endpoint:
+   ```bash
+   curl -sI https://www.campusconnectco.in/api/test-error
+   ```
+3. Open the Sentry Dashboard -> CampusConnect Project -> Issues.
+4. Verify the event arrived, the environment says `production`, and no `authorization`/`cookie` headers are visible in the payload.
