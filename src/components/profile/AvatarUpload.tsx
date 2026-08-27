@@ -73,7 +73,7 @@ export function AvatarUpload({ initialImage, userId }: AvatarUploadProps) {
 
   return (
     <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-      <div className="w-24 h-24 rounded-full bg-linear-to-br from-[#1E293B] to-[#0F172A] border-[#121826] overflow-hidden flex items-center justify-center relative shadow-2xl transition-all group-hover:scale-105 group-hover:border-indigo-500/50">
+      <div className="w-24 h-24 rounded-full bg-surface-2 border border-border overflow-hidden flex items-center justify-center relative shadow-card transition-all group-hover:scale-105 group-hover:border-primary/50">
         {image ? (
           <Image src={image} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" unoptimized />
         ) : (
@@ -104,7 +104,7 @@ export function AvatarUpload({ initialImage, userId }: AvatarUploadProps) {
 
       {/* Status badge */}
       {saved && !uploading && (
-        <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-foreground p-1 rounded-full shadow-lg border-[#121826] animate-bounce">
+        <div className="absolute -bottom-1 -right-1 bg-success text-success-foreground p-1 rounded-full shadow-lg border-border animate-bounce">
           <Check size={12} strokeWidth={4} />
         </div>
       )}

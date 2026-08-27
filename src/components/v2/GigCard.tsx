@@ -51,7 +51,7 @@ export const GigCard = ({
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={cn(
-        "group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface/80 p-6 backdrop-blur-xl transition-all duration-300 hover:shadow-card-hover shadow-card border",
+        "group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface p-6 transition-all duration-300 hover:shadow-card-hover hover:border-primary/40 shadow-card border",
         isFeatured ? "border-primary/30" : "border-border",
         className
       )}
@@ -76,7 +76,7 @@ export const GigCard = ({
       )}
 
       {collegeId && (
-        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-400 backdrop-blur-md flex items-center gap-1">
+        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
           <GraduationCap size={12} /> Campus Opportunity
         </div>
       )}
@@ -93,7 +93,7 @@ export const GigCard = ({
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold tracking-tight text-foreground line-clamp-1">
+            <h3 className="text-lg font-heading font-semibold tracking-wide text-foreground line-clamp-1">
               {title}
             </h3>
             <p className="text-sm font-medium text-muted-foreground">
@@ -130,7 +130,7 @@ export const GigCard = ({
         {tags.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-text-2 -subtle"
+            className="inline-flex items-center rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-text-2"
           >
             {tag}
           </span>

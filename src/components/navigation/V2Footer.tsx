@@ -6,14 +6,14 @@ import React from "react"
 import { Reveal } from "@/components/ui/motion/Reveal"
 
 const FooterLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-  <Link href={href} className="text-text-2 hover:text-white transition-colors">
+  <Link href={href} className="text-text-2 hover:text-foreground transition-colors">
     {children}
   </Link>
 )
 
 export function V2Footer() {
   return (
-    <footer className="pt-24 pb-8 relative overflow-hidden bg-bg border-t border-white/5">
+    <footer className="pt-24 pb-8 relative overflow-hidden bg-bg border-t border-border">
       
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
         
@@ -21,11 +21,11 @@ export function V2Footer() {
           
           <div className="lg:col-span-1">
             <Reveal>
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-bold text-lg">
-                  C
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm shadow-glow-primary">
+                  CC
                 </div>
-                <span className="font-semibold text-lg tracking-tight">CampusConnect</span>
+                <span className="font-heading font-semibold text-lg tracking-wide">CampusConnect</span>
               </div>
               <p className="text-text-2 mb-6 max-w-xs">
                 The premium network for ambitious students to find internships and freelance gigs.
@@ -72,20 +72,20 @@ export function V2Footer() {
         </div>
 
         <Reveal delay={0.4}>
-          <div className="w-full flex justify-center py-12 border-t border-white/5">
-            <h2 className="text-[12vw] md:text-[14vw] font-extrabold tracking-tighter text-white/5 select-none text-center leading-none">
+          <div className="w-full flex justify-center py-12 border-t border-border">
+            <h2 className="text-[12vw] md:text-[14vw] font-extrabold tracking-tighter text-black/5 select-none text-center leading-none">
               CAMPUSCONNECT
             </h2>
           </div>
         </Reveal>
         
         <Reveal delay={0.5}>
-          <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/5 text-sm text-text-3">
+          <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-border text-sm text-text-3">
             <p>© {new Date().getFullYear()} CampusConnect. All rights reserved.</p>
             <div className="flex items-center gap-4 mt-4 md:mt-0">
-              <a href="https://twitter.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Twitter</a>
-              <a href="https://linkedin.com/company/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
-              <a href="https://instagram.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
+              <a href="https://twitter.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Twitter</a>
+              <a href="https://linkedin.com/company/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">LinkedIn</a>
+              <a href="https://instagram.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Instagram</a>
             </div>
           </div>
         </Reveal>

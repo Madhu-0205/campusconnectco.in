@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Bricolage_Grotesque, DM_Sans, JetBrains_Mono } from "next/font/google"
+import { Inter, Space_Mono } from "next/font/google"
 import { headers } from "next/headers"
 import { Toaster } from "react-hot-toast"
 
@@ -15,25 +15,17 @@ import { CommandCenter } from "@/components/v2/CommandCenter"
 
 import "./globals.css"
 
-
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 })
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  display: "swap",
-})
-
-const jetbrainsMono = JetBrains_Mono({
+const spaceMono = Space_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "600"],
+  weight: ["400", "700"],
   display: "swap",
 })
 
@@ -119,12 +111,12 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
-      <body className={`${bricolage.variable} ${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased bg-[#050508] text-white selection:bg-[#7c3aed]/30 selection:text-white relative`}>
+      <body className={`${inter.variable} ${spaceMono.variable} font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-black relative`}>
         <GAScripts nonce={nonce} />
         <OrganizationSchema nonce={nonce} />
         <WebSiteSchema nonce={nonce} />
         <AggregateRatingSchema nonce={nonce} />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem nonce={nonce}>
+        <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" nonce={nonce}>
           <Toaster position="top-right" reverseOrder={false} />
           <ToastProvider>
             <ClientOnlyProviders>

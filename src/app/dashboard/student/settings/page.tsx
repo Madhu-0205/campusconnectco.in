@@ -118,62 +118,62 @@ export default function SettingsPage() {
                     <span className="w-8 h-1 bg-primary rounded-full" />
                     <span className="font-bold text-primary uppercase tracking-widest">Preferences</span>
                 </div>
-                <h2 className="font-bold text-slate-900">Account Settings</h2>
-                <p className="text-slate-500 font-medium">Manage your professional identity and preferences.</p>
+                <h2 className="font-bold text-foreground">Account Settings</h2>
+                <p className="text-muted-foreground font-medium">Manage your professional identity and preferences.</p>
             </div>
 
             <div className="grid gap-6">
-                <Card className="p-4 md:p-8 border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl">
+                <Card className="p-4 md:p-8 border-border bg-surface shadow-card rounded-3xl">
                     <div className="flex items-center gap-4 mb-8">
-                        <div className="p-3 bg-blue-100/50 text-blue-600 rounded-2xl">
+                        <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl">
                             <User size={24} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-slate-800 tracking-tight">Profile Identity</h3>
-                            <p className="text-slate-500 font-medium uppercase tracking-wider">Publicly visible information</p>
+                            <h3 className="font-bold text-foreground tracking-tight">Profile Identity</h3>
+                            <p className="text-muted-foreground font-medium uppercase tracking-wider">Publicly visible information</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                         <div className="space-y-3">
-                            <label className="font-black text-slate-700 uppercase tracking-widest">Display Name</label>
+                            <label className="font-black text-muted-foreground uppercase tracking-widest">Display Name</label>
                             <input
                                 type="text"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full px-5 py-4 rounded-2xl border border-white/5 bg-white/2/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-slate-900"
+                                className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:bg-surface-2 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-foreground"
                                 placeholder="Your full name"
                             />
                         </div>
                         <div className="space-y-3">
-                            <label className="font-black text-slate-700 uppercase tracking-widest">Email Address</label>
+                            <label className="font-black text-muted-foreground uppercase tracking-widest">Email Address</label>
                             <input
                                 type="email"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="w-full px-5 py-4 rounded-2xl border border-white/5 bg-white/2/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-slate-900"
+                                className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:bg-surface-2 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-foreground"
                                 placeholder="your@email.com"
                             />
                         </div>
                     </div>
                 </Card>
 
-                <Card className="p-4 md:p-8 border-none bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl">
+                <Card className="p-4 md:p-8 border-border bg-surface shadow-card rounded-3xl">
                     <div className="flex items-center gap-4 mb-8">
-                        <div className="p-3 bg-purple-100/50 text-purple-600 rounded-2xl">
+                        <div className="p-3 bg-purple-500/10 text-purple-500 rounded-2xl">
                             <Bell size={24} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-slate-800 tracking-tight">Notification Channels</h3>
-                            <p className="text-slate-500 font-medium uppercase tracking-wider">How we reach you</p>
+                            <h3 className="font-bold text-foreground tracking-tight">Notification Channels</h3>
+                            <p className="text-muted-foreground font-medium uppercase tracking-wider">How we reach you</p>
                         </div>
                     </div>
 
                     <div className="space-y-6">
-                        <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-white/2 transition-colors">
+                        <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-accent transition-colors">
                             <div className="space-y-1">
-                                <p className="font-bold text-slate-900">Email Notifications</p>
-                                <p className="text-slate-500 font-medium">Receive alerts about new gigs and messages via email.</p>
+                                <p className="font-bold text-foreground">Email Notifications</p>
+                                <p className="text-muted-foreground font-medium">Receive alerts about new gigs and messages via email.</p>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -182,14 +182,14 @@ export default function SettingsPage() {
                                     checked={formData.emailNotifications}
                                     onChange={(e) => setFormData({ ...formData, emailNotifications: e.target.checked })}
                                 />
-                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                <div className="w-11 h-6 bg-surface-2 border border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.75 after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-white/2 transition-colors">
+                        <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-accent transition-colors">
                             <div className="space-y-1">
-                                <p className="font-bold text-slate-900">Desktop Alerts</p>
-                                <p className="text-slate-500 font-medium">Show browser notifications for real-time dashboard updates.</p>
+                                <p className="font-bold text-foreground">Desktop Alerts</p>
+                                <p className="text-muted-foreground font-medium">Show browser notifications for real-time dashboard updates.</p>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -198,7 +198,7 @@ export default function SettingsPage() {
                                     checked={formData.desktopAlerts}
                                     onChange={(e) => setFormData({ ...formData, desktopAlerts: e.target.checked })}
                                 />
-                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                <div className="w-11 h-6 bg-surface-2 border border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.75 after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
                     </div>
@@ -229,7 +229,7 @@ export default function SettingsPage() {
                 
                 {/* Danger Zone */}
                 <div className="pt-8">
-                    <Card className="p-4 md:p-8 border-none bg-red-50/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl">
+                    <Card className="p-4 md:p-8 border-destructive/20 bg-destructive/5 shadow-card rounded-3xl">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div>
                                 <h3 className="font-bold text-red-600 tracking-tight text-xl mb-1">Danger Zone</h3>

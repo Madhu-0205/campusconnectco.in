@@ -1,13 +1,12 @@
 "use client"
 
+import { Search, Navigation, MapPin, Map as MapIcon } from "lucide-react"
 import * as maplibregl from "maplibre-gl"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState, useCallback } from "react"
 
 import "maplibre-gl/dist/maplibre-gl.css"
 import { reverseGeocode, geocodeLocation, GeoLocation } from "@/lib/maps/geocoding"
 import { MAP_CONFIG } from "@/lib/maps/map-config"
-
-import { Search, Navigation, MapPin, Map as MapIcon } from "lucide-react"
 
 interface LocationMapProps {
   initialLat?: number
@@ -26,7 +25,7 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
   const [error, setError] = useState("")
   const [mapError, setMapError] = useState(false)
 
-  const updateLocation = async (lat: number, lng: number) => {
+  const updateLocation = useCallback(async (lat: number, lng: number) => {
     setIsLoading(true)
     setError("")
     const location = await reverseGeocode(lat, lng)
@@ -38,7 +37,7 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
       onGeocodeFailed?.()
     }
     setIsLoading(false)
-  }
+  }, [onLocationSelect, onGeocodeFailed])
 
   useEffect(() => {
     if (map.current || !mapContainer.current || mapError) return
@@ -46,7 +45,7 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
     try {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
-        style: MAP_CONFIG.STYLE_URL_DARK,
+        style: MAP_CONFIG.STYLE_URL_LIGHT,
         center: [initialLng, initialLat],
         zoom: MAP_CONFIG.DEFAULT_ZOOM,
         attributionControl: false,
@@ -63,7 +62,7 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
 
       marker.current = new maplibregl.Marker({
         draggable: true,
-        color: "#6366f1"
+        color: "#1fa971" // Vivid green primary
       })
         .setLngLat([initialLng, initialLat])
         .addTo(map.current)
@@ -94,7 +93,7 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
       map.current?.remove()
       map.current = null
     }
-  }, [initialLat, initialLng, mapError])
+  }, [initialLat, initialLng, mapError, onGeocodeFailed, updateLocation])
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -150,13 +149,13 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search for your city or area..."
-            className="w-full bg-[#1A1A24] border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-white placeholder:text-muted-foreground"
+            className="w-full bg-surface border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-muted-foreground"
           />
         </div>
         <button
           type="button"
           onClick={useCurrentLocation}
-          className="px-4 py-3 bg-[#1A1A24] hover:bg-white/10 border border-white/10 rounded-xl transition-all text-indigo-400 flex items-center justify-center shrink-0"
+          className="px-4 py-3 bg-surface hover:bg-surface-2 border border-border rounded-xl transition-all text-primary flex items-center justify-center shrink-0"
           title="Use current location"
         >
           <Navigation className="w-5 h-5" />
@@ -165,18 +164,18 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
 
       {error && <p className="text-red-400 text-sm font-medium">{error}</p>}
 
-      <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+      <div className="relative w-full h-100 rounded-2xl overflow-hidden border border-border shadow-2xl">
         {mapError ? (
-          <div className="absolute inset-0 bg-[#1A1A24] flex flex-col items-center justify-center text-center p-6 border border-dashed border-white/10 rounded-2xl gap-3">
+          <div className="absolute inset-0 bg-surface flex flex-col items-center justify-center text-center p-6 border border-dashed border-border rounded-2xl gap-3">
             <MapIcon className="w-12 h-12 text-muted-foreground/50" />
-            <h3 className="text-sm font-medium text-white">Map Preview Unavailable</h3>
-            <p className="text-xs text-muted-foreground max-w-[260px]">
+            <h3 className="text-sm font-medium text-foreground">Map Preview Unavailable</h3>
+            <p className="text-xs text-muted-foreground max-w-65">
               The interactive map couldn&apos;t load. Use the search bar above or detect your location via GPS below.
             </p>
             <button
               type="button"
               onClick={useCurrentLocation}
-              className="mt-1 flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white text-xs font-bold transition-all"
+              className="mt-1 flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-light rounded-xl text-primary-foreground text-xs font-bold transition-all"
             >
               <Navigation className="w-3.5 h-3.5" /> Detect via GPS
             </button>
@@ -186,13 +185,13 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
             <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
             
             {isLoading && (
-              <div className="absolute inset-0 bg-[#0A0A0F]/50 backdrop-blur-sm flex items-center justify-center z-10">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
               </div>
             )}
             
-            <div className="absolute top-4 left-4 z-10 bg-[#0A0A0F]/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-medium text-white flex items-center gap-2">
-              <MapPin size={14} className="text-indigo-400" />
+            <div className="absolute top-4 left-4 z-10 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-foreground flex items-center gap-2">
+              <MapPin size={14} className="text-primary" />
               Drag marker to adjust
             </div>
           </>

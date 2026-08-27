@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const { execSync } = require('child_process');
-const https = require('https');
 const fs = require('fs');
+const https = require('https');
 const path = require('path');
 
 console.log('🚀 Initiating CampusConnect Advanced Production Readiness Scan...\n');

@@ -1,8 +1,9 @@
 
+import { NextResponse } from "next/server";
+
 import { streamChatResponse, ChatContext } from '@/lib/ai/chatAssistant';
 import { aiLimiter } from '@/lib/rate-limit';
 import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from "next/server";
 
 export const runtime = 'nodejs';
 

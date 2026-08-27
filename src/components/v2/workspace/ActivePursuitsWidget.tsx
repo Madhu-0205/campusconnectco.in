@@ -33,7 +33,7 @@ export const ActivePursuitsWidget = ({ pursuits }: ActivePursuitsWidgetProps) =>
         accessibilityNotes: "List format for pursuits"
       }}
     >
-      <div className="rounded-2xl bg-surface-2 p-6 flex flex-col h-full shadow-sm hover:border-primary/30 transition-colors">
+      <div className="rounded-2xl bg-surface border border-border p-6 flex flex-col h-full shadow-card hover:border-primary/30 transition-colors">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-black text-foreground flex items-center gap-2">
             <Activity size={18} className="text-primary" /> Active Pursuits
@@ -48,9 +48,9 @@ export const ActivePursuitsWidget = ({ pursuits }: ActivePursuitsWidgetProps) =>
             pursuits.map((pursuit) => (
               <HoverMagnetic key={pursuit.id} strength={0.05}>
                 <Link href={pursuit.href} className="block">
-                  <div className="p-4 rounded-xl bg-background hover:border-primary/50 transition-colors group">
+                  <div className="p-4 rounded-xl bg-surface-2 border border-transparent hover:border-primary/50 transition-colors group">
                     <div className="flex justify-between items-start mb-2">
-                      <div className="w-10 h-10 rounded-lg bg-surface-2 flex items-center justify-center font-black text-foreground shadow-inner">
+                      <div className="w-10 h-10 rounded-lg bg-surface border border-border flex items-center justify-center font-black text-foreground shadow-sm">
                         {pursuit.company.charAt(0)}
                       </div>
                       <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
@@ -77,7 +77,7 @@ export const ActivePursuitsWidget = ({ pursuits }: ActivePursuitsWidgetProps) =>
               </HoverMagnetic>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center flex-1 py-8 text-center bg-background rounded-xl border border-dashed border-border">
+            <div className="flex flex-col items-center justify-center flex-1 py-8 text-center bg-surface-2 rounded-xl border border-dashed border-border">
               <Activity size={24} className="text-muted-foreground/50 mb-2" />
               <p className="text-sm font-bold text-muted-foreground">No active pursuits</p>
               <p className="text-xs text-muted-foreground/70 mt-1">Start applying to see them here.</p>

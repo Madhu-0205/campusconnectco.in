@@ -21,7 +21,7 @@ export const QuickActionsWidget = () => {
         accessibilityNotes: "Buttons use visible focus rings"
       }}
     >
-      <div className="rounded-2xl bg-surface-2 p-6 flex flex-col h-full shadow-sm hover:border-primary/30 transition-colors">
+      <div className="rounded-2xl bg-surface border border-border p-6 flex flex-col h-full shadow-card hover:border-primary/30 transition-colors">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-black text-foreground flex items-center gap-2">
              Quick Actions
@@ -31,7 +31,7 @@ export const QuickActionsWidget = () => {
         <div className="flex-1 flex flex-col gap-3 justify-center">
           <HoverMagnetic strength={0.03}>
             <Link href="/dashboard/student/resume" className="block">
-              <Button variant="outline" className="w-full justify-start h-12 bg-background border-border hover:bg-accent hover:border-primary/30 rounded-xl font-bold">
+              <Button variant="outline" className="w-full justify-start h-12 bg-surface-2 border-border hover:bg-accent hover:border-primary/30 rounded-xl font-bold">
                 <Upload size={16} className="mr-3 text-muted-foreground" /> Upload Resume
               </Button>
             </Link>
@@ -39,7 +39,7 @@ export const QuickActionsWidget = () => {
           
           <HoverMagnetic strength={0.03}>
             <Link href="/dashboard/student/smartmatch" className="block">
-              <Button variant="outline" className="w-full justify-start h-12 bg-background border-border hover:bg-accent hover:border-primary/30 rounded-xl font-bold">
+              <Button variant="outline" className="w-full justify-start h-12 bg-surface-2 border-border hover:bg-accent hover:border-primary/30 rounded-xl font-bold">
                 <Sparkles size={16} className="mr-3 text-primary" /> Open AI Copilot
               </Button>
             </Link>
@@ -47,7 +47,7 @@ export const QuickActionsWidget = () => {
 
           <HoverMagnetic strength={0.03}>
             <Link href="/dashboard/student/profile" className="block">
-              <Button variant="outline" className="w-full justify-start h-12 bg-background border-border hover:bg-accent hover:border-primary/30 rounded-xl font-bold">
+              <Button variant="outline" className="w-full justify-start h-12 bg-surface-2 border-border hover:bg-accent hover:border-primary/30 rounded-xl font-bold">
                 <UserCircle size={16} className="mr-3 text-muted-foreground" /> Update Profile
               </Button>
             </Link>

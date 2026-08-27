@@ -37,13 +37,13 @@ export default function StudentProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0F1E] space-y-10 p-10 max-w-7xl mx-auto">
-        <Skeleton className="h-24 w-full rounded-2xl bg-white/5" />
+      <div className="min-h-screen bg-background space-y-10 p-10 max-w-7xl mx-auto">
+        <Skeleton className="h-24 w-full rounded-2xl bg-surface-2 border border-border" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
-            <Skeleton className="lg:col-span-2 h-[600px] rounded-3xl bg-white/5" />
+            <Skeleton className="lg:col-span-2 h-150 rounded-3xl bg-surface-2 border border-border" />
             <div className="space-y-6">
-                <Skeleton className="h-64 rounded-3xl bg-white/5" />
-                <Skeleton className="h-96 rounded-3xl bg-white/5" />
+                <Skeleton className="h-64 rounded-3xl bg-surface-2 border border-border" />
+                <Skeleton className="h-96 rounded-3xl bg-surface-2 border border-border" />
             </div>
         </div>
       </div>
@@ -52,18 +52,18 @@ export default function StudentProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-[#0A0F1E] flex flex-col items-center justify-center p-6">
-        <div className="bg-[#111116] border border-red-500/20 rounded-3xl p-10 text-center max-w-lg shadow-2xl">
-          <ShieldCheck size={40} className="mx-auto text-red-400 mb-4" />
-          <h2 className="font-bold text-white mb-2">Profile Missing</h2>
-          <p className="text-slate-400">We couldn&apos;t load your profile data. Please refresh or contact support.</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <div className="bg-surface border border-destructive/20 rounded-3xl p-10 text-center max-w-lg shadow-card">
+          <ShieldCheck size={40} className="mx-auto text-destructive mb-4" />
+          <h2 className="font-bold text-foreground mb-2">Profile Missing</h2>
+          <p className="text-muted-foreground">We couldn&apos;t load your profile data. Please refresh or contact support.</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0F1E]">
+    <div className="min-h-screen bg-background">
       <ProfileEditor profile={profile} />
     </div>
   )

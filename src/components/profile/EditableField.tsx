@@ -83,14 +83,14 @@ export function EditableField({
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={placeholder}
                 rows={3}
-                className="w-full bg-[#111116] border border-border hover:border-indigo-500/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm leading-relaxed"
+                className="w-full bg-background border border-border hover:border-primary/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm leading-relaxed"
                 autoFocus
               />
             ) : type === "select" ? (
               <select
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="w-full bg-[#111116] border border-border hover:border-indigo-500/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm"
+                className="w-full bg-background border border-border hover:border-primary/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm"
                 autoFocus
               >
                 <option value="">Select {label}</option>
@@ -106,7 +106,7 @@ export function EditableField({
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-[#111116] border border-border hover:border-indigo-500/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm"
+                className="w-full bg-background border border-border hover:border-primary/50 focus:border-foreground focus:outline-none rounded-xl px-4 py-3 transition-all text-sm"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave()
@@ -136,7 +136,7 @@ export function EditableField({
         ) : (
           <div 
             onClick={() => setIsEditing(true)}
-            className="w-full bg-white/2 border border-transparent hover:border-white/5 hover:bg-white/4 rounded-xl px-4 py-3 transition-all cursor-pointer min-h-11.5 flex items-center"
+            className="w-full bg-surface-2 border border-border hover:border-primary/50 hover:bg-accent rounded-xl px-4 py-3 transition-all cursor-pointer min-h-11.5 flex items-center"
           >
             <p className={`text-sm ${!value ? 'text-muted-foreground italic' : 'text-foreground'}`}>
               {value || `No ${label.toLowerCase()} added yet.`}

@@ -210,7 +210,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                 {/* Back Button */}
                 <Link
                     href="/get-gig"
-                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-violet-500 transition-colors mb-6"
+                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6"
                 >
                     <ArrowLeft size={20} />
                     Back to Gigs
@@ -223,7 +223,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                         <Card className="p-8">
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex-1">
-                                    <h1 className="font-black text-foreground mb-2">
+                                    <h1 className="font-heading text-3xl md:text-4xl font-black text-foreground mb-2 tracking-tight">
                                         {gig.title}
                                     </h1>
                                     <div className="flex flex-wrap gap-4 text-muted-foreground">
@@ -246,9 +246,9 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
 
                             {/* Key Info */}
                             <div className="grid sm:grid-cols-2 gap-4 mb-6">
-                                <div className="flex items-center gap-3 p-4 bg-violet-600/5 dark:bg-violet-600/10 rounded-xl">
-                                    <div className="p-2 bg-violet-600/20 rounded-lg">
-                                        <DollarSign className="text-violet-500" size={24} />
+                                <div className="flex items-center gap-3 p-4 bg-primary/5 dark:bg-primary/10 rounded-xl">
+                                    <div className="p-2 bg-primary/20 rounded-lg">
+                                        <DollarSign className="text-primary" size={24} />
                                     </div>
                                     <div>
                                         <p className="text-muted-foreground">Budget</p>
@@ -259,9 +259,9 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                 </div>
 
                                 {gig.deadline && (
-                                    <div className="flex items-center gap-3 p-4 bg-violet-500/5 dark:bg-violet-500/10 rounded-xl">
-                                        <div className="p-2 bg-violet-500/10 dark:bg-violet-500/20 rounded-lg">
-                                            <Clock className="text-violet-600 dark:text-violet-400" size={24} />
+                                    <div className="flex items-center gap-3 p-4 bg-primary/5 dark:bg-primary/10 rounded-xl">
+                                        <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-lg">
+                                            <Clock className="text-primary dark:text-primary-light" size={24} />
                                         </div>
                                         <div>
                                             <p className="text-muted-foreground">Deadline</p>
@@ -411,7 +411,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                         >
                                             <div className="flex items-start justify-between mb-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-full bg-violet-600 text-foreground font-bold flex items-center justify-center">
+                                                    <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center">
                                                         {application.applicant.name?.slice(0, 2).toUpperCase() ||
                                                             application.applicant.email.slice(0, 2).toUpperCase()}
                                                     </div>
@@ -497,7 +497,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                 Posted By
                             </h3>
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="h-12 w-12 rounded-full bg-violet-600 font-bold flex items-center justify-center text-lg">
+                                <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-lg shadow-glow-primary">
                                     {gig.poster.name?.slice(0, 2).toUpperCase() ||
                                         gig.poster.email.slice(0, 2).toUpperCase()}
                                 </div>
@@ -547,7 +547,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                         href={gig.poster.portfolio}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 text-violet-500 hover:underline"
+                                        className="flex items-center gap-2 text-primary hover:underline"
                                     >
                                         <ExternalLink size={16} />
                                         Portfolio
@@ -558,7 +558,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                         href={gig.poster.linkedin}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 text-violet-500 hover:underline"
+                                        className="flex items-center gap-2 text-primary hover:underline"
                                     >
                                         <Linkedin size={16} />
                                         LinkedIn
@@ -569,7 +569,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                                         href={gig.poster.github}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 text-violet-500 hover:underline"
+                                        className="flex items-center gap-2 text-primary hover:underline"
                                     >
                                         <Github size={16} />
                                         GitHub
@@ -633,7 +633,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                         {(gig.latitude || gig.poster.latitude) && (
                             <Card className="p-6">
                                 <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
-                                    <MapPin size={20} className="text-violet-500" />
+                                    <MapPin size={20} className="text-primary" />
                                     Location
                                 </h3>
                                 <p className="text-muted-foreground">

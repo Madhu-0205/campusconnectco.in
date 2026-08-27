@@ -15,7 +15,6 @@ import { useState, useEffect, useCallback } from 'react'
 
 import NotificationsPopover from '@/components/NotificationsPopover'
 import { SignOutButton } from '@/components/SignOutButton'
-import { ThemeToggle } from '@/components/ThemeToggle'
 import { Button } from '@/components/ui/Button'
 import { pressScale, springSnappy } from '@/lib/motion'
 import { createClient } from '@/lib/supabase/client'
@@ -150,19 +149,19 @@ export function NavbarClient({
     <>
       <nav
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 h-14 border-b transition-colors duration-300',
+          'fixed top-0 left-0 right-0 z-50 h-16 border-b transition-all duration-300',
           isScrolled
-            ? 'bg-background/80 backdrop-blur-md border-border'
+            ? 'bg-background/70 backdrop-blur-xl border-border shadow-card'
             : 'bg-transparent border-transparent'
         )}
       >
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between gap-6">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md">
-            <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center text-background font-bold text-xs">
+          <Link href="/" className="flex items-center gap-3 shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md">
+            <div className="w-7 h-7 rounded bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs shadow-glow-primary transition-transform group-hover:scale-105 duration-300">
               CC
             </div>
-            <span className="text-sm font-semibold hidden sm:block tracking-tight text-foreground">
+            <span className="text-sm font-heading font-semibold hidden sm:block tracking-wide text-foreground">
               CampusConnect
             </span>
           </Link>
@@ -179,8 +178,8 @@ export function NavbarClient({
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'relative flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
-                    isActive ? 'text-foreground bg-accent' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
+                    'relative flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200',
+                    isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-accent',
                     link.highlight && 'text-primary'
                   )}
                 >
@@ -211,10 +210,6 @@ export function NavbarClient({
               isOpen={isNotificationsOpen}
               onOpenChange={setIsNotificationsOpen}
             />
-
-            <div className="hidden sm:block">
-              <ThemeToggle />
-            </div>
 
             {(userRole === 'CLIENT' || userRole === 'STARTUP') && mounted && userId && (
               <Button asChild size="sm" className="hidden xl:flex">

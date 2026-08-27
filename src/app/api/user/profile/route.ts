@@ -167,6 +167,8 @@ export async function POST(req: Request) {
         const autoVerify = finalRole === "STUDENT" && isAcademicEmail;
 
         // Upsert — safe to call even if row already exists (e.g. from auth trigger)
+        // We'll check if the user exists first so we only send the email on real creation
+        const existingUser = await prisma.user.findUnique({ where: { id } });
         const user = await prisma.user.upsert({
             where: { id },
             update: {
@@ -188,6 +190,20 @@ export async function POST(req: Request) {
                 marketingConsentAt: marketingConsent ? new Date() : null,
             },
         });
+
+        if (!existingUser && user.email) {
+            import("@/lib/email/resend").then(async ({ sendTransactionalEmail }) => {
+                const { WelcomeEmail } = await import("@/lib/email/templates/WelcomeEmail");
+                await sendTransactionalEmail({
+                    to: user.email,
+                    subject: "Welcome to CampusConnect! 🎉",
+                    react: WelcomeEmail({
+                        name: user.name || "there",
+                        role: user.role
+                    }) as any
+                });
+            }).catch(console.error);
+        }
 
         return NextResponse.json(user, { status: 201 });
     } catch (error) {

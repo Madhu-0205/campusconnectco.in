@@ -42,7 +42,7 @@ export const IdentityCard = ({ profile }: IdentityCardProps) => {
       </div>
 
       <div className="flex items-center gap-2 mb-1 justify-center flex-wrap">
-        <h1 className="text-2xl font-black text-foreground">{profile.name}</h1>
+        <h1 className="text-2xl font-heading font-black text-foreground">{profile.name}</h1>
         {profile.isVerified && <VerificationBadge isVerified size="sm" />}
       </div>
       

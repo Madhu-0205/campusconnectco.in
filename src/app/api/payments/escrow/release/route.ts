@@ -20,7 +20,11 @@ export async function POST(req: NextRequest) {
 
         // Validate Escrow status
         const escrow = await prisma.escrow.findFirst({
-            where: { gigId, clientId: user.id, status: "LOCKED" }
+            where: { gigId, clientId: user.id, status: "LOCKED" },
+            include: {
+                worker: { select: { name: true, email: true } },
+                gig: { select: { title: true } }
+            }
         });
 
         if (!escrow) {
@@ -83,6 +87,23 @@ export async function POST(req: NextRequest) {
             logger.error("Escrow release transaction failed", txError, { gigId, clientId: user.id });
             throw txError;
         });
+
+        // Fire-and-forget email notification
+        if (escrow.worker?.email) {
+            import("@/lib/email/resend").then(async ({ sendTransactionalEmail }) => {
+                const { PaymentStatusEmail } = await import("@/lib/email/templates/PaymentStatusEmail");
+                await sendTransactionalEmail({
+                    to: escrow.worker.email!,
+                    subject: `Payment Released: ${escrow.gig.title}`,
+                    react: PaymentStatusEmail({
+                        recipientName: escrow.worker.name || "Freelancer",
+                        gigTitle: escrow.gig.title,
+                        amount: Number(escrow.payout),
+                        status: "RELEASED"
+                    }) as any
+                });
+            }).catch(console.error);
+        }
 
         return NextResponse.json({ success: true, message: "Funds released to worker successfully." });
     } catch (error: any) {

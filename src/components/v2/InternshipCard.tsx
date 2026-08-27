@@ -51,7 +51,7 @@ export const InternshipCard = ({
       whileHover={{ y: -4, scale: 1.01 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={cn(
-        "group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface/80 p-6 backdrop-blur-xl transition-all duration-300 hover:shadow-card-hover shadow-card border",
+        "group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface p-6 transition-all duration-300 hover:shadow-card-hover hover:border-primary/40 shadow-card border",
         isUrgent ? "border-error/30" : "border-border",
         className
       )}
@@ -70,29 +70,31 @@ export const InternshipCard = ({
         }}
       />
       {isUrgent ? (
-        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-error/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-error backdrop-blur-md">
+        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-error/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-error">
           Urgent Hiring
         </div>
       ) : collegeId ? (
-        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-400 backdrop-blur-md flex items-center gap-1">
+        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
           <GraduationCap size={12} /> Campus Opportunity
         </div>
       ) : null}
 
       <div className="flex gap-5">
-        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm overflow-hidden p-2">
+        <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-surface border border-border shadow-sm overflow-hidden p-2">
           {logoUrl ? (
             <Image src={logoUrl} alt={company} fill className="object-contain p-2" />
           ) : (
-            <span className="text-2xl font-bold text-black">
+            <span className="text-2xl font-bold text-foreground">
               {company.charAt(0)}
             </span>
           )}
         </div>
         <div className="flex w-full flex-col justify-center">
-          <h3 className="text-xl font-bold tracking-tight text-foreground line-clamp-1 pr-12">
-            {role}
-          </h3>
+          <div>
+            <h3 className="text-lg font-heading font-semibold tracking-wide text-foreground line-clamp-1">
+              {role}
+            </h3>
+          </div>
           <p className="text-sm font-medium text-muted-foreground mt-0.5">
             {company}
           </p>
@@ -119,7 +121,7 @@ export const InternshipCard = ({
           {tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center rounded-md bg-surface-2 px-2 py-1 text-xs font-medium text-text-2 -subtle"
+              className="inline-flex items-center rounded-md bg-surface-2 px-2 py-1 text-xs font-medium text-text-2"
             >
               {tag}
             </span>

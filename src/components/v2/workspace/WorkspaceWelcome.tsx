@@ -24,7 +24,7 @@ export const WorkspaceWelcome = ({ userName, focusText, careerScore }: Workspace
         accessibilityNotes: "H1 header used for document outline"
       }}
     >
-      <div className="relative overflow-hidden rounded-3xl bg-surface-2 p-6 md:p-8 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 h-full w-full col-span-1 md:col-span-2 lg:col-span-3">
+      <div className="relative overflow-hidden rounded-3xl bg-surface p-6 md:p-8 shadow-card border border-border flex flex-col md:flex-row md:items-center justify-between gap-6 h-full w-full col-span-1 md:col-span-2 lg:col-span-3">
         {/* Ambient Glow */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
         
@@ -32,12 +32,12 @@ export const WorkspaceWelcome = ({ userName, focusText, careerScore }: Workspace
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
             <Sparkles size={14} className="text-primary" /> Today&apos;s Focus: {focusText}
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-heading font-black text-foreground tracking-tight">
             Welcome back, <span className="text-primary">{userName}</span>
           </h1>
         </div>
 
-        <div className="relative z-10 flex items-center gap-4 bg-background rounded-2xl p-4 shadow-sm shrink-0">
+        <div className="relative z-10 flex items-center gap-4 bg-surface-2 border border-border rounded-2xl p-4 shadow-sm shrink-0">
           <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/20 text-primary">
             <Trophy size={24} />
           </div>

@@ -68,7 +68,7 @@ export function SkillsEditor({ initialSkills = [] }: SkillsEditorProps) {
         {skills.map((skill) => (
           <div
             key={skill}
-            className="flex items-center gap-2 px-3 py-1.5 bg-[#111116] border border-border hover:border-indigo-500/30 rounded-xl group/tag transition-all"
+            className="flex items-center gap-2 px-3 py-1.5 bg-surface-2 border border-border hover:border-primary/50 rounded-xl group/tag transition-all"
           >
             <span className="font-bold text-foreground">{skill}</span>
             <button
@@ -89,7 +89,7 @@ export function SkillsEditor({ initialSkills = [] }: SkillsEditorProps) {
               onChange={(e) => setInputValue(e.target.value)}
               onBlur={() => !inputValue && setIsAdding(false)}
               onKeyDown={(e) => e.key === 'Escape' && setIsAdding(false)}
-              className="bg-accent border border-indigo-500/50 rounded-xl px-3 py-1.5 text-foreground focus:outline-none w-[120px] placeholder-indigo-400/50"
+              className="bg-accent border border-primary/50 rounded-xl px-3 py-1.5 text-foreground focus:outline-none w-30 placeholder:text-muted-foreground"
               placeholder="Type & Enter..."
             />
           </form>
@@ -98,7 +98,7 @@ export function SkillsEditor({ initialSkills = [] }: SkillsEditorProps) {
         {skills.length === 0 && !isAdding && (
           <div 
             onClick={() => setIsAdding(true)}
-            className="w-full py-6 border border-white/5 rounded-2xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-muted-foreground hover:bg-white/2 cursor-pointer transition-all"
+            className="w-full py-6 border border-border rounded-2xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-accent cursor-pointer transition-all"
           >
             <Plus size={20} className="opacity-50" />
             <p className="text-xs font-bold uppercase tracking-widest">Add your first skill</p>

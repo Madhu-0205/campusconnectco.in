@@ -1,7 +1,8 @@
 import { randomUUID } from 'crypto';
-import { z } from "zod";
 
 import { NextResponse } from 'next/server';
+import { z } from "zod";
+
 
 import { AIService, AIConfigurationError, AIRateLimitError } from '@/lib/ai';
 import { protectApi } from '@/lib/auth-checks';

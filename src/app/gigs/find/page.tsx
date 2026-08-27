@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+
 import { DesignNode } from '@/components/v2/inspector/DesignNode'
 import { OpportunityDiscoveryClient } from '@/components/v2/OpportunityDiscoveryClient'
 import { QualityGate } from '@/components/v2/QualityGate'

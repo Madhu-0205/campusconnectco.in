@@ -70,6 +70,13 @@ export async function POST(req: Request) {
                 id: true,
                 status: true,
                 posted_by: true,
+                title: true,
+                poster: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
             },
         });
 
@@ -120,6 +127,39 @@ export async function POST(req: Request) {
                 },
             },
         });
+
+        // Fire-and-forget emails
+        import("@/lib/email/resend").then(async ({ sendTransactionalEmail }) => {
+            const { ApplicationSubmittedEmail } = await import("@/lib/email/templates/ApplicationSubmittedEmail");
+            const { NewApplicationFounderEmail } = await import("@/lib/email/templates/NewApplicationFounderEmail");
+            
+            // 1. Send confirmation to applicant
+            if (application.applicant?.email) {
+                await sendTransactionalEmail({
+                    to: application.applicant.email,
+                    subject: `Application Submitted: ${gig.title}`,
+                    react: ApplicationSubmittedEmail({
+                        applicantName: application.applicant.name || "Student",
+                        gigTitle: gig.title,
+                        applicationId: application.id
+                    }) as any
+                });
+            }
+
+            // 2. Send notification to founder
+            if (gig.poster?.email) {
+                await sendTransactionalEmail({
+                    to: gig.poster.email,
+                    subject: `New Application for ${gig.title}`,
+                    react: NewApplicationFounderEmail({
+                        founderName: gig.poster.name || "Founder",
+                        applicantName: application.applicant.name || "A student",
+                        gigTitle: gig.title,
+                        applicationId: application.id
+                    }) as any
+                });
+            }
+        }).catch(console.error);
 
         return NextResponse.json({
             message: "Application submitted successfully",

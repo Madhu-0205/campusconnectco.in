@@ -56,6 +56,14 @@ export async function PATCH(
             return NextResponse.json({ error: "Application not found" }, { status: 404 });
         }
 
+        // Prevent duplicate status updates and emails
+        if (application.status === status) {
+            return NextResponse.json({
+                message: "Application status is already up to date",
+                application: { id: applicationId, status },
+            });
+        }
+
         // Check if user is the gig poster (only poster can update status)
         if (application.gig.posted_by !== userId) {
             return NextResponse.json(
@@ -92,6 +100,23 @@ export async function PATCH(
 
         // Execute sequentially in transaction
         await prisma.$transaction(operations);
+
+        if ((status === "ACCEPTED" || status === "REJECTED") && application.applicant?.email) {
+            import("@/lib/email/resend").then(async ({ sendTransactionalEmail }) => {
+                const { ApplicationStatusEmail } = await import("@/lib/email/templates/ApplicationStatusEmail");
+                await sendTransactionalEmail({
+                    to: application.applicant.email!,
+                    subject: status === "ACCEPTED" 
+                        ? `Application Accepted: ${application.gig.title}` 
+                        : `Update on your application for ${application.gig.title}`,
+                    react: ApplicationStatusEmail({
+                        applicantName: application.applicant.name || "Student",
+                        gigTitle: application.gig.title,
+                        status: status
+                    }) as any
+                });
+            }).catch(console.error);
+        }
 
         return NextResponse.json({
             message: "Application status updated successfully",

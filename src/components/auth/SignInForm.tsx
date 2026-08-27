@@ -101,7 +101,7 @@ export default function SignInForm() {
       style={{ fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}
     >
       {/* Top accent line */}
-      <div className="h-1.5 w-full bg-linear-to-r from-[#10B981] via-[#0EA5E9] to-[#7C3AED]" />
+      <div className="h-1.5 w-full bg-primary" />
 
       <div className="p-8">
         {/* Header */}
@@ -109,7 +109,7 @@ export default function SignInForm() {
           <div className="mx-auto w-12 h-12 bg-(--surface-2) border border-(--border) rounded-2xl flex items-center justify-center mb-4 shadow-inner">
             <Sparkles size={22} className="text-(--primary-light)" />
           </div>
-          <h1 className="font-black text-white" style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
+          <h1 className="font-black text-foreground" style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
             Welcome Back
           </h1>
           <p className="text-sm mt-1">Sign in to your CampusConnect account</p>
@@ -131,7 +131,7 @@ export default function SignInForm() {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={googleLoading || isLoading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-2xl border border-(--border) bg-(--surface-2) hover:bg-white/10 transition-all font-bold text-white shadow-sm active:scale-[0.98] disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-2xl border border-(--border) bg-(--surface-2) hover:bg-accent transition-all font-bold text-foreground shadow-sm active:scale-[0.98] disabled:opacity-50"
         >
           {googleLoading ? <Loader2 size={18} className="animate-spin text-muted-foreground" /> : <GoogleIcon />}
           {googleLoading ? "Redirecting to Google..." : "Continue with Google"}
@@ -140,7 +140,7 @@ export default function SignInForm() {
         {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-white/5" />
+            <div className="w-full border-b border-border" />
           </div>
           <div className="relative flex justify-center">
             <span className="px-3 bg-(--surface) font-bold text-[10px] uppercase tracking-widest">or sign in with email</span>
@@ -157,7 +157,7 @@ export default function SignInForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all font-medium"
+              className="w-full bg-(--surface-2) border border-(--border) text-foreground placeholder-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary)/50 outline-none transition-all font-medium"
             />
           </div>
 
@@ -170,19 +170,19 @@ export default function SignInForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all pr-12 font-medium"
+                className="w-full bg-(--surface-2) border border-(--border) text-foreground placeholder-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary)/50 outline-none transition-all pr-12 font-medium"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-3.5 text-muted-foreground hover:text-white transition-colors"
+                className="absolute right-4 top-3.5 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             <div className="mt-2.5 text-right">
-              <Link href="/auth/forgot-password" className="text-(--primary-light) hover:text-white font-bold transition-colors">
+              <Link href="/auth/forgot-password" className="text-(--primary) hover:text-foreground font-bold transition-colors">
                 Forgot Password?
               </Link>
             </div>
@@ -191,7 +191,7 @@ export default function SignInForm() {
           <button
             type="submit"
             disabled={isLoading || googleLoading}
-            className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-black py-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] shadow-[0_0_20px_rgba(124,58,237,0.3)] mt-2"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black py-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] mt-2 shadow-sm"
           >
             {isLoading ? <><Loader2 className="animate-spin" size={18} /> Signing In...</> : "Sign In Securely"}
           </button>
@@ -200,11 +200,11 @@ export default function SignInForm() {
         <div className="mt-8 text-center space-y-4">
           <p className="text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/sign-up" className="text-white font-black hover:text-(--primary-light) transition-colors">Create Free Profile</Link>
+            <Link href="/auth/sign-up" className="text-foreground font-black hover:text-(--primary) transition-colors">Create Free Profile</Link>
           </p>
           
-          <div className="border-white/5 pt-4">
-            <Link href="/auth/founder" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-(--surface-2) hover:bg-white/10 border border-(--border) hover:text-white transition-all text-xs font-bold">
+          <div className="border-t border-border pt-4">
+            <Link href="/auth/founder" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-(--surface-2) hover:bg-accent border border-(--border) hover:text-foreground transition-all text-xs font-bold text-muted-foreground">
               🛠️ Founder Login
             </Link>
           </div>

@@ -155,7 +155,7 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
             </AnimatePresence>
 
             {/* Sidebar */}
-            <aside className={`w-64 fixed top-16 h-[calc(100vh-4rem)] z-40 transition-all duration-300 md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} bg-[#0a0a0f]/80 backdrop-blur-xl border-white/5 shadow-[4px_0_24px_rgba(0,0,0,0.2)]`}>
+            <aside className={`w-64 fixed top-16 h-[calc(100vh-4rem)] z-40 transition-all duration-300 md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} bg-white/80 backdrop-blur-xl border-r border-border-subtle shadow-[4px_0_24px_rgba(0,0,0,0.02)]`}>
                 <div className="p-6 h-full flex flex-col">
                     <nav className="flex-1 space-y-6 overflow-y-auto custom-scrollbar pr-2">
                         {isStudentPath && (
@@ -224,10 +224,10 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
                         </div>
                     </nav>
 
-                    <div className="pt-6 border-white/10 mt-auto">
+                    <div className="pt-6 border-t border-border-subtle mt-auto">
                         <Button
                             variant="ghost"
-                            className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl font-medium"
+                            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl font-medium"
                             onClick={handleSignOut}
                             disabled={isSigningOut}
                         >
@@ -239,16 +239,16 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 w-full relative z-10 transition-all duration-300">
-                <header className="h-16 bg-[#0a0a0f]/70 backdrop-blur-xl border-white/5 sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between shadow-sm">
+            <main className="flex-1 md:ml-64 w-full relative z-10 transition-all duration-300 bg-bg-subtle">
+                <header className="h-16 bg-white/70 backdrop-blur-xl border-b border-border-subtle sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between shadow-sm">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="p-2 -ml-2 text-slate-500 hover:bg-white/5 rounded-lg md:hidden transition-colors"
+                            className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg md:hidden transition-colors"
                         >
                             <Menu size={20} />
                         </button>
-                        <h1 className="font-black md:text-base text-white tracking-tight flex items-center gap-3">
+                        <h1 className="font-black md:text-base text-slate-900 tracking-tight flex items-center gap-3">
                             <span className="relative flex h-2.5 w-2.5">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-(--primary) opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-(--primary)"></span>
@@ -257,19 +257,19 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
                         </h1>
                     </div>
                     <div className="flex items-center gap-3">
-                        <div suppressHydrationWarning className="hidden sm:block font-black tracking-widest text-slate-500 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                        <div suppressHydrationWarning className="hidden sm:block font-bold text-xs tracking-widest text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full border border-border-subtle">
                             {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                         </div>
-                        <div className="h-6 w-px bg-white/5 mx-1" />
+                        <div className="h-6 w-px bg-border-subtle mx-1" />
                         <PostGigModal />
                         <button
                             onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'j', metaKey: true }))}
-                            className="relative p-2.5 rounded-full text-slate-500 hover:bg-white/5 transition-all duration-300 hidden md:block"
+                            className="relative p-2.5 rounded-full text-slate-500 hover:bg-slate-100 hover:text-primary transition-all duration-300 hidden md:block"
                             title="Open Career Copilot (⌘ + J)"
                         >
                             <Sparkles size={20} />
                         </button>
-                        <Link href="/dashboard/student/messages" className="relative p-2.5 rounded-full text-slate-500 hover:bg-white/5 transition-all duration-300">
+                        <Link href="/dashboard/student/messages" className="relative p-2.5 rounded-full text-slate-500 hover:bg-slate-100 hover:text-primary transition-all duration-300">
                             <MessageCircle size={20} />
                         </Link>
                         <NotificationsPopover
@@ -294,12 +294,12 @@ export default function ClientLayout({ children, initialRole, isPreviewMode }: C
 function SidebarLink({ href, icon: Icon, label, isActive }: { href: string, icon: any, label: string, isActive: boolean }) {
     return (
         <Link href={href}>
-            <div className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${isActive ? 'bg-blue-500/10 text-blue-400 font-bold shadow-sm' : 'text-slate-400 hover:bg-white/5 hover:text-white font-medium' }`}>
-                <Icon size={18} className={isActive ? "text-blue-400" : ""} />
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${isActive ? 'bg-primary/10 text-primary font-bold shadow-sm' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 font-medium' }`}>
+                <Icon size={18} className={isActive ? "text-primary" : ""} />
                 <span className="text-xs md:text-sm tracking-wide">{label}</span>
                 {isActive && (
                     <motion.div
-                        className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]"
+                        className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-glow-primary"
                     />
                 )}
             </div>

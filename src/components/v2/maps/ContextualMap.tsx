@@ -15,9 +15,9 @@ import { motion, AnimatePresence } from "framer-motion"
 // Custom HTML Markers
 function UserLocationMarker() {
   return (
-    <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/20 border-2 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.5)]">
-      <div className="w-3 h-3 bg-indigo-500 rounded-full animate-ping absolute" />
-      <div className="w-3 h-3 bg-indigo-500 rounded-full relative z-10" />
+    <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 border-2 border-primary/50 shadow-[0_0_15px_rgba(31,169,113,0.5)]">
+      <div className="w-3 h-3 bg-primary rounded-full animate-ping absolute" />
+      <div className="w-3 h-3 bg-primary rounded-full relative z-10" />
     </div>
   )
 }
@@ -37,17 +37,17 @@ function OpportunityMapMarker({
     <div className={`relative transition-all duration-300 ${isHovered || isSelected ? 'scale-110 z-50' : 'scale-100 z-10'}`}>
       <div className={`flex items-center justify-center w-10 h-10 rounded-full shadow-lg border-2 ${
         data.type === 'gig' 
-          ? (isSelected ? 'bg-[#7c3aed] border-white' : 'bg-[#0A0A0F] border-[#7c3aed]')
-          : (isSelected ? 'bg-emerald-500 border-white' : 'bg-[#0A0A0F] border-emerald-500')
+          ? (isSelected ? 'bg-primary border-white' : 'bg-white border-primary')
+          : (isSelected ? 'bg-emerald-500 border-white' : 'bg-white border-emerald-500')
       }`}>
-        <Icon size={18} className={isSelected ? 'text-white' : (data.type === 'gig' ? 'text-[#7c3aed]' : 'text-emerald-500')} />
+        <Icon size={18} className={isSelected ? 'text-white' : (data.type === 'gig' ? 'text-primary' : 'text-emerald-500')} />
       </div>
       
       {/* Tooltip on hover or select */}
       {(isHovered || isSelected) && data.title && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max max-w-[200px] bg-[#1A1A24] border border-white/10 rounded-lg p-2 shadow-xl z-50 pointer-events-none">
-          <p className="text-sm font-semibold text-white truncate">{data.title}</p>
-          {data.subtitle && <p className="text-xs text-muted-foreground truncate">{data.subtitle}</p>}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max max-w-50 bg-white border border-border rounded-lg p-2 shadow-xl z-50 pointer-events-none">
+          <p className="text-sm font-semibold text-slate-900 truncate">{data.title}</p>
+          {data.subtitle && <p className="text-xs text-slate-500 truncate">{data.subtitle}</p>}
         </div>
       )}
     </div>
@@ -72,7 +72,7 @@ export default function ContextualMap() {
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style: MAP_CONFIG.STYLE_URL_DARK,
+      style: MAP_CONFIG.STYLE_URL_LIGHT,
       center: initialCenter,
       zoom: userLocation ? MAP_CONFIG.CITY_ZOOM : MAP_CONFIG.DEFAULT_ZOOM,
       attributionControl: false // Custom attribution or none for cleaner look
@@ -170,7 +170,7 @@ export default function ContextualMap() {
   }, [markers, hoveredId, selectedId, setHoveredId, setSelectedId])
 
   return (
-    <div className="relative w-full h-full bg-[#0A0A0F]">
+    <div className="relative w-full h-full bg-surface">
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
       
       {/* Selected Opportunity Sheet / Overlay in Map */}
@@ -180,19 +180,19 @@ export default function ContextualMap() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 20, opacity: 0 }}
-            className="absolute bottom-6 left-6 right-6 bg-[#1A1A24]/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl z-20"
+            className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-2xl z-20"
           >
             <button 
               onClick={() => setSelectedId(null)}
-              className="absolute top-3 right-3 p-1 rounded-full hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
+              className="absolute top-3 right-3 p-1 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors"
             >
               <X size={16} />
             </button>
             <div className="pr-6">
-              <h3 className="font-semibold text-white truncate">
+              <h3 className="font-semibold text-slate-900 truncate">
                 {markers.find(m => m.id === selectedId)?.title || "Selected Item"}
               </h3>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-slate-500 mt-1">
                 View more details in the feed.
               </p>
             </div>

@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+
 const { moderateGig } = require('./src/lib/ai/moderator');
 const prisma = new PrismaClient();
 

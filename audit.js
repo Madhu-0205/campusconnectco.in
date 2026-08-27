@@ -1,6 +1,6 @@
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 function walk(dir) {
     let results = [];

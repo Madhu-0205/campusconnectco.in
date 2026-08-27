@@ -3,61 +3,63 @@
 @import "tw-animate-css";
 @import "../styles/responsive.css";
 
-@custom-variant dark (&:is(.dark *));
+
 
 /* ════════════════════════════════════════════════════════════════
-   DESIGN SYSTEM TOKENS — CampusConnect Premium
-   Palette: Monochromatic workspace with subtle physical accents
+   DESIGN SYSTEM TOKENS — Evolution Foundation Theme (Light/Green)
    ════════════════════════════════════════════════════════════════ */
 :root {
-  /* ── Base backgrounds (Deep dark mode) ───────────────────────── */
-  --bg:           #000000;
-  --bg-subtle:    #0A0A0A;
-  --surface:      #111111;
-  --surface-2:    #18181B;
-  --surface-3:    #27272A;
+  /* ── Background System ───────────────────────── */
+  --bg:           #FFFFFF;
+  --bg-subtle:    #F7F9F5;
+  --bg-white:     #FFFFFF;
+  --bg-offwhite:  #FAFCFA;
+  --bg-palegreen: #E8F3EE;
+  --surface:      #FFFFFF;
+  --surface-2:    #F3F4EF;
+  --surface-3:    #EAF0EC;
   
-  /* ── Borders (Precise and subtle) ────────────────────────────── */
-  --border:       rgba(255,255,255,0.1);
-  --border-subtle:rgba(255,255,255,0.05);
-  --border-focus: rgba(255,255,255,0.25);
+  /* ── Borders (Clean and subtle) ────────────────────────────── */
+  --border:       rgba(0, 0, 0, 0.08);
+  --border-subtle:rgba(0, 0, 0, 0.04);
+  --border-focus: rgba(31, 169, 113, 0.4);
 
-  /* ── Brand palette (Desaturated and elegant) ─────────────────── */
-  --primary:      #FAFAFA;
-  --primary-foreground: #000000;
-  --primary-light:#FFFFFF;
-  --primary-glow: rgba(255,255,255,0.1);
-  --accent:       #3F3F46;
-  --accent-foreground: #FAFAFA;
+  /* ── Brand palette (Vivid Green) ─────────────────── */
+  --primary:      #1fa971;
+  --primary-foreground: #FFFFFF;
+  --primary-light:#35c489;
+  --primary-glow: rgba(31, 169, 113, 0.15);
+  --accent:       #232B27;
+  --accent-foreground: #FFFFFF;
   --gold:         #F59E0B; /* Kept for specific premium badges only */
   --gold-glow:    rgba(245,158,11,0.1);
 
-  /* ── Text (High contrast editorial) ──────────────────────────── */
-  --text:         #EDEDED;
-  --text-2:       #A1A1AA;
-  --text-3:       #71717A;
-  --text-inverse: #0A0A0A;
+  /* ── Text (High contrast dark slate) ──────────────────────────── */
+  --text:         #232b27;
+  --text-2:       #64748b;
+  --text-3:       #94a3b8;
+  --text-inverse: #FFFFFF;
 
   /* ── Status (Optically balanced) ─────────────────────────────── */
-  --success:      #10B981;
+  --success:      #1fa971;
   --warning:      #F59E0B;
   --error:        #EF4444;
   --info:         #3B82F6;
 
   /* ── Gradients ────────────────────────────────────────────────── */
-  --grad-brand:   linear-gradient(135deg, #FFFFFF, #A1A1AA);
+  --grad-brand:   linear-gradient(135deg, #35c489, #1fa971);
   --grad-gold:    linear-gradient(135deg, #FDE68A, #F59E0B);
-  --grad-hero:    radial-gradient(ellipse at 50% -20%, rgba(255,255,255,0.08) 0%, transparent 60%);
+  --grad-hero:    radial-gradient(ellipse at 50% -20%, rgba(31, 169, 113, 0.12) 0%, transparent 60%);
 
   /* ── Fonts (injected by next/font) ───────────────────────────── */
-  --font-heading: var(--font-bricolage, 'Bricolage Grotesque', sans-serif);
-  --font-body:    var(--font-dm-sans, 'DM Sans', sans-serif);
+  --font-heading: var(--font-inter, 'Inter', sans-serif);
+  --font-body:    var(--font-inter, 'Inter', sans-serif);
   --font-mono:    var(--font-jetbrains, 'JetBrains Mono', monospace);
 
-  /* ── Shadows (Ambient and directional) ───────────────────────── */
-  --shadow-card:      0 1px 2px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
-  --shadow-card-hover:0 2px 4px rgba(0,0,0,0.5), 0 12px 24px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
-  --shadow-glow-primary: 0 0 20px rgba(255,255,255,0.05);
+  /* ── Shadows (Ambient and directional light) ───────────────────────── */
+  --shadow-card:      0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.02);
+  --shadow-card-hover:0 8px 24px rgba(31, 169, 113, 0.12), 0 4px 8px rgba(0,0,0,0.04);
+  --shadow-glow-primary: 0 0 24px rgba(31, 169, 113, 0.2);
 
   /* ── Spacing & sizing (Strict 8pt grid base) ─────────────────── */
   --section-py:     6rem;
@@ -72,7 +74,7 @@
   --foreground:   var(--text);
   --card:         var(--surface);
   --card-foreground: var(--text);
-  --popover:      var(--surface-2);
+  --popover:      var(--surface);
   --popover-foreground: var(--text);
   --secondary:         var(--surface-2);
   --secondary-foreground: var(--text-2);
@@ -228,14 +230,14 @@ body {
 
 /* Glass (Minimalist) */
 .glass {
-  background: rgba(17, 17, 17, 0.4);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border);
 }
 
 .glass-card {
-  background: rgba(17, 17, 17, 0.4);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border);

@@ -212,7 +212,7 @@ export default function SignUpForm() {
       style={{ fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}
     >
       {/* Top accent line */}
-      <div className="h-1.5 w-full bg-linear-to-r from-[#10B981] via-[#0EA5E9] to-[#7C3AED]" />
+      <div className="h-1.5 w-full bg-primary" />
 
       <div className="p-8">
         {/* Header */}
@@ -220,7 +220,7 @@ export default function SignUpForm() {
           <div className="mx-auto w-12 h-12 bg-(--surface-2) border border-(--border) rounded-2xl flex items-center justify-center mb-4 shadow-inner">
             <UserPlus size={22} className="text-(--primary-light)" />
           </div>
-          <h1 className="font-black text-white" style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
+          <h1 className="font-black text-foreground" style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
             Create Account
           </h1>
           <p className="text-sm mt-1">Join thousands on CampusConnect</p>
@@ -262,14 +262,14 @@ export default function SignUpForm() {
                   <button
                     type="button"
                     onClick={() => setForm({ ...form, role: "STUDENT" })}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 font-bold rounded-lg transition-all ${ form.role === "STUDENT" ? "bg-[#7C3AED] text-white shadow-lg" : "text-muted-foreground hover:text-white" }`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 font-bold rounded-lg transition-all ${ form.role === "STUDENT" ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:text-foreground" }`}
                   >
                     <GraduationCap size={15} /> Student
                   </button>
                   <button
                     type="button"
                     onClick={() => setForm({ ...form, role: "CLIENT" })}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 font-bold rounded-lg transition-all ${ form.role === "CLIENT" ? "bg-[#F59E0B] text-[#0A1628] shadow-lg" : "text-muted-foreground hover:text-white" }`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 font-bold rounded-lg transition-all ${ form.role === "CLIENT" ? "bg-[#F59E0B] text-[#0A1628] shadow-lg" : "text-muted-foreground hover:text-foreground" }`}
                   >
                     <Building2 size={15} /> Startup
                   </button>
@@ -286,7 +286,7 @@ export default function SignUpForm() {
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   required minLength={2}
-                  className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all font-medium"
+                  className="w-full bg-(--surface-2) border border-(--border) text-foreground placeholder-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary)/50 outline-none transition-all font-medium"
                 />
               </div>
 
@@ -299,7 +299,7 @@ export default function SignUpForm() {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   required
-                  className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all font-medium"
+                  className="w-full bg-(--surface-2) border border-(--border) text-foreground placeholder-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary)/50 outline-none transition-all font-medium"
                 />
               </div>
 
@@ -317,7 +317,7 @@ export default function SignUpForm() {
               {/* Google sign-up */}
               <div className="relative my-2">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-white/5" />
+                  <div className="w-full border-b border-border" />
                 </div>
                 <div className="relative flex justify-center">
                   <span className="px-3 bg-(--surface) font-bold text-[10px] uppercase tracking-widest">or sign up with Google</span>
@@ -328,7 +328,7 @@ export default function SignUpForm() {
                 type="button"
                 onClick={handleGoogleSignUp}
                 disabled={googleLoading || loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-2xl border border-(--border) bg-(--surface-2) hover:bg-white/10 transition-all font-bold text-white shadow-sm active:scale-[0.98] disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-2xl border border-(--border) bg-(--surface-2) hover:bg-accent transition-all font-bold text-foreground shadow-sm active:scale-[0.98] disabled:opacity-50"
               >
                 {googleLoading ? <Loader2 size={18} className="animate-spin text-muted-foreground" /> : <GoogleIcon />}
                 {googleLoading ? "Redirecting to Google..." : "Continue with Google"}
@@ -338,7 +338,7 @@ export default function SignUpForm() {
               <button
                 type="button"
                 onClick={handleNextStep}
-                className={`w-full font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98] ${ form.role === "CLIENT" ? "bg-[#F59E0B] shadow-[0_0_20px_rgba(245,158,11,0.3)]" : "bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-[0_0_20px_rgba(124,58,237,0.3)]" }`}
+                className={`w-full font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98] ${ form.role === "CLIENT" ? "bg-[#F59E0B] shadow-sm" : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" }`}
               >
                 Continue <ArrowRight size={18} />
               </button>
@@ -357,15 +357,15 @@ export default function SignUpForm() {
               className="space-y-5"
             >
               {/* Account summary */}
-              <div className="bg-white/4 border border-white/8 rounded-2xl p-4 flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${form.role === "CLIENT" ? "bg-[#F59E0B]/20" : "bg-[#7C3AED]/20"}`}>
-                  {form.role === "CLIENT" ? <Building2 size={18} className="text-[#F59E0B]" /> : <GraduationCap size={18} className="text-(--primary-light)" />}
+              <div className="bg-surface border border-border rounded-2xl p-4 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${form.role === "CLIENT" ? "bg-[#F59E0B]/20" : "bg-primary/20"}`}>
+                  {form.role === "CLIENT" ? <Building2 size={18} className="text-[#F59E0B]" /> : <GraduationCap size={18} className="text-(--primary)" />}
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-bold truncate">{form.name || "—"}</p>
                   <p className="text-xs truncate">{form.email}</p>
                 </div>
-                <button type="button" onClick={() => setStep(1)} className="font-bold text-(--primary-light) hover:text-white transition-colors shrink-0 ml-auto">
+                <button type="button" onClick={() => setStep(1)} className="font-bold text-(--primary) hover:text-foreground transition-colors shrink-0 ml-auto">
                   Edit
                 </button>
               </div>
@@ -380,12 +380,12 @@ export default function SignUpForm() {
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     required minLength={8}
-                    className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 pr-12 rounded-xl focus:ring-2 focus:ring-[#7C3AED]/50 focus:border-[#7C3AED]/50 outline-none transition-all font-medium"
+                    className="w-full bg-(--surface-2) border border-(--border) text-foreground placeholder-muted-foreground p-3.5 pr-12 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary)/50 outline-none transition-all font-medium"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-3.5 text-muted-foreground hover:text-white transition-colors"
+                    className="absolute right-4 top-3.5 text-muted-foreground hover:text-foreground transition-colors"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -418,12 +418,12 @@ export default function SignUpForm() {
                       onChange={(e) => setAcceptedTerms(e.target.checked)}
                       className="peer sr-only" 
                     />
-                    <div className="w-5 h-5 rounded border-2 border-white/20 bg-white/5 peer-checked:bg-(--primary) peer-checked:border-(--primary) peer-focus:ring-2 peer-focus:ring-(--primary)/50 transition-all group-hover:border-white/40 flex items-center justify-center">
+                    <div className="w-5 h-5 rounded border border-border bg-surface peer-checked:bg-(--primary) peer-checked:border-(--primary) peer-focus:ring-2 peer-focus:ring-(--primary)/50 transition-all flex items-center justify-center">
                       <CheckCircle2 size={14} className="text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground leading-snug">
-                    I have read and agree to the <Link href="/terms" className="text-white font-medium hover:text-(--primary-light) transition-colors hover:underline">Terms & Conditions</Link> and <Link href="/privacy" className="text-white font-medium hover:text-(--primary-light) transition-colors hover:underline">Privacy Policy</Link>.
+                    I have read and agree to the <Link href="/terms" className="text-foreground font-medium hover:text-(--primary) transition-colors hover:underline">Terms & Conditions</Link> and <Link href="/privacy" className="text-foreground font-medium hover:text-(--primary) transition-colors hover:underline">Privacy Policy</Link>.
                   </p>
                 </label>
 
@@ -435,7 +435,7 @@ export default function SignUpForm() {
                       onChange={(e) => setMarketingConsent(e.target.checked)}
                       className="peer sr-only" 
                     />
-                    <div className="w-5 h-5 rounded border-2 border-white/20 bg-white/5 peer-checked:bg-(--primary) peer-checked:border-(--primary) peer-focus:ring-2 peer-focus:ring-(--primary)/50 transition-all group-hover:border-white/40 flex items-center justify-center">
+                    <div className="w-5 h-5 rounded border border-border bg-surface peer-checked:bg-(--primary) peer-checked:border-(--primary) peer-focus:ring-2 peer-focus:ring-(--primary)/50 transition-all flex items-center justify-center">
                       <CheckCircle2 size={14} className="text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
                     </div>
                   </div>
@@ -449,7 +449,7 @@ export default function SignUpForm() {
               <button
                 type="submit"
                 disabled={loading || googleLoading || !acceptedTerms}
-                className={`w-full font-black py-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] mt-2 ${ form.role === "CLIENT" ? "bg-[#F59E0B] shadow-[0_0_20px_rgba(245,158,11,0.3)]" : "bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-[0_0_20px_rgba(124,58,237,0.3)]" }`}
+                className={`w-full font-black py-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] mt-2 ${ form.role === "CLIENT" ? "bg-[#F59E0B] shadow-[0_0_20px_rgba(245,158,11,0.3)]" : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" }`}
               >
                 {loading ? <><Loader2 className="animate-spin" size={18} /> Creating Account...</> : "Create Account"}
               </button>
@@ -465,10 +465,10 @@ export default function SignUpForm() {
           Join CampusConnect and supercharge your career.
         </p>
 
-        <div className="mt-5 text-center pt-4 border-white/5">
+        <div className="mt-5 text-center pt-4 border-t border-border">
           <p className="text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/auth/sign-in" className="text-white font-black hover:text-(--primary-light) transition-colors">Sign In</Link>
+            <Link href="/auth/sign-in" className="text-foreground font-black hover:text-(--primary) transition-colors">Sign In</Link>
           </p>
         </div>
       </div>
