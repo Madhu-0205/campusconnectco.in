@@ -12,19 +12,19 @@
  * @returns Bounding box with minLat, maxLat, minLng, maxLng
  */
 export function getBoundingBox(lat: number, lng: number, radiusKm: number) {
-  // Approximate conversions
-  // 1 degree of latitude is ~111.32 km
-  const latDelta = radiusKm / 111.32;
-  
-  // 1 degree of longitude varies by latitude
-  const lngDelta = radiusKm / (111.32 * Math.cos(lat * (Math.PI / 180)));
+ // Approximate conversions
+ // 1 degree of latitude is ~111.32 km
+ const latDelta = radiusKm / 111.32;
+ 
+ // 1 degree of longitude varies by latitude
+ const lngDelta = radiusKm / (111.32 * Math.cos(lat * (Math.PI / 180)));
 
-  return {
-    minLat: lat - latDelta,
-    maxLat: lat + latDelta,
-    minLng: lng - lngDelta,
-    maxLng: lng + lngDelta,
-  };
+ return {
+ minLat: lat - latDelta,
+ maxLat: lat + latDelta,
+ minLng: lng - lngDelta,
+ maxLng: lng + lngDelta,
+ };
 }
 
 /**
@@ -37,19 +37,19 @@ export function getBoundingBox(lat: number, lng: number, radiusKm: number) {
  * @returns Distance in kilometers
  */
 export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371; // Radius of the earth in km
-  const dLat = deg2rad(lat2 - lat1);
-  const dLon = deg2rad(lon2 - lon1); 
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2)
-    ; 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  const d = R * c; // Distance in km
-  return d;
+ const R = 6371; // Radius of the earth in km
+ const dLat = deg2rad(lat2 - lat1);
+ const dLon = deg2rad(lon2 - lon1); 
+ const a = 
+ Math.sin(dLat/2) * Math.sin(dLat/2) +
+ Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+ Math.sin(dLon/2) * Math.sin(dLon/2)
+ ; 
+ const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+ const d = R * c; // Distance in km
+ return d;
 }
 
 function deg2rad(deg: number): number {
-  return deg * (Math.PI/180);
+ return deg * (Math.PI/180);
 }

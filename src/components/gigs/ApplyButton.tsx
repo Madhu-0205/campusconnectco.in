@@ -1,52 +1,52 @@
 "use client"
 
-import { useState } from "react"
-import { toast } from "sonner"
+import { useState } from"react"
+import { toast } from"sonner"
 
-import { Button } from "@/components/ui/Button"
+import { Button } from"@/components/ui/Button"
 
 export function ApplyButton({ gigId }: { gigId: string }) {
-    const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+ const [status, setStatus] = useState<"idle" |"loading" |"success" |"error">("idle")
 
-    const handleApply = async (e: React.MouseEvent) => {
-        e.stopPropagation()
-        setStatus("loading")
-        try {
-            const res = await fetch("/api/applications", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ gigId })
-            })
+ const handleApply = async (e: React.MouseEvent) => {
+ e.stopPropagation()
+ setStatus("loading")
+ try {
+ const res = await fetch("/api/applications", {
+ method:"POST",
+ headers: {"Content-Type":"application/json" },
+ body: JSON.stringify({ gigId })
+ })
 
-            if (res.status === 409) {
-                toast.error("You have already applied to this gig.")
-                setStatus("error")
-                return
-            }
+ if (res.status === 409) {
+ toast.error("You have already applied to this gig.")
+ setStatus("error")
+ return
+ }
 
-            if (!res.ok) throw new Error("Failed")
+ if (!res.ok) throw new Error("Failed")
 
-            toast.success("Application submitted successfully!")
-            setStatus("success")
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-            toast.error("Failed to submit application.")
-            setStatus("error")
-        }
-    }
+ toast.success("Application submitted successfully!")
+ setStatus("success")
+ // eslint-disable-next-line @typescript-eslint/no-unused-vars
+ } catch (error) {
+ toast.error("Failed to submit application.")
+ setStatus("error")
+ }
+ }
 
-    if (status === "success") {
-        return <Button size="sm" variant="outline" disabled className="text-green-600 border-green-200 bg-green-50">Applied</Button>
-    }
+ if (status ==="success") {
+ return <Button size="sm" variant="outline" disabled className="text-green-600 border-green-200 bg-green-50">Applied</Button>
+ }
 
-    return (
-        <Button
-            size="sm"
-            variant="outline"
-            onClick={handleApply}
-            disabled={status === "loading"}
-        >
-            {status === "loading" ? "Sending..." : "Apply Now"}
-        </Button>
-    )
+ return (
+ <Button
+ size="sm"
+ variant="outline"
+ onClick={handleApply}
+ disabled={status ==="loading"}
+ >
+ {status ==="loading" ?"Sending..." :"Apply Now"}
+ </Button>
+ )
 }

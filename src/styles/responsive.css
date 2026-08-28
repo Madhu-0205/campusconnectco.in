@@ -110,7 +110,7 @@
     }
 
     .responsive-table {
-        @apply min-w-full divide-y divide-slate-200 dark:divide-slate-800;
+        @apply min-w-full divide-y divide-slate-200;
     }
 
     .responsive-table th,
@@ -336,7 +336,7 @@
     }
 
     .mobile-menu-panel {
-        @apply fixed inset-y-0 left-0 w-full sm:w-80 bg-white dark:bg-slate-900 z-50 transform transition-transform;
+        @apply fixed inset-y-0 left-0 w-full sm:w-80 bg-white z-50 transform transition-transform;
     }
 
     /* Responsive Chat Widget */

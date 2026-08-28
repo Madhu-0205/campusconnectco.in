@@ -1,29 +1,29 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect } from"react"
 
-import { useMapContext, MarkerData } from "./MapContext"
+import { useMapContext, MarkerData } from"./MapContext"
 
 export function MapDataSync({ 
-  markers, 
-  userLocation 
+ markers, 
+ userLocation 
 }: { 
-  markers?: MarkerData[]
-  userLocation?: { lat: number; lng: number } | null 
+ markers?: MarkerData[]
+ userLocation?: { lat: number; lng: number } | null 
 }) {
-  const { setMarkers, setUserLocation } = useMapContext()
+ const { setMarkers, setUserLocation } = useMapContext()
 
-  useEffect(() => {
-    if (markers) {
-      setMarkers(markers)
-    }
-  }, [markers, setMarkers])
+ useEffect(() => {
+ if (markers) {
+ setMarkers(markers)
+ }
+ }, [markers, setMarkers])
 
-  useEffect(() => {
-    if (userLocation !== undefined) {
-      setUserLocation(userLocation)
-    }
-  }, [userLocation, setUserLocation])
+ useEffect(() => {
+ if (userLocation !== undefined) {
+ setUserLocation(userLocation)
+ }
+ }, [userLocation, setUserLocation])
 
-  return null
+ return null
 }

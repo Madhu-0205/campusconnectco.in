@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
+import { redirect } from"next/navigation";
 
 // Platform metrics consolidated under Analytics
 export default function MetricsPage() {
-    redirect("/dashboard/founder/analytics");
+ redirect("/dashboard/founder/analytics");
 }

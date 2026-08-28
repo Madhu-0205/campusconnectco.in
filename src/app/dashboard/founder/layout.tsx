@@ -1,17 +1,17 @@
-import { redirect } from "next/navigation";
+import { redirect } from"next/navigation";
 
-import { protectPage } from "@/lib/auth-checks";
+import { protectPage } from"@/lib/auth-checks";
 
 /**
  * Server-side RBAC protection for all /dashboard/founder/* routes.
  * Role is fetched from the database — cannot be spoofed client-side.
  */
 export default async function FounderLayout({ children }: { children: React.ReactNode }) {
-    const { authorized } = await protectPage(["FOUNDER"]);
+ const { authorized } = await protectPage(["FOUNDER"]);
 
-    if (!authorized) {
-        redirect("/dashboard/student");
-    }
+ if (!authorized) {
+ redirect("/dashboard/student");
+ }
 
-    return <>{children}</>;
+ return <>{children}</>;
 }

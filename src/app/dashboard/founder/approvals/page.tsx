@@ -1,7 +1,7 @@
 "use client";
 
-import ApprovalsClient from "./ApprovalsClient";
+import ApprovalsClient from"./ApprovalsClient";
 
 export default function Page(props: any) {
-  return <ApprovalsClient {...props} />;
+ return <ApprovalsClient {...props} />;
 }

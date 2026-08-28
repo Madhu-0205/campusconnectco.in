@@ -1,7 +1,7 @@
 "use client";
 
-import ForgotPasswordClient from "./ForgotPasswordClient";
+import ForgotPasswordClient from"./ForgotPasswordClient";
 
 export default function Page(props: any) {
-  return <ForgotPasswordClient {...props} />;
+ return <ForgotPasswordClient {...props} />;
 }

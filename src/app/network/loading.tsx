@@ -1,17 +1,17 @@
-import { UserCardSkeleton } from "@/components/ui/Skeletons";
+import { UserCardSkeleton } from"@/components/ui/Skeletons";
 
 export default function Loading() {
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-pulse">
-      <div className="h-10 w-48 rounded-lg bg-[#131929]" />
-      <div className="flex gap-3 mb-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-9 w-24 rounded-xl bg-[#131929]" />
-        ))}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <UserCardSkeleton count={9} />
-      </div>
-    </div>
-  );
+ return (
+ <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-pulse">
+ <div className="h-10 w-48 rounded-lg bg-surface" />
+ <div className="flex gap-3 mb-6">
+ {[1, 2, 3, 4].map((i) => (
+ <div key={i} className="h-9 w-24 rounded-xl bg-surface" />
+ ))}
+ </div>
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+ <UserCardSkeleton count={9} />
+ </div>
+ </div>
+ );
 }

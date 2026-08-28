@@ -1,114 +1,114 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from"next/server"
 
-import { calculateDistance, calculateMatchScore, calculateRadiusScore } from "@/lib/matching"
-import prisma from "@/lib/prisma"
-import { createClient } from "@/lib/supabase/server"
+import { calculateDistance, calculateMatchScore, calculateRadiusScore } from"@/lib/matching"
+import prisma from"@/lib/prisma"
+import { createClient } from"@/lib/supabase/server"
 
 export async function GET(req: Request) {
-    try {
-        const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
+ try {
+ const supabase = await createClient();
+ const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-        if (authError || !user) {
-            return new NextResponse("Unauthorized", { status: 401 })
-        }
+ if (authError || !user) {
+ return new NextResponse("Unauthorized", { status: 401 })
+ }
 
-        const { searchParams } = new URL(req.url)
-        const parseCoord = (val: string | null) => {
-            if (!val) return null;
-            const parsed = parseFloat(val);
-            return isNaN(parsed) ? null : parsed;
-        };
+ const { searchParams } = new URL(req.url)
+ const parseCoord = (val: string | null) => {
+ if (!val) return null;
+ const parsed = parseFloat(val);
+ return isNaN(parsed) ? null : parsed;
+ };
 
-        const lat = parseCoord(searchParams.get("lat"))
-        const lng = parseCoord(searchParams.get("lng"))
-        const type = searchParams.get("type") || "gigs" // "gigs" or "talent"
+ const lat = parseCoord(searchParams.get("lat"))
+ const lng = parseCoord(searchParams.get("lng"))
+ const type = searchParams.get("type") ||"gigs" //"gigs" or"talent"
 
-        const dbUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { id: true, skills: true, latitude: true, longitude: true }
-        })
+ const dbUser = await prisma.user.findUnique({
+ where: { id: user.id },
+ select: { id: true, skills: true, latitude: true, longitude: true }
+ })
 
-        if (!dbUser) {
-            return new NextResponse("User profile not found", { status: 404 })
-        }
+ if (!dbUser) {
+ return new NextResponse("User profile not found", { status: 404 })
+ }
 
-        // Use provided lat/lng or fallback to user's saved location
-        const searchLat = lat ?? dbUser.latitude ?? 0
-        const searchLng = lng ?? dbUser.longitude ?? 0
+ // Use provided lat/lng or fallback to user's saved location
+ const searchLat = lat ?? dbUser.latitude ?? 0
+ const searchLng = lng ?? dbUser.longitude ?? 0
 
-        if (type === "gigs") {
-            const gigs = await prisma.gig.findMany({ take: 50,
-                where: { status: "OPEN" },
-                include: {
-                    poster: {
-                        select: { name: true, image: true }
-                    }
-                }
-            })
+ if (type ==="gigs") {
+ const gigs = await prisma.gig.findMany({ take: 50,
+ where: { status:"OPEN" },
+ include: {
+ poster: {
+ select: { name: true, image: true }
+ }
+ }
+ })
 
-            const ratedGigs = gigs.map((gig: any) => {
-                const distance = (gig.latitude != null && gig.longitude != null)
-                    ? calculateDistance(searchLat, searchLng, gig.latitude, gig.longitude)
-                    : null
+ const ratedGigs = gigs.map((gig: any) => {
+ const distance = (gig.latitude != null && gig.longitude != null)
+ ? calculateDistance(searchLat, searchLng, gig.latitude, gig.longitude)
+ : null
 
-                const skillScore = calculateMatchScore(dbUser.skills || "", gig.tags || "", gig.description)
-                const radiusScore = calculateRadiusScore(distance)
+ const skillScore = calculateMatchScore(dbUser.skills ||"", gig.tags ||"", gig.description)
+ const radiusScore = calculateRadiusScore(distance)
 
-                // Hybrid Formula: 70% skill match, 30% proximity
-                const finalScore = (skillScore * 0.7) + (radiusScore * 100 * 0.3)
+ // Hybrid Formula: 70% skill match, 30% proximity
+ const finalScore = (skillScore * 0.7) + (radiusScore * 100 * 0.3)
 
-                // Strip sensitive coordinates before returning to client
-                const { latitude, longitude, ...safeGig } = gig;
+ // Strip sensitive coordinates before returning to client
+ const { latitude, longitude, ...safeGig } = gig;
 
-                return {
-                    ...safeGig,
-                    distance,
-                    matchScore: Math.round(finalScore)
-                }
-            })
+ return {
+ ...safeGig,
+ distance,
+ matchScore: Math.round(finalScore)
+ }
+ })
 
-            ratedGigs.sort((a: any, b: any) => b.matchScore - a.matchScore)
-            return NextResponse.json(ratedGigs.slice(0, 10))
-        } else {
-            // Recommendation for Talent
-            const talent = await prisma.user.findMany({ take: 50,
-                where: {
-                    role: "STUDENT",
-                    id: { not: dbUser.id }
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    image: true,
-                    skills: true,
-                    latitude: true,
-                    longitude: true,
-                    bio: true
-                }
-            })
+ ratedGigs.sort((a: any, b: any) => b.matchScore - a.matchScore)
+ return NextResponse.json(ratedGigs.slice(0, 10))
+ } else {
+ // Recommendation for Talent
+ const talent = await prisma.user.findMany({ take: 50,
+ where: {
+ role:"STUDENT",
+ id: { not: dbUser.id }
+ },
+ select: {
+ id: true,
+ name: true,
+ image: true,
+ skills: true,
+ latitude: true,
+ longitude: true,
+ bio: true
+ }
+ })
 
-            const ratedTalent = talent.map((t: any) => {
-                const distance = (t.latitude != null && t.longitude != null)
-                    ? calculateDistance(searchLat, searchLng, t.latitude, t.longitude)
-                    : null
+ const ratedTalent = talent.map((t: any) => {
+ const distance = (t.latitude != null && t.longitude != null)
+ ? calculateDistance(searchLat, searchLng, t.latitude, t.longitude)
+ : null
 
-                // Strip sensitive coordinates before returning to client
-                const { latitude, longitude, ...safeTalent } = t;
+ // Strip sensitive coordinates before returning to client
+ const { latitude, longitude, ...safeTalent } = t;
 
-                return {
-                    ...safeTalent,
-                    distance,
-                    matchScore: 0
-                }
-            })
+ return {
+ ...safeTalent,
+ distance,
+ matchScore: 0
+ }
+ })
 
-            ratedTalent.sort((a: any, b: any) => (a.distance || Infinity) - (b.distance || Infinity))
-            return NextResponse.json(ratedTalent.slice(0, 10))
-        }
+ ratedTalent.sort((a: any, b: any) => (a.distance || Infinity) - (b.distance || Infinity))
+ return NextResponse.json(ratedTalent.slice(0, 10))
+ }
 
-    } catch (error) {
-        console.error("Recommendations Error:", error)
-        return new NextResponse("Internal Server Error", { status: 500 })
-    }
+ } catch (error) {
+ console.error("Recommendations Error:", error)
+ return new NextResponse("Internal Server Error", { status: 500 })
+ }
 }

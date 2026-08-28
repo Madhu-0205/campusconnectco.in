@@ -1,124 +1,124 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { toast } from "sonner"
+import { useRouter } from"next/navigation"
+import { useState } from"react"
+import { toast } from"sonner"
 
-import { Button } from "@/components/ui/Button"
-import { Card } from "@/components/ui/Card"
+import { Button } from"@/components/ui/Button"
+import { Card } from"@/components/ui/Card"
 
 export default function PostGigPage() {
-    const router = useRouter()
-    const [loading, setLoading] = useState(false)
-    const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        budget: "",
-        deadline: ""
-    })
+ const router = useRouter()
+ const [loading, setLoading] = useState(false)
+ const [formData, setFormData] = useState({
+ title:"",
+ description:"",
+ budget:"",
+ deadline:""
+ })
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
+ const handleSubmit = async (e: React.FormEvent) => {
+ e.preventDefault()
+ setLoading(true)
 
-        try {
-            const res = await fetch("/api/gigs", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    ...formData,
-                    budget: parseFloat(formData.budget)
-                })
-            })
+ try {
+ const res = await fetch("/api/gigs", {
+ method:"POST",
+ headers: {"Content-Type":"application/json" },
+ body: JSON.stringify({
+ ...formData,
+ budget: parseFloat(formData.budget)
+ })
+ })
 
-            const data = await res.json()
+ const data = await res.json()
 
-            if (!res.ok) {
-                throw new Error(data.error || "Failed to post gig")
-            }
+ if (!res.ok) {
+ throw new Error(data.error ||"Failed to post gig")
+ }
 
-            toast.success("Gig posted successfully!")
-            router.push("/client-hub")
-            router.refresh()
-        } catch (err: any) {
-            toast.error(err.message || "Something went wrong while posting the gig.")
-        } finally {
-            setLoading(false)
-        }
-    }
+ toast.success("Gig posted successfully!")
+ router.push("/client-hub")
+ router.refresh()
+ } catch (err: any) {
+ toast.error(err.message ||"Something went wrong while posting the gig.")
+ } finally {
+ setLoading(false)
+ }
+ }
 
-    return (
-        <div className="max-w-2xl mx-auto relative z-10 p-6">
-            <div className="fixed inset-0 pointer-events-none -z-10">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-[100px] animate-pulse" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 dark:bg-purple-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
-            </div>
+ return (
+ <div className="max-w-2xl mx-auto relative z-10 p-6">
+ <div className="fixed inset-0 pointer-events-none -z-10">
+ <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[100px] animate-pulse" />
+ <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px] animate-pulse delay-1000" />
+ </div>
 
-            <div className="mb-8">
-                <h2 className="font-black mb-2 text-foreground tracking-tight">Post a New Gig</h2>
-                <p className="text-muted-foreground font-medium">Find the perfect student for your task.</p>
-            </div>
+ <div className="mb-8">
+ <h2 className="font-black mb-2 text-foreground tracking-tight">Post a New Gig</h2>
+ <p className="text-muted-foreground font-medium">Find the perfect student for your task.</p>
+ </div>
 
-            <Card className="border border-white/20 dark:border-slate-800 shadow-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-5xl overflow-hidden">
-                <div className="p-10">
-                    <form onSubmit={handleSubmit} className="space-y-8">
-                        <div className="space-y-3">
-                            <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Gig Title</label>
-                            <input
-                                required
-                                type="text"
-                                placeholder="e.g. Build a React Landing Page"
-                                className="w-full px-6 py-4 rounded-2xl border border-white/5 dark:border-slate-700 bg-(--surface-2)/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground placeholder:text-slate-400"
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            />
-                        </div>
+ <Card className="border border-white/20 shadow-2xl bg-white/80 backdrop-blur-md rounded-5xl overflow-hidden">
+ <div className="p-10">
+ <form onSubmit={handleSubmit} className="space-y-8">
+ <div className="space-y-3">
+ <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Gig Title</label>
+ <input
+ required
+ type="text"
+ placeholder="e.g. Build a React Landing Page"
+ className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-(--surface-2)/50 focus:bg-white :bg-surface-3 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground placeholder:text-slate-400"
+ value={formData.title}
+ onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+ />
+ </div>
 
-                        <div className="space-y-3">
-                            <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Description</label>
-                            <textarea
-                                required
-                                rows={6}
-                                placeholder="Describe the deliverables, timeline, and requirements..."
-                                className="w-full px-6 py-4 rounded-2xl border border-white/5 dark:border-slate-700 bg-(--surface-2)/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-medium text-foreground placeholder:text-slate-400 resize-none"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            />
-                        </div>
+ <div className="space-y-3">
+ <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Description</label>
+ <textarea
+ required
+ rows={6}
+ placeholder="Describe the deliverables, timeline, and requirements..."
+ className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-(--surface-2)/50 focus:bg-white :bg-surface-3 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-medium text-foreground placeholder:text-slate-400 resize-none"
+ value={formData.description}
+ onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+ />
+ </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-3">
-                                <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Budget (₹)</label>
-                                <input
-                                    required
-                                    type="number"
-                                    min="5"
-                                    placeholder="200"
-                                    className="w-full px-6 py-4 rounded-2xl border border-white/5 dark:border-slate-700 bg-(--surface-2)/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground placeholder:text-slate-400"
-                                    value={formData.budget}
-                                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-3">
-                                <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Deadline</label>
-                                <input
-                                    type="date"
-                                    className="w-full px-6 py-4 rounded-2xl border border-white/5 dark:border-slate-700 bg-(--surface-2)/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground placeholder:text-slate-400"
-                                    value={formData.deadline}
-                                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                                />
-                            </div>
-                        </div>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <div className="space-y-3">
+ <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Budget (₹)</label>
+ <input
+ required
+ type="number"
+ min="5"
+ placeholder="200"
+ className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-(--surface-2)/50 focus:bg-white :bg-surface-3 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground placeholder:text-slate-400"
+ value={formData.budget}
+ onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+ />
+ </div>
+ <div className="space-y-3">
+ <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Deadline</label>
+ <input
+ type="date"
+ className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-(--surface-2)/50 focus:bg-white :bg-surface-3 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground placeholder:text-slate-400"
+ value={formData.deadline}
+ onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+ />
+ </div>
+ </div>
 
-                        <div className="pt-6 flex justify-end gap-5">
-                            <Button type="button" variant="ghost" onClick={() => router.back()} className="rounded-xl font-bold px-8 text-muted-foreground hover:text-foreground">Cancel</Button>
-                            <Button type="submit" disabled={loading} className="rounded-xl font-black px-12 h-14 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 shadow-xl shadow-slate-900/20 active:scale-95 transition-all">
-                                {loading ? "Posting..." : "Post Gig"}
-                            </Button>
-                        </div>
-                    </form>
-                </div>
-            </Card>
-        </div>
-    )
+ <div className="pt-6 flex justify-end gap-5">
+ <Button type="button" variant="ghost" onClick={() => router.back()} className="rounded-xl font-bold px-8 text-muted-foreground hover:text-foreground">Cancel</Button>
+ <Button type="submit" disabled={loading} className="rounded-xl font-black px-12 h-14 bg-surface-2 hover:bg-surface-3 :bg-slate-200 text-white shadow-xl shadow-slate-900/20 active:scale-95 transition-all">
+ {loading ?"Posting..." :"Post Gig"}
+ </Button>
+ </div>
+ </form>
+ </div>
+ </Card>
+ </div>
+ )
 }

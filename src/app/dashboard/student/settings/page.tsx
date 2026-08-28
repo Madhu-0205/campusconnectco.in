@@ -1,253 +1,253 @@
 "use client"
 
-import { User, Bell, Loader2 } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import { toast } from "sonner"
+import { User, Bell, Loader2 } from"lucide-react"
+import { useRouter } from"next/navigation"
+import { useState, useEffect } from"react"
+import { toast } from"sonner"
 
-import { Button } from "@/components/ui/Button"
-import { Card } from "@/components/ui/Card"
+import { Button } from"@/components/ui/Button"
+import { Card } from"@/components/ui/Card"
 
 export default function SettingsPage() {
-    const router = useRouter()
-    const [loading, setLoading] = useState(true)
-    const [saving, setSaving] = useState(false)
-    const [initialData, setInitialData] = useState({
-        name: "",
-        email: "",
-        emailNotifications: true,
-        desktopAlerts: false
-    })
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        emailNotifications: true,
-        desktopAlerts: false
-    })
+ const router = useRouter()
+ const [loading, setLoading] = useState(true)
+ const [saving, setSaving] = useState(false)
+ const [initialData, setInitialData] = useState({
+ name:"",
+ email:"",
+ emailNotifications: true,
+ desktopAlerts: false
+ })
+ const [formData, setFormData] = useState({
+ name:"",
+ email:"",
+ emailNotifications: true,
+ desktopAlerts: false
+ })
 
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const res = await fetch("/api/user/profile")
-                if (!res.ok) throw new Error("Failed to fetch settings")
-                const data = await res.json()
-                const profileData = {
-                    name: data.name || "John Doe",
-                    email: data.email || "john@university.edu",
-                    emailNotifications: true,
-                    desktopAlerts: false
-                }
-                setInitialData(profileData)
-                setFormData(profileData)
-            } catch {
-                toast.error("Error loading settings")
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchSettings()
-    }, [])
+ useEffect(() => {
+ const fetchSettings = async () => {
+ try {
+ const res = await fetch("/api/user/profile")
+ if (!res.ok) throw new Error("Failed to fetch settings")
+ const data = await res.json()
+ const profileData = {
+ name: data.name ||"John Doe",
+ email: data.email ||"john@university.edu",
+ emailNotifications: true,
+ desktopAlerts: false
+ }
+ setInitialData(profileData)
+ setFormData(profileData)
+ } catch {
+ toast.error("Error loading settings")
+ } finally {
+ setLoading(false)
+ }
+ }
+ fetchSettings()
+ }, [])
 
-    const handleSave = async () => {
-        setSaving(true)
-        try {
-            const res = await fetch("/api/user/profile", {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email
-                })
-            })
+ const handleSave = async () => {
+ setSaving(true)
+ try {
+ const res = await fetch("/api/user/profile", {
+ method:"PATCH",
+ headers: {"Content-Type":"application/json" },
+ body: JSON.stringify({
+ name: formData.name,
+ email: formData.email
+ })
+ })
 
-            if (!res.ok) throw new Error("Failed to save preferences")
+ if (!res.ok) throw new Error("Failed to save preferences")
 
-            setInitialData(formData)
-            toast.success("Preferences saved successfully!")
-        } catch (error) {
-            toast.error("Failed to save preferences")
-            console.error(error)
-        } finally {
-            setSaving(false)
-        }
-    }
+ setInitialData(formData)
+ toast.success("Preferences saved successfully!")
+ } catch (error) {
+ toast.error("Failed to save preferences")
+ console.error(error)
+ } finally {
+ setSaving(false)
+ }
+ }
 
-    const handleDiscard = () => {
-        setFormData(initialData)
-        toast.info("Changes discarded")
-    }
+ const handleDiscard = () => {
+ setFormData(initialData)
+ toast.info("Changes discarded")
+ }
 
-    const handleDeleteAccount = async () => {
-        const confirmation = window.prompt("To permanently delete your account, type 'DELETE' below:")
-        if (confirmation !== "DELETE") {
-            if (confirmation !== null) toast.error("Account deletion cancelled.")
-            return
-        }
+ const handleDeleteAccount = async () => {
+ const confirmation = window.prompt("To permanently delete your account, type 'DELETE' below:")
+ if (confirmation !=="DELETE") {
+ if (confirmation !== null) toast.error("Account deletion cancelled.")
+ return
+ }
 
-        try {
-            const res = await fetch("/api/user/delete", {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ confirmation: "DELETE" })
-            })
+ try {
+ const res = await fetch("/api/user/delete", {
+ method:"DELETE",
+ headers: {"Content-Type":"application/json" },
+ body: JSON.stringify({ confirmation:"DELETE" })
+ })
 
-            if (!res.ok) throw new Error("Failed to delete account")
-            
-            toast.success("Account permanently deleted.")
-            router.push("/")
-        } catch (error) {
-            toast.error("Failed to delete account")
-            console.error(error)
-        }
-    }
+ if (!res.ok) throw new Error("Failed to delete account")
+ 
+ toast.success("Account permanently deleted.")
+ router.push("/")
+ } catch (error) {
+ toast.error("Failed to delete account")
+ console.error(error)
+ }
+ }
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-100">
-                <Loader2 className="animate-spin text-primary" size={32} />
-            </div>
-        )
-    }
+ if (loading) {
+ return (
+ <div className="flex items-center justify-center min-h-100">
+ <Loader2 className="animate-spin text-primary" size={32} />
+ </div>
+ )
+ }
 
-    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialData)
+ const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialData)
 
-    return (
-        <div className="max-w-4xl mx-auto space-y-6">
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                    <span className="w-8 h-1 bg-primary rounded-full" />
-                    <span className="font-bold text-primary uppercase tracking-widest">Preferences</span>
-                </div>
-                <h2 className="font-bold text-foreground">Account Settings</h2>
-                <p className="text-muted-foreground font-medium">Manage your professional identity and preferences.</p>
-            </div>
+ return (
+ <div className="max-w-4xl mx-auto space-y-6">
+ <div className="flex flex-col gap-2">
+ <div className="flex items-center gap-2">
+ <span className="w-8 h-1 bg-primary rounded-full" />
+ <span className="font-bold text-primary uppercase tracking-widest">Preferences</span>
+ </div>
+ <h2 className="font-bold text-foreground">Account Settings</h2>
+ <p className="text-muted-foreground font-medium">Manage your professional identity and preferences.</p>
+ </div>
 
-            <div className="grid gap-6">
-                <Card className="p-4 md:p-8 border-border bg-surface shadow-card rounded-3xl">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl">
-                            <User size={24} />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-foreground tracking-tight">Profile Identity</h3>
-                            <p className="text-muted-foreground font-medium uppercase tracking-wider">Publicly visible information</p>
-                        </div>
-                    </div>
+ <div className="grid gap-6">
+ <Card className="p-4 md:p-8 border-border bg-surface shadow-card rounded-3xl">
+ <div className="flex items-center gap-4 mb-8">
+ <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl">
+ <User size={24} />
+ </div>
+ <div>
+ <h3 className="font-bold text-foreground tracking-tight">Profile Identity</h3>
+ <p className="text-muted-foreground font-medium uppercase tracking-wider">Publicly visible information</p>
+ </div>
+ </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                        <div className="space-y-3">
-                            <label className="font-black text-muted-foreground uppercase tracking-widest">Display Name</label>
-                            <input
-                                type="text"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:bg-surface-2 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-foreground"
-                                placeholder="Your full name"
-                            />
-                        </div>
-                        <div className="space-y-3">
-                            <label className="font-black text-muted-foreground uppercase tracking-widest">Email Address</label>
-                            <input
-                                type="email"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:bg-surface-2 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-foreground"
-                                placeholder="your@email.com"
-                            />
-                        </div>
-                    </div>
-                </Card>
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+ <div className="space-y-3">
+ <label className="font-black text-muted-foreground uppercase tracking-widest">Display Name</label>
+ <input
+ type="text"
+ value={formData.name}
+ onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+ className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:bg-surface-2 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-foreground"
+ placeholder="Your full name"
+ />
+ </div>
+ <div className="space-y-3">
+ <label className="font-black text-muted-foreground uppercase tracking-widest">Email Address</label>
+ <input
+ type="email"
+ value={formData.email}
+ onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+ className="w-full px-5 py-4 rounded-2xl border border-border bg-background focus:bg-surface-2 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium text-foreground"
+ placeholder="your@email.com"
+ />
+ </div>
+ </div>
+ </Card>
 
-                <Card className="p-4 md:p-8 border-border bg-surface shadow-card rounded-3xl">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="p-3 bg-purple-500/10 text-purple-500 rounded-2xl">
-                            <Bell size={24} />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-foreground tracking-tight">Notification Channels</h3>
-                            <p className="text-muted-foreground font-medium uppercase tracking-wider">How we reach you</p>
-                        </div>
-                    </div>
+ <Card className="p-4 md:p-8 border-border bg-surface shadow-card rounded-3xl">
+ <div className="flex items-center gap-4 mb-8">
+ <div className="p-3 bg-primary/10 text-primary rounded-2xl">
+ <Bell size={24} />
+ </div>
+ <div>
+ <h3 className="font-bold text-foreground tracking-tight">Notification Channels</h3>
+ <p className="text-muted-foreground font-medium uppercase tracking-wider">How we reach you</p>
+ </div>
+ </div>
 
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-accent transition-colors">
-                            <div className="space-y-1">
-                                <p className="font-bold text-foreground">Email Notifications</p>
-                                <p className="text-muted-foreground font-medium">Receive alerts about new gigs and messages via email.</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={formData.emailNotifications}
-                                    onChange={(e) => setFormData({ ...formData, emailNotifications: e.target.checked })}
-                                />
-                                <div className="w-11 h-6 bg-surface-2 border border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.75 after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                            </label>
-                        </div>
+ <div className="space-y-6">
+ <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-accent transition-colors">
+ <div className="space-y-1">
+ <p className="font-bold text-foreground">Email Notifications</p>
+ <p className="text-muted-foreground font-medium">Receive alerts about new gigs and messages via email.</p>
+ </div>
+ <label className="relative inline-flex items-center cursor-pointer">
+ <input
+ type="checkbox"
+ className="sr-only peer"
+ checked={formData.emailNotifications}
+ onChange={(e) => setFormData({ ...formData, emailNotifications: e.target.checked })}
+ />
+ <div className="w-11 h-6 bg-surface-2 border border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.75 after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+ </label>
+ </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-accent transition-colors">
-                            <div className="space-y-1">
-                                <p className="font-bold text-foreground">Desktop Alerts</p>
-                                <p className="text-muted-foreground font-medium">Show browser notifications for real-time dashboard updates.</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={formData.desktopAlerts}
-                                    onChange={(e) => setFormData({ ...formData, desktopAlerts: e.target.checked })}
-                                />
-                                <div className="w-11 h-6 bg-surface-2 border border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.75 after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                            </label>
-                        </div>
-                    </div>
-                </Card>
+ <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-accent transition-colors">
+ <div className="space-y-1">
+ <p className="font-bold text-foreground">Desktop Alerts</p>
+ <p className="text-muted-foreground font-medium">Show browser notifications for real-time dashboard updates.</p>
+ </div>
+ <label className="relative inline-flex items-center cursor-pointer">
+ <input
+ type="checkbox"
+ className="sr-only peer"
+ checked={formData.desktopAlerts}
+ onChange={(e) => setFormData({ ...formData, desktopAlerts: e.target.checked })}
+ />
+ <div className="w-11 h-6 bg-surface-2 border border-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.75 after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+ </label>
+ </div>
+ </div>
+ </Card>
 
-                <div className="flex justify-end gap-3 pt-4">
-                    <Button
-                        variant="outline"
-                        className="h-14 px-8 rounded-2xl font-bold border-2"
-                        onClick={handleDiscard}
-                        disabled={!hasChanges || saving}
-                    >
-                        Discard Changes
-                    </Button>
-                    <Button
-                        className="h-14 px-8 rounded-2xl font-bold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
-                        onClick={handleSave}
-                        disabled={!hasChanges || saving}
-                    >
-                        {saving ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Saving...
-                            </>
-                        ) : "Save Preferences"}
-                    </Button>
-                </div>
-                
-                {/* Danger Zone */}
-                <div className="pt-8">
-                    <Card className="p-4 md:p-8 border-destructive/20 bg-destructive/5 shadow-card rounded-3xl">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                            <div>
-                                <h3 className="font-bold text-red-600 tracking-tight text-xl mb-1">Danger Zone</h3>
-                                <p className="text-red-900/60 font-medium max-w-lg">
-                                    Permanently delete your account and all associated data. This action cannot be undone.
-                                </p>
-                            </div>
-                            <Button 
-                                variant="destructive" 
-                                className="h-12 px-6 rounded-xl font-bold bg-red-600 hover:bg-red-700 w-full md:w-auto shrink-0"
-                                onClick={handleDeleteAccount}
-                            >
-                                Delete Account
-                            </Button>
-                        </div>
-                    </Card>
-                </div>
-            </div>
-        </div>
-    )
+ <div className="flex justify-end gap-3 pt-4">
+ <Button
+ variant="outline"
+ className="h-14 px-8 rounded-2xl font-bold border-2"
+ onClick={handleDiscard}
+ disabled={!hasChanges || saving}
+ >
+ Discard Changes
+ </Button>
+ <Button
+ className="h-14 px-8 rounded-2xl font-bold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
+ onClick={handleSave}
+ disabled={!hasChanges || saving}
+ >
+ {saving ? (
+ <>
+ <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+ Saving...
+ </>
+ ) :"Save Preferences"}
+ </Button>
+ </div>
+ 
+ {/* Danger Zone */}
+ <div className="pt-8">
+ <Card className="p-4 md:p-8 border-destructive/20 bg-destructive/5 shadow-card rounded-3xl">
+ <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+ <div>
+ <h3 className="font-bold text-red-600 tracking-tight text-xl mb-1">Danger Zone</h3>
+ <p className="text-red-900/60 font-medium max-w-lg">
+ Permanently delete your account and all associated data. This action cannot be undone.
+ </p>
+ </div>
+ <Button 
+ variant="destructive" 
+ className="h-12 px-6 rounded-xl font-bold bg-red-600 hover:bg-red-700 w-full md:w-auto shrink-0"
+ onClick={handleDeleteAccount}
+ >
+ Delete Account
+ </Button>
+ </div>
+ </Card>
+ </div>
+ </div>
+ </div>
+ )
 }
