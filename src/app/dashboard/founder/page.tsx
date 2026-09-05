@@ -244,7 +244,7 @@ export default async function FounderDashboard() {
  <button className="px-3 py-1.5 font-black text-muted-foreground hover:text-foreground transition-colors">Monthly</button>
  </div>
  </div>
- <div className="h-[280px]">
+ <div className="h-70">
  <FinancialChart />
  </div>
  </Card>

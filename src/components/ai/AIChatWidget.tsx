@@ -114,7 +114,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  }
  }
  }
- } catch (err: any) {
+ } catch {
  setMessages(prev =>
  prev.map(m =>
  m.id === assistantMsgId
@@ -148,7 +148,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  }
 
  return (
- <div className={`fixed bottom-6 right-6 z-50 w-[380px] ${className}`}>
+ <div className={`fixed bottom-6 right-6 z-50 w-95 ${className}`}>
  <div className="bg-[#0e0e12] border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
  {/* Header */}
  <div className="flex items-center justify-between px-4 py-3 border-border bg-linear-to-r from-amber-500/10 to-orange-500/10">
@@ -184,7 +184,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  {!minimized && (
  <>
  {/* Messages */}
- <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[360px] min-h-[200px]">
+ <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-90 min-h-50">
  {messages.map((msg) => (
  <div
  key={msg.id}
@@ -195,7 +195,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  <Bot className="w-3 h-3 text-amber-400" />
  </div>
  )}
- <div className={`p-3 max-w-[85%] ${msg.role === 'user' ? 'bg-linear-to-r from-orange-500 to-amber-500 ml-auto' : 'bg-accent border border-white/5 text-foreground rounded-tl-[4px]'}`}>
+ <div className={`p-3 max-w-[85%] ${msg.role === 'user' ? 'bg-linear-to-r from-orange-500 to-amber-500 ml-auto' : 'bg-accent border border-white/5 text-foreground rounded-tl-lg'}`}>
  {msg.content || (
  <span className="flex gap-1 items-center py-1">
  <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />

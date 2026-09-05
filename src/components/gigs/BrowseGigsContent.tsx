@@ -373,7 +373,7 @@ export default function BrowseGigsContent() {
  <button
  type="button"
  onClick={() => setShowFilters(!showFilters)}
- className="flex items-center gap-2 px-6 py-3 bg-accent text-muted-foreground rounded-xl hover:bg-accent hover:bg-accent transition-colors font-medium"
+ className="flex items-center gap-2 px-6 py-3 bg-accent text-muted-foreground rounded-xl hover:bg-accent/80 transition-colors font-medium"
  >
  <SlidersHorizontal size={20} />
  Filters
@@ -402,14 +402,14 @@ export default function BrowseGigsContent() {
  <button
  type="button"
  onClick={() => setViewMode("grid")}
- className={`p-2 rounded-lg transition-colors ${viewMode ==="grid" ?"bg-white bg-accent text-foreground shadow-sm" :"text-muted-foreground" }`}
+ className={`p-2 rounded-lg transition-colors ${viewMode ==="grid" ?"bg-background text-foreground shadow-sm" :"text-muted-foreground" }`}
  >
  <Grid3x3 size={20} />
  </button>
  <button
  type="button"
  onClick={() => setViewMode("list")}
- className={`p-2 rounded-lg transition-colors ${viewMode ==="list" ?"bg-white bg-accent text-foreground shadow-sm" :"text-muted-foreground" }`}
+ className={`p-2 rounded-lg transition-colors ${viewMode ==="list" ?"bg-background text-foreground shadow-sm" :"text-muted-foreground" }`}
  >
  <List size={20} />
  </button>
@@ -418,7 +418,7 @@ export default function BrowseGigsContent() {
  {/* Search Button */}
  <button
  type="submit"
- className="px-8 py-3 bg-foreground text-background rounded-xl font-bold hover:opacity-90 transition-colors shadow-lg shadow-sm"
+ className="px-8 py-3 bg-foreground text-background rounded-xl font-bold hover:opacity-90 transition-colors shadow-lg"
  >
  Search
  </button>

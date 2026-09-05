@@ -393,15 +393,15 @@ export default function Profile() {
  <motion.div
  onMouseMove={handleMouseMove}
  onMouseLeave={handleMouseLeave}
- style={{ rotateX, rotateY, transformStyle:"preserve-3d" }}
- className="bg-card/80 backdrop-blur-xl rounded-5xl shadow-2xl p-10 border border-(--border-subtle) border-border flex flex-col items-center text-center relative overflow-hidden"
+ style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+ className="bg-card/80 backdrop-blur-xl rounded-5xl shadow-2xl p-10 border border-(--border-subtle) flex flex-col items-center text-center relative overflow-hidden"
  >
  {/* Accent bar */}
- <div className="absolute top-0 left-0 w-full h-1.5 rounded-t-5xl" style={{ background:"linear-gradient(90deg, var(--color-primary), #ffb800)" }} />
+ <div className="absolute top-0 left-0 w-full h-1.5 rounded-t-5xl" style={{ background: "linear-gradient(90deg, var(--color-primary), #ffb800)" }} />
 
  {/* Avatar */}
  <div className="relative group mb-8">
- <div className="h-40 w-40 rounded-4xl bg-(--surface-2) flex items-center justify-center font-black text-foreground shadow-2xl transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 overflow-hidden border-white border-border">
+ <div className="h-40 w-40 rounded-4xl bg-(--surface-2) flex items-center justify-center font-black text-foreground shadow-2xl transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 overflow-hidden border border-white/10">
  {profile.image ? (
  <Image src={profile.image} alt={profile.name} width={120} height={120} className="h-full w-full object-cover" />
  ) : (
@@ -435,13 +435,13 @@ export default function Profile() {
  value={profile.name}
  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
  placeholder="Display Name"
- className="w-full bg-(--surface-2) border-white/5 border-border rounded-2xl px-6 py-4 font-black focus:border-electric outline-none transition-all text-foreground"
+ className="w-full bg-(--surface-2) border border-white/5 rounded-2xl px-6 py-4 font-black focus:border-electric outline-none transition-all text-foreground"
  />
  <input
  value={profile.role}
  onChange={(e) => setProfile({ ...profile, role: e.target.value })}
  placeholder="Professional Role"
- className="w-full bg-(--surface-2) border-white/5 border-border rounded-2xl px-6 py-3 font-bold text-center focus:border-electric outline-none transition-all"
+ className="w-full bg-(--surface-2) border border-white/5 rounded-2xl px-6 py-3 font-bold text-center focus:border-electric outline-none transition-all"
  />
  </div>
  ) : (
@@ -462,7 +462,7 @@ export default function Profile() {
  </div>
 
  {/* Social Connectivity */}
- <div className="mt-10 pt-10 border-white/5 border-border w-full relative z-10">
+ <div className="mt-10 pt-10 border-t border-white/5 w-full relative z-10">
  <p className="font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">Digital Presence</p>
  <div className="space-y-4">
  <SocialLink
@@ -498,11 +498,11 @@ export default function Profile() {
 
  {/* Stats Quick Look */}
  <div className="grid grid-cols-2 gap-4 mt-8 w-full relative z-10">
- <div className="bg-(--surface-2)/50 p-4 rounded-3xl border border-white/5 border-border">
+ <div className="bg-(--surface-2)/50 p-4 rounded-3xl border border-white/5">
  <p className="font-black text-foreground">{stats.connections}</p>
  <p className="font-bold text-muted-foreground uppercase">Network</p>
  </div>
- <div className="bg-(--surface-2)/50 p-4 rounded-3xl border border-white/5 border-border">
+ <div className="bg-(--surface-2)/50 p-4 rounded-3xl border border-white/5">
  <p className="font-black text-foreground flex items-center gap-1">
  {(stats.reputationPoints / 100).toFixed(1)} <Sparkles size={16} className="text-amber-400" />
  </p>
@@ -530,7 +530,7 @@ export default function Profile() {
  <div className="lg:col-span-8 space-y-12">
 
  {/* THE STORY (ABOUT) */}
- <section className="bg-card/60 backdrop-blur-xl rounded-5xl p-10 border border-(--border-subtle) border-border shadow-xl">
+ <section className="bg-card/60 backdrop-blur-xl rounded-5xl p-10 border border-(--border-subtle) shadow-xl">
  <div className="flex items-center justify-between mb-8">
  <h2 className="font-black text-foreground tracking-tight flex items-center gap-3">
  <div className="p-3 bg-background text-foreground rounded-2xl shadow-lg">
@@ -545,7 +545,7 @@ export default function Profile() {
  value={profile.bio}
  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
  placeholder="Write your professional journey..."
- className="w-full h-48 bg-(--surface-2) border-white/5 border-border rounded-3xl p-6 font-medium text-foreground focus:border-electric outline-none transition-all resize-none"
+ className="w-full h-48 bg-(--surface-2) border border-white/5 rounded-3xl p-6 font-medium text-foreground focus:border-electric outline-none transition-all resize-none"
  />
  ) : (
  <p className="text-muted-foreground leading-relaxed font-medium">
@@ -660,7 +660,7 @@ export default function Profile() {
  </section>
 
  {/* Gamification & Reputation */}
- <section className="bg-card/60 backdrop-blur-xl border border-(--border-subtle) border-border rounded-5xl p-8 relative overflow-hidden">
+ <section className="bg-card/60 backdrop-blur-xl border border-(--border-subtle) rounded-5xl p-8 relative overflow-hidden">
  <div className="flex items-center justify-between mb-6">
  <h2 className="font-black text-foreground flex items-center gap-3">
  <div className="p-2.5 bg-amber-500 text-foreground rounded-xl shadow-lg shadow-amber-500/30">
@@ -685,7 +685,7 @@ export default function Profile() {
  <p className="font-bold mt-2 uppercase tracking-widest text-center">{Math.max(0, 1000 - stats.reputationPoints)} pts to &quot;Expert&quot; tier</p>
  </div>
 
- <div className="pt-4 border-white/5 border-border">
+ <div className="pt-4 border-t border-white/5">
  <div className="grid grid-cols-2 gap-4 mb-5">
  <div>
  <p className="font-black text-foreground">{stats.completedGigs}</p>
@@ -704,7 +704,7 @@ export default function Profile() {
  <div className="flex items-center justify-center p-3 bg-primary border border-primary/20 text-primary rounded-2xl hover:scale-105 transition-transform cursor-help" title="Verified Designer">
  <Award size={20} />
  </div>
- <div className="flex items-center justify-center p-3 bg-emerald-50 text-success border border-emerald-500/20 text-emerald-500 rounded-2xl hover:scale-105 transition-transform cursor-help" title="Campus Leader">
+ <div className="flex items-center justify-center p-3 bg-emerald-50 border border-emerald-500/20 text-emerald-500 rounded-2xl hover:scale-105 transition-transform cursor-help" title="Campus Leader">
  <Users size={20} />
  </div>
  </div>
@@ -731,7 +731,7 @@ export default function Profile() {
  initial={{ opacity: 0, scale: 0.9, y: 40 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.9, y: 40 }}
- className="relative w-full max-w-xl bg-(--surface) rounded-5xl shadow-2xl p-10 flex flex-col gap-6 border border-white/5 border-border"
+ className="relative w-full max-w-xl bg-(--surface) rounded-5xl shadow-2xl p-10 flex flex-col gap-6 border border-white/5"
  >
  <div className="flex justify-between items-center">
  <h3 className="font-black text-foreground tracking-tight">Showcase Project</h3>
@@ -758,7 +758,7 @@ export default function Profile() {
  <textarea
  value={newProject.description}
  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
- className="w-full h-32 bg-(--surface-2) border-white/5 border-border rounded-2xl p-4 font-bold outline-none focus:border-electric transition-all resize-none text-foreground"
+ className="w-full h-32 bg-(--surface-2) border border-white/5 rounded-2xl p-4 font-bold outline-none focus:border-electric transition-all resize-none text-foreground"
  placeholder="What makes this project standout?"
  />
  </div>
@@ -782,8 +782,6 @@ export default function Profile() {
  COMPONENTS
 ================================ */
 
-
-
 function SocialLink({ icon: Icon, label, value, isEditing, onChange }: {
  icon: LucideIcon,
  label: string,
@@ -800,7 +798,7 @@ function SocialLink({ icon: Icon, label, value, isEditing, onChange }: {
  value={value}
  onChange={(e) => onChange(e.target.value)}
  placeholder={`${label} Profile URL`}
- className="w-full bg-(--surface-2) border-white/5 border-border rounded-2xl pl-12 pr-6 py-3 font-bold text-foreground focus:border-electric outline-none transition-all"
+ className="w-full bg-(--surface-2) border border-white/5 rounded-2xl pl-12 pr-6 py-3 font-bold text-foreground focus:border-electric outline-none transition-all"
  />
  </div>
  ) : (
@@ -813,14 +811,14 @@ function SocialLink({ icon: Icon, label, value, isEditing, onChange }: {
  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor ="rgba(31,169,113,0.20)"; (e.currentTarget as HTMLElement).style.background ="rgba(31,169,113,0.05)" }}
  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor ="transparent"; (e.currentTarget as HTMLElement).style.background ="transparent" }}
  >
- <div className="h-10 w-10 bg-(--surface-2) shadow-lg border border-white/5 border-border rounded-xl flex items-center justify-center text-foreground transition-all"
+ <div className="h-10 w-10 bg-(--surface-2) shadow-lg border border-white/5 rounded-xl flex items-center justify-center text-foreground transition-all"
  onMouseEnter={(e) => { const el = e.currentTarget; el.style.background ="var(--color-primary)"; el.style.color ="white" }}
  onMouseLeave={(e) => { const el = e.currentTarget; el.style.background =""; el.style.color ="" }}>
  <Icon size={18} />
  </div>
  <div className="text-left">
  <p className="font-black text-muted-foreground uppercase tracking-widest">{label}</p>
- <p className="font-black text-foreground truncate max-w-[150px]">{value ?"Connected" :"Not Connected"}</p>
+ <p className="font-black text-foreground truncate max-w-37.5">{value ?"Connected" :"Not Connected"}</p>
  </div>
  {value && <ExternalLink size={14} className="ml-auto text-muted-foreground transition-all" style={{ color:"var(--color-text-muted)" }} />}
  </a>
@@ -836,7 +834,7 @@ function ProjectCard({ project, onRemove }: { project: Project, onRemove: () => 
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.95 }}
- className="group bg-card/50 backdrop-blur-xl rounded-4xl border border-white/5 border-border shadow-xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500"
+ className="group bg-card/50 backdrop-blur-xl rounded-4xl border border-white/5 shadow-xl overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500"
  >
  <div className="relative h-48 bg-(--surface-2)">
  {project.image ? (
@@ -886,7 +884,7 @@ function InputField({ label, value, onChange, placeholder }: { label: string, va
  value={value}
  onChange={(e) => onChange(e.target.value)}
  placeholder={placeholder}
- className="w-full bg-(--surface-2) border-white/5 border-border rounded-2xl px-6 py-4 font-bold text-foreground outline-none focus:border-electric transition-all"
+ className="w-full bg-(--surface-2) border border-white/5 rounded-2xl px-6 py-4 font-bold text-foreground outline-none focus:border-electric transition-all"
  />
  </div>
  );
