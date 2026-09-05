@@ -120,11 +120,11 @@
 
     /* Touch Targets (Minimum 44x44px for mobile) */
     .touch-target {
-        @apply min-h-[44px] min-w-[44px];
+        @apply min-h-11 min-w-11;
     }
 
     .touch-target-sm {
-        @apply min-h-[36px] min-w-[36px];
+        @apply min-h-9 min-w-9;
     }
 
     /* Responsive Images */
@@ -341,7 +341,7 @@
 
     /* Responsive Chat Widget */
     .responsive-chat-widget {
-        @apply w-full sm:w-96 h-[80vh] sm:h-[600px];
+        @apply w-full sm:w-96 h-[80vh] sm:h-150;
     }
 
     .responsive-chat-button {

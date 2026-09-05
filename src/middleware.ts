@@ -197,12 +197,12 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
  matcher: [
- /*
- * Match all request paths except for public assets, metadata files, and health endpoints.
- * This avoids redirecting browser metadata and PWA resources to /auth/sign-in.
- */
- '/((?!_next/.*|favicon.ico|favicon.svg|apple-touch-icon.png|site.webmanifest|manifest.webmanifest|robots.txt|sitemap.xml|sitemap-index.xml|opensearch.xml|sw.js|images/.*|icons/.*|fonts/.*|logos/.*|assets/.*|static/.*|.*\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|xml|txt|webmanifest)$|api/health|api/ready|api/live).*)',
- ],
+  /*
+   * Match all request paths except for public assets and metadata files.
+   * This avoids redirecting browser metadata and PWA resources to /auth/sign-in.
+   */
+  '/((?!_next/.*|favicon.ico|favicon.svg|apple-touch-icon.png|site.webmanifest|manifest.webmanifest|robots.txt|sitemap.xml|sitemap-index.xml|opensearch.xml|sw.js|images/.*|icons/.*|fonts/.*|logos/.*|assets/.*|static/.*|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|xml|txt|webmanifest)$).*)',
+  ],
 };
 
 export default proxy;

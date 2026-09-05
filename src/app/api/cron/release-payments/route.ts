@@ -144,7 +144,7 @@ export async function GET(req: Request) {
 "Content-Type":"application/json",
  },
  body: JSON.stringify({
- account_number:"23456789012", // Your RazorpayX account number
+ account_number: process.env.RAZORPAYX_ACCOUNT_NUMBER || "23456789012", // RazorpayX account number
  fund_account_id: fundAccount.id,
  amount: Math.round(Number(transaction.sellerPayout) * 100), // in paise
  currency:"INR",
