@@ -2,6 +2,7 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
+const http = require('http');
 const https = require('https');
 const path = require('path');
 
@@ -98,10 +99,11 @@ publicKeys.forEach(k => checkKey(k, false));
 
 // 5. PRODUCTION HTTP HEADERS & URL AVAILABILITY
 console.log('\n🌐 Verifying Production HTTP Headers...');
-const TARGET_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in';
+const TARGET_URL = process.env.TEST_TARGET_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in';
 const HEALTH_URL = `${TARGET_URL}/api/health`;
 
-const req = https.get(HEALTH_URL, (res) => {
+const client = HEALTH_URL.startsWith('https:') ? https : http;
+const req = client.get(HEALTH_URL, (res) => {
   const headers = res.headers;
   
   if (res.statusCode !== 200) {
