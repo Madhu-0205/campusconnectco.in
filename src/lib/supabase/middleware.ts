@@ -2,6 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 import { SEO_LANDING_PAGE_SLUGS } from '@/lib/seoLandingPages'
+
 import { fetchWithBackoff } from './fetch'
 
 export async function updateSession(request: NextRequest) {

@@ -42,3 +42,5 @@ next-env.d.ts
 node_modules
 .prisma
 prisma/generated
+playwright-report/
+test-results/
