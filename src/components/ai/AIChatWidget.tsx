@@ -240,7 +240,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  <button
  onClick={() => sendMessage()}
  disabled={!input.trim() || streaming}
- className="w-10 h-10 rounded-xl bg-foreground text-background hover:bg-orange-600 text-foreground flex items-center justify-center shrink-0 disabled:opacity-50 transition-colors shadow-lg"
+ className="w-10 h-10 rounded-xl bg-foreground text-background hover:bg-orange-600 flex items-center justify-center shrink-0 disabled:opacity-50 transition-colors shadow-lg"
  >
  <Send className="w-3.5 h-3.5" />
  </button>

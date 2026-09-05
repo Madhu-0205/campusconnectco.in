@@ -308,7 +308,7 @@ export default async function FounderDashboard() {
 
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-4">
- <div className="p-3 bg-foreground text-background/10 text-primary rounded-xl">
+ <div className="p-3 bg-(--primary)/10 text-(--primary) rounded-xl">
  <MessageSquare size={18} />
  </div>
  <div>

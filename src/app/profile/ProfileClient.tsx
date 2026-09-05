@@ -766,7 +766,7 @@ export default function Profile() {
 
  <Button
  onClick={handleAddProject}
- className="w-full bg-background hover:bg-foreground text-background :bg-foreground text-foreground py-6 rounded-2xl font-black text-lg transition-all shadow-xl"
+ className="w-full bg-foreground hover:bg-foreground/90 text-background py-6 rounded-2xl font-black text-lg transition-all shadow-xl"
  >
  Publish to Wall of Fame
  </Button>

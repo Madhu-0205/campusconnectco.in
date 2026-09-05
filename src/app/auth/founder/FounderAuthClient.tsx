@@ -57,7 +57,7 @@ export default function FounderSignInPage() {
  <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
  {/* Background glows */}
  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-warning/10 text-warning rounded-full blur-3xl" />
- <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-foreground text-background/5 rounded-full blur-3xl" />
+ <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-(--primary)/5 rounded-full blur-3xl" />
 
  <motion.div
  initial={{ opacity: 0, y: 24 }}

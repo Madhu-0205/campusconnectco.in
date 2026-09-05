@@ -414,7 +414,7 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
  <div className={cn(
 "px-6 py-4 rounded-4xl text-sm font-bold shadow-xl",
  isMe 
- ?"bg-foreground text-background text-foreground rounded-tr-none shadow-primary/10" 
+ ?"bg-foreground text-background rounded-tr-none shadow-primary/10" 
  :"bg-(--surface-2) text-foreground border border-white/5 rounded-tl-none"
  )}>
  {msg.content}
@@ -456,7 +456,7 @@ export function MessagesLayout({ initialConversations, currentUserId, initialAct
  </button>
  <button 
  type="submit"
- className="bg-foreground text-background hover:bg-foreground/90 text-foreground p-4 rounded-2xl shadow-xl shadow-primary/20 active:scale-95 transition-all"
+ className="bg-foreground text-background hover:bg-foreground/90 p-4 rounded-2xl shadow-xl shadow-primary/20 active:scale-95 transition-all"
  >
  <Send size={18} fill="white" />
  </button>

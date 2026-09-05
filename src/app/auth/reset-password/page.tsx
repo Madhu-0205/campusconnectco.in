@@ -139,7 +139,7 @@ export default function ResetPasswordPage() {
 
  <Link
  href="/auth/forgot-password"
- className="inline-block bg-foreground text-background hover:bg-foreground/90 text-foreground font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02]"
+ className="inline-block bg-foreground text-background hover:bg-foreground/90 font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02]"
  >
  Request New Reset Link
  </Link>
@@ -153,7 +153,7 @@ export default function ResetPasswordPage() {
  <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-blue-50 to-primary-light p-4">
  <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl p-4 md:p-8 border border-border">
  <div className="text-center mb-8">
- <div className="mx-auto w-16 h-16 bg-foreground text-background/10 text-background rounded-full flex items-center justify-center mb-4">
+ <div className="mx-auto w-16 h-16 bg-(--primary)/10 text-(--primary) rounded-full flex items-center justify-center mb-4">
  <Lock size={32} className="text-(--primary)" />
  </div>
 
@@ -248,7 +248,7 @@ export default function ResetPasswordPage() {
  <button
  type="submit"
  disabled={isLoading}
- className="w-full bg-foreground text-background hover:bg-foreground/90 disabled:bg-slate-400 text-foreground font-bold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none shadow-lg disabled:shadow-none flex items-center justify-center gap-2"
+ className="w-full bg-foreground text-background hover:bg-foreground/90 disabled:bg-slate-400 font-bold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none shadow-lg disabled:shadow-none flex items-center justify-center gap-2"
  >
  {isLoading ? (
  <>

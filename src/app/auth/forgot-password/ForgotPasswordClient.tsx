@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
  <div className="min-h-screen relative flex items-center justify-center p-4 bg-background overflow-hidden">
  {/* Background */}
  <div className="absolute inset-0 bg-size-[48px_48px]" />
- <div className="absolute top-0 left-1/2 -translate-x-1/2 w-125 h-100 bg-foreground text-background/10 blur-[100px] rounded-full pointer-events-none" />
+ <div className="absolute top-0 left-1/2 -translate-x-1/2 w-125 h-100 bg-(--primary)/10 blur-[100px] rounded-full pointer-events-none" />
 
  <div className="relative z-10 w-full max-w-md">
  {/* Brand */}
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
  ) : (
  <motion.div key="form" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
  <div className="text-center mb-8">
- <div className="w-14 h-14 bg-foreground text-background/15 border border-(--primary)/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
+ <div className="w-14 h-14 bg-(--primary)/15 border border-(--primary)/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
  <Mail size={26} className="text-(--primary)" />
  </div>
  <h1 className="font-black text-foreground mb-2">Forgot your password?</h1>
@@ -98,7 +98,7 @@ export default function ForgotPasswordPage() {
  <button
  type="submit"
  disabled={isLoading}
- className="w-full h-11 bg-foreground text-background hover:bg-foreground disabled:bg-slate-700 text-foreground font-black rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-(--primary)/20 disabled:shadow-none disabled:cursor-not-allowed"
+ className="w-full h-11 bg-foreground text-background hover:bg-foreground/90 disabled:bg-slate-700 disabled:opacity-50 font-black rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-(--primary)/20 disabled:shadow-none disabled:cursor-not-allowed"
  >
  {isLoading ? (
  <><Loader2 size={16} className="animate-spin" /> Sending...</>

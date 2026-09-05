@@ -104,11 +104,11 @@ export function AIPersonalizedFeed() {
  return (
  <Link key={`gig-${gig.id}`} href={`/dashboard/student/gigs`}>
  <div className="bg-linear-to-br from-[#111116] to-[#1a1a24] border border-(--primary)/20 hover:border-(--primary)/40 hover:shadow-[0_0_30px_-5px_rgba(249,115,22,0.15)] transition-all rounded-3xl p-5 md:p-6 relative overflow-hidden group cursor-pointer block">
- <div className="absolute top-0 right-0 w-32 h-32 bg-foreground text-background/10 blur-[50px] rounded-full pointer-events-none" />
+ <div className="absolute top-0 right-0 w-32 h-32 bg-(--primary)/10 blur-[50px] rounded-full pointer-events-none" />
  
  <div className="flex items-start justify-between mb-4 relative z-10">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-xl bg-foreground text-background/10 flex items-center justify-center font-bold text-orange-400">
+ <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center font-bold text-orange-400">
  <Briefcase className="w-5 h-5" />
  </div>
  <div>

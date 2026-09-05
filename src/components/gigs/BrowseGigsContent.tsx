@@ -418,7 +418,7 @@ export default function BrowseGigsContent() {
  {/* Search Button */}
  <button
  type="submit"
- className="px-8 py-3 bg-foreground text-background text-foreground rounded-xl font-bold hover:opacity-90 transition-colors shadow-lg shadow-sm"
+ className="px-8 py-3 bg-foreground text-background rounded-xl font-bold hover:opacity-90 transition-colors shadow-lg shadow-sm"
  >
  Search
  </button>
@@ -565,7 +565,7 @@ export default function BrowseGigsContent() {
  </p>
  <button
  onClick={clearFilters}
- className="px-6 py-3 bg-foreground text-background text-foreground rounded-xl font-bold hover:opacity-90 transition-colors"
+ className="px-6 py-3 bg-foreground text-background rounded-xl font-bold hover:opacity-90 transition-colors"
  >
  Clear Filters
  </button>

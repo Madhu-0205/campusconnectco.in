@@ -100,7 +100,7 @@ export function ReputationLedgerCard({
  return (
  <div className="rounded-3xl border border-white/5 bg-white/2 p-6 shadow-2xl relative overflow-hidden group">
  {/* Background effects */}
- <div className="absolute -right-16 -top-16 w-32 h-32 blur-[60px] bg-foreground text-background/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+ <div className="absolute -right-16 -top-16 w-32 h-32 blur-[60px] bg-(--primary)/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
  
  <div className="flex items-center justify-between mb-6 relative z-10">
  <h3 className="font-black text-foreground flex items-center gap-2 text-base font-display">
