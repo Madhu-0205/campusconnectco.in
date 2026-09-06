@@ -1,129 +1,88 @@
-import { NextRequest, NextResponse } from"next/server";
-import OpenAI from"openai";
+import { NextRequest, NextResponse } from "next/server";
 
-import { protectApi } from"@/lib/auth-checks";
-import prisma from"@/lib/prisma";
+import { puterAI } from "@/lib/ai/puter";
+import { protectApi } from "@/lib/auth-checks";
+import prisma from "@/lib/prisma";
 
 export const maxDuration = 60;
 
-function getOpenAIClient(): OpenAI {
- if (!process.env.OPENAI_API_KEY) {
- throw new Error("OPENAI_API_KEY is not set");
- }
- return new OpenAI({
- apiKey: process.env.OPENAI_API_KEY,
- ...(process.env.OPENAI_API_KEY.startsWith("gsk_")
- ? { baseURL:"https://api.groq.com/openai/v1" }
- : {}),
- });
-}
-
 // ────────────────────────────────────────────────────────────────────────────
 // POST /api/ai/resume-analyze
-// Analyzes a resume and persists the result to the ResumeAnalysis table.
+// Analyzes a resume using Puter AI and persists the result to ResumeAnalysis table.
 // ────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
- try {
- const auth = await protectApi(["FOUNDER","STUDENT","STARTUP","CLIENT"]);
- if (auth.errorResponse) return auth.errorResponse;
+  try {
+    const auth = await protectApi(["FOUNDER", "STUDENT", "STARTUP", "CLIENT"]);
+    if (auth.errorResponse) return auth.errorResponse;
 
- const openai = getOpenAIClient();
+    let body: { resumeText?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
 
- let body: { resumeText?: string };
- try {
- body = await req.json();
- } catch {
- return NextResponse.json({ error:"Invalid request body" }, { status: 400 });
- }
+    const { resumeText } = body;
+    if (!resumeText || typeof resumeText !== "string" || resumeText.trim().length < 50) {
+      return NextResponse.json(
+        { error: "resumeText is required and must be at least 50 characters" },
+        { status: 400 }
+      );
+    }
+    if (resumeText.length > 25000) {
+      return NextResponse.json(
+        { error: "resumeText is too long. Maximum allowed length is 25000 characters." },
+        { status: 400 }
+      );
+    }
 
- const { resumeText } = body;
- if (!resumeText || typeof resumeText !=="string" || resumeText.trim().length < 50) {
- return NextResponse.json(
- { error:"resumeText is required and must be at least 50 characters" },
- { status: 400 }
- );
- }
- if (resumeText.length > 25000) {
- return NextResponse.json(
- { error:"resumeText is too long. Maximum allowed length is 25000 characters." },
- { status: 400 }
- );
- }
+    // Call Puter AI Resume Analyzer
+    const parsed = await puterAI.analyzeResume(resumeText);
 
- const model = process.env.OPENAI_API_KEY?.startsWith("gsk_")
- ?"llama-3.3-70b-versatile"
- :"gpt-4o-mini";
+    const formattedResult = {
+      score: parsed.score,
+      grade: parsed.grade,
+      strengths: parsed.strengths,
+      weaknesses: parsed.weaknesses,
+      skills: parsed.skills,
+      missingSkills: parsed.missingSkills,
+      suggestions: parsed.suggestions,
+      keywords: parsed.keywords,
+      experienceLevel: parsed.experienceLevel,
+      summary: parsed.summary,
+      section_scores: {
+        skills_match: parsed.sectionScores.skillsMatch,
+        structure: parsed.sectionScores.structure,
+        content_depth: parsed.sectionScores.contentDepth,
+        keyword_density: parsed.sectionScores.keywordDensity
+      },
+      poweredBy: "Puter.js"
+    };
 
- const response = await openai.chat.completions.create({
- model,
- max_tokens: 1500,
- messages: [
- {
- role:"system",
- content: `You are an expert ATS (Applicant Tracking System) and senior career coach.
-Analyze the resume text and return ONLY a JSON object with exactly this structure:
-{
-"score": number (0-100, ATS compatibility score),
-"grade": string ("A+","A","B+","B","C+","C","D"),
-"strengths": string[] (3-5 specific strengths found in this resume),
-"weaknesses": string[] (3-5 specific weaknesses),
-"skills": string[] (all technical and soft skills detected),
-"missingSkills": string[] (high-demand skills absent from this resume),
-"suggestions": string[] (5-7 concrete, actionable improvement suggestions),
-"keywords": string[] (important industry keywords present),
-"experienceLevel": string ("Fresher","Junior","Mid-level","Senior","Lead"),
-"summary": string (2-sentence objective assessment),
-"section_scores": {
-"skills_match": number (0-100),
-"structure": number (0-100),
-"content_depth": number (0-100),
-"keyword_density": number (0-100)
- }
-}
-No preamble. No markdown. Just JSON.`,
- },
- {
- role:"user",
- content: resumeText.slice(0, 10000),
- },
- ],
- });
+    // ── Persist the result to the database ──────────────────────────────────
+    const wordCount = resumeText.trim().split(/\s+/).length;
+    const savedAnalysis = await prisma.resumeAnalysis.create({
+      data: {
+        userId: auth.user!.id,
+        score: formattedResult.score,
+        grade: formattedResult.grade,
+        resumeSnippet: resumeText.slice(0, 200),
+        wordCount,
+        result: formattedResult as object
+      },
+      select: { id: true, createdAt: true }
+    });
 
- const raw = response.choices[0]?.message?.content ??"{}";
- let parsed: Record<string, unknown>;
- try {
- const clean = raw.replace(/```json|```/g,"").trim();
- parsed = JSON.parse(clean);
- } catch {
- return NextResponse.json({ error:"AI returned invalid JSON", raw }, { status: 500 });
- }
-
- // ── Persist the result to the database ──────────────────────────────────
- // The ResumeAnalysis model stores results per-user so users can review
- // their analysis history without re-running the AI each time.
- const wordCount = resumeText.trim().split(/\s+/).length;
- const savedAnalysis = await prisma.resumeAnalysis.create({
- data: {
- userId: auth.user!.id,
- score: typeof parsed.score ==="number" ? parsed.score : 0,
- grade: typeof parsed.grade ==="string" ? parsed.grade :"N/A",
- resumeSnippet: resumeText.slice(0, 200), // Store only first 200 chars for reference
- wordCount,
- result: parsed as object, // Full AI JSON stored as Prisma Json field
- },
- select: { id: true, createdAt: true },
- });
-
- return NextResponse.json({
- success: true,
- resume_id: savedAnalysis.id,
- data: {
- ...parsed,
- word_count: wordCount,
- processing_time_ms: Date.now(),
- },
- });
- } catch (error: unknown) {
+    return NextResponse.json({
+      success: true,
+      resume_id: savedAnalysis.id,
+      data: {
+        ...formattedResult,
+        word_count: wordCount,
+        created_at: savedAnalysis.createdAt
+      }
+    });
+  } catch (error: unknown) {
  const err = error as {
  message?: string;
  status?: number;

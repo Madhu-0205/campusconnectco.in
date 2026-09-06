@@ -101,6 +101,7 @@ export async function updateSession(request: NextRequest) {
     path.startsWith('/api/skills') ||
     path.startsWith('/api/colleges') ||
     path.startsWith('/api/recommendations') ||
+    path.startsWith('/api/ai/opportunity-summary') ||
     path.startsWith('/api/ai/resume-analyze') ||
     path.startsWith('/api/internal/import-internship') ||
     path.startsWith('/api/internal/opportunities') ||

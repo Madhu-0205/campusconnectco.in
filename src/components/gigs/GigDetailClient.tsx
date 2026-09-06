@@ -22,6 +22,9 @@ import {
  Linkedin,
  ShieldCheck,
  FileText,
+ Sparkles,
+ Brain,
+ Loader2,
 } from"lucide-react";
 import Link from"next/link";
 import { useRouter } from "next/navigation";
@@ -98,15 +101,61 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
      if (session?.user) {
        setCurrentUserId(session.user.id);
        // Fetch user role from database
-       const response = await fetch("/api/user/profile");
-       if (response.ok) {
-         const userData = await response.json();
-         setUserRole(userData.role);
-       }
-     }
-   };
-   fetchUser();
- }, [supabase]);
+        const response = await fetch("/api/user/profile");
+        if (response.ok) {
+          const userData = await response.json();
+          setUserRole(userData.role);
+        }
+      }
+    };
+    fetchUser();
+  }, [supabase]);
+
+  // Phase 6 Puter AI: Smart Match Explanation & Opportunity Summary
+  const [matchExplanation, setMatchExplanation] = useState<any>(null);
+  const [loadingMatch, setLoadingMatch] = useState(false);
+  const [aiSummary, setAiSummary] = useState<any>(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+
+  const fetchMatchExplanation = async () => {
+    if (!currentUserId || loadingMatch) return;
+    setLoadingMatch(true);
+    try {
+      const res = await fetch("/api/ai/match-explanation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gigId: gig.id })
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setMatchExplanation(data.data);
+      }
+    } catch {
+      // Graceful degradation
+    } finally {
+      setLoadingMatch(false);
+    }
+  };
+
+  const fetchAiSummary = async () => {
+    if (loadingSummary) return;
+    setLoadingSummary(true);
+    try {
+      const res = await fetch("/api/ai/opportunity-summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gigId: gig.id })
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setAiSummary(data.data);
+      }
+    } catch {
+      // Graceful degradation
+    } finally {
+      setLoadingSummary(false);
+    }
+  };
 
  const userApplication = gig.applications.find(
    (app) => app.applicant.id === currentUserId
@@ -297,6 +346,151 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
  </p>
  </div>
  </Card>
+
+        {/* Phase 6: Smart Match Explanation (Authenticated Students) */}
+        {currentUserId && !isOwner && (
+          <Card className="p-6 border-primary/20 bg-primary/2">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h3 className="font-bold text-foreground">Why this matches you</h3>
+                <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Puter AI</span>
+              </div>
+              <a
+                href="https://developer.puter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] text-muted-foreground hover:text-primary transition-colors font-medium"
+              >
+                Powered by Puter
+              </a>
+            </div>
+
+            {matchExplanation ? (
+              <div className="space-y-3 text-sm">
+                <p className="text-foreground font-medium bg-background p-3 rounded-xl border border-border/60">
+                  {matchExplanation.summary}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                  <div className="p-2.5 bg-background rounded-lg border border-border/40">
+                    <span className="font-bold text-foreground block mb-1">🎯 Skills</span>
+                    <span className="text-muted-foreground">{matchExplanation.scoreBreakdown?.skillMatchExplanation}</span>
+                  </div>
+                  <div className="p-2.5 bg-background rounded-lg border border-border/40">
+                    <span className="font-bold text-foreground block mb-1">📍 Proximity</span>
+                    <span className="text-muted-foreground">{matchExplanation.scoreBreakdown?.locationExplanation}</span>
+                  </div>
+                  <div className="p-2.5 bg-background rounded-lg border border-border/40">
+                    <span className="font-bold text-foreground block mb-1">⏱️ Freshness</span>
+                    <span className="text-muted-foreground">{matchExplanation.scoreBreakdown?.freshnessExplanation}</span>
+                  </div>
+                </div>
+                {matchExplanation.suggestedAction && (
+                  <p className="text-xs text-primary font-medium flex items-center gap-1.5 pt-1">
+                    <span>💡 Suggestion:</span> {matchExplanation.suggestedAction}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-between pt-1">
+                <p className="text-xs text-muted-foreground">
+                  Get an AI breakdown of how your skills and location align with this opportunity.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchMatchExplanation}
+                  disabled={loadingMatch}
+                  className="shrink-0 ml-3"
+                >
+                  {loadingMatch ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="h-3.5 w-3.5 mr-1.5 text-primary" />
+                      Explain Match
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </Card>
+        )}
+
+        {/* Phase 6: AI Opportunity Summary */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-primary" />
+              <h3 className="font-bold text-foreground">AI Opportunity Summary</h3>
+              <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Puter AI</span>
+            </div>
+            <a
+              href="https://developer.puter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-muted-foreground hover:text-primary transition-colors font-medium"
+            >
+              Powered by Puter
+            </a>
+          </div>
+
+          {aiSummary ? (
+            <div className="space-y-4 text-sm">
+              <div>
+                <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider mb-2">What you&apos;ll do</h4>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                  {aiSummary.whatYouWillDo?.map((item: string, i: number) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border/40 text-xs">
+                <div>
+                  <span className="font-bold text-foreground block mb-1">Ideal Candidate:</span>
+                  <span className="text-muted-foreground">{aiSummary.whoThisSuits}</span>
+                </div>
+                <div>
+                  <span className="font-bold text-foreground block mb-1">Preparation Tips:</span>
+                  <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
+                    {aiSummary.preparationTips?.slice(0, 2).map((tip: string, i: number) => (
+                      <li key={i}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between pt-1">
+              <p className="text-xs text-muted-foreground">
+                Get an objective, structured summary of deliverables, required skills, and preparation tips.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchAiSummary}
+                disabled={loadingSummary}
+                className="shrink-0 ml-3"
+              >
+                {loadingSummary ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5 mr-1.5 text-primary" />
+                    Quick Breakdown
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </Card>
 
  {/* Application Status or Form */}
  {hasApplied && userApplication && (

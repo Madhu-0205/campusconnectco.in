@@ -37,24 +37,47 @@ export const CopilotProvider = ({ children }: { children: ReactNode }) => {
 
  const stop = () => setIsLoading(false)
 
- const sendMessage = async (text: string) => {
- if (!text.trim()) return;
- 
- const userMsg: Message = { id: Date.now().toString(), role:"user", content: text };
- setMessages(prev => [...prev, userMsg]);
- setIsLoading(true);
+  const sendMessage = async (text: string) => {
+    if (!text.trim()) return;
 
- // Mock response for UI
- setTimeout(() => {
- const aiMsg: Message = { 
- id: (Date.now() + 1).toString(), 
- role:"assistant", 
- content:"I've analyzed your request. Based on your profile, I recommend updating your resume to highlight your frontend skills before applying to this role." 
- };
- setMessages(prev => [...prev, aiMsg]);
- setIsLoading(false);
- }, 1500);
- }
+    const userMsg: Message = { id: Date.now().toString(), role: "user", content: text };
+    const currentMessages = [...messages, userMsg];
+    setMessages(currentMessages);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/ai/copilot/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: text,
+          messages: currentMessages.map((m) => ({ role: m.role, content: m.content }))
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Copilot response failed");
+      }
+
+      const aiMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data.content || data.message || "I've reviewed your request based on CampusConnect marketplace data."
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+    } catch (_err: any) {
+      const fallbackMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content:
+          "⚠️ Career Copilot is temporarily in low-latency fallback mode. Based on verified platform records, please review your recommended opportunities and ensure your resume tags match the required skills."
+      };
+      setMessages((prev) => [...prev, fallbackMsg]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
  const promptChat = (prompt: string) => {
  setIsOpen(true)

@@ -15,9 +15,9 @@ export function V2Navbar() {
  return (
  <>
  {/* Promotional Top Bar - Evolution style dark green */}
- <div className="w-full bg-[#2B4B3C] text-white flex items-center justify-center py-2.5 px-4 text-xs md:text-sm font-medium z-50 relative">
+ <div className="w-full max-w-full overflow-hidden bg-[#2B4B3C] text-white flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 py-2 px-3 text-xs md:text-sm font-medium z-50 relative">
  <span className="hidden sm:inline">Build your career from scratch and start earning in 30 minutes.</span>
- <span className="sm:hidden">Start earning in 30 minutes.</span>
+ <span className="sm:hidden text-center truncate">Start earning in 30 minutes.</span>
  
  <div className="mx-4 h-4 w-px bg-white/20 hidden md:block"></div>
  

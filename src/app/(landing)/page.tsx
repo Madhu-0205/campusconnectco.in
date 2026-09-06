@@ -138,7 +138,7 @@ export default async function CampusConnectLandingPage() {
  <WebsiteSchema nonce={nonce} />
  <FAQSchema faqs={landingFaqs} nonce={nonce} />
 
- <main className="landing-body flex flex-col min-h-screen bg-[#FAFCFA] text-[#232B27]">
+ <main className="landing-body flex flex-col min-h-screen w-full max-w-full overflow-x-hidden bg-[#FAFCFA] text-[#232B27]">
  
  {/* 1. Promotional Bar */}
  <MasterPromoBar />

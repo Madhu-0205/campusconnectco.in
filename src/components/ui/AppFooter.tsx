@@ -10,10 +10,19 @@ const AppFooter: FC = () => {
  <span className="text-base font-semibold tracking-tight text-foreground">
  Campus<span className="text-muted-foreground">Connect</span>
  </span>
- <span className="text-xs text-muted-foreground">
- © {new Date().getFullYear()} All rights reserved.
- </span>
- </div>
+        <span className="text-xs text-muted-foreground">
+          © {new Date().getFullYear()} All rights reserved.
+        </span>
+        <span className="text-border text-xs">•</span>
+        <a
+          href="https://developer.puter.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Powered by Puter
+        </a>
+      </div>
  {/* Links */}
  <div className="flex flex-wrap items-center gap-6 text-xs text-muted-foreground font-mono">
  <Link

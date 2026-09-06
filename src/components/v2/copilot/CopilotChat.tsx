@@ -91,8 +91,11 @@ export const CopilotChat = () => {
  <Sparkles size={20} />
  </div>
  <div>
+ <div className="flex items-center gap-2">
  <h3 className="font-bold text-foreground leading-tight">Career Copilot</h3>
- <p className="text-xs text-muted-foreground font-medium">Your personal mentor</p>
+ <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Puter AI</span>
+ </div>
+ <p className="text-xs text-muted-foreground font-medium">CampusConnect Intelligence</p>
  </div>
  </div>
  <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label="Close Chat" className="text-muted-foreground hover:text-foreground">
@@ -192,9 +195,17 @@ export const CopilotChat = () => {
  )}
  </div>
  </form>
- <p className="text-[10px] text-center text-muted-foreground/50 mt-3 font-medium">
- AI Copilot can make mistakes. Verify important information.
- </p>
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground/60 mt-3 px-1 font-medium">
+            <span>AI Copilot can make mistakes. Verify info.</span>
+            <a
+              href="https://developer.puter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors inline-flex items-center gap-1 font-semibold"
+            >
+              Powered by Puter
+            </a>
+          </div>
  </div>
  </motion.div>
  </>

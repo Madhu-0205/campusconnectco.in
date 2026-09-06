@@ -80,9 +80,20 @@ export function V2Footer() {
  </Reveal>
  
  <Reveal delay={0.5}>
- <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-border text-sm text-text-3">
- <p>© {new Date().getFullYear()} CampusConnect. All rights reserved.</p>
- <div className="flex items-center gap-4 mt-4 md:mt-0">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-border text-sm text-text-3">
+          <div className="flex items-center gap-3">
+            <p>© {new Date().getFullYear()} CampusConnect. All rights reserved.</p>
+            <span className="text-border">•</span>
+            <a
+              href="https://developer.puter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs hover:text-foreground text-text-3/80 transition-colors"
+            >
+              Powered by Puter
+            </a>
+          </div>
+          <div className="flex items-center gap-4 mt-4 md:mt-0">
  <a href="https://twitter.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Twitter</a>
  <a href="https://linkedin.com/company/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">LinkedIn</a>
  <a href="https://instagram.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Instagram</a>
