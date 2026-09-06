@@ -11,7 +11,7 @@ const getAudit = () => (prisma as unknown as { transactionAudit: AuditDelegate }
 // GET /api/founder/audit - Transaction audit trail for a specific transaction
 export async function GET(req: Request) {
  try {
- const auth = await protectApi(["ADMIN"]);
+ const auth = await protectApi(["FOUNDER", "ADMIN"]);
  if (auth.errorResponse) return auth.errorResponse;
 
  const url = new URL(req.url);

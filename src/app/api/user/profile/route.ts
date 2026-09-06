@@ -551,12 +551,49 @@ export async function PATCH(req: Request) {
  updateData.avatar_url = finalImg;
  }
  if (coverImage !== undefined) updateData.coverImage = coverImage;
- if (college !== undefined) updateData.college = college;
- if (collegeId !== undefined) updateData.collegeId = collegeId;
- const currentUser = await prisma.user.findUnique({
- where: { id: user.id },
- select: { city: true, state: true }
- });
+  if (collegeId !== undefined) {
+    if (collegeId === null || collegeId.trim() === "") {
+      updateData.collegeId = null;
+      updateData.college = null;
+    } else {
+      if (!isValidUUID(collegeId)) {
+        return NextResponse.json({ error: "Invalid college ID format" }, { status: 400 });
+      }
+
+      const collegeRecord = await prisma.college.findUnique({
+        where: { id: collegeId },
+        select: { id: true, name: true, city: true, state: true, latitude: true, longitude: true }
+      });
+
+      if (!collegeRecord) {
+        return NextResponse.json({ error: "Selected college does not exist in verified catalog" }, { status: 400 });
+      }
+
+      // Never trust client-supplied college name; bind to authoritative DB name
+      updateData.collegeId = collegeRecord.id;
+      updateData.college = collegeRecord.name;
+    }
+  } else if (college !== undefined) {
+    if (college === null || college.trim() === "") {
+      updateData.college = null;
+      updateData.collegeId = null;
+    } else {
+      const matched = await prisma.college.findFirst({
+        where: { name: { equals: college.trim(), mode: "insensitive" } },
+        select: { id: true, name: true }
+      });
+      if (matched) {
+        updateData.collegeId = matched.id;
+        updateData.college = matched.name;
+      } else {
+        updateData.college = college.trim();
+      }
+    }
+  }
+  const currentUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { city: true, state: true }
+  });
 
  if (city !== undefined) updateData.city = city;
  if (state !== undefined) updateData.state = state;

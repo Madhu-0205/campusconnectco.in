@@ -13,9 +13,9 @@ import { protectPage } from"@/lib/auth-checks"
 import prisma from"@/lib/prisma"
 
 export default async function ClientDashboard() {
- const { authorized, user } = await protectPage(["CLIENT","STARTUP"])
+ const { authorized, user } = await protectPage(["CLIENT", "STARTUP", "FOUNDER", "ADMIN"])
  if (!authorized) {
- redirect("/auth/sign-in")
+ redirect("/auth/sign-in?returnUrl=/client-hub")
  }
 
  const orgMembership = await prisma.member.findFirst({ where: { userId: user?.id } })

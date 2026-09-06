@@ -4,7 +4,7 @@ import { protectApi } from"@/lib/auth-checks";
 import prisma from"@/lib/prisma";
 
 export async function GET() {
- const { errorResponse } = await protectApi(["ADMIN"]);
+ const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
  if (errorResponse) return errorResponse;
 
  try {

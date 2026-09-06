@@ -154,7 +154,7 @@ export async function getUnifiedOpportunities(params: FetchOpportunitiesParams) 
       workType: "Internship",
       tags: skills.slice(0, 3) as string[],
       logoUrl: null, // Internships might not have logos in this schema unless linked to a startup profile
-      href: `/dashboard/student/internships/${int.id}`, 
+      href: `/internships/${int.id}`, 
       isFeatured: int.isFeatured || false,
       isUrgent: false, 
       createdAt: int.createdAt,

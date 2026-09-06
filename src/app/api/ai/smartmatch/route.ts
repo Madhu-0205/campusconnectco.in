@@ -132,7 +132,7 @@ try {
  select: { id: true, title: true, description: true, skills: true, stipend: true, location: true, city: true, state: true, collegeId: true },
  }),
  prisma.gig.findMany({
- where: { status: 'OPEN' },
+ where: { status: 'OPEN', posted_by: { not: userId } },
  take: 15,
  orderBy: { createdAt: 'desc' },
  select: { id: true, title: true, description: true, required_skills: true, budget: true, city: true, state: true, collegeId: true },

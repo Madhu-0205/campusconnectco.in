@@ -8,7 +8,7 @@ import { protectApi } from"@/lib/auth-checks";
  */
 export async function GET() {
  try {
-const { errorResponse } = await protectApi(["ADMIN"]);
+const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
 if (errorResponse) return errorResponse;
 return NextResponse.json({ verified: true });
  } catch (error) {

@@ -75,13 +75,20 @@ export default function SignInForm() {
  if (signInError) throw new Error(signInError.message)
 
  if (data.user) {
+ const returnUrl = searchParams.get("returnUrl")
+ if (returnUrl && returnUrl.startsWith("/") && !returnUrl.startsWith("//")) {
+ router.replace(returnUrl)
+ } else {
  const role = data.user.user_metadata?.role
+ const email = data.user.email?.toLowerCase().trim()
+ const isFounder = role === "FOUNDER" || email === "madhuvalurouthu52@gmail.com"
  if (role ==="CLIENT" || role ==="STARTUP") {
  router.replace("/client-hub")
- } else if (role ==="FOUNDER") {
+ } else if (isFounder) {
  router.replace("/dashboard/founder")
  } else {
  router.replace("/dashboard/student")
+ }
  }
  router.refresh()
  }

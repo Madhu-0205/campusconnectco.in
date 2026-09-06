@@ -6,7 +6,7 @@ import prisma from"@/lib/prisma";
 export const dynamic ="force-dynamic";
 
 export async function GET() {
- const { errorResponse } = await protectApi(["ADMIN"]);
+ const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
  if (errorResponse) return errorResponse;
 
  try {
@@ -62,7 +62,7 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
- const { errorResponse } = await protectApi(["ADMIN"]);
+ const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
  if (errorResponse) return errorResponse;
 
  try {

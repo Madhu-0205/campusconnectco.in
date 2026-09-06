@@ -24,8 +24,8 @@ import {
  FileText,
 } from"lucide-react";
 import Link from"next/link";
-import { useRouter } from"next/navigation";
-import { useState } from"react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 import { Button } from"@/components/ui/Button";
 import { Card } from"@/components/ui/Card";
@@ -92,37 +92,37 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
  const [userRole, setUserRole] = useState<string | null>(null);
 
  // Get current user
- useState(() => {
- const fetchUser = async () => {
- const { data: { session } } = await supabase.auth.getSession();
- if (session?.user) {
- setCurrentUserId(session.user.id);
- // Fetch user role from database
- const response = await fetch("/api/user/profile");
- if (response.ok) {
- const userData = await response.json();
- setUserRole(userData.role);
- }
- }
- };
- fetchUser();
- });
+ useEffect(() => {
+   const fetchUser = async () => {
+     const { data: { session } } = await supabase.auth.getSession();
+     if (session?.user) {
+       setCurrentUserId(session.user.id);
+       // Fetch user role from database
+       const response = await fetch("/api/user/profile");
+       if (response.ok) {
+         const userData = await response.json();
+         setUserRole(userData.role);
+       }
+     }
+   };
+   fetchUser();
+ }, [supabase]);
 
  const userApplication = gig.applications.find(
- (app) => app.applicant.id === currentUserId
+   (app) => app.applicant.id === currentUserId
  );
 
  const isOwner = currentUserId === gig.poster.id;
  const hasApplied = !!userApplication;
- const canApply = currentUserId && !isOwner && !hasApplied && gig.status ==="OPEN";
+ const canApply = currentUserId && !isOwner && !hasApplied && gig.status === "OPEN";
 
  const handleApply = async (e: React.FormEvent) => {
- e.preventDefault();
+   e.preventDefault();
 
- if (!currentUserId) {
- router.push("/auth/sign-in");
- return;
- }
+   if (!currentUserId) {
+     router.push(`/auth/sign-in?returnUrl=/gigs/${gig.id}`);
+     return;
+   }
 
  setIsApplying(true);
  setError("");

@@ -10,7 +10,7 @@ export const dynamic ="force-dynamic";
  */
 export async function GET() {
  try {
- const auth = await protectApi(["FOUNDER"]);
+ const auth = await protectApi(["FOUNDER", "ADMIN"]);
  if (auth.errorResponse) return auth.errorResponse;
 
  const settings = await prisma.platformSetting.findMany({ take: 50,
@@ -37,7 +37,7 @@ export async function GET() {
  */
 export async function POST(req: NextRequest) {
  try {
- const auth = await protectApi(["FOUNDER"]);
+ const auth = await protectApi(["FOUNDER", "ADMIN"]);
  if (auth.errorResponse) return auth.errorResponse;
 
  const { key, value } = await req.json();

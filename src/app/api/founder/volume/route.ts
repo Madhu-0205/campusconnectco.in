@@ -5,7 +5,7 @@ import prisma from"@/lib/prisma"
 
 export async function GET() {
  try {
- const auth = await protectApi(["ADMIN"]);
+ const auth = await protectApi(["FOUNDER", "ADMIN"]);
  if (auth.errorResponse) return auth.errorResponse;
 
  const transactions = await prisma.transaction.findMany({ take: 50,

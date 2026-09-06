@@ -93,7 +93,7 @@ export async function PATCH(
  title:"Application Update",
  message: `Your application for ${application.gig.title} has been ${status.toLowerCase()}.`,
  type:"APPLICATION",
- link: `/get-gig`
+ link: `/dashboard/student/applications`
  }
  })
  );

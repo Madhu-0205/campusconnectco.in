@@ -4,11 +4,14 @@ import React, { createContext, useContext, useState, ReactNode } from"react"
 
 export type MarkerData = {
  id: string
- type:"gig" |"internship" |"user"
+ type: "gig" | "internship" | "user" | "college"
  lat: number
  lng: number
  title?: string
  subtitle?: string
+ location?: string
+ compensation?: string
+ url?: string
  isPremium?: boolean
 }
 

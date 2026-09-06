@@ -17,7 +17,7 @@ export default async function StudentLayout({ children }: { children: React.Reac
  if (user && role ==="CLIENT") {
  redirect("/dashboard");
  } else {
- redirect("/auth/sign-in");
+ redirect("/auth/sign-in?returnUrl=/dashboard/student");
  }
  }
 

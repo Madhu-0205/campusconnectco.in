@@ -15,7 +15,7 @@ export async function PATCH(
 ) {
  const params = await props.params;
  try {
- const auth = await protectApi(["ADMIN"]);
+ const auth = await protectApi(["FOUNDER", "ADMIN"]);
  if (auth.errorResponse) return auth.errorResponse;
 
  const gigId = params.id;
@@ -110,7 +110,7 @@ export async function DELETE(
 ) {
  const params = await props.params;
  try {
- const auth = await protectApi(["ADMIN"]);
+ const auth = await protectApi(["FOUNDER", "ADMIN"]);
  if (auth.errorResponse) return auth.errorResponse;
 
  const gigId = params.id;

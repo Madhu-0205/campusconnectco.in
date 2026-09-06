@@ -10,7 +10,7 @@ export const dynamic ="force-dynamic";
  */
 export async function GET() {
  try {
- const auth = await protectApi(["FOUNDER"]);
+ const auth = await protectApi(["FOUNDER", "ADMIN"]);
  if (auth.errorResponse) return auth.errorResponse;
 
  // Fetch security audit logs

@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export async function GET() {
- const { errorResponse } = await protectApi(["ADMIN"]);
+ const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
  if (errorResponse) return errorResponse;
 
  try {
@@ -37,7 +37,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: NextRequest) {
- const { errorResponse } = await protectApi(["ADMIN"]);
+ const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
  if (errorResponse) return errorResponse;
 
  try {

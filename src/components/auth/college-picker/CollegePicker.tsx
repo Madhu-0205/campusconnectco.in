@@ -26,44 +26,54 @@ export default function CollegePicker({ value, onChange, userId }: CollegePicker
  const [isRequesting, setIsRequesting] = useState(false)
 
  const openPicker = useCallback(() => {
- setOpen(true)
- // If already used location before, skip to list
- if (hasLocation || state ==="list") {
- setState("list")
- } else {
- setState("permission")
- }
- }, [hasLocation, state])
+    setOpen(true)
+    const storedStatus = typeof window !== "undefined" ? localStorage.getItem("cc_location_permission") : null
+    // If already used location before or previously denied/dismissed, skip directly to list
+    if (hasLocation || state === "list" || storedStatus === "denied" || storedStatus === "dismissed") {
+      setState("list")
+    } else {
+      setState("permission")
+    }
+  }, [hasLocation, state])
 
  const handleAllowLocation = useCallback(async () => {
- if (!navigator.geolocation) {
- setState("list")
- return
- }
- setIsRequesting(true)
- navigator.geolocation.getCurrentPosition(
- pos => {
- setUserLat(pos.coords.latitude)
- setUserLng(pos.coords.longitude)
- setHasLocation(true)
- setIsRequesting(false)
- setState("locating")
- // Brief"locating" shimmer before showing list
- setTimeout(() => setState("list"), 600)
- },
- () => {
- // Permission denied or error → skip to list
- setIsRequesting(false)
- setState("list")
- },
- { timeout: 8000, maximumAge: 300000 }
- )
- }, [])
+    if (!navigator.geolocation) {
+      setState("list")
+      return
+    }
+    setIsRequesting(true)
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setUserLat(pos.coords.latitude)
+        setUserLng(pos.coords.longitude)
+        setHasLocation(true)
+        setIsRequesting(false)
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cc_location_permission", "granted")
+        }
+        setState("locating")
+        // Brief"locating" shimmer before showing list
+        setTimeout(() => setState("list"), 600)
+      },
+      () => {
+        // Permission denied or error → skip to list and remember preference
+        setIsRequesting(false)
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cc_location_permission", "denied")
+        }
+        setState("list")
+      },
+      { timeout: 8000, maximumAge: 300000 }
+    )
+  }, [])
 
  const handleSkipLocation = useCallback(() => {
- setIsRequesting(false)
- setState("list")
- }, [])
+    setIsRequesting(false)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cc_location_permission", "dismissed")
+    }
+    setState("list")
+  }, [])
 
  const handleSelect = useCallback(
  (name: string, id: string) => {

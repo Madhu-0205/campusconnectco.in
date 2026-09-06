@@ -81,13 +81,25 @@ export default function ContextualMap() {
  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right')
  mapRef.current = map
 
- return () => {
- // Cleanup all roots and map on unmount
- activeMarkers.current.forEach(({ root }) => root.unmount())
- if (userMarkerRef.current) userMarkerRef.current.root.unmount()
- map.remove()
- mapRef.current = null
- }
+    return () => {
+      // Cleanup all roots and map on unmount
+      activeMarkers.current.forEach(({ root, marker }) => {
+        try { marker.remove() } catch {}
+        try { setTimeout(() => root.unmount(), 0) } catch {}
+      })
+      activeMarkers.current.clear()
+
+      if (userMarkerRef.current) {
+        try { userMarkerRef.current.marker.remove() } catch {}
+        try {
+          const uRoot = userMarkerRef.current.root
+          setTimeout(() => uRoot.unmount(), 0)
+        } catch {}
+        userMarkerRef.current = null
+      }
+      map.remove()
+      mapRef.current = null
+    }
  }, []) // Empty dependency array means init once
 
  // Update User Marker
@@ -118,8 +130,8 @@ export default function ContextualMap() {
  const currentIds = new Set(markers.map(m => m.id))
  for (const [id, { marker, root }] of Array.from(activeMarkers.current.entries())) {
  if (!currentIds.has(id)) {
- root.unmount()
- marker.remove()
+ try { marker.remove() } catch {}
+ try { setTimeout(() => root.unmount(), 0) } catch {}
  activeMarkers.current.delete(id)
  }
  }
@@ -129,29 +141,38 @@ export default function ContextualMap() {
  const isHovered = hoveredId === data.id
  const isSelected = selectedId === data.id
  
+ const createMarker = () => {
+   const el = document.createElement('div')
+   el.addEventListener('click', (e) => {
+     e.stopPropagation()
+     setSelectedId(data.id)
+   })
+   el.addEventListener('mouseenter', () => setHoveredId(data.id))
+   el.addEventListener('mouseleave', () => setHoveredId(null))
+   
+   const root = createRoot(el)
+   root.render(<OpportunityMapMarker data={data} isHovered={isHovered} isSelected={isSelected} />)
+   
+   const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+     .setLngLat([data.lng, data.lat])
+     .addTo(mapRef.current!)
+   
+   activeMarkers.current.set(data.id, { marker, root })
+ }
+
  if (!activeMarkers.current.has(data.id)) {
- const el = document.createElement('div')
- // Add click listener to element wrapper
- el.addEventListener('click', (e) => {
- e.stopPropagation()
- setSelectedId(data.id)
- })
- el.addEventListener('mouseenter', () => setHoveredId(data.id))
- el.addEventListener('mouseleave', () => setHoveredId(null))
- 
- const root = createRoot(el)
- root.render(<OpportunityMapMarker data={data} isHovered={isHovered} isSelected={isSelected} />)
- 
- const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
- .setLngLat([data.lng, data.lat])
- .addTo(mapRef.current!)
- 
- activeMarkers.current.set(data.id, { marker, root })
+   createMarker()
  } else {
- // Re-render the root with new hover/selected props
- const { root, marker } = activeMarkers.current.get(data.id)!
- root.render(<OpportunityMapMarker data={data} isHovered={isHovered} isSelected={isSelected} />)
- marker.setLngLat([data.lng, data.lat]) // in case it moved
+   const entry = activeMarkers.current.get(data.id)!
+   try {
+     entry.root.render(<OpportunityMapMarker data={data} isHovered={isHovered} isSelected={isSelected} />)
+     entry.marker.setLngLat([data.lng, data.lat])
+   } catch {
+     // If the root was unmounted, cleanly recreate it
+     try { entry.marker.remove() } catch {}
+     activeMarkers.current.delete(data.id)
+     createMarker()
+   }
  }
  })
  
@@ -169,13 +190,24 @@ export default function ContextualMap() {
 
  }, [markers, hoveredId, selectedId, setHoveredId, setSelectedId])
 
+ const selectedMarker = markers.find(m => m.id === selectedId)
+
  return (
  <div className="relative w-full h-full bg-surface">
  <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+
+ {!userLocation && (
+ <div className="absolute top-4 left-4 right-4 z-10 pointer-events-none flex justify-center">
+ <div className="bg-slate-900/85 backdrop-blur-md border border-white/10 text-white/90 text-xs px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+ <MapPin size={12} className="text-primary shrink-0" />
+ <span>Set your location to discover opportunities near you.</span>
+ </div>
+ </div>
+ )}
  
  {/* Selected Opportunity Sheet / Overlay in Map */}
  <AnimatePresence>
- {selectedId && (
+ {selectedMarker && (
  <motion.div 
  initial={{ y: 20, opacity: 0 }}
  animate={{ y: 0, opacity: 1 }}
@@ -189,12 +221,42 @@ export default function ContextualMap() {
  <X size={16} />
  </button>
  <div className="pr-6">
+ <div className="flex items-center gap-2 mb-1.5">
+ <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+ selectedMarker.type === 'gig' 
+ ? 'bg-primary/10 text-primary border border-primary/20' 
+ : 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
+ }`}>
+ {selectedMarker.type === 'gig' ? 'Gig' : 'Internship'}
+ </span>
+ {selectedMarker.location && (
+ <span className="text-xs text-slate-500 flex items-center gap-1 truncate">
+ <MapPin size={10} />
+ {selectedMarker.location}
+ </span>
+ )}
+ </div>
  <h3 className="font-semibold text-slate-900 truncate">
- {markers.find(m => m.id === selectedId)?.title ||"Selected Item"}
+ {selectedMarker.title || "Selected Item"}
  </h3>
- <p className="text-sm text-slate-500 mt-1">
- View more details in the feed.
+ {selectedMarker.subtitle && (
+ <p className="text-sm text-slate-600 truncate mt-0.5">
+ {selectedMarker.subtitle}
  </p>
+ )}
+ {selectedMarker.compensation && (
+ <p className="text-xs font-semibold text-primary mt-1">
+ {selectedMarker.compensation}
+ </p>
+ )}
+ <div className="mt-3">
+ <a
+ href={selectedMarker.url || (selectedMarker.type === 'gig' ? `/gigs/${selectedMarker.id}` : `/internships/${selectedMarker.id}`)}
+ className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
+ >
+ View opportunity
+ </a>
+ </div>
  </div>
  </motion.div>
  )}

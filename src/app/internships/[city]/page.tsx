@@ -68,9 +68,15 @@ export default async function CityInternshipsPage({ params }: Props) {
  const decodedCity = decodeURIComponent(city).toLowerCase()
  const cityName = capitalizeCity(city)
 
- if (!decodedCity || decodedCity.length > 50) {
- notFound()
- }
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (uuidRegex.test(city)) {
+    const { redirect } = await import("next/navigation")
+    redirect(`/dashboard/student/internships/${city}`)
+  }
+
+  if (!decodedCity || decodedCity.length > 50) {
+    notFound()
+  }
 
  // 1. Fetch matching local internships
  const getInternships = unstable_cache(

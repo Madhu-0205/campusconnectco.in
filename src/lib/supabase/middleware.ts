@@ -100,6 +100,7 @@ export async function updateSession(request: NextRequest) {
     path === '/api/stats' ||
     path.startsWith('/api/skills') ||
     path.startsWith('/api/colleges') ||
+    path.startsWith('/api/recommendations') ||
     path.startsWith('/api/ai/resume-analyze') ||
     path.startsWith('/api/internal/import-internship') ||
     path.startsWith('/api/internal/opportunities') ||
@@ -144,6 +145,8 @@ export async function updateSession(request: NextRequest) {
 
  const url = request.nextUrl.clone();
  url.pathname = '/auth/sign-in';
+ const fullReturnUrl = request.nextUrl.search ? `${path}${request.nextUrl.search}` : path;
+ url.searchParams.set('returnUrl', fullReturnUrl);
  const res = NextResponse.redirect(url);
  return copyCookies(supabaseResponse, res);
  }
@@ -152,10 +155,12 @@ export async function updateSession(request: NextRequest) {
  // 3. AUTO-REDIRECT LOGGED IN USERS AWAY FROM AUTH PAGES
  if (path.startsWith('/auth')) {
  const role = user.user_metadata?.role;
+ const email = user.email?.toLowerCase().trim();
+ const isFounder = role === 'FOUNDER' || email === 'madhuvalurouthu52@gmail.com';
  const url = request.nextUrl.clone();
  if (role === 'CLIENT' || role === 'STARTUP') {
  url.pathname = '/client-hub';
- } else if (role === 'FOUNDER') {
+ } else if (isFounder) {
  url.pathname = '/dashboard/founder';
  } else {
  url.pathname = '/dashboard/student';

@@ -29,7 +29,7 @@ export async function PATCH(
  request: NextRequest,
  { params }: { params: Promise<{ id: string }> }
 ) {
- const { errorResponse } = await protectApi(["ADMIN"]);
+ const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
  if (errorResponse) return errorResponse;
 
  try {
@@ -98,7 +98,7 @@ export async function DELETE(
  _request: NextRequest,
  { params }: { params: Promise<{ id: string }> }
 ) {
- const { errorResponse } = await protectApi(["ADMIN"]);
+ const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
  if (errorResponse) return errorResponse;
 
  try {
