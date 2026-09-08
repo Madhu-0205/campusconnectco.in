@@ -24,7 +24,7 @@ export async function GET(req: Request) {
  const reportDate = new Date().toLocaleDateString();
  
  const htmlReport = `
- <h1>CampusConnect Weekly Product Analytics Report (${reportDate})</h1>
+ <h1>CampusConnectCo Weekly Product Analytics Report (${reportDate})</h1>
  <h2>1. User Retention (Past 7 Days)</h2>
  <ul>
  <li>Active Users: ${retention.activeUsers}</li>

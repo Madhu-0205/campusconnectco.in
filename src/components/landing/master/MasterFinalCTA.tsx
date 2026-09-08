@@ -36,7 +36,7 @@ export function MasterFinalCTA() {
  </h2>
  
  <p className="text-lg lg:text-xl text-gray-300 font-medium mb-12 max-w-2xl mx-auto">
- Join thousands of verified students and local founders already connecting on CampusConnect.
+ Join thousands of verified students and local founders already connecting on CampusConnectCo.
  </p>
 
  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

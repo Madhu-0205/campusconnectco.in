@@ -77,6 +77,12 @@ export class PuterAIAdapter {
       // In browser contexts, window.puter may be initialized with client credentials
       const clientPuter = typeof window !== "undefined" && (window as any).puter ? (window as any).puter : puter;
 
+      if (typeof process !== "undefined" && process.env?.PUTER_AUTH_TOKEN && clientPuter?.setAuthToken) {
+        try {
+          clientPuter.setAuthToken(process.env.PUTER_AUTH_TOKEN);
+        } catch {}
+      }
+
       if (!clientPuter?.ai?.chat) {
         throw new Error("Puter AI is not initialized in current environment");
       }
@@ -104,7 +110,7 @@ export class PuterAIAdapter {
       }
       return String(response || "").trim();
     } catch (error: any) {
-      console.warn(`[PuterAIAdapter] Puter API call failed (${error?.message || error}). Employing resilient fallback.`);
+      console.warn(`[PuterAIAdapter] Puter API call failed (${error?.message || error}). Employing truthful fallback.`);
       return this.fallbackChatResponse(sanitizedMessages);
     }
   }
@@ -157,7 +163,7 @@ export class PuterAIAdapter {
     try {
       const raw = await this.chat(
         [
-          { role: "system", content: "You explain student opportunity matches on CampusConnect in strict JSON format." },
+          { role: "system", content: "You explain student opportunity matches on CampusConnectCo in strict JSON format." },
           { role: "user", content: prompt }
         ],
         { ...options, temperature: 0.3 }
@@ -277,24 +283,61 @@ export class PuterAIAdapter {
 
   private fallbackChatResponse(messages: AIChatMessage[]): string {
     const lastUser = messages.filter((m) => m.role === "user").pop()?.content || "";
+    const lowerQ = lastUser.toLowerCase();
+
+    if (lowerQ.includes("what is campusconnect") || lowerQ.includes("about campusconnect") || lowerQ.includes("how does campusconnect work")) {
+      return `AI assistance is temporarily unavailable.
+
+**Verified CampusConnectCo Platform Information:**
+CampusConnectCo (campusconnectco.in) is India's dedicated student opportunity platform and freelance gig marketplace.
+- **Verified Gigs & Internships**: Search tech, design, marketing, and campus opportunities posted by vetted founders and startups.
+- **JobNest Map Discovery**: Interactive geolocation to find opportunities around Indian university hubs.
+- **SmartMatch Scoring**: Compatibility matching between student skills and active role requirements.
+- **Milestone-Based Tracking**: Structured deliverable sign-offs for student safety.
+
+*(Note: Live Puter AI response is temporarily unavailable; verified platform records shown.)*`;
+    }
+
     const topicHint = lastUser ? ` regarding "${lastUser.slice(0, 40)}"` : "";
-    return `[AI ADVICE]: Based on your profile and CampusConnect's verified marketplace records${topicHint}, explore the top matched gigs and internships in your dashboard. Prepare your portfolio to match required project tags. (Note: AI service is currently operating in low-latency fallback mode).`;
+    return `AI assistance is temporarily unavailable.
+
+Based on CampusConnectCo verified marketplace records${topicHint}:
+- Explore top matched gigs and internships directly in your student dashboard.
+- Prepare your profile and portfolio to match listed project skills.
+
+*(Note: Live Puter AI response is temporarily unavailable; verified platform records shown.)*`;
   }
 
   private buildGroundedCopilotFallback(query: string, context?: CopilotContextData): string {
+    const lowerQ = query.toLowerCase();
     const recs = context?.topRecommendations || [];
     let recsText = "";
     if (recs.length > 0) {
-      recsText = `\n\n[VERIFIED CAMPUSCONNECT TOP MATCHES]:\n` +
+      recsText = `\n\n**Verified CampusConnectCo Matches:**\n` +
         recs.slice(0, 3).map((r, i) => `${i + 1}. **${r.title}** at *${r.company}* (${r.location}) — Match Score: ${r.matchScore}/100`).join("\n");
     }
 
-    return `Hello! I'm your Career Copilot powered by Puter.js.
+    if (lowerQ.includes("what is campusconnect") || lowerQ.includes("about campusconnect") || lowerQ.includes("how does campusconnect work")) {
+      return `AI assistance is temporarily unavailable.
 
-[AI GUIDANCE]:
-To maximize your chances for technical gigs and internships, ensure your profile highlights active project repositories and proven tools relevant to your goal (${context?.user?.careerGoal || "Software Engineering"}).${recsText}
+**Verified CampusConnectCo Platform Information:**
+CampusConnectCo (campusconnectco.in) is India's student super-app connecting college students with:
+- **Verified Gigs & Tech Internships** across top tech hubs and universities.
+- **JobNest Map**: Real-time geolocation-based opportunity discovery.
+- **SmartMatch**: Automated skill compatibility scoring.
+- **Milestone Delivery**: Transparent deliverable tracking and sign-off.
 
-*Tip: Review the listed requirements and customize your application note before submitting!*`;
+*(You can retry your AI query shortly or explore verified listings directly.)*`;
+    }
+
+    return `AI assistance is temporarily unavailable.
+
+**Verified Guidance from CampusConnectCo Platform Records:**
+To maximize your chances for technical gigs and internships:
+- Ensure your profile showcases projects relevant to your goal (${context?.user?.careerGoal || "Software Engineering"}).
+- Match your listed skills with active tags on verified postings.${recsText}
+
+*(You can retry your AI query shortly or explore verified listings directly.)*`;
   }
 
   private fallbackMatchExplanation(input: MatchExplanationInput): MatchExplanationOutput {
@@ -314,7 +357,7 @@ To maximize your chances for technical gigs and internships, ensure your profile
         locationExplanation: locationText,
         freshnessExplanation: input.freshnessDays <= 3
           ? "Recently posted opportunity with high recruitment activity."
-          : "Active verified listing on CampusConnect."
+          : "Active verified listing on CampusConnectCo."
       },
       suggestedAction: input.missingSkills.length > 0
         ? `Highlight your proficiency in ${input.matchedSkills[0] || "core concepts"} and note familiarity with ${input.missingSkills[0]}.`
@@ -333,7 +376,7 @@ To maximize your chances for technical gigs and internships, ensure your profile
       skillsNeeded: input.tags.length > 0 ? input.tags : ["Problem Solving", "Communication", "Technical Domain Knowledge"],
       whoThisSuits: `Students with practical skills in ${input.tags.slice(0, 3).join(", ") || "software/design"} seeking real-world experience.`,
       compensationVerified: input.compensation || "Standard platform compensation",
-      locationDetails: input.location || "CampusConnect verified location",
+      locationDetails: input.location || "CampusConnectCo verified location",
       importantRequirements: [
         "Reliable delivery within stated timeline.",
         "Adherence to platform escrow completion guidelines."

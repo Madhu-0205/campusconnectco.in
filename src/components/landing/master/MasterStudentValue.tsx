@@ -24,8 +24,8 @@ export function MasterStudentValue() {
  },
  {
  icon: CheckCircle,
- title:"4. Work & get paid",
- desc:"Communicate with founders, submit work, and receive secure payments via escrow."
+ title: "4. Work & earn credit",
+ desc: "Communicate with founders, submit work, and track milestones with structured deliverable sign-offs."
  }
  ]
 
@@ -44,7 +44,7 @@ export function MasterStudentValue() {
  <span className="text-[#1FA971]">before you graduate.</span>
  </h2>
  <p className="text-lg text-[#4A5550] font-medium max-w-2xl">
- Gain real-world experience, build your network, and earn money while studying. CampusConnect is designed specifically for the student journey.
+ Gain real-world experience, build your network, and earn money while studying. CampusConnectCo is designed specifically for the student journey.
  </p>
  </div>
  </Reveal>

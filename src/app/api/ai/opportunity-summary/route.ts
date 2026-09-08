@@ -51,7 +51,7 @@ async function handleOpportunitySummary(gigId?: string | null, internshipId?: st
 
     summaryInput = {
       title: gig.title,
-      company: gig.poster?.company_name || gig.poster?.full_name || gig.poster?.name || "CampusConnect Startup",
+      company: gig.poster?.company_name || gig.poster?.full_name || gig.poster?.name || "CampusConnectCo Startup",
       description: gig.description || "Project deliverables described by client.",
       tags,
       compensation: gig.budget ? `₹${gig.budget}` : undefined,
@@ -87,7 +87,7 @@ async function handleOpportunitySummary(gigId?: string | null, internshipId?: st
       description: internship.description || "Internship responsibilities and scope.",
       tags,
       compensation: internship.stipend ? `₹${internship.stipend}` : undefined,
-      location: internship.location || "CampusConnect Partner Office / Remote",
+      location: internship.location || "CampusConnectCo Partner Office / Remote",
       deadline: internship.deadline ? internship.deadline.toISOString().split("T")[0] : null,
       type: "internship"
     };

@@ -9,7 +9,7 @@ import Link from"next/link"
 
 
 export const metadata: Metadata = {
- title:"Employer Plans & Pricing | CampusConnect",
+ title:"Employer Plans & Pricing | CampusConnectCo",
  description:"Choose the right plan to hire India's top student talent. From startups to enterprises.",
 }
 

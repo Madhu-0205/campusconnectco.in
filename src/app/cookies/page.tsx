@@ -3,16 +3,16 @@ import { Metadata } from"next";
 import LegalLayout from"@/components/legal/LegalLayout";
 
 export const metadata: Metadata = {
- title:"Cookie Policy | CampusConnect",
- description:"Learn how CampusConnect uses cookies to improve your experience.",
+ title:"Cookie Policy | CampusConnectCo",
+ description:"Learn how CampusConnectCo uses cookies to improve your experience.",
  alternates: {
  canonical:"https://campusconnectco.in/cookies",
  },
  openGraph: {
- title:"Cookie Policy | CampusConnect",
- description:"Learn how CampusConnect uses cookies to improve your experience.",
+ title:"Cookie Policy | CampusConnectCo",
+ description:"Learn how CampusConnectCo uses cookies to improve your experience.",
  url:"https://campusconnectco.in/cookies",
- siteName:"CampusConnect",
+ siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",
  }
@@ -45,7 +45,7 @@ export default function CookiePolicyPage() {
  <section id="essential-cookies">
  <h2>2. Essential Cookies (Strictly Necessary)</h2>
  <p>
- These cookies are required for CampusConnect to function properly. They cannot be switched off in our systems. They are usually set in response to actions made by you, such as logging in, filling in forms, or setting your privacy preferences.
+ These cookies are required for CampusConnectCo to function properly. They cannot be switched off in our systems. They are usually set in response to actions made by you, such as logging in, filling in forms, or setting your privacy preferences.
  </p>
  <p>
  For example, we use Supabase authentication cookies to keep you securely logged in as you navigate between pages.
@@ -71,7 +71,7 @@ export default function CookiePolicyPage() {
  <section id="advertising-cookies">
  <h2>5. Future Advertising Cookies</h2>
  <p>
- Currently, CampusConnect does not use intrusive advertising or tracking cookies for third-party ad targeting. If we ever decide to implement such cookies in the future to keep the platform free for students, we will update this policy and explicitly ask for your consent before placing them on your device.
+ Currently, CampusConnectCo does not use intrusive advertising or tracking cookies for third-party ad targeting. If we ever decide to implement such cookies in the future to keep the platform free for students, we will update this policy and explicitly ask for your consent before placing them on your device.
  </p>
  </section>
 
@@ -87,7 +87,7 @@ export default function CookiePolicyPage() {
  <li><a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop" target="_blank" rel="noopener noreferrer">Mozilla Firefox</a></li>
  </ul>
  <p>
- Please note that disabling Essential Cookies will prevent you from logging into CampusConnect and using core features of the platform.
+ Please note that disabling Essential Cookies will prevent you from logging into CampusConnectCo and using core features of the platform.
  </p>
  </section>
  </LegalLayout>

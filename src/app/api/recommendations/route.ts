@@ -71,8 +71,8 @@ export async function GET(req: Request) {
             ...safeGig,
             distance: null,
             matchScore: 85,
-            badges: ["Trending on CampusConnect"],
-            recommendationReason: "Popular opportunity on CampusConnect"
+            badges: ["Trending on CampusConnectCo"],
+            recommendationReason: "Popular opportunity on CampusConnectCo"
           }
         })
 

@@ -49,12 +49,12 @@ export const NewApplicationFounderEmail = ({
  </Section>
  
  <Text style={text}>
- Log in to CampusConnect to review their profile, cover letter, and decide on the next steps.
+ Log in to CampusConnectCo to review their profile, cover letter, and decide on the next steps.
  </Text>
  
  <Text style={footer}>
  Best,<br />
- The CampusConnect Team
+ The CampusConnectCo Team
  </Text>
  </Container>
  </Body>

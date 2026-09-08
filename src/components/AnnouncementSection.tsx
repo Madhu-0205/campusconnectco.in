@@ -27,7 +27,7 @@ const SAMPLE_ANNOUNCEMENTS: AnnouncementItem[] = [
  category:"Placement Drive",
  priority:"Urgent",
  featured: true,
- locationOrOrganizer:"CampusConnect Placement Portal",
+ locationOrOrganizer:"CampusConnectCo Placement Portal",
  linkUrl:"/employer/drives",
  },
  {
@@ -51,7 +51,7 @@ const SAMPLE_ANNOUNCEMENTS: AnnouncementItem[] = [
  category:"Campus Event",
  priority:"New",
  featured: false,
- locationOrOrganizer:"CampusConnect Developer Hub",
+ locationOrOrganizer:"CampusConnectCo Developer Hub",
  linkUrl:"/gigs/find",
  },
  {

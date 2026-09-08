@@ -7,8 +7,9 @@ import { notFound } from"next/navigation"
 import React from"react"
 
 
-import { BreadcrumbSchema, FAQSchema, getWikidataURI } from"@/components/seo/JsonLd"
-import prisma from"@/lib/prisma"
+import InternshipDetailsClient from "@/components/internships/InternshipDetailsClient"
+import { BreadcrumbSchema, FAQSchema, getWikidataURI } from "@/components/seo/JsonLd"
+import prisma from "@/lib/prisma"
 
 
 interface Props {
@@ -36,12 +37,26 @@ function capitalizeCity(city: string): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
- const { city } = await params
- const cityName = capitalizeCity(city)
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+  const { city } = await params
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (uuidRegex.test(city)) {
+    const internship = await prisma.internship.findUnique({
+      where: { id: city },
+      select: { title: true, company: true }
+    })
+    if (internship) {
+      return {
+        title: `${internship.title} at ${internship.company} | CampusConnectCo`,
+        description: `Apply for ${internship.title} internship opportunity at ${internship.company} on CampusConnectCo.`,
+      }
+    }
+  }
+
+  const cityName = capitalizeCity(city)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
 
  return {
- title: `Best Student Internships in ${cityName} | CampusConnect`,
+ title: `Best Student Internships in ${cityName} | CampusConnectCo`,
  description: `Find top college student internships, remote projects, and startup opportunities in ${cityName}. Earn stipend, build your career roadmap, and match with mentors.`,
  alternates: {
  canonical: `${baseUrl}/internships/${city.toLowerCase()}`,
@@ -70,8 +85,13 @@ export default async function CityInternshipsPage({ params }: Props) {
 
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
   if (uuidRegex.test(city)) {
-    const { redirect } = await import("next/navigation")
-    redirect(`/dashboard/student/internships/${city}`)
+    const internshipData = await prisma.internship.findUnique({
+      where: { id: city }
+    })
+    if (!internshipData) {
+      notFound()
+    }
+    return <InternshipDetailsClient internship={internshipData} />
   }
 
   if (!decodedCity || decodedCity.length > 50) {
@@ -83,6 +103,7 @@ export default async function CityInternshipsPage({ params }: Props) {
  async (decodedCity: string) => prisma.internship.findMany({
  where: {
  status:"OPEN",
+ deletedAt: null,
  location: { equals: decodedCity, mode:"insensitive" }
  },
  take: 12,
@@ -141,12 +162,12 @@ export default async function CityInternshipsPage({ params }: Props) {
 
  const faqs = [
  {
- question: `What is the average internship stipend in ${cityName} on CampusConnect?`,
+ question: `What is the average internship stipend in ${cityName} on CampusConnectCo?`,
  answer: `The average monthly stipend for student internships in ${cityName} is approximately INR ${averageStipend.toLocaleString("en-IN")}, based on active startup and tech project listings.`
  },
  {
- question: `Which local colleges in ${cityName} have active student networks on CampusConnect?`,
- answer: `CampusConnect features verified candidates from premier local colleges including ${collegesList.length > 0 ? collegesList.join(",") :"various regional universities"}.`
+ question: `Which local colleges in ${cityName} have active student networks on CampusConnectCo?`,
+ answer: `CampusConnectCo features verified candidates from premier local colleges including ${collegesList.length > 0 ? collegesList.join(",") :"various regional universities"}.`
  },
  {
  question: `How are student internship engagements verified and secured?`,
@@ -163,7 +184,7 @@ export default async function CityInternshipsPage({ params }: Props) {
  <div 
  className="sr-only" 
  data-ai-digest="true" 
- data-ai-source-origin="CampusConnect"
+ data-ai-source-origin="CampusConnectCo"
  data-cc-entity="CityInternships"
  data-cc-city={decodedCity}
  aria-hidden="false"
@@ -257,7 +278,7 @@ export default async function CityInternshipsPage({ params }: Props) {
  <div className="bg-surface/50 border border-white/5 rounded-3xl p-8 text-center space-y-4">
  <p className="text-slate-400 text-xs">No active students registered from colleges in {cityName} yet.</p>
  <Link href="/auth/sign-up" className="inline-block px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs transition-all">
- Join CampusConnect
+ Join CampusConnectCo
  </Link>
  </div>
  ) : (
@@ -297,14 +318,11 @@ export default async function CityInternshipsPage({ params }: Props) {
  <h4 className="font-black uppercase tracking-wider text-xs">AI SmartMatch</h4>
  </div>
  <p className="text-[11px] text-slate-400 leading-relaxed">
- CampusConnect matches student profiles with local internships based on skills, academic history, and career copilot objectives dynamically.
+ CampusConnectCo matches student profiles with local internships based on skills, academic history, and career copilot objectives dynamically.
  </p>
  </div>
-
  </div>
-
  </div>
-
  </div>
  </div>
  )

@@ -57,7 +57,7 @@ function SavedOpportunitiesContent() {
  lat: g.latitude,
  lng: g.longitude,
  title: g.title,
- subtitle: g.company ||"CampusConnect"
+ subtitle: g.company ||"CampusConnectCo"
  });
  });
  }
@@ -149,7 +149,7 @@ function SavedOpportunitiesContent() {
  </button>
  <GigCard 
  title={gig.title}
- company="CampusConnect"
+ company="CampusConnectCo"
  location={gig.location ||"Remote"}
  compensation={`₹${gig.budget}`}
  duration={gig.duration ||"Project based"}

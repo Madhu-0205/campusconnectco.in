@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
 
  return {
- title: `How to Become a ${careerTitle}: Student Career Roadmap & Internships | CampusConnect`,
+ title: `How to Become a ${careerTitle}: Student Career Roadmap & Internships | CampusConnectCo`,
  description: `Complete step-by-step roadmap for college students to become a ${careerTitle}. Explore required skills, average salary expectations (${career?.salaryRange ||""}), and active student internships.`,
  alternates: {
  canonical: `${baseUrl}/careers/${encodeURIComponent(slug)}`,
@@ -91,8 +91,8 @@ export default async function CareerPathSEOPage({ params }: Props) {
  answer: `The typical salary range for a ${career.title} in India ranges between ${career.salaryRange}, depending on experience, skill competency, and company scale.`,
  },
  {
- question: `How does CampusConnect help students become a ${career.title}?`,
- answer: `CampusConnect offers AI career roadmaps, matches students with skill-specific campus gigs, and connects candidates to verified startup internships.`,
+ question: `How does CampusConnectCo help students become a ${career.title}?`,
+ answer: `CampusConnectCo offers AI career roadmaps, matches students with skill-specific campus gigs, and connects candidates to verified startup internships.`,
  },
  ];
 
@@ -239,7 +239,7 @@ export default async function CareerPathSEOPage({ params }: Props) {
  <h4 className="font-black uppercase tracking-wider text-xs">AI Milestone Tracking</h4>
  </div>
  <p className="text-[11px] text-slate-400 leading-relaxed">
- As you complete campus gigs and internship milestones on CampusConnect, your career level automatically updates on your public brand profile.
+ As you complete campus gigs and internship milestones on CampusConnectCo, your career level automatically updates on your public brand profile.
  </p>
  </div>
  </div>

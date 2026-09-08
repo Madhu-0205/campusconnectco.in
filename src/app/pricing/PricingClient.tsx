@@ -48,7 +48,7 @@ const faqs = [
  },
  {
  q:"Who pays the platform fee — student or startup?",
- a:"Always the startup — never the student. Students use CampusConnect completely free of charge. The platform fee is added on top of the gig value when startups post and fund escrow.",
+ a:"Always the startup — never the student. Students use CampusConnectCo completely free of charge. The platform fee is added on top of the gig value when startups post and fund escrow.",
  },
  {
  q:"Can I switch between tiers?",
@@ -257,7 +257,7 @@ export default function PricingClient() {
  <p className="text-lg max-w-3xl mx-auto leading-relaxed">
  🚀 Like{""}
  <strong className="text-white">Swiggy takes a delivery fee</strong>
- , CampusConnect takes a small platform fee on every completed gig —{""}
+ , CampusConnectCo takes a small platform fee on every completed gig —{""}
  <strong style={{ color:"var(--color-primary)" }}>paid by the startup, never the student.</strong>
  </p>
  </motion.div>
@@ -292,7 +292,7 @@ export default function PricingClient() {
  <tr className="border-white/8">
  <th className="p-4 text-sm font-bold">Feature</th>
  <th className="p-4 text-center">
- <span className="text-xs font-black px-3 py-1.5 rounded-xl" style={{ background:"var(--color-primary)", color:"white" }}>CampusConnect</span>
+ <span className="text-xs font-black px-3 py-1.5 rounded-xl" style={{ background:"var(--color-primary)", color:"white" }}>CampusConnectCo</span>
  </th>
  <th className="p-4 text-sm font-bold">Internshala</th>
  <th className="p-4 text-sm font-bold">Fiverr</th>
@@ -353,7 +353,7 @@ export default function PricingClient() {
  <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ fontFamily:"var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
  Ready to launch?
  </h2>
- <p className="text-lg mb-8">Join students already building their careers on CampusConnect.</p>
+ <p className="text-lg mb-8">Join students already building their careers on CampusConnectCo.</p>
  <div className="flex flex-col sm:flex-row gap-4 justify-center">
  <Link href="/auth/sign-up"
  className="px-8 py-4 font-black rounded-2xl text-sm transition-all hover:-translate-y-0.5 active:scale-95"

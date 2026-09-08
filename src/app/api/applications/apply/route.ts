@@ -45,25 +45,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid session. Please sign out and sign in again." }, { status: 400 });
     }
 
-    // 3. Verify user role & status in database
-    const dbUser = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { role: true, isSuspended: true, name: true, email: true },
-    });
-
-    if (!dbUser) {
-      return NextResponse.json({ error: "User profile not found" }, { status: 404 });
-    }
-
-    if (dbUser.isSuspended) {
-      return NextResponse.json({ error: "Account suspended" }, { status: 403 });
-    }
-
-    if (dbUser.role !== "STUDENT") {
-      return NextResponse.json({ error: "Only student accounts are eligible to apply for gigs" }, { status: 403 });
-    }
-
-    // 4. Parse request body
+    // 3. Parse request body
     let body;
     try {
       body = await req.json();
@@ -82,7 +64,7 @@ export async function POST(req: Request) {
     const { gigId } = parseResult.data;
     const coverLetter = parseResult.data.coverLetter ? sanitizeInput(parseResult.data.coverLetter) : null;
 
-    // 5. Verify gig exists and is open
+    // 4. Verify gig exists and is open
     const gig = await prisma.gig.findUnique({
       where: { id: gigId },
       select: {
@@ -90,6 +72,7 @@ export async function POST(req: Request) {
         status: true,
         posted_by: true,
         title: true,
+        deletedAt: true,
         poster: {
           select: {
             name: true,
@@ -99,12 +82,30 @@ export async function POST(req: Request) {
       },
     });
 
-    if (!gig) {
+    if (!gig || gig.deletedAt) {
       return NextResponse.json({ error: "Gig not found" }, { status: 404 });
     }
 
-    if (gig.status !== "OPEN") {
+    if (gig.status !== "OPEN" && gig.status !== "active") {
       return NextResponse.json({ error: "This gig is no longer accepting applications" }, { status: 400 });
+    }
+
+    // 5. Verify user profile & student role in database
+    const dbUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true, isSuspended: true, name: true, email: true },
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: "User profile not found" }, { status: 404 });
+    }
+
+    if (dbUser.isSuspended) {
+      return NextResponse.json({ error: "Account suspended" }, { status: 403 });
+    }
+
+    if (dbUser.role !== "STUDENT") {
+      return NextResponse.json({ error: "Only student accounts are eligible to apply for gigs" }, { status: 403 });
     }
 
     // 6. Self-apply guard
@@ -210,8 +211,9 @@ export async function POST(req: Request) {
       .catch(console.error);
 
     return NextResponse.json({ success: true, application }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("[APPLICATIONS_APPLY_ERROR]:", error);
     logger.error("Error submitting application", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: error?.message || "Internal Server Error" }, { status: 500 });
   }
 }

@@ -5,8 +5,8 @@ import { Suspense } from"react";
 import SignUpForm from"@/components/auth/SignUpForm";
 
 export const metadata: Metadata = {
- title:"Join CampusConnect — Start Your Student Career",
- description:"Create your free CampusConnect account. Find gigs, post opportunities, and build your career before graduation."
+ title:"Join CampusConnectCo — Start Your Student Career",
+ description:"Create your free CampusConnectCo account. Find gigs, post opportunities, and build your career before graduation."
 };
 
 export default function SignUpPage() {
@@ -25,7 +25,7 @@ export default function SignUpPage() {
  <span className="font-heading font-black text-xl tracking-tighter text-background">CC</span>
  </div>
  <span className="font-heading font-black text-2xl text-foreground transition-colors tracking-tight">
- CampusConnect
+ CampusConnectCo
  </span>
  </Link>
  <p className="text-sm mt-2 font-bold tracking-wide uppercase text-muted-foreground">Join students building their careers</p>

@@ -25,8 +25,8 @@ export function MasterFounderValue() {
  },
  {
  icon: ShieldCheck,
- title:"Secure payments",
- desc:"Fund gig payments via escrow. Release only when work is approved."
+ title: "Milestone protection",
+ desc: "Set deliverable expectations. Review and sign off when work meets requirements."
  }
  ]
 
@@ -48,7 +48,7 @@ export function MasterFounderValue() {
  <span className="text-[#1FA971]">locally.</span>
  </h2>
  <p className="text-lg text-[#4A5550] font-medium mb-10 leading-relaxed">
- Why compete with tech giants on generic boards? CampusConnect gives you direct access to verified, ambitious students right in your city.
+ Why compete with tech giants on generic boards? CampusConnectCo gives you direct access to verified, ambitious students right in your city.
  </p>
  
  <Link 

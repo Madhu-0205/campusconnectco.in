@@ -54,6 +54,20 @@ vi.mock("../lib/ai/resumeParser", () => {
  };
 });
 
+// Mock Puter AI adapter
+vi.mock("../lib/ai/puter", () => {
+  return {
+    puterAI: {
+      copilotChat: vi.fn().mockResolvedValue({
+        message: "Highlight skills and customize your portfolio for the role.",
+        poweredBy: "Puter.js",
+        isFallback: false,
+      }),
+      chat: vi.fn().mockResolvedValue("Highlight skills"),
+    },
+  };
+});
+
 // Mock OpenAI client creator
 vi.mock("../lib/ai/client", () => {
  return {

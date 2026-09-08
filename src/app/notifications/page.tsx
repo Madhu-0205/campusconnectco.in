@@ -8,7 +8,7 @@ import NotificationsClient from"./NotificationsClient"
 
 
 export const metadata: Metadata = {
- title:"Notifications — CampusConnect",
+ title:"Notifications — CampusConnectCo",
  description:"All your gig updates, payment releases, and platform activity in one place.",
 }
 
@@ -33,6 +33,7 @@ export default async function NotificationsPage() {
  description: n.message,
  time: n.createdAt.toISOString(),
  read: n.isRead,
+ link: n.link || null,
  }))
 
  return <NotificationsClient initialNotifications={serialized} />

@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
       topRecommendations: topGigs.map((g) => ({
         id: g.id,
         title: g.title,
-        company: g.poster?.company_name || g.poster?.full_name || g.poster?.name || "CampusConnect Partner",
+        company: g.poster?.company_name || g.poster?.full_name || g.poster?.name || "CampusConnectCo Partner",
         location: [g.city, g.state].filter(Boolean).join(", ") || (g.work_mode === "remote" ? "Remote" : "Campus Opportunity"),
         compensation: g.budget ? `₹${g.budget}` : undefined,
         matchScore: 85,
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to generate copilot response.",
-        content: "CampusConnect Career Copilot is temporarily unavailable. Your verified profile and opportunities are still accessible."
+        content: "CampusConnectCo Career Copilot is temporarily unavailable. Your verified profile and opportunities are still accessible."
       },
       { status: 500 }
     );

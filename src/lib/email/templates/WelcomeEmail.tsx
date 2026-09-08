@@ -24,10 +24,10 @@ export const WelcomeEmail = ({ name, role }: WelcomeEmailProps) => {
  return (
  <Html>
  <Head />
- <Preview>Welcome to CampusConnect! 🎉</Preview>
+ <Preview>Welcome to CampusConnectCo! 🎉</Preview>
  <Body style={main}>
  <Container style={container}>
- <Heading style={h1}>Welcome to CampusConnect, {name}! 🚀</Heading>
+ <Heading style={h1}>Welcome to CampusConnectCo, {name}! 🚀</Heading>
  <Text style={text}>
  {isStudent 
  ?"We're thrilled to have you here. Your journey to finding the best gigs, internships, and opportunities starts now." 
@@ -49,7 +49,7 @@ export const WelcomeEmail = ({ name, role }: WelcomeEmailProps) => {
  
  <Text style={footer}>
  Best,<br />
- The CampusConnect Team
+ The CampusConnectCo Team
  </Text>
  </Container>
  </Body>

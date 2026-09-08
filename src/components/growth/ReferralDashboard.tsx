@@ -77,7 +77,7 @@ export function ReferralDashboard({}: { userId: string }) {
  const shareOnChannel = (channel:"whatsapp" |"linkedin" |"twitter") => {
  if (!data?.referralLink) return
  const link = data.referralLink
- const text = encodeURIComponent(`Hey! I'm building my freelance career on CampusConnect — India's best platform for student gigs. Join me and we both get rewards when you complete your first gig 🚀 `)
+ const text = encodeURIComponent(`Hey! I'm building my freelance career on CampusConnectCo — India's best platform for student gigs. Join me and we both get rewards when you complete your first gig 🚀 `)
 
  const urls: Record<string, string> = {
  whatsapp: `https://wa.me/?text=${text}${encodeURIComponent(link)}`,

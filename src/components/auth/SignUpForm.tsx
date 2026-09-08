@@ -223,7 +223,7 @@ export default function SignUpForm() {
  <h1 className="font-black text-foreground" style={{ fontFamily:"var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
  Create Account
  </h1>
- <p className="text-sm mt-1">Join thousands on CampusConnect</p>
+ <p className="text-sm mt-1">Join thousands on CampusConnectCo</p>
  </div>
 
  {/* Step Progress */}
@@ -462,7 +462,7 @@ export default function SignUpForm() {
  </AnimatePresence>
 
  <p className="text-muted-foreground mt-5 leading-relaxed text-center">
- Join CampusConnect and supercharge your career.
+ Join CampusConnectCo and supercharge your career.
  </p>
 
  <div className="mt-5 text-center pt-4 border-t border-border">

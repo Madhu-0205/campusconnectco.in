@@ -6,9 +6,9 @@ import type { Metadata } from"next"
 import Link from"next/link"
 
 export const metadata: Metadata = {
- title:"Editorial Standards | CampusConnect — Our Content Principles",
+ title:"Editorial Standards | CampusConnectCo — Our Content Principles",
  description:
-"CampusConnect's editorial standards, fact-checking process, content review guidelines, and author policies. We are committed to accuracy, transparency, and fairness in all platform content.",
+"CampusConnectCo's editorial standards, fact-checking process, content review guidelines, and author policies. We are committed to accuracy, transparency, and fairness in all platform content.",
  alternates: { canonical:"https://campusconnectco.in/editorial" },
 }
 
@@ -22,7 +22,7 @@ const STANDARDS = [
 "All salary ranges and stipend data are sourced from verified student-reported outcomes",
 "Industry statistics are cited with primary sources (NASSCOM, AICTE, LinkedIn, etc.)",
 "Salary data is updated quarterly using aggregated platform data",
-"No fabricated testimonials — all stories are from real, verified CampusConnect users",
+"No fabricated testimonials — all stories are from real, verified CampusConnectCo users",
  ],
  },
  {
@@ -67,12 +67,12 @@ const REVIEW_PROCESS = [
  { step:"01", title:"Content Submission", desc:"Blog posts, success stories, and employer profiles are submitted via internal CMS" },
  { step:"02", title:"Fact Verification", desc:"Data claims are verified against primary sources within 48 hours" },
  { step:"03", title:"Student/Employer Review", desc:"Any story featuring a named person is sent to them for approval before publishing" },
- { step:"04", title:"Editorial Review", desc:"CampusConnect editorial team reviews for tone, accuracy, and compliance with our standards" },
+ { step:"04", title:"Editorial Review", desc:"CampusConnectCo editorial team reviews for tone, accuracy, and compliance with our standards" },
  { step:"05", title:"Publication", desc:"Content is published with author attribution, date, and last-reviewed date" },
  { step:"06", title:"Annual Audit", desc:"All evergreen content is reviewed annually for accuracy and updated as needed" },
 ]
 
-const CORRECTIONS_POLICY = `If you find an inaccuracy, outdated information, or misrepresentation in any CampusConnect content, please contact us at editorial@campusconnectco.in. 
+const CORRECTIONS_POLICY = `If you find an inaccuracy, outdated information, or misrepresentation in any CampusConnectCo content, please contact us at editorial@campusconnectco.in. 
 
 We commit to:
 • Acknowledging your report within 24 hours
@@ -100,12 +100,12 @@ export default async function EditorialPage() {
  __html: JSON.stringify({
 "@context":"https://schema.org",
 "@type":"WebPage",
-"name":"Editorial Standards | CampusConnect",
+"name":"Editorial Standards | CampusConnectCo",
 "url":"https://campusconnectco.in/editorial",
-"description":"CampusConnect's editorial standards, content policies, and fact-checking process.",
+"description":"CampusConnectCo's editorial standards, content policies, and fact-checking process.",
 "publisher": {
 "@type":"Organization",
-"name":"CampusConnect",
+"name":"CampusConnectCo",
 "url":"https://campusconnectco.in",
  },
 "dateModified":"2026-06-25",
@@ -133,7 +133,7 @@ export default async function EditorialPage() {
  How We Decide What<br />Gets Published
  </h1>
  <p className="text-slate-400 leading-relaxed">
- CampusConnect is a platform where students make real career decisions based on content we publish — salary guides, success stories, employer reviews, and skill advice. That responsibility demands clear editorial principles.
+ CampusConnectCo is a platform where students make real career decisions based on content we publish — salary guides, success stories, employer reviews, and skill advice. That responsibility demands clear editorial principles.
  </p>
  <p className="text-slate-500 text-sm mt-3">
  Last reviewed: <time dateTime="2024-06-01">June 2024</time> · Updated quarterly

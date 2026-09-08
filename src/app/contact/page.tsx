@@ -5,16 +5,16 @@ import Link from"next/link";
 import LegalLayout from"@/components/legal/LegalLayout";
 
 export const metadata: Metadata = {
- title:"Contact Us | CampusConnect",
- description:"Get in touch with the CampusConnect team for support, legal inquiries, or partnership opportunities.",
+ title:"Contact Us | CampusConnectCo",
+ description:"Get in touch with the CampusConnectCo team for support, legal inquiries, or partnership opportunities.",
  alternates: {
  canonical:"https://campusconnectco.in/contact",
  },
  openGraph: {
- title:"Contact Us | CampusConnect",
- description:"Get in touch with the CampusConnect team for support, legal inquiries, or partnership opportunities.",
+ title:"Contact Us | CampusConnectCo",
+ description:"Get in touch with the CampusConnectCo team for support, legal inquiries, or partnership opportunities.",
  url:"https://campusconnectco.in/contact",
- siteName:"CampusConnect",
+ siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",
  }

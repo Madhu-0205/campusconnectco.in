@@ -29,7 +29,7 @@ type Message = {
 // Dummy Data
 const contacts: Contact[] = [
  { id: 1, name:"Alice Freeman", avatar:"AF", status:"online", lastMessage:"Hey, are we still on for the meeting?", time:"10:30 AM", unread: 2 },
- { id: 2, name:"CampusConnect Support", avatar:"CC", status:"offline", lastMessage:"Your gig application has been approved!", time:"Yesterday", unread: 0, verified: true },
+ { id: 2, name:"CampusConnectCo Support", avatar:"CC", status:"offline", lastMessage:"Your gig application has been approved!", time:"Yesterday", unread: 0, verified: true },
  { id: 3, name:"David Chen", avatar:"DC", status:"online", lastMessage:"I'll send the files over shortly.", time:"Yesterday", unread: 0 },
  { id: 4, name:"Sarah Wilson", avatar:"SW", status:"offline", lastMessage:"Thanks for the help!", time:"Tue", unread: 0 },
  { id: 5, name:"Project Alpha Team", avatar:"PA", status:"online", lastMessage:"New task assigned: UI Design", time:"Mon", unread: 5, isGroup: true },
@@ -209,7 +209,7 @@ export default function MessagesPage() {
  <div className="flex justify-center mb-4">
  <div className="bg-yellow-500/10 px-4 py-2 rounded-lg text-center shadow-sm max-w-sm flex items-center gap-2">
  <Lock size={12} className="shrink-0" />
- <span>Messages are end-to-end encrypted. No one outside of this chat, not even CampusConnect, can read or listen to them.</span>
+ <span>Messages are end-to-end encrypted. No one outside of this chat, not even CampusConnectCo, can read or listen to them.</span>
  </div>
  </div>
 
@@ -282,8 +282,8 @@ export default function MessagesPage() {
  <div className="w-32 h-32 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-500">
  <MessageCircle size={64} className="opacity-50" />
  </div>
- <h2 className="font-bold text-white mb-2">CampusConnect Web</h2>
- <p className="text-slate-400 mb-6">Send and receive messages without keeping your phone online.<br />Use CampusConnect on up to 4 linked devices and 1 phone.</p>
+ <h2 className="font-bold text-white mb-2">CampusConnectCo Web</h2>
+ <p className="text-slate-400 mb-6">Send and receive messages without keeping your phone online.<br />Use CampusConnectCo on up to 4 linked devices and 1 phone.</p>
  <div className="flex items-center justify-center gap-2 text-slate-400">
  <Lock size={12} />
  End-to-end encrypted

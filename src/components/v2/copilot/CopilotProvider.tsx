@@ -63,7 +63,7 @@ export const CopilotProvider = ({ children }: { children: ReactNode }) => {
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data.content || data.message || "I've reviewed your request based on CampusConnect marketplace data."
+        content: data.content || data.message || "I've reviewed your request based on CampusConnectCo marketplace data."
       };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (_err: any) {

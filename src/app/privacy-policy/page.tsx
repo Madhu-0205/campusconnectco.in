@@ -2,7 +2,7 @@ import { Shield } from"lucide-react";
 import type { Metadata } from"next";
 
 export const metadata: Metadata = {
- title:"Privacy Policy — CampusConnect",
+ title:"Privacy Policy — CampusConnectCo",
 };
 
 export default function PrivacyPolicyPage() {
@@ -78,11 +78,11 @@ export default function PrivacyPolicyPage() {
  {/* Layered Background Depth */}
  <div className="absolute inset-0 noise-bg opacity-[0.025] pointer-events-none" />
  <div 
- className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full blur-[160px] pointer-events-none opacity-[0.15]"
+ className="absolute top-0 right-0 w-200 h-200 rounded-full blur-[160px] pointer-events-none opacity-[0.15]"
  style={{ background: 'radial-gradient(circle, var(--accent-warm) 0%, transparent 80%)', transform: 'translate(40%, -40%)' }} 
  />
 
- <div className="max-w-[1200px] mx-auto px-6 sm:px-12 pt-40 pb-32 relative z-10">
+ <div className="max-w-300 mx-auto px-6 sm:px-12 pt-40 pb-32 relative z-10">
  
  {/* Header Section */}
  <div className="mb-24 max-w-2xl">
@@ -106,7 +106,7 @@ export default function PrivacyPolicyPage() {
  className="leading-relaxed text-[#8a8a93] stagger-3"
  style={{ fontFamily: 'var(--font-body)' }}
  >
- We built CampusConnect to empower you, not to harvest your data. We operate on strict necessity—collecting only what ensures secure escrow and definitive identity verification.
+ We built CampusConnectCo to empower you, not to harvest your data. We operate on strict necessity—collecting only what ensures secure escrow and definitive identity verification.
  </p>
  
  <div className="mt-8 pt-8 border-t stagger-3 flex items-center gap-4" style={{ borderColor: 'var(--border-dim)' }}>
@@ -135,10 +135,10 @@ export default function PrivacyPolicyPage() {
  <div className="editorial-text stagger-text max-w-3xl">
  
  <h2>Information Collection Paradigm</h2>
- <p>At CampusConnect, our architecture guarantees your privacy. Upon account creation, we query strictly requisite parameters: cryptographic identifiers (emails), physical nomenclature (names), and academic vetting data (college affiliations). No ambient tracking, no shadow profiling.</p>
+ <p>At CampusConnectCo, our architecture guarantees your privacy. Upon account creation, we query strictly requisite parameters: cryptographic identifiers (emails), physical nomenclature (names), and academic vetting data (college affiliations). No ambient tracking, no shadow profiling.</p>
 
  <h2>Isolated Financial Architecture</h2>
- <p>CampusConnect fundamentally functions as a mediator. <strong>All payment credentials, credit matrices, and banking routes are handled securely by our payment partners.</strong> Our servers never ingest, parse, or log your primary financial artifacts.</p>
+ <p>CampusConnectCo fundamentally functions as a mediator. <strong>All payment credentials, credit matrices, and banking routes are handled securely by our payment partners.</strong> Our servers never ingest, parse, or log your primary financial artifacts.</p>
 
  <h2>Operational Utility</h2>
  <p>Information persists in our active databases solely to optimize the latency of your matches, execute escrow triggers reliably, and deliver push-telemetry regarding gig trajectories. If data isn&apos;t serving your operational velocity, it gets pruned.</p>

@@ -143,15 +143,15 @@ export default async function CollegeSEOPage({ params }: Props) {
 
  const faqs = [
  {
- question: `How do I recruit students from ${collegeName} on CampusConnect?`,
+ question: `How do I recruit students from ${collegeName} on CampusConnectCo?`,
  answer: `Employers and startups can post gigs specifically targeting ${collegeName} or search the vetted student directory, review design and development portfolios, and directly hire candidates.`
  },
  {
- question: `What roles do students from ${collegeName} specialize in on CampusConnect?`,
+ question: `What roles do students from ${collegeName} specialize in on CampusConnectCo?`,
  answer: `Students from ${collegeName} are active across software engineering, UX/UI design, mobile development, content strategy, and data analysis roles.`
  },
  {
- question: `Are student freelancing payments on CampusConnect secure?`,
+ question: `Are student freelancing payments on CampusConnectCo secure?`,
  answer: `Yes, all student engagements are backed by platform milestone escrows, ensuring that payments are locked before work starts and only released after approval.`
  }
  ];
@@ -236,7 +236,7 @@ export default async function CollegeSEOPage({ params }: Props) {
  <p className="text-[10px] text-slate-500 mt-0.5">{student.branch ||""} · {student.year ||""}</p>
  </div>
  </div>
- <p className="text-xs text-slate-400 line-clamp-2 italic my-3">&quot;{student.bio || 'Passionate student developer honing skills on CampusConnect.'}&quot;</p>
+ <p className="text-xs text-slate-400 line-clamp-2 italic my-3">&quot;{student.bio || 'Passionate student developer honing skills on CampusConnectCo.'}&quot;</p>
  <Link href={`/profile/${student.username || student.id}`} className="inline-flex items-center gap-1 text-xs text-primary font-bold hover:text-primary">
  View Brand Profile <ExternalLink size={12} />
  </Link>

@@ -363,7 +363,7 @@ export default function GetGigPage() {
  <div>
  <h4 className="font-bold text-sm">Secure Escrow Payments</h4>
  <p className="font-medium text-emerald-700/80 mt-1 leading-relaxed">
- CampusConnect holds payments in escrow until work is approved. You&apos;re guaranteed to get paid for authorized milestones.
+ CampusConnectCo holds payments in escrow until work is approved. You&apos;re guaranteed to get paid for authorized milestones.
  </p>
  </div>
  </div>

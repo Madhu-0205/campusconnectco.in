@@ -3,11 +3,11 @@ import type { Metadata } from"next"
 import AboutClient from"./AboutClient"
 
 export const metadata: Metadata = {
- title:"About CampusConnect | Built by Students, For Students — Our Story",
+ title:"About CampusConnectCo | Built by Students, For Students — Our Story",
  description:
-"CampusConnect was founded by engineering students who couldn't find real internships. Today we help 10,000+ students across 120 campuses build verified careers before graduation. Meet the team.",
+"CampusConnectCo was founded by engineering students who couldn't find real internships. Today we help 10,000+ students across 120 campuses build verified careers before graduation. Meet the team.",
  openGraph: {
- title:"About CampusConnect | Built by Students, For Students",
+ title:"About CampusConnectCo | Built by Students, For Students",
  description:"From a dorm-room idea to India's largest student opportunity platform. Meet the founders and read our story.",
  images: [{ url:"/og-about.jpg" }],
  type:"website",
@@ -20,7 +20,7 @@ const PERSON_SCHEMA = [
 "@type":"Person",
 "name":"Sathwik",
 "jobTitle":"Founder",
-"worksFor": {"@type":"Organization","name":"CampusConnect" },
+"worksFor": {"@type":"Organization","name":"CampusConnectCo" },
 "url":"https://campusconnectco.in/about",
 "knowsAbout": ["Student Entrepreneurship","EdTech","Career Development"],
  },
@@ -28,7 +28,7 @@ const PERSON_SCHEMA = [
 "@type":"Person",
 "name":"Suro",
 "jobTitle":"Chief Executive Officer",
-"worksFor": {"@type":"Organization","name":"CampusConnect" },
+"worksFor": {"@type":"Organization","name":"CampusConnectCo" },
 "url":"https://campusconnectco.in/about",
 "knowsAbout": ["Operations","Platform Scaling","Student Marketplaces"],
  },
@@ -36,7 +36,7 @@ const PERSON_SCHEMA = [
 "@type":"Person",
 "name":"Shanker",
 "jobTitle":"Lead Engineer",
-"worksFor": {"@type":"Organization","name":"CampusConnect" },
+"worksFor": {"@type":"Organization","name":"CampusConnectCo" },
 "url":"https://campusconnectco.in/about",
 "knowsAbout": ["Next.js","Artificial Intelligence","Full-Stack Development"],
  },
@@ -44,7 +44,7 @@ const PERSON_SCHEMA = [
 "@type":"Person",
 "name":"Akash",
 "jobTitle":"Growth & UI Lead",
-"worksFor": {"@type":"Organization","name":"CampusConnect" },
+"worksFor": {"@type":"Organization","name":"CampusConnectCo" },
 "url":"https://campusconnectco.in/about",
 "knowsAbout": ["Digital Marketing","UI Design","Growth Strategy"],
  },
@@ -56,8 +56,8 @@ const ORG_SCHEMA = {
  {
 "@type":"Organization",
 "@id":"https://campusconnectco.in/#organization",
-"name":"CampusConnect",
-"alternateName":"CampusConnect India",
+"name":"CampusConnectCo",
+"alternateName":"CampusConnectCo India",
 "url":"https://campusconnectco.in",
 "logo": {
 "@type":"ImageObject",
@@ -72,7 +72,7 @@ const ORG_SCHEMA = {
 "addressCountry":"IN",
  },
 "description":
-"CampusConnect is India's largest verified student opportunity platform connecting 10,000+ students with startups, SMBs and enterprises through AI-matched gigs, internships and campus drives.",
+"CampusConnectCo is India's largest verified student opportunity platform connecting 10,000+ students with startups, SMBs and enterprises through AI-matched gigs, internships and campus drives.",
 "sameAs": [
 "https://linkedin.com/company/campusconnectcoin",
 "https://twitter.com/campusconnectin",
@@ -94,8 +94,8 @@ const ORG_SCHEMA = {
  {
 "@type":"AboutPage",
 "url":"https://campusconnectco.in/about",
-"name":"About CampusConnect",
-"description":"The story of CampusConnect — founded by students to solve the experience paradox in India.",
+"name":"About CampusConnectCo",
+"description":"The story of CampusConnectCo — founded by students to solve the experience paradox in India.",
 "publisher": {"@id":"https://campusconnectco.in/#organization" },
  },
  ],

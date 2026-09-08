@@ -8,7 +8,7 @@ const AppFooter: FC = () => {
  {/* Logo + copyright */}
  <div className="flex items-center gap-3">
  <span className="text-base font-semibold tracking-tight text-foreground">
- Campus<span className="text-muted-foreground">Connect</span>
+ Campus<span className="text-muted-foreground">ConnectCo</span>
  </span>
         <span className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} All rights reserved.

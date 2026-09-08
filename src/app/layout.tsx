@@ -1,7 +1,8 @@
-import type { Metadata } from"next"
-import { Inter, Space_Mono } from"next/font/google"
-import { headers } from"next/headers"
-import { Toaster } from"react-hot-toast"
+import type { Metadata } from "next"
+import { Inter, Space_Mono } from "next/font/google"
+import { headers } from "next/headers"
+import Script from "next/script"
+import { Toaster } from "react-hot-toast"
 
 import { GAScripts } from"@/components/Analytics/GoogleAnalytics"
 import MainWrapper from"@/components/MainWrapper"
@@ -35,51 +36,52 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
- metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in"),
- title: {
- default:"CampusConnect — India's Student Super-App",
- template:"%s | CampusConnect",
- },
- description:
-"Find student internships, campus gigs, freelance work, and AI career roadmaps in India. Trusted student opportunities with verified employer hiring.",
- keywords: [
-"student internships",
-"college internships",
-"campus jobs",
-"freelance jobs",
-"AI career roadmap",
-"student networking",
-"career guidance",
-"internships for students",
-"student marketplace",
-"verified student gigs",
- ],
- authors: [{ name:"CampusConnect Team" }],
- creator:"CampusConnect",
- publisher:"CampusConnect",
- alternates: {
- languages: {
-"en-IN":"https://www.campusconnectco.in/",
- },
- },
- openGraph: {
- type:"website",
- locale:"en-IN",
- url:"https://www.campusconnectco.in",
- siteName:"CampusConnect",
- title:"CampusConnect — India's Student Super-App",
- description:
-"Hyperlocal student marketplace. Any college. Any city. Campus gigs, startup internships, AI career roadmap — all in one place.",
- images: [{ url:"/logo-v2.jpg", width: 1200, height: 630, alt:"CampusConnect" }],
- },
- twitter: {
- card:"summary_large_image",
- title:"CampusConnect — India's Student Super-App",
- description:
-"Find students near you for campus gigs, startup internships, and AI career roadmap. Launching across India.",
- images: ["/logo-v2.jpg"],
- site:"@campusconnectin",
- },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://www.campusconnectco.in"),
+  title: {
+    default: "CampusConnectCo — India's Student Super-App",
+    template: "%s | CampusConnectCo",
+  },
+  description:
+    "Find student internships, campus gigs, freelance work, and AI career roadmaps in India. Trusted student opportunities with verified employer hiring on CampusConnectCo.",
+  keywords: [
+    "student internships",
+    "college internships",
+    "campus gigs",
+    "freelance jobs",
+    "AI career roadmap",
+    "student networking",
+    "career guidance",
+    "internships for students",
+    "student marketplace",
+    "verified student gigs",
+    "CampusConnectCo",
+  ],
+  authors: [{ name: "CampusConnectCo Team" }],
+  creator: "CampusConnectCo",
+  publisher: "CampusConnectCo",
+  alternates: {
+    languages: {
+      "en-IN": "https://www.campusconnectco.in/",
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en-IN",
+    url: "https://www.campusconnectco.in",
+    siteName: "CampusConnectCo",
+    title: "CampusConnectCo — India's Student Super-App",
+    description:
+      "Hyperlocal student marketplace. Any college. Any city. Campus gigs, startup internships, AI career roadmap — all in one place on CampusConnectCo.",
+    images: [{ url: "/logo-v2.jpg", width: 1200, height: 630, alt: "CampusConnectCo" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CampusConnectCo — India's Student Super-App",
+    description:
+      "Find students near you for campus gigs, startup internships, and AI career roadmap. Launching across India on CampusConnectCo.",
+    images: ["/logo-v2.jpg"],
+    site: "@campusconnectin",
+  },
  icons: {
  icon:"/favicon.svg",
  shortcut:"/favicon.svg",
@@ -112,6 +114,7 @@ export default async function RootLayout({
  return (
  <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
  <body className={`${inter.variable} ${spaceMono.variable} font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-black relative overflow-x-hidden`}>
+ <Script src="https://js.puter.com/v2/" strategy="afterInteractive" nonce={nonce} />
  <GAScripts nonce={nonce} />
  <OrganizationSchema nonce={nonce} />
  <WebSiteSchema nonce={nonce} />

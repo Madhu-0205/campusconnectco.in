@@ -1,6 +1,6 @@
 "use client"
 
-import { Shield, Sparkles, Map, Bell, Target, Users } from"lucide-react"
+import { Shield, Map, Bell, Target } from "lucide-react"
 import React from"react"
 
 import { Reveal } from"@/components/ui/motion/Reveal"
@@ -15,11 +15,11 @@ export function MasterFeatures() {
  bgClass:"bg-[#FAFCFA]"
  },
  {
- title:"Smart Matching",
- desc:"Our engine maps your skills to relevant startups instantly.",
- icon: Sparkles,
- colSpan:"lg:col-span-4",
- bgClass:"bg-white"
+ title: "Milestone Protection",
+ desc: "Structured deliverable checkpoints agreed upfront.",
+ icon: Shield,
+ colSpan: "lg:col-span-4",
+ bgClass: "bg-white"
  },
  {
  title:"Secure Escrow",

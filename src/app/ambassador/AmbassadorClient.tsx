@@ -10,14 +10,14 @@ import { useState } from"react"
 const BENEFITS = [
  { icon: TrendingUp, color:"#10B981", title:"Earn from every student you onboard", desc:"Get 5% of the platform fee on every gig your students complete. This compounds every month." },
  { icon: Crown, color:"#F59E0B", title:"\"Campus Captain\" title & badge", desc:"Exclusive badge shown on your public profile and leaderboard. Stands out to employers." },
- { icon: Gift, color:"#1FA971", title:"CampusConnect merch kit", desc:"Hoodie, laptop sticker pack, and notebook — shipped to you when you onboard your first 10 students." },
- { icon: Rocket, color:"#0EA5E9", title:"Priority for CampusConnect internships", desc:"Ambassadors get first access to paid internship roles within CampusConnect as we grow." },
- { icon: Shield, color:"#EF4444", title:"Official certificate for placements", desc:"\"Campus Growth Lead, CampusConnect\" — add to your resume and LinkedIn." },
+ { icon: Gift, color:"#1FA971", title:"CampusConnectCo merch kit", desc:"Hoodie, laptop sticker pack, and notebook — shipped to you when you onboard your first 10 students." },
+ { icon: Rocket, color:"#0EA5E9", title:"Priority for CampusConnectCo internships", desc:"Ambassadors get first access to paid internship roles within CampusConnectCo as we grow." },
+ { icon: Shield, color:"#EF4444", title:"Official certificate for placements", desc:"\"Campus Growth Lead, CampusConnectCo\" — add to your resume and LinkedIn." },
  { icon: GraduationCap, color:"#F59E0B", title:"Placement cell introduction", desc:"We help you open the door to your placement cell for an official campus partnership." },
 ]
 
 const RESPONSIBILITIES = [
-"Host 1 CampusConnect info session per semester (we provide all materials)",
+"Host 1 CampusConnectCo info session per semester (we provide all materials)",
 "Share gig opportunities in your college's WhatsApp groups 2x/week",
 "Onboard a minimum of 5 students per month",
 "Be the point-of-contact for your college's placement cell",
@@ -38,7 +38,7 @@ const FAQ = [
  },
  {
  q:"How do I earn the 5% fee share?",
- a:"When a student you onboarded (who signed up using your referral link) completes a gig, you receive 5% of CampusConnect's platform fee — directly to your account. Not a cut from their earnings.",
+ a:"When a student you onboarded (who signed up using your referral link) completes a gig, you receive 5% of CampusConnectCo's platform fee — directly to your account. Not a cut from their earnings.",
  },
  {
  q:"Can I be an ambassador if I'm already working on gigs?",
@@ -83,13 +83,13 @@ export function AmbassadorClient({ nonce }: { nonce?: string }) {
  __html: JSON.stringify({
 "@context":"https://schema.org",
 "@type":"EducationalOccupationalProgram",
-"name":"CampusConnect Campus Ambassador Program",
+"name":"CampusConnectCo Campus Ambassador Program",
 "url":"https://campusconnectco.in/ambassador",
-"description":"Become a Campus Captain for CampusConnect. Lead your college community, earn from every student you onboard.",
+"description":"Become a Campus Captain for CampusConnectCo. Lead your college community, earn from every student you onboard.",
 "educationalProgramMode":"online",
 "provider": {
 "@type":"Organization",
-"name":"CampusConnect",
+"name":"CampusConnectCo",
 "url":"https://campusconnectco.in",
  },
  }),
@@ -117,7 +117,7 @@ export function AmbassadorClient({ nonce }: { nonce?: string }) {
  at your college.
  </h1>
  <p className="text-slate-400 text-lg leading-relaxed mb-8">
- Lead your college&apos;s CampusConnect community. Earn from every student you help. Build a resume that actually stands out. No prior experience needed — just hustle.
+ Lead your college&apos;s CampusConnectCo community. Earn from every student you help. Build a resume that actually stands out. No prior experience needed — just hustle.
  </p>
  <div className="flex flex-wrap items-center justify-center gap-4">
  <a
@@ -316,7 +316,7 @@ export function AmbassadorClient({ nonce }: { nonce?: string }) {
  <div>
  <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block mb-1.5">Why do you want to be Campus Captain? *</label>
  <textarea
- placeholder="Tell us about yourself and why your campus needs CampusConnect..."
+ placeholder="Tell us about yourself and why your campus needs CampusConnectCo..."
  required
  rows={4}
  value={form.why}

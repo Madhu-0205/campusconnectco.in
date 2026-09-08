@@ -115,7 +115,7 @@ export default function AdvertisementBanner({
  </span>
  </div>
  <p className="text-sm font-semibold" style={{ color:"var(--text)" }}>
- Partner with CampusConnect — Reach 10,000+ Verified Tech Students Across India
+ Partner with CampusConnectCo — Reach 10,000+ Verified Tech Students Across India
  </p>
  </div>
  </div>

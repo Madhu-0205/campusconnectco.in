@@ -3,7 +3,7 @@ import { Article, Author, TopicCluster } from"./types";
 export const AUTHORS: Record<string, Author> = {
 "campusconnect-editorial": {
  id:"campusconnect-editorial",
- name:"CampusConnect Editorial Team",
+ name:"CampusConnectCo Editorial Team",
  role:"Content Integrity Board",
  avatarUrl:"/logo-v2.jpg",
  bio:"The central editorial board dedicated to researching, fact-checking, and publishing actionable career advice for Indian college students.",
@@ -93,7 +93,7 @@ Use the XYZ formula:"Accomplished [X] as measured by [Y], by doing [Z]."
 *Example:*"Reduced API latency by 40% by migrating database queries to Redis."
 
 ## 3. Include a Portfolio Link
-Link to your GitHub, Live Projects, and CampusConnect Profile.
+Link to your GitHub, Live Projects, and CampusConnectCo Profile.
  `,
  readingTimeMinutes: 5,
  publishedAt:"2026-06-15T00:00:00Z",

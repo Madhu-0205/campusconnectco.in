@@ -156,12 +156,12 @@ export async function proxy(request: NextRequest) {
  const cspElements = [
 "default-src 'none'",
 "manifest-src 'self'",
- `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: https://www.googletagmanager.com https://www.google-analytics.com https://va.vercel-scripts.com https://accounts.google.com https://apis.google.com ${isDev ?"'unsafe-eval'" :""}`,
+ `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: https://js.puter.com https://www.googletagmanager.com https://www.google-analytics.com https://va.vercel-scripts.com https://accounts.google.com https://apis.google.com ${isDev ?"'unsafe-eval'" :""}`,
 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-"img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://i.pravatar.cc https://ui-avatars.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.amazonaws.com https://images.unsplash.com https://tiles.basemaps.cartocdn.com",
- `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.supabase.in https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://va.vercel-scripts.com https://vitals.vercel-insights.com https://accounts.google.com https://oauth2.googleapis.com https://basemaps.cartocdn.com https://tiles.basemaps.cartocdn.com https://api.pwnedpasswords.com${isDev ?" ws://localhost:* ws://127.0.0.1:*" :""}`,
+"img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://i.pravatar.cc https://ui-avatars.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.amazonaws.com https://images.unsplash.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://www.googletagmanager.com https://www.google-analytics.com",
+ `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.supabase.in https://*.puter.com wss://*.puter.com https://api.puter.com wss://api.puter.com https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://va.vercel-scripts.com https://vitals.vercel-insights.com https://accounts.google.com https://oauth2.googleapis.com https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://api.pwnedpasswords.com${isDev ?" ws://localhost:* ws://127.0.0.1:*" :""}`,
 "font-src 'self' https://fonts.gstatic.com data:",
-"frame-src 'self' https://checkout.razorpay.com https://accounts.google.com",
+"frame-src 'self' https://checkout.razorpay.com https://accounts.google.com https://puter.com https://*.puter.com",
 "object-src 'none'",
 "base-uri 'none'",
 "form-action 'self'",
@@ -201,7 +201,7 @@ export const config = {
    * Match all request paths except for public assets and metadata files.
    * This avoids redirecting browser metadata and PWA resources to /auth/sign-in.
    */
-  '/((?!_next/.*|favicon.ico|favicon.svg|apple-touch-icon.png|site.webmanifest|manifest.webmanifest|robots.txt|sitemap.xml|sitemap-index.xml|opensearch.xml|sw.js|images/.*|icons/.*|fonts/.*|logos/.*|assets/.*|static/.*|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|xml|txt|webmanifest)$).*)',
+   '/((?!_next/.*|maplibre/.*|favicon.ico|favicon.svg|apple-touch-icon.png|site.webmanifest|manifest.webmanifest|robots.txt|sitemap.xml|sitemap-index.xml|opensearch.xml|sw.js|images/.*|icons/.*|fonts/.*|logos/.*|assets/.*|static/.*|.*\\.(?:mjs|js|svg|png|jpg|jpeg|gif|webp|ico|json|xml|txt|webmanifest)$).*)',
   ],
 };
 

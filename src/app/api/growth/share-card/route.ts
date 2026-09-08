@@ -32,16 +32,16 @@ export async function GET(req: NextRequest) {
  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in"
 
  const CARD_TEMPLATES: Record<string, { headline: string; subtext: string; emoji: string }> = {
- first_gig: { headline: `${firstName} just shipped their first gig 🚀`, subtext: `Building real work before graduation at CampusConnect`, emoji:"🚀" },
+ first_gig: { headline: `${firstName} just shipped their first gig 🚀`, subtext: `Building real work before graduation at CampusConnectCo`, emoji:"🚀" },
  earning_1k: { headline: `${firstName} earned ₹1,000 as a student 💰`, subtext: `From ${college}. Real work. Real pay. No degree needed.`, emoji:"💰" },
- earning_5k: { headline: `₹5,000 earned without a degree 🎯`, subtext: `${firstName} from ${college} is on CampusConnect`, emoji:"🎯" },
+ earning_5k: { headline: `₹5,000 earned without a degree 🎯`, subtext: `${firstName} from ${college} is on CampusConnectCo`, emoji:"🎯" },
  earning_10k: { headline: `₹10,000 milestone unlocked! 🏆`, subtext: `${firstName} proves students can earn before graduation`, emoji:"🏆" },
- earning_25k: { headline: `₹25,000 earned as a student 🔥`, subtext: `${firstName} · ${college} · CampusConnect`, emoji:"🔥" },
- earning_1l: { headline: `₹1 Lakh earned as a student 👑`, subtext: `${firstName} from ${college} just hit ₹1L on CampusConnect`, emoji:"👑" },
- streak_7: { headline: `7-day streak 🔥 Nothing stopping ${firstName}`, subtext: `Daily career building at CampusConnect · ${college}`, emoji:"🔥" },
+ earning_25k: { headline: `₹25,000 earned as a student 🔥`, subtext: `${firstName} · ${college} · CampusConnectCo`, emoji:"🔥" },
+ earning_1l: { headline: `₹1 Lakh earned as a student 👑`, subtext: `${firstName} from ${college} just hit ₹1L on CampusConnectCo`, emoji:"👑" },
+ streak_7: { headline: `7-day streak 🔥 Nothing stopping ${firstName}`, subtext: `Daily career building at CampusConnectCo · ${college}`, emoji:"🔥" },
  streak_30: { headline: `30-day streak! ${firstName} never stopped 💯`, subtext: `A month of consistent career building · ${college}`, emoji:"💯" },
- badge: { headline: `${firstName} just earned a new badge ⭐`, subtext: `${college} student leveling up on CampusConnect`, emoji:"⭐" },
- rank_1: { headline: `${firstName} is #1 on campus 👑`, subtext: `Top of the CampusConnect leaderboard at ${college}`, emoji:"👑" },
+ badge: { headline: `${firstName} just earned a new badge ⭐`, subtext: `${college} student leveling up on CampusConnectCoCo`, emoji:"⭐" },
+ rank_1: { headline: `${firstName} is #1 on campus 👑`, subtext: `Top of the CampusConnectCo leaderboard at ${college}`, emoji:"👑" },
  level_up: { headline: `Level ${gamif?.level ||"up"}: ${gamif?.levelTitle ||"Achieved"} 🎮`, subtext: `${firstName} from ${college} keeps leveling up`, emoji:"🎮" },
  }
 
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
  // Pre-formatted share text per channel
  const shareText = {
  whatsapp: `${template.headline}\n\n${template.subtext}\n\n🔗 Join me: ${shareUrl}`,
- twitter: `${template.headline} ${template.subtext} ${shareUrl} #CampusConnect #StudentFreelancing`,
+ twitter: `${template.headline} ${template.subtext} ${shareUrl} #CampusConnectCo #StudentFreelancing`,
  linkedin: `${template.headline}\n\n${template.subtext}\n\nJoin 10,000+ students building verified careers: ${shareUrl}`,
  instagram: `${template.headline}\n${template.subtext}\n\n👉 Link in bio`,
  }

@@ -13,7 +13,7 @@ export function TrustBanner() {
  Editorial Integrity Checked
  </h4>
  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
- This article adheres to CampusConnect&apos;s strict editorial guidelines. The content is fact-checked, written by domain experts, and free from undisclosed sponsorships.
+ This article adheres to CampusConnectCo&apos;s strict editorial guidelines. The content is fact-checked, written by domain experts, and free from undisclosed sponsorships.
  </p>
  <Link 
  href="/editorial" 

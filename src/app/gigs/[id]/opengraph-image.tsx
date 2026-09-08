@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og';
 import prisma from '@/lib/prisma';
 
 export const runtime = 'nodejs';
-export const alt = 'CampusConnect Gig Opportunity';
+export const alt = 'CampusConnectCo Gig Opportunity';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -40,7 +40,7 @@ export default async function GigOGImage({
  const title = gig?.title ?? 'Campus Gig Opportunity';
  const budget = gig?.budget ? `₹${gig.budget.toLocaleString('en-IN')}` : '';
  const location = gig?.work_mode ? (gig.work_mode.charAt(0).toUpperCase() + gig.work_mode.slice(1)) : 'Remote / India';
- const poster = gig?.poster?.name ?? 'CampusConnect';
+ const poster = gig?.poster?.name ?? 'CampusConnectCo';
  const tags = gig?.tags
  ? gig.tags.split(',').map(t => t.trim()).slice(0, 4)
  : [];
@@ -103,7 +103,7 @@ export default async function GigOGImage({
  letterSpacing: '-0.5px',
  }}
  >
- CampusConnect
+ CampusConnectCo
  </div>
  <div
  style={{

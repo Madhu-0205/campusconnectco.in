@@ -3,16 +3,16 @@ import { Metadata } from"next";
 import LegalLayout from"@/components/legal/LegalLayout";
 
 export const metadata: Metadata = {
- title:"Terms & Conditions | CampusConnect",
- description:"Read the Terms and Conditions for using CampusConnect. Learn about user responsibilities, student conduct, and content ownership.",
+ title:"Terms & Conditions | CampusConnectCo",
+ description:"Read the Terms and Conditions for using CampusConnectCo. Learn about user responsibilities, student conduct, and content ownership.",
  alternates: {
  canonical:"https://campusconnectco.in/terms",
  },
  openGraph: {
- title:"Terms & Conditions | CampusConnect",
- description:"Read the Terms and Conditions for using CampusConnect.",
+ title:"Terms & Conditions | CampusConnectCo",
+ description:"Read the Terms and Conditions for using CampusConnectCo.",
  url:"https://campusconnectco.in/terms",
- siteName:"CampusConnect",
+ siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",
  }
@@ -43,18 +43,18 @@ export default function TermsPage() {
  <section id="introduction">
  <h2>1. Introduction</h2>
  <p>
- Welcome to CampusConnect. These Terms & Conditions (&quot;Terms&quot;) govern your access to and use of the CampusConnect website, platform, and services (collectively, the &quot;Services&quot;). 
+ Welcome to CampusConnectCo. These Terms & Conditions (&quot;Terms&quot;) govern your access to and use of the CampusConnectCo website, platform, and services (collectively, the &quot;Services&quot;). 
  By creating an account, accessing, or using our Services, you agree to be bound by these Terms and our Privacy Policy.
  </p>
  <p>
- CampusConnect is a platform designed to bridge the gap between students, educational institutions, and employers. We facilitate connections for internships, jobs, hackathons, and networking.
+ CampusConnectCo is a platform designed to bridge the gap between students, educational institutions, and employers. We facilitate connections for internships, jobs, hackathons, and networking.
  </p>
  </section>
 
  <section id="eligibility">
  <h2>2. Eligibility</h2>
  <p>
- You must be at least 16 years old to create an account on CampusConnect. By using our Services, you represent and warrant that you meet this minimum age requirement and have the legal capacity to enter into these Terms.
+ You must be at least 16 years old to create an account on CampusConnectCo. By using our Services, you represent and warrant that you meet this minimum age requirement and have the legal capacity to enter into these Terms.
  </p>
  </section>
 
@@ -77,7 +77,7 @@ export default function TermsPage() {
  <section id="student-conduct">
  <h2>4. Student Conduct & User Responsibilities</h2>
  <p>
- As a student or job-seeking user on CampusConnect, you represent yourself professionally. You agree to:
+ As a student or job-seeking user on CampusConnectCo, you represent yourself professionally. You agree to:
  </p>
  <ul>
  <li>Submit accurate resumes, portfolios, and application materials.</li>
@@ -90,7 +90,7 @@ export default function TermsPage() {
  <section id="employer-responsibilities">
  <h2>5. Employer & Startup Responsibilities</h2>
  <p>
- Employers, recruiters, and startups using CampusConnect to hire or recruit talent agree to:
+ Employers, recruiters, and startups using CampusConnectCo to hire or recruit talent agree to:
  </p>
  <ul>
  <li>Provide accurate and transparent information regarding job roles, stipends, and working conditions.</li>
@@ -103,23 +103,23 @@ export default function TermsPage() {
  <section id="opportunity-listings">
  <h2>6. Opportunity Listings</h2>
  <p>
- CampusConnect aggregates and hosts opportunities (internships, hackathons, jobs). While we strive for quality, we do not guarantee the validity, safety, or outcome of any third-party opportunity. Users are advised to exercise due diligence before sharing sensitive information or accepting offers.
+ CampusConnectCo aggregates and hosts opportunities (internships, hackathons, jobs). While we strive for quality, we do not guarantee the validity, safety, or outcome of any third-party opportunity. Users are advised to exercise due diligence before sharing sensitive information or accepting offers.
  </p>
  </section>
 
  <section id="intellectual-property">
  <h2>7. Intellectual Property & Content Ownership</h2>
  <p>
- <strong>Your Content:</strong> You retain ownership of the content you post (e.g., resumes, portfolios, project descriptions). By posting, you grant CampusConnect a non-exclusive, worldwide, royalty-free license to use, display, and distribute your content to facilitate the Services.
+ <strong>Your Content:</strong> You retain ownership of the content you post (e.g., resumes, portfolios, project descriptions). By posting, you grant CampusConnectCo a non-exclusive, worldwide, royalty-free license to use, display, and distribute your content to facilitate the Services.
  </p>
  <p>
- <strong>CampusConnect Content:</strong> The CampusConnect logo, design, code, and proprietary algorithms are the intellectual property of CampusConnect. You may not copy, modify, or distribute our intellectual property without written consent.
+ <strong>CampusConnectCo Content:</strong> The CampusConnectCo logo, design, code, and proprietary algorithms are the intellectual property of CampusConnectCo. You may not copy, modify, or distribute our intellectual property without written consent.
  </p>
  </section>
 
  <section id="prohibited-activities">
  <h2>8. Prohibited Activities</h2>
- <p>You agree NOT to engage in any of the following activities on CampusConnect:</p>
+ <p>You agree NOT to engage in any of the following activities on CampusConnectCo:</p>
  <ul>
  <li><strong>Fraud & Scams:</strong> Posting fake job listings, phishing, or attempting to extract money from users.</li>
  <li><strong>Spam:</strong> Sending unsolicited promotional messages, bulk emails, or irrelevant links.</li>
@@ -131,24 +131,24 @@ export default function TermsPage() {
  <section id="termination">
  <h2>9. Termination</h2>
  <p>
- CampusConnect reserves the right to suspend or terminate your account at any time, with or without notice, if we believe you have violated these Terms, engaged in fraudulent behavior, or created a risk to the platform or other users.
+ CampusConnectCo reserves the right to suspend or terminate your account at any time, with or without notice, if we believe you have violated these Terms, engaged in fraudulent behavior, or created a risk to the platform or other users.
  </p>
  </section>
 
  <section id="disclaimer">
  <h2>10. Disclaimer & Limitation of Liability</h2>
  <p>
- The Services are provided on an &quot;AS-IS&quot; and &quot;AS-AVAILABLE&quot; basis. CampusConnect disclaims all warranties, express or implied, including the implied warranties of merchantability and fitness for a particular purpose.
+ The Services are provided on an &quot;AS-IS&quot; and &quot;AS-AVAILABLE&quot; basis. CampusConnectCo disclaims all warranties, express or implied, including the implied warranties of merchantability and fitness for a particular purpose.
  </p>
  <p>
- To the maximum extent permitted by law, CampusConnect shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the platform, your interactions with other users, or any employment outcomes.
+ To the maximum extent permitted by law, CampusConnectCo shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the platform, your interactions with other users, or any employment outcomes.
  </p>
  </section>
 
  <section id="changes">
  <h2>11. Changes to Terms</h2>
  <p>
- We may update these Terms from time to time. If we make material changes, we will notify you via email or a prominent notice on the platform. Your continued use of CampusConnect after such updates constitutes acceptance of the revised Terms.
+ We may update these Terms from time to time. If we make material changes, we will notify you via email or a prominent notice on the platform. Your continued use of CampusConnectCo after such updates constitutes acceptance of the revised Terms.
  </p>
  </section>
 
@@ -159,7 +159,7 @@ export default function TermsPage() {
  </p>
  <p>
  <strong>Email:</strong> legal@campusconnectco.in<br />
- <strong>Address:</strong> CampusConnect Legal Department, India
+ <strong>Address:</strong> CampusConnectCo Legal Department, India
  </p>
  </section>
  </LegalLayout>

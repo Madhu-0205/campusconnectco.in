@@ -17,7 +17,7 @@ import {
 
 
 export const metadata: Metadata = {
- title:"Career Copilot | CampusConnect",
+ title:"Career Copilot | CampusConnectCo",
  description:"Your intelligent AI career mentor.",
 }
 

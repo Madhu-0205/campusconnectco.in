@@ -4,7 +4,7 @@ import type { Metadata } from"next";
 import ContactForm from"./ContactForm";
 
 export const metadata: Metadata = {
- title:"Contact Us — CampusConnect",
+ title:"Contact Us — CampusConnectCo",
 };
 
 export default function ContactUsPage() {

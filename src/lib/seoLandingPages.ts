@@ -21,7 +21,7 @@ const commonRelatedLinks = [
 
 export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  internships: {
- title:"Student Internships in India | CampusConnect",
+ title:"Student Internships in India | CampusConnectCo",
  description:
 "Discover verified student internships, college jobs, and remote roles across India with AI matching, secure escrow, and startup hiring confidence.",
  keywords: [
@@ -34,7 +34,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  heroTitle:"Find internships that build real experience",
  heroSubtitle:
-"CampusConnect connects students to high-growth internships, startup roles, and campus gigs with AI matching and secure payments.",
+"CampusConnectCo connects students to high-growth internships, startup roles, and campus gigs with AI matching and secure payments.",
  primaryCta: { label:"Browse Internships", href:"/internships" },
  secondaryCta: { label:"Hire Interns", href:"/hire-student-talent" },
  benefits: [
@@ -43,8 +43,8 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  { title:"Secure milestone payments", description:"Escrow protects students and employers until work is approved and delivered." },
  ],
  faqs: [
- { question:"Can I apply to internships without a resume?", answer:"Yes. CampusConnect lets students apply using profiles, skills, and milestone-based portfolios for faster hiring." },
- { question:"Are internships on CampusConnect paid?", answer:"Most internships are paid, with transparent stipends and secure payment terms before work begins." },
+ { question:"Can I apply to internships without a resume?", answer:"Yes. CampusConnectCo lets students apply using profiles, skills, and milestone-based portfolios for faster hiring." },
+ { question:"Are internships on CampusConnectCo paid?", answer:"Most internships are paid, with transparent stipends and secure payment terms before work begins." },
  { question:"Can I find internships near my college?", answer:"Yes. Filter internships by city, college, remote availability, and startup stage for local and hybrid roles." },
  ],
  relatedLinks: commonRelatedLinks,
@@ -55,7 +55,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "campus-gigs": {
- title:"Campus Gigs for Students | CampusConnect",
+ title:"Campus Gigs for Students | CampusConnectCo",
  description:
 "Earn on campus with verified campus gigs, event support roles, and micro-projects designed for students who want flexible income and skill experience.",
  keywords: ["campus gigs","student gigs","college side projects","event support jobs","campus hiring"],
@@ -72,7 +72,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  faqs: [
  { question:"How are campus gigs different from internships?", answer:"Campus gigs are short-term, skill-based tasks and event roles that offer flexible hours and faster payouts compared to internships." },
  { question:"Can I take multiple campus gigs at once?", answer:"Yes, as long as the schedules do not overlap. You can manage multiple gigs based on your availability." },
- { question:"Do employers verify student credentials?", answer:"CampusConnect supports student verification to help employers trust your profile and hire you confidently." },
+ { question:"Do employers verify student credentials?", answer:"CampusConnectCo supports student verification to help employers trust your profile and hire you confidently." },
  ],
  relatedLinks: commonRelatedLinks,
  featuredCards: [
@@ -82,7 +82,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "freelance-jobs": {
- title:"Freelance Jobs for Students | CampusConnect",
+ title:"Freelance Jobs for Students | CampusConnectCo",
  description:
 "Build a freelance portfolio with design, development, writing, and marketing projects that pay students fairly and connect them with verified clients.",
  keywords: ["freelance jobs","student freelancing","freelance marketplace","remote freelance India","startup gigs"],
@@ -97,7 +97,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  { title:"Skill-based matching", description:"Land gigs that match your technical, creative, and leadership strengths." },
  ],
  faqs: [
- { question:"Can I freelance without prior experience?", answer:"Yes. CampusConnect helps students find entry-level freelance jobs and build their first professional project portfolio." },
+ { question:"Can I freelance without prior experience?", answer:"Yes. CampusConnectCo helps students find entry-level freelance jobs and build their first professional project portfolio." },
  { question:"How are freelance payments protected?", answer:"Payments are secured with escrow so funds are available before work starts and released after project acceptance." },
  { question:"Can I work with clients outside my college?", answer:"Yes. Students can take remote freelance jobs from startups and brands across India." },
  ],
@@ -109,7 +109,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "remote-internships": {
- title:"Remote Internships for Students | CampusConnect",
+ title:"Remote Internships for Students | CampusConnectCo",
  description:
 "Access remote internships with Indian startups and global teams. Learn from mentors, build remote collaboration skills, and earn from anywhere.",
  keywords: ["remote internships","work from home internship","remote student jobs","virtual internships","online internships"],
@@ -124,7 +124,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  { title:"Communication coaching", description:"Get guidance on remote collaboration, client updates, and productivity." },
  ],
  faqs: [
- { question:"Are remote internships paid?", answer:"Yes. Many remote internships on CampusConnect offer paid stipends and milestone-based payments." },
+ { question:"Are remote internships paid?", answer:"Yes. Many remote internships on CampusConnectCo offer paid stipends and milestone-based payments." },
  { question:"How do remote payments work?", answer:"Payments are secured using escrow so you can focus on work while funds are safely held until completion." },
  { question:"Will remote internships count on my resume?", answer:"Absolutely. Remote internships are recognized as professional experience, especially when completed with verified startups." },
  ],
@@ -136,7 +136,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "software-internships": {
- title:"Software Internships for Students | CampusConnect",
+ title:"Software Internships for Students | CampusConnectCo",
  description:
 "Launch your software career with internships in frontend, backend, mobile, and full-stack development from verified student-friendly employers.",
  keywords: ["software internships","developer internships","coding internships","tech internships","student developer jobs"],
@@ -151,7 +151,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  { title:"Career-ready deliverables", description:"Ship projects that become portfolio examples for future job interviews." },
  ],
  faqs: [
- { question:"Which software internship roles are available?", answer:"CampusConnect lists front-end, back-end, mobile, full-stack, and product engineering internships for students." },
+ { question:"Which software internship roles are available?", answer:"CampusConnectCo lists front-end, back-end, mobile, full-stack, and product engineering internships for students." },
  { question:"Can I apply as a first-year student?", answer:"Yes. Many internships are open to first-year and second-year students who demonstrate enthusiasm and foundational skills." },
  { question:"How do mentors support interns?", answer:"Mentors provide code reviews, technical roadmaps, and feedback to help you grow through the internship." },
  ],
@@ -163,7 +163,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "data-science-internships": {
- title:"Data Science Internships for Students | CampusConnect",
+ title:"Data Science Internships for Students | CampusConnectCo",
  description:
 "Work on analytics, ML, and data projects with startups that value data-driven student talent and deliver measurable impact.",
  keywords: ["data science internships","analytics internships","machine learning internships","student data roles"],
@@ -179,7 +179,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  faqs: [
  { question:"Do I need advanced statistics skills?", answer:"No. Many internships welcome students with basic analytics skills and a willingness to learn." },
- { question:"Are data internships remote?", answer:"Yes. CampusConnect offers both remote and hybrid data science internships for students." },
+ { question:"Are data internships remote?", answer:"Yes. CampusConnectCo offers both remote and hybrid data science internships for students." },
  { question:"How can I prepare for data internship interviews?", answer:"Review case studies, SQL queries, and problem-solving examples related to data analysis." },
  ],
  relatedLinks: commonRelatedLinks,
@@ -190,7 +190,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "marketing-internships": {
- title:"Marketing Internships for Students | CampusConnect",
+ title:"Marketing Internships for Students | CampusConnectCo",
  description:
 "Join marketing internships that help students grow brand strategy, digital campaigns, content, and launch plans for startups and campus brands.",
  keywords: ["marketing internships","digital marketing internships","student marketing jobs","growth internships"],
@@ -198,7 +198,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  heroSubtitle:
 "Work on campaigns, content, and growth strategies that help startups and campus initiatives scale while you learn market skills.",
  primaryCta: { label:"Browse Marketing Internships", href:"/marketing-internships" },
- secondaryCta: { label:"Join CampusConnect", href:"/join" },
+ secondaryCta: { label:"Join CampusConnectCo", href:"/join" },
  benefits: [
  { title:"Campaign experience", description:"Run social, email, and brand campaigns for startups and student communities." },
  { title:"Creative portfolio", description:"Build work examples that prove your growth marketing and content skills." },
@@ -217,7 +217,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "ui-ux-internships": {
- title:"UI/UX Internships for Students | CampusConnect",
+ title:"UI/UX Internships for Students | CampusConnectCo",
  description:
 "Design interfaces, product experiences, and prototypes with internships that help students become user-focused designers and product thinkers.",
  keywords: ["ui/ux internships","design internships","student design roles","product design internship"],
@@ -244,7 +244,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "startup-internships": {
- title:"Startup Internships for Students | CampusConnect",
+ title:"Startup Internships for Students | CampusConnectCo",
  description:
 "Join startup internships that let students build fast, learn from founders, and take ownership of meaningful product work.",
  keywords: ["startup internships","student startup jobs","early-stage internships","founder internships"],
@@ -259,7 +259,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  { title:"High-growth resume experience", description:"Build startup achievements that stand out to future employers." },
  ],
  faqs: [
- { question:"What kinds of startup internships are listed?", answer:"CampusConnect lists product, engineering, design, marketing, and operations internships at high-growth startups." },
+ { question:"What kinds of startup internships are listed?", answer:"CampusConnectCo lists product, engineering, design, marketing, and operations internships at high-growth startups." },
  { question:"How do startups verify students?", answer:"Verified student profiles and academic credentials make hiring faster and safer for startups." },
  { question:"Can I work with remote founders?", answer:"Yes. Startup internships include remote and hybrid opportunities that suit student schedules." },
  ],
@@ -271,7 +271,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "business-development-internships": {
- title:"Business Development Internships | CampusConnect",
+ title:"Business Development Internships | CampusConnectCo",
  description:
 "Land business development internships that help students learn sales, partnerships, market research, and growth execution for startups.",
  keywords: ["business development internships","biz dev internships","sales internships","startup business roles"],
@@ -288,7 +288,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  faqs: [
  { question:"Do business development internships need prior sales experience?", answer:"No. Many roles prioritize communication, persistence, and growth mindset over prior experience." },
  { question:"Will I get training?", answer:"Yes. Employers often provide onboarding, lead lists, and mentoring for student business development interns." },
- { question:"Can I work with startups or established companies?", answer:"CampusConnect lists both startup and SME opportunities for business development interns." },
+ { question:"Can I work with startups or established companies?", answer:"CampusConnectCo lists both startup and SME opportunities for business development interns." },
  ],
  relatedLinks: commonRelatedLinks,
  featuredCards: [
@@ -298,7 +298,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "engineering-internships": {
- title:"Engineering Internships for Students | CampusConnect",
+ title:"Engineering Internships for Students | CampusConnectCo",
  description:
 "Find engineering internships in software, hardware, product, and research that help students launch technical careers with real project ownership.",
  keywords: ["engineering internships","technical internships","student engineering jobs","software internships"],
@@ -325,7 +325,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "student-network": {
- title:"Student Network & Profiles | CampusConnect",
+ title:"Student Network & Profiles | CampusConnectCo",
  description:
 "Join a student community for networking, mentorship, verified profiles, and opportunity sharing with employers and campus leaders.",
  keywords: ["student network","student profiles","campus networking","student community","mentor network"],
@@ -352,7 +352,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "ai-career-roadmap": {
- title:"AI Career Roadmap for Students | CampusConnect",
+ title:"AI Career Roadmap for Students | CampusConnectCo",
  description:
 "Plan your student career with AI-powered roadmaps, skill milestones, and recommended internships to reach your goals faster.",
  keywords: ["AI career roadmap","career guidance","student career planning","skill roadmap","internship pathways"],
@@ -367,7 +367,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  { title:"Progress tracking", description:"Monitor your growth across internships, projects, and network connections." },
  ],
  faqs: [
- { question:"How does the AI roadmap work?", answer:"CampusConnect analyzes your skills, goals, and student profile to recommend the right internships and learning steps." },
+ { question:"How does the AI roadmap work?", answer:"CampusConnectCo analyzes your skills, goals, and student profile to recommend the right internships and learning steps." },
  { question:"Can I update my roadmap?", answer:"Yes. Your roadmap evolves as you complete internships, earn badges, and add new skills." },
  { question:"Will this help me choose a career path?", answer:"Yes. The roadmap is designed to surface internships and projects that support student career decisions." },
  ],
@@ -379,7 +379,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  },
 "hire-student-talent": {
- title:"Hire Student Talent | CampusConnect Employers",
+ title:"Hire Student Talent | CampusConnectCo Employers",
  description:
 "Hire verified students for internships, campus gigs, freelance work, and campus ambassador programs using AI matching and verified profiles.",
  keywords: ["hire students","employer hiring","student talent","campus recruitment","intern hiring"],
@@ -395,7 +395,7 @@ export const SEO_LANDING_PAGES: Record<string, SEOLandingPageData> = {
  ],
  faqs: [
  { question:"What types of student roles can I post?", answer:"You can post internships, freelance jobs, campus gigs, ambassador roles, and project-based opportunities." },
- { question:"How does CampusConnect protect payments?", answer:"Escrow secures employer funds until student work is delivered and approved." },
+ { question:"How does CampusConnectCo protect payments?", answer:"Escrow secures employer funds until student work is delivered and approved." },
  { question:"Can I hire students from multiple colleges?", answer:"Yes. Filter candidates by college, skills, and location to reach the right student talent." },
  ],
  relatedLinks: commonRelatedLinks,

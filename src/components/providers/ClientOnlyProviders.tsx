@@ -14,21 +14,12 @@ const NetworkStatusIndicator = dynamic(() => import("@/components/NetworkStatusI
 export function ClientOnlyProviders({ children }: { children: React.ReactNode }) {
  const [mountedAgent, setMountedAgent] = useState(false)
 
- useEffect(() => {
- if (typeof window !=="undefined") {
- if ("requestIdleCallback" in window) {
- const handle = window.requestIdleCallback(() => {
- setMountedAgent(true)
- }, { timeout: 4000 })
- return () => window.cancelIdleCallback(handle)
- } else {
- const handle = setTimeout(() => {
- setMountedAgent(true)
- }, 1500)
- return () => clearTimeout(handle)
- }
- }
- }, [])
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMountedAgent(true)
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [])
 
  return (
  <>

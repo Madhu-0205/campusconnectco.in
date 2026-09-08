@@ -19,7 +19,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const { slug } = await params
  const page = SEO_LANDING_PAGES[slug]
- if (!page) return { title:"Page not found | CampusConnect" }
+ if (!page) return { title:"Page not found | CampusConnectCo" }
 
  const canonical = `https://www.campusconnectco.in/${slug}`
 
@@ -71,7 +71,7 @@ export default async function SEOLandingPage({ params }: Props) {
  <main className="max-w-7xl mx-auto px-6 py-14 lg:px-8">
  <section className="space-y-6 text-slate-950">
  <div className="max-w-3xl">
- <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">CampusConnect SEO Landing</p>
+ <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">CampusConnectCo SEO Landing</p>
  <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">{page.heroTitle}</h1>
  <p className="mt-6 text-lg leading-8 text-slate-700">{page.heroSubtitle}</p>
  <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -105,7 +105,7 @@ export default async function SEOLandingPage({ params }: Props) {
  <section className="mt-16 rounded-3xl border border-slate-200 bg-slate-50 p-8">
  <header className="mb-8">
  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Benefits</p>
- <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">Why students and employers choose CampusConnect</h2>
+ <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">Why students and employers choose CampusConnectCo</h2>
  </header>
 
  <div className="grid gap-6 md:grid-cols-3">

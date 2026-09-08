@@ -86,6 +86,7 @@ model User {
   userSkills           UserSkill[]
   applications         Application[]
   gigsPosted           Gig[]               @relation("PostedGigs")
+  internshipsPosted    Internship[]        @relation("PostedInternships")
   messages             Message[]
   analytics            Analytics[]
 
@@ -166,6 +167,7 @@ model Gig {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   completedAt     DateTime?
+  deletedAt       DateTime?
   savedGigs       SavedGig[]
   isPremium       Boolean       @default(false)
   expires_at      DateTime      @default(now())
@@ -414,9 +416,15 @@ model Internship {
   views           Int               @default(0)
   externalId      String?           @unique
   source          String?
+  posted_by       String?           @db.Uuid
+  completedAt     DateTime?
+  deletedAt       DateTime?
+  poster          User?             @relation("PostedInternships", fields: [posted_by], references: [id])
   savedBy         SavedInternship[]
 
   @@index([status])
+  @@index([posted_by])
+  @@index([deletedAt])
 }
 
 model SavedInternship {

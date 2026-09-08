@@ -40,7 +40,7 @@ export function PaymentModal({ isOpen, onClose, gigId, workerId, gigTitle, budge
  key: data.key,
  amount: Math.round(totalAmount * 100), // Expected in paise
  currency:"INR",
- name:"CampusConnect",
+ name:"CampusConnectCo",
  description: `Escrow Lock: ${gigTitle}`,
  image:"/logo-v2.jpg",
  order_id: data.orderId,
@@ -107,7 +107,7 @@ export function PaymentModal({ isOpen, onClose, gigId, workerId, gigTitle, budge
  {/* Body */}
  <div className="p-6 space-y-6">
  <p className="text-sm text-muted-foreground leading-relaxed">
- To formally assign this gig and guarantee payment to the student upon successful completion, please lock the total budget into CampusConnect Escrow.
+ To formally assign this gig and guarantee payment to the student upon successful completion, please lock the total budget into CampusConnectCo Escrow.
  </p>
 
  <div className="bg-background rounded-2xl p-5 space-y-3 border border-white/5">

@@ -51,6 +51,10 @@ describe("Root Security Proxy (s../middleware.ts)", () => {
  expect(csp).toContain("manifest-src 'self'");
  expect(csp).toContain(`script-src 'self' 'nonce-${nonce}'`);
  expect(csp).toContain("frame-src 'self' https://checkout.razorpay.com");
+ expect(csp).toContain("https://*.basemaps.cartocdn.com");
+ expect(csp).toContain("https://js.puter.com");
+ expect(csp).toContain("https://*.puter.com");
+ expect(csp).toContain("wss://*.puter.com");
  expect(csp).toContain("form-action 'self'");
 
  // Verify additional safety headers

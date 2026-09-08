@@ -9,7 +9,7 @@ const PILLARS = [
  num:"01",
  icon: Users,
  title:"The Student Foundation",
- content:"Traditional platforms rely on top-down verification. CampusConnect flips the script. We believe that a student's reputation within their own community is the most powerful signal of professional capability and reliability.",
+ content:"Traditional platforms rely on top-down verification. CampusConnectCo flips the script. We believe that a student's reputation within their own community is the most powerful signal of professional capability and reliability.",
  borderColor:"rgba(255,77,28,0.25)",
  iconBg:"rgba(255,77,28,0.10)",
  iconColor:"#ff4d1c",
@@ -121,7 +121,7 @@ export default function ManifestoPage() {
  }}
  >
  <Shield size={13} style={{ color:"var(--color-primary)" }} />
- The CampusConnect Manifesto
+ The CampusConnectCo Manifesto
  </motion.div>
 
  <motion.h1

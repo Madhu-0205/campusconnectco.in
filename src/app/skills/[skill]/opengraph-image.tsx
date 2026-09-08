@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og';
 import prisma from '@/lib/prisma';
 
 export const runtime = 'nodejs';
-export const alt = 'CampusConnect Skill Page';
+export const alt = 'CampusConnectCo Skill Page';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -76,7 +76,7 @@ export default async function SkillOGImage({
  {/* Brand */}
  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '48px' }}>
  <div style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', borderRadius: '10px', padding: '7px 16px', color: 'white', fontSize: '16px', fontWeight: 800 }}>
- CampusConnect
+ CampusConnectCo
  </div>
  <div style={{ background: palette.bg, border: `1px solid ${palette.border}`, borderRadius: '8px', padding: '6px 14px', color: palette.text, fontSize: '14px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
  Skill Hub

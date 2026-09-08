@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og';
 import prisma from '@/lib/prisma';
 
 export const runtime = 'nodejs';
-export const alt = 'CampusConnect Student Profile';
+export const alt = 'CampusConnectCo Student Profile';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -46,7 +46,7 @@ export default async function ProfileOGImage({
  }
 
  const displayName = profile?.full_name ?? profile?.name ?? username;
- const bio = profile?.bio?.slice(0, 120) ?? 'Student on CampusConnect';
+ const bio = profile?.bio?.slice(0, 120) ?? 'Student on CampusConnectCo';
  const college = profile?.college ?? '';
  const branch = profile?.branch ?? '';
  const year = profile?.year ?? '';
@@ -83,7 +83,7 @@ export default async function ProfileOGImage({
  {/* Brand */}
  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '36px' }}>
  <div style={{ background: 'linear-gradient(135deg, #6366f1, #ec4899)', borderRadius: '10px', padding: '7px 16px', color: 'white', fontSize: '16px', fontWeight: 800 }}>
- CampusConnect
+ CampusConnectCo
  </div>
  {verified && (
  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '8px', padding: '5px 12px', color: '#34d399', fontSize: '13px', fontWeight: 700 }}>

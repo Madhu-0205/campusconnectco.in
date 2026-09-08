@@ -23,7 +23,7 @@ export async function generateMetadata({
  const pageUrl = `${baseUrl}/profile/${username}`
 
  let displayName = username
- let description = `View ${username}'s verified skills, completed gigs, and career portfolio on CampusConnect.`
+ let description = `View ${username}'s verified skills, completed gigs, and career portfolio on CampusConnectCo.`
  let keywords: string[] = ['student freelancer india', 'campus talent', 'hire student']
 
  try {
@@ -37,7 +37,7 @@ export async function generateMetadata({
  const verifiedBadge = user.isVerified ? 'Verified ' : ''
  description = user.bio
  ? `${user.bio.slice(0, 140)}...`
- : `${verifiedBadge}student developer${college}. Available for gigs and internships on CampusConnect.`
+ : `${verifiedBadge}student developer${college}. Available for gigs and internships on CampusConnectCo.`
  if (user.skills) {
  keywords = [...keywords, ...user.skills.split(',').map((s: string) => s.trim()).slice(0, 8)]
  }
@@ -47,20 +47,20 @@ export async function generateMetadata({
  }
 
  return {
- title: `${displayName} — Student Profile | CampusConnect`,
+ title: `${displayName} — Student Profile | CampusConnectCo`,
  description,
  keywords,
  alternates: { canonical: pageUrl },
  openGraph: {
- title: `${displayName} | CampusConnect`,
+ title: `${displayName} | CampusConnectCo`,
  description,
  url: pageUrl,
- siteName: 'CampusConnect',
+ siteName: 'CampusConnectCo',
  type: 'profile',
  },
  twitter: {
  card: 'summary_large_image',
- title: `${displayName} | CampusConnect`,
+ title: `${displayName} | CampusConnectCo`,
  description,
  site: '@campusconnect_in',
  },
@@ -134,13 +134,13 @@ export default async function PublicProfilePage({
  level:"Intermediate"
  })) || (user.skills ? user.skills.split(',').map((s: string) => ({ name: s.trim(), level: 'Intermediate' })) : []),
  projects: [
- { id:"1", title:"CampusConnect iOS App", description:"Built the initial prototype for the iOS app.", link:"https://github.com/campusconnect" },
+ { id:"1", title:"CampusConnectCo iOS App", description:"Built the initial prototype for the iOS app.", link:"https://github.com/campusconnect" },
  { id:"2", title:"E-commerce Dashboard", description:"Admin panel for tracking daily revenue and metrics using Next.js and Tremor.", link:"https://github.com/campusconnect" }
  ],
  experiences: user.workerEscrows?.filter((e: any) => e.status ==="RELEASED").map((e: any) => ({
  id: e.gigId,
  title: e.gig.title,
- company:"CampusConnect Verified Client",
+ company:"CampusConnectCo Verified Client",
  date: e.createdAt.toLocaleString('default', { month: 'short', year: 'numeric' }),
  type:"CampusGig",
  skills: ["Freelance","Gig"],

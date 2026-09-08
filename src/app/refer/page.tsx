@@ -8,8 +8,8 @@ import { getSession } from"@/lib/auth-checks"
 
 
 export const metadata: Metadata = {
- title:"Refer & Earn | CampusConnect",
- description:"Refer your college friends to CampusConnect. Both of you earn XP + ₹100 when they complete their first gig.",
+ title:"Refer & Earn | CampusConnectCo",
+ description:"Refer your college friends to CampusConnectCo. Both of you earn XP + ₹100 when they complete their first gig.",
  robots:"noindex", // private page
 }
 

@@ -59,7 +59,7 @@ export function V2Navbar() {
  C
  </div>
  <span className="font-bold text-xl tracking-tight text-[#2B4B3C]">
- campus<span className="text-[#1FA971]">connect</span>
+ Campus<span className="text-[#1FA971]">ConnectCo</span>
  </span>
  </Link>
 

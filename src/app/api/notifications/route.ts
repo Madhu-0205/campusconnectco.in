@@ -33,19 +33,24 @@ export async function PATCH(request: NextRequest) {
  const { user, errorResponse } = await requireUser();
  if (errorResponse) return errorResponse;
 
- const { id } = await request.json();
+  const body = await request.json().catch(() => null);
+  if (!body || typeof body.id !== "string") {
+    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  }
 
- if (id ==="all") {
- await prisma.notification.updateMany({
- where: { userId: user.id, isRead: false },
- data: { isRead: true },
- });
- } else {
- await prisma.notification.update({
- where: { id, userId: user.id },
- data: { isRead: true },
- });
- }
+  const { id } = body;
+
+  if (id === "all") {
+    await prisma.notification.updateMany({
+      where: { userId: user.id, isRead: false },
+      data: { isRead: true },
+    });
+  } else {
+    await prisma.notification.updateMany({
+      where: { id, userId: user.id },
+      data: { isRead: true },
+    });
+  }
 
  return NextResponse.json({ success: true });
  } catch (error) {

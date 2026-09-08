@@ -67,7 +67,7 @@ export const PaymentStatusEmail = ({
  
  <Text style={footer}>
  Best,<br />
- The CampusConnect Team
+ The CampusConnectCo Team
  </Text>
  </Container>
  </Body>

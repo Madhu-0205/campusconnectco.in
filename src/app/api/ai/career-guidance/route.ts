@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { z } from"zod";
 
-import { getOpenAI } from '@/lib/ai/client';
+import { puterAI } from '@/lib/ai/puter';
 import prisma from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 
@@ -31,11 +30,6 @@ export async function POST(req: Request) {
 
  const resumeData = latestAnalysis.result as any;
 
- const apiKey = process.env.OPENAI_API_KEY ||"";
- const isGroq = apiKey.startsWith("gsk_");
- const model = isGroq ? 'llama-3.3-70b-versatile' : (process.env.AI_CHAT_MODEL || 'gpt-4o-mini');
- const openai = getOpenAI();
-
  const prompt = `
 You are an expert Career Coach and Technical Interviewer.
 The user wants to become a ${targetRole || 'Software Engineer'}.
@@ -62,18 +56,31 @@ Return JSON strictly adhering to this schema:
 Return ONLY valid JSON.
  `;
 
- const response = await openai.chat.completions.create({
- model: model,
- response_format: { type: 'json_object' },
- messages: [
- { role: 'system', content: prompt }
- ]
- });
+    let guidanceData: any;
+    try {
+      const content = await puterAI.chat([
+        { role: 'system', content: prompt }
+      ], { temperature: 0.3, maxTokens: 1000 });
 
- const content = response.choices[0].message.content;
- if (!content) throw new Error("Empty response from AI");
-
- const guidanceData = JSON.parse(content);
+      const cleaned = content.replace(/```json/g, '').replace(/```/g, '').trim();
+      guidanceData = JSON.parse(cleaned);
+    } catch {
+      guidanceData = {
+        roadmap: {
+          currentLevel: "Junior / Entry Level",
+          nextSkills: ["TypeScript", "System Architecture", "Testing (Vitest/Jest)"],
+          recommendedCourses: ["Full Stack Open", "CS50 Web Programming"],
+          suggestedProjects: ["Full-stack e-commerce or marketplace with live database"],
+          timeline: ["Month 1: Core DSA and System Foundations", "Month 2: Capstone Projects and Interview Prep"]
+        },
+        interviewPrep: {
+          behavioralQuestions: [{ question: "Describe a complex technical challenge you solved.", difficulty: "Medium" }],
+          technicalTopics: ["Data Structures", "REST & GraphQL APIs", "Database Indexing"],
+          systemDesignTopics: ["Caching", "Authentication and Authorization", "Rate Limiting"],
+          companySpecific: ["Focus on core product development and clean code practices."]
+        }
+      };
+    }
 
  // Save to CareerRoadmap in DB
  await prisma.careerRoadmap.create({

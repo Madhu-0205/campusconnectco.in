@@ -42,8 +42,8 @@ export default function ForgotPasswordPage() {
  {/* Brand */}
  <div className="text-center mb-8">
  <Link href="/" className="inline-flex items-center gap-2.5 group">
- <Image src="/logo-v2.jpg" alt="CampusConnect" width={40} height={40} className="w-10 h-10 rounded-xl object-contain" />
- <span className="font-black text-foreground group-hover:text-(--primary) transition-colors">CampusConnect</span>
+ <Image src="/logo-v2.jpg" alt="CampusConnectCo" width={40} height={40} className="w-10 h-10 rounded-xl object-contain" />
+ <span className="font-black text-foreground group-hover:text-(--primary) transition-colors">CampusConnectCo</span>
  </Link>
  </div>
 

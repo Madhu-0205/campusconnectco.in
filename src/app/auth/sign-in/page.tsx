@@ -5,8 +5,8 @@ import { Suspense } from"react";
 import SignInForm from"@/components/auth/SignInForm";
 
 export const metadata: Metadata = {
- title:"Sign In — CampusConnect",
- description:"Sign in to your CampusConnect account and access your student opportunity dashboard."
+ title:"Sign In — CampusConnectCo",
+ description:"Sign in to your CampusConnectCo account and access your student opportunity dashboard."
 };
 
 export default function SignInPage() {
@@ -25,7 +25,7 @@ export default function SignInPage() {
  <span className="font-heading font-black text-xl tracking-tighter text-background">CC</span>
  </div>
  <span className="font-heading font-black text-2xl text-foreground transition-colors tracking-tight">
- CampusConnect
+ CampusConnectCo
  </span>
  </Link>
  <p className="text-sm mt-2 font-bold tracking-wide uppercase text-muted-foreground">The student opportunity hub</p>

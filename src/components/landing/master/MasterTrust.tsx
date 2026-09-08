@@ -24,16 +24,16 @@ export function MasterTrust() {
  <span className="text-[#1FA971]">real identity.</span>
  </h2>
  <p className="text-lg text-[#4A5550] font-medium mb-8">
- We don&apos;t allow anonymous profiles. CampusConnect ensures that every student and founder on the platform is exactly who they claim to be.
+ We don&apos;t allow anonymous profiles. CampusConnectCo ensures that every student and founder on the platform is exactly who they claim to be.
  </p>
  <div className="space-y-4">
  <div className="flex items-center gap-3">
  <Mail className="w-5 h-5 text-[#1FA971]" />
- <span className="font-bold text-[#232B27]">.edu Email Verification</span>
+ <span className="font-bold text-[#232B27]">Academic & .edu Verification</span>
  </div>
  <div className="flex items-center gap-3">
  <Lock className="w-5 h-5 text-[#1FA971]" />
- <span className="font-bold text-[#232B27]">Secure Escrow System</span>
+ <span className="font-bold text-[#232B27]">Milestone Protection Architecture</span>
  </div>
  </div>
  </Reveal>
@@ -42,19 +42,25 @@ export function MasterTrust() {
  <div className="bg-[#1FA971] p-10 lg:p-12 text-white relative overflow-hidden flex flex-col justify-center">
  <div className="absolute top-[-20%] right-[-20%] w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
  <Reveal delay={0.2}>
- <h3 className="text-2xl font-bold mb-4">How Escrow Works</h3>
- <ol className="space-y-5 text-white/90 font-medium">
+ <div className="inline-block px-2.5 py-1 rounded-full bg-white/20 text-[11px] font-bold tracking-wider uppercase mb-3 text-white/90">
+ Platform Safeguards
+ </div>
+ <h3 className="text-2xl font-bold mb-2">Milestone Architecture</h3>
+ <p className="text-xs text-white/80 font-medium mb-6 leading-relaxed">
+ Engineered for structured checkpoints. (Automated payment gateway onboarding is intentionally paused; direct applications, student discovery, and deliverable reviews remain fully operational.)
+ </p>
+ <ol className="space-y-4 text-white/90 font-medium text-sm">
  <li className="flex gap-3">
- <span className="font-bold bg-white/20 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-sm">1</span>
- Founder deposits funds before the gig starts.
+ <span className="font-bold bg-white/20 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">1</span>
+ <span>Deliverable scope and milestone criteria defined upfront.</span>
  </li>
  <li className="flex gap-3">
- <span className="font-bold bg-white/20 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-sm">2</span>
- Student completes and submits the work.
+ <span className="font-bold bg-white/20 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">2</span>
+ <span>Student completes work with transparent checkpoint tracking.</span>
  </li>
  <li className="flex gap-3">
- <span className="font-bold bg-white/20 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-sm">3</span>
- Founder approves, funds are released instantly.
+ <span className="font-bold bg-white/20 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">3</span>
+ <span>Milestone approved upon review with verified portfolio credit.</span>
  </li>
  </ol>
  </Reveal>

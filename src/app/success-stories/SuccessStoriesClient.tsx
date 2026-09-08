@@ -28,7 +28,7 @@ const STUDENT_STORIES = [
  location:"New Delhi",
  outcome:"₹35,000 earned in 3 months + PPO from first gig client",
  quote:
-"I completed 6 freelance gigs on CampusConnect before my 3rd year ended. When Razorpay interviewed me, the verified work history was the reason I got shortlisted over 300 other candidates. No other platform had real employers with milestone escrow — it's the only place where the work actually counts.",
+"I completed 6 freelance gigs on CampusConnectCo before my 3rd year ended. When Razorpay interviewed me, the verified work history was the reason I got shortlisted over 300 other candidates. No other platform had real employers with milestone escrow — it's the only place where the work actually counts.",
  tags: ["React","Node.js","API Integration"],
  gigType:"Full-Stack Development",
  rating: 5,
@@ -45,7 +45,7 @@ const STUDENT_STORIES = [
  location:"Ahmedabad",
  outcome:"3 clients converted to full-time offer within 8 months",
  quote:
-"As an MBA student, I couldn't just say I understood growth marketing — I had to show it. CampusConnect let me run real campaigns for D2C brands and charge professionally. The verified ratings system meant my profile spoke for itself. I walked into Zepto interviews with a portfolio that had actual revenue numbers.",
+"As an MBA student, I couldn't just say I understood growth marketing — I had to show it. CampusConnectCo let me run real campaigns for D2C brands and charge professionally. The verified ratings system meant my profile spoke for itself. I walked into Zepto interviews with a portfolio that had actual revenue numbers.",
  tags: ["Growth Marketing","D2C","Meta Ads"],
  gigType:"Digital Marketing",
  rating: 5,
@@ -62,7 +62,7 @@ const STUDENT_STORIES = [
  location:"Bangalore",
  outcome:"₹28,000 first gig → ₹80,000/month by graduation",
  quote:
-"Design students don't get coding-style internships. CampusConnect was the first platform that had real UX briefs from actual startups — not design contests where you work for free and might win nothing. The escrow system meant I always got paid. In 18 months I went from ₹28k to ₹80k/month.",
+"Design students don't get coding-style internships. CampusConnectCo was the first platform that had real UX briefs from actual startups — not design contests where you work for free and might win nothing. The escrow system meant I always got paid. In 18 months I went from ₹28k to ₹80k/month.",
  tags: ["Figma","User Research","Prototyping"],
  gigType:"UX/Product Design",
  rating: 5,
@@ -79,7 +79,7 @@ const STUDENT_STORIES = [
  location:"Bangalore",
  outcome:"Built a verified finance portfolio with 12 real clients",
  quote:
-"Commerce students are told to wait for CA articleship or a bank job. I used CampusConnect to do real financial modeling, MIS reports and pitch decks for 12 different startups. EY specifically cited my 'demonstrated client work' in my offer letter. That's the CampusConnect effect.",
+"Commerce students are told to wait for CA articleship or a bank job. I used CampusConnectCo to do real financial modeling, MIS reports and pitch decks for 12 different startups. EY specifically cited my 'demonstrated client work' in my offer letter. That's the CampusConnectCo effect.",
  tags: ["Financial Modeling","Excel","Pitch Decks"],
  gigType:"Finance & Analysis",
  rating: 5,
@@ -96,7 +96,7 @@ const STUDENT_STORIES = [
  location:"Pune",
  outcome:"26 LPA offer backed by verified open-source + gig portfolio",
  quote:
-"I'm from a Tier-2 college. Everyone told me Microsoft wouldn't look at my resume. CampusConnect helped me build verified proof — real clients, real code reviews, real ratings. I showed up to Microsoft interviews with a portfolio that would hold up under any scrutiny. They offered me 26 LPA.",
+"I'm from a Tier-2 college. Everyone told me Microsoft wouldn't look at my resume. CampusConnectCo helped me build verified proof — real clients, real code reviews, real ratings. I showed up to Microsoft interviews with a portfolio that would hold up under any scrutiny. They offered me 26 LPA.",
  tags: ["Python","System Design","Cloud"],
  gigType:"Backend Engineering",
  rating: 5,
@@ -113,7 +113,7 @@ const STUDENT_STORIES = [
  location:"Bangalore",
  outcome:"Published 3 ML case studies using real client data",
  quote:
-"Research is great but employers want applied ML. Through CampusConnect I built a recommendation engine for a D2C brand, an NLP classifier for a legal tech startup, and a demand forecasting model. These weren't Kaggle notebooks — they were production systems. Flipkart hired me in their first interview round.",
+"Research is great but employers want applied ML. Through CampusConnectCo I built a recommendation engine for a D2C brand, an NLP classifier for a legal tech startup, and a demand forecasting model. These weren't Kaggle notebooks — they were production systems. Flipkart hired me in their first interview round.",
  tags: ["Python","PyTorch","MLOps"],
  gigType:"Machine Learning",
  rating: 5,
@@ -131,9 +131,9 @@ const EMPLOYER_STORIES = [
  logoColor:"text-[#F87171]",
  contact:"Ayesha Mehta, CTO",
  industry:"D2C / FoodTech",
- outcome:"Hired 3 engineers via CampusConnect; saved ₹40L vs agency fees",
+ outcome:"Hired 3 engineers via CampusConnectCo; saved ₹40L vs agency fees",
  quote:
-"We were scaling rapidly and needed engineers who could ship fast. CampusConnect gave us access to students who'd already proven they could build in production environments. The verified portfolio meant zero surprise hires. We've now made it our default for entry-level technical hiring.",
+"We were scaling rapidly and needed engineers who could ship fast. CampusConnectCo gave us access to students who'd already proven they could build in production environments. The verified portfolio meant zero surprise hires. We've now made it our default for entry-level technical hiring.",
  metrics: [
  { label:"Time to first hire", value:"6 days" },
  { label:"Cost per hire", value:"₹0 fee" },
@@ -151,7 +151,7 @@ const EMPLOYER_STORIES = [
  industry:"FinTech",
  outcome:"15 campus drives, 8 full-time hires from IIT/NIT campuses",
  quote:
-"Traditional campus placement is a 6-month process. With CampusConnect's Campus Drives feature, we ran 15 virtual drives across IITs and NITs in parallel, screened 800+ students, and made 8 offers in 3 weeks. The quality of candidates was exceptional — all had verified work samples we could evaluate before interviewing.",
+"Traditional campus placement is a 6-month process. With CampusConnectCo's Campus Drives feature, we ran 15 virtual drives across IITs and NITs in parallel, screened 800+ students, and made 8 offers in 3 weeks. The quality of candidates was exceptional — all had verified work samples we could evaluate before interviewing.",
  metrics: [
  { label:"Colleges reached", value:"15" },
  { label:"Students screened", value:"800+" },
@@ -190,7 +190,7 @@ export function SuccessStoriesClient({ nonce }: { nonce?: string }) {
  __html: JSON.stringify({
 "@context":"https://schema.org",
 "@type":"EducationalOrganization",
-"name":"CampusConnect",
+"name":"CampusConnectCo",
 "url":"https://campusconnectco.in",
 "aggregateRating": {
 "@type":"AggregateRating",

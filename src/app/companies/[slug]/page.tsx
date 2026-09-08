@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
 
  return {
- title: `${companyName} Student Internships, Campus Drives & Hiring | CampusConnect`,
+ title: `${companyName} Student Internships, Campus Drives & Hiring | CampusConnectCo`,
  description: `Explore student internships, campus drive roles, and technical project positions at ${companyName}. View required tech stack, open opportunities, and verified student hires.`,
  alternates: {
  canonical: `${baseUrl}/companies/${encodeURIComponent(slug)}`,
@@ -101,15 +101,15 @@ export default async function CompanySEOPage({ params }: Props) {
  const faqs = [
  {
  question: `How do I apply for student internships at ${comp.name}?`,
- answer: `Students can apply directly on CampusConnect by building a verified profile, displaying technical skills in ${comp.techStack.slice(0, 3).join(",")}, and submitting applications for active campus drives.`,
+ answer: `Students can apply directly on CampusConnectCo by building a verified profile, displaying technical skills in ${comp.techStack.slice(0, 3).join(",")}, and submitting applications for active campus drives.`,
  },
  {
  question: `What tech stack does ${comp.name} use for engineering and product roles?`,
  answer: `${comp.name} utilizes ${comp.techStack.join(",")} across their core engineering and product development teams.`,
  },
  {
- question: `Are internship hires at ${comp.name} verified on CampusConnect?`,
- answer: `Yes, recruiters at ${comp.name} verify student credentials, academic backgrounds, and project portfolios through CampusConnect's verified university domain infrastructure.`,
+ question: `Are internship hires at ${comp.name} verified on CampusConnectCo?`,
+ answer: `Yes, recruiters at ${comp.name} verify student credentials, academic backgrounds, and project portfolios through CampusConnectCo's verified university domain infrastructure.`,
  },
  ];
 

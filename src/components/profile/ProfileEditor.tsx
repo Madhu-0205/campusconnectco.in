@@ -428,7 +428,7 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
  <div>
  <h4 className="font-bold text-primary mb-1 tracking-tight">AI Matching Pro-Tip</h4>
  <p className="text-muted-foreground leading-relaxed font-medium">
- Profiles with at least 5 verified technical skills get 12x higher priority in the &quot;CampusConnect SmartMatch&quot; algorithm for top-tier internships.
+ Profiles with at least 5 verified technical skills get 12x higher priority in the &quot;CampusConnectCo SmartMatch&quot; algorithm for top-tier internships.
  </p>
  </div>
  </div>

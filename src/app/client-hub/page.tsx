@@ -7,8 +7,9 @@ import {
 import Link from"next/link"
 import { redirect } from"next/navigation"
 
-import { KanbanBoard, TopApplicants } from"@/components/client-hub/ClientDashboardClient"
-import { Card } from"@/components/ui/Card"
+import { KanbanBoard, TopApplicants } from "@/components/client-hub/ClientDashboardClient"
+import MyPostsManager from "@/components/dashboard/MyPostsManager"
+import { Card } from "@/components/ui/Card"
 import { protectPage } from"@/lib/auth-checks"
 import prisma from"@/lib/prisma"
 
@@ -26,54 +27,59 @@ export default async function ClientDashboard() {
  let activeGigsCount = 0;
  let applicationsCount = 0;
  let completedGigsCount = 0;
- let escrowData: any = { _sum: { amount: null } };
+ let totalAgreedBudget = 0;
  let recentGigs: any[] = [];
  let topApplicants: any[] = [];
+ let userInternships: any[] = [];
  let dbError = false;
 
  try {
- const [actGigs, apps, compGigs, escrow, recGigs, topApps] = await Promise.all([
- prisma.gig.count({ where: { posted_by: user?.id, status: { in: ["OPEN","IN_PROGRESS"] } } }),
- prisma.application.count({ where: { gig: { posted_by: user?.id } } }),
- prisma.gig.count({ where: { posted_by: user?.id, status:"COMPLETED" } }),
- prisma.escrow.aggregate({ where: { clientId: user?.id ||"", status:"LOCKED" }, _sum: { amount: true } }),
- prisma.gig.findMany({
- where: { posted_by: user?.id },
- include: {
- _count: { select: { applications: true } },
- escrows: { take: 1, select: { status: true, amount: true } },
- applications: {
- take: 1,
- where: { status: { in: ["ACCEPTED","PENDING"] } },
- select: { status: true }
- }
- },
- take: 6,
- orderBy: { createdAt:"desc" }
- }),
- prisma.application.findMany({
- where: { gig: { posted_by: user?.id }, status:"PENDING" },
- include: {
- applicant: { select: { name: true, email: true, id: true } },
- gig: { select: { title: true, budget: true } }
- },
- take: 4,
- orderBy: { createdAt:"desc" }
- }),
- ]);
+    const [actGigs, apps, compGigs, budgetAgg, recGigs, topApps, internships] = await Promise.all([
+      prisma.gig.count({ where: { posted_by: user?.id, status: { in: ["OPEN", "active", "IN_PROGRESS"] }, deletedAt: null } }),
+      prisma.application.count({ where: { gig: { posted_by: user?.id } } }),
+      prisma.gig.count({ where: { posted_by: user?.id, status: "COMPLETED", deletedAt: null } }),
+      prisma.gig.aggregate({ where: { posted_by: user?.id, deletedAt: null }, _sum: { budget: true } }),
+      prisma.gig.findMany({
+        where: { posted_by: user?.id, deletedAt: null },
+        include: {
+          _count: { select: { applications: true } },
+          escrows: { take: 1, select: { status: true, amount: true } },
+          applications: {
+            take: 1,
+            where: { status: { in: ["ACCEPTED","PENDING"] } },
+            select: { status: true }
+          }
+        },
+        take: 20,
+        orderBy: { createdAt:"desc" }
+      }),
+      prisma.application.findMany({
+        where: { gig: { posted_by: user?.id }, status:"PENDING" },
+        include: {
+          applicant: { select: { name: true, email: true, id: true } },
+          gig: { select: { title: true, budget: true } }
+        },
+        take: 4,
+        orderBy: { createdAt:"desc" }
+      }),
+      prisma.internship.findMany({
+        where: { posted_by: user?.id, deletedAt: null },
+        take: 20,
+        orderBy: { createdAt: "desc" }
+      })
+    ]);
 
- activeGigsCount = actGigs;
- applicationsCount = apps;
- completedGigsCount = compGigs;
- escrowData = escrow;
- recentGigs = recGigs;
- topApplicants = topApps;
+    activeGigsCount = actGigs;
+    applicationsCount = apps;
+    completedGigsCount = compGigs;
+    totalAgreedBudget = budgetAgg._sum.budget || 0;
+    recentGigs = recGigs;
+    topApplicants = topApps;
+    userInternships = internships;
  } catch (err) {
  console.error("[CLIENT_HUB_DASHBOARD_DB_ERROR]:", err);
  dbError = true;
  }
-
- const escrowAmount = escrowData._sum.amount || 0;
 
  // eslint-disable-next-line @typescript-eslint/no-unused-vars
  const kanbanColumns = [
@@ -149,96 +155,68 @@ export default async function ClientDashboard() {
  </Link>
  </div>
 
- {/* â”€â”€ STATS GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+ {/* —— STATS GRID ─────────────────────────────────────────── */}
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
  {[
  {
- label:"Active Roles",
+ label: "Active Roles",
  value: activeGigsCount,
  icon: Briefcase,
- color:"text-[#0EA5E9]",
- stroke:"#0EA5E9",
- bg:"bg-[#0EA5E9]/10 border-[#0EA5E9]/20",
- trend:"+2 this month",
- data: [2, 3, 2, 4, 3, 5, activeGigsCount > 0 ? activeGigsCount : 1]
+ color: "text-[#0EA5E9]",
+ bg: "bg-[#0EA5E9]/10 border-[#0EA5E9]/20",
+ statusText: activeGigsCount > 0 ? "Currently hiring" : "Ready to post",
+ badge: activeGigsCount > 0 ? "Active" : null,
  },
  {
- label:"Applications",
+ label: "Applications",
  value: applicationsCount,
  icon: Users,
- color:"text-[#1FA971]",
- stroke:"#1FA971",
- bg:"bg-[#1FA971]/10 border-[#1FA971]/20",
- trend: applicationsCount > 0 ? `${applicationsCount} pending review` :"No pending",
- badge: applicationsCount > 0 ?"New" : null,
- data: [5, 8, 12, 10, 15, 20, applicationsCount > 0 ? applicationsCount : 2]
+ color: "text-[#1FA971]",
+ bg: "bg-[#1FA971]/10 border-[#1FA971]/20",
+ statusText: applicationsCount > 0 ? `${applicationsCount} received` : "No pending",
+ badge: applicationsCount > 0 ? "New" : null,
  },
  {
- label:"Successful Hires",
+ label: "Completed Roles",
  value: completedGigsCount,
  icon: CheckCircle,
- color:"text-[#10B981]",
- stroke:"#10B981",
- bg:"bg-(--accent)/10 border-[#10B981]/20",
- trend:"All escrow-protected",
- data: [1, 2, 2, 3, 3, 4, completedGigsCount > 0 ? completedGigsCount : 1]
+ color: "text-[#10B981]",
+ bg: "bg-(--accent)/10 border-[#10B981]/20",
+ statusText: completedGigsCount > 0 ? "Deliverables verified" : "No completions yet",
+ badge: null,
  },
  {
- label:"Funds in Escrow",
- value: `â‚¹${escrowAmount.toLocaleString("en-IN")}`,
+ label: "Milestones Tracked",
+ value: `₹${totalAgreedBudget.toLocaleString("en-IN")}`,
  icon: ShieldCheck,
- color:"text-[#F59E0B]",
- stroke:"#F59E0B",
- bg:"bg-[#F59E0B]/10 border-[#F59E0B]/20",
- trend:"Protected by Razorpay",
- data: [1000, 2000, 1500, 3000, 2500, 4000, escrowAmount > 0 ? escrowAmount : 1000]
+ color: "text-[#F59E0B]",
+ bg: "bg-[#F59E0B]/10 border-[#F59E0B]/20",
+ statusText: "Direct settlement tracking",
+ badge: null,
  },
- ].map(({ label, value, icon: Icon, color, bg, trend, badge, data, stroke }) => {
- const max = Math.max(...data);
- const min = Math.min(...data);
- const range = max - min || 1;
- const sparklinePoints = data.map((d, i) => {
- const x = (i / (data.length - 1)) * 60;
- const y = 20 - ((d - min) / range) * 20;
- return `${x},${y}`;
- }).join("");
- 
- return (
- <Card key={label} className="p-6 rounded-3xl shadow-xl transition-all duration-300 relative overflow-hidden group" style={{ background:"var(--color-surface)", border:"1px solid var(--color-border)" }}>
+ ].map(({ label, value, icon: Icon, color, bg, statusText, badge }) => (
+ <Card key={label} className="p-6 rounded-3xl shadow-xl transition-all duration-300 relative overflow-hidden group" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
  <div className={`absolute -right-8 -top-8 w-24 h-24 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${bg}`} />
  <div className="relative z-10">
  <div className="flex justify-between items-start mb-5">
  <div className={`p-2.5 rounded-2xl border ${bg}`}>
  <Icon size={20} className={color} />
  </div>
- <div className="flex flex-col items-end gap-2">
  {badge && (
  <span className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${bg} ${color}`}>
  <CircleDot size={8} className="animate-pulse" /> {badge}
  </span>
  )}
- <svg width="60" height="20" className="opacity-70 group-hover:opacity-100 transition-opacity drop-shadow-lg">
- <polyline 
- points={sparklinePoints} 
- fill="none" 
- stroke={stroke} 
- strokeWidth="2" 
- strokeLinecap="round" 
- strokeLinejoin="round" 
- />
- </svg>
- </div>
  </div>
  <p className="font-black text-white mb-1 tracking-tight">{value}</p>
- <p className="font-bold text-slate-500 uppercase tracking-widest mb-2">{label}</p>
- <p className="text-slate-600">{trend}</p>
+ <p className="font-bold text-slate-500 uppercase tracking-widest mb-1 text-xs">{label}</p>
+ <p className="text-xs text-slate-400">{statusText}</p>
  </div>
  </Card>
- )})}
+ ))}
  </div>
 
-
- {/* â”€â”€ MAIN GRID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+ {/* —— MAIN GRID ———————————————————————————————————————————————— */}
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
  {/* LEFT 2/3: Kanban Pipeline + Top Applicants */}
@@ -309,51 +287,54 @@ export default async function ClientDashboard() {
  </div>
  </Card>
 
- {/* â”€ AI Match Preview â”€ */}
- <Card className="p-6 rounded-3xl shadow-xl" style={{ background:"var(--color-surface)", border:"1px solid var(--color-border)" }}>
- <h3 className="font-black text-white mb-4 flex items-center gap-2" style={{ fontFamily:"var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
- <Zap size={16} className="text-[#F59E0B]" /> Curated Talent Match
+ {/* ── Candidate Match ── */}
+ <Card className="p-6 rounded-3xl shadow-xl" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
+ <h3 className="font-black text-white mb-4 flex items-center gap-2" style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
+ <Zap size={16} className="text-[#F59E0B]" /> Recent Applicant
  </h3>
+ {topApplicants.length > 0 ? (
  <div className="bg-white/3 border border-white/8 rounded-2xl p-4 hover:border-[#1FA971]/30 transition-all">
  <div className="flex items-center gap-3 mb-3">
  <div className="w-12 h-12 bg-linear-to-br from-(--primary) to-(--accent) rounded-xl flex items-center justify-center font-black text-base shadow-[0_0_15px_rgba(31,169,113,0.3)]">
- AJ
+ {topApplicants[0].applicant?.name?.charAt(0) || "S"}
  </div>
  <div>
  <p className="font-black text-sm flex items-center gap-2">
- Arjun J.
- <span className="bg-[#10B981]/15 border border-[#10B981]/20 text-[#10B981] px-1.5 py-0.5 rounded font-black">VERIFIED</span>
+ {topApplicants[0].applicant?.name || "Student Candidate"}
+ <span className="bg-[#10B981]/15 border border-[#10B981]/20 text-[#10B981] px-1.5 py-0.5 rounded font-black text-[10px]">PENDING REVIEW</span>
  </p>
- <p className="text-slate-400 mt-0.5">Full Stack React Expert Â· â˜… 4.9</p>
+ <p className="text-slate-400 text-xs mt-0.5">Role: {topApplicants[0].gig?.title}</p>
  </div>
- </div>
- <div className="flex items-center gap-2 mb-3">
- {["React","TypeScript","Next.js"].map(s => (
- <span key={s} className="font-bold px-2 py-0.5 bg-(--primary)/15 text-(--primary-light) rounded-full">{s}</span>
- ))}
  </div>
  <div className="flex items-center justify-between">
- <span className="text-xs font-black">94% match score</span>
- <button className="font-bold px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all">
- View Profile â†’
- </button>
+ <span className="text-xs text-slate-400">Budget: ₹{topApplicants[0].gig?.budget?.toLocaleString("en-IN")}</span>
+ <Link href="/client-hub/applicants" className="text-xs font-bold px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all">
+ Review Candidate →
+ </Link>
  </div>
  </div>
+ ) : (
+ <div className="bg-white/3 border border-dashed border-white/10 rounded-2xl p-6 text-center">
+ <Users size={28} className="text-slate-500 mx-auto mb-2" />
+ <p className="font-bold text-sm text-slate-300">No applicants yet</p>
+ <p className="text-xs text-slate-500 mt-1">When students apply to your open gigs, applicant details will appear here.</p>
+ </div>
+ )}
  </Card>
 
- {/* â”€ Quick Actions â”€ */}
- <Card className="p-6 rounded-3xl shadow-xl" style={{ background:"var(--color-surface)", border:"1px solid var(--color-border)" }}>
- <h3 className="font-black text-white mb-4" style={{ fontFamily:"var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
+ {/* ── Quick Actions ── */}
+ <Card className="p-6 rounded-3xl shadow-xl" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
+ <h3 className="font-black text-white mb-4" style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
  Quick Actions
  </h3>
  <div className="space-y-2">
  {[
- { label:"Post New Gig", href:"/client-hub/post-gig", icon: PlusCircle, color:"text-(--primary-light)" },
- { label:"AI Talent Search", href:"/employer/talent-search", icon: Brain, color:"text-[#1FA971]" },
- { label:"Campus Drives", href:"/employer/drives", icon: Target, color:"text-[#10B981]" },
- { label:"Message Students", href:"/messages", icon: MessageSquare, color:"text-[#F59E0B]" },
- { label:"Company Profile", href:"/employer/profile", icon: Building2, color:"text-slate-400" },
- { label:"Upgrade Plan", href:"/employer/upgrade", icon: Sparkles, color:"text-[#F59E0B]" },
+ { label: "Post New Gig", href: "/client-hub/post-gig", icon: PlusCircle, color: "text-(--primary-light)" },
+ { label: "AI Talent Search", href: "/employer/talent-search", icon: Brain, color: "text-[#1FA971]" },
+ { label: "Campus Drives", href: "/employer/drives", icon: Target, color: "text-[#10B981]" },
+ { label: "Message Students", href: "/messages", icon: MessageSquare, color: "text-[#F59E0B]" },
+ { label: "Company Profile", href: "/employer/profile", icon: Building2, color: "text-slate-400" },
+ { label: "Upgrade Plan", href: "/employer/upgrade", icon: Sparkles, color: "text-[#F59E0B]" },
  ].map(({ label, href, icon: I, color }) => (
  <Link key={label} href={href}>
  <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-(--surface-2) transition-colors group cursor-pointer border border-transparent hover:border-white/8 active:scale-[0.98]">
@@ -366,17 +347,17 @@ export default async function ClientDashboard() {
  </div>
  </Card>
 
- {/* â”€ Platform Stats â”€ */}
- <Card className="p-6 rounded-3xl shadow-xl" style={{ background:"var(--color-surface)", border:"1px solid var(--color-border)" }}>
- <h3 className="font-black text-white mb-4 flex items-center gap-2" style={{ fontFamily:"var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
- <Award size={16} className="text-[#F59E0B]" /> Why CampusConnect?
+ {/* ── Platform Stats ── */}
+ <Card className="p-6 rounded-3xl shadow-xl" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
+ <h3 className="font-black text-white mb-4 flex items-center gap-2" style={{ fontFamily: "var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
+ <Award size={16} className="text-[#F59E0B]" /> Why CampusConnectCo?
  </h3>
  <div className="space-y-3">
  {[
- { label:"Verified Students", value:"Verified", color:"text-[#0EA5E9]" },
- { label:"Gigs Completed", value:"Active", color:"text-[#10B981]" },
- { label:"Avg Time to Hire", value:"< 48 hrs", color:"text-[#F59E0B]" },
- { label:"Escrow Protected", value:"100%", color:"text-(--primary-light)" },
+ { label: "Verified Students", value: "Verified", color: "text-[#0EA5E9]" },
+ { label: "Gigs Completed", value: "Active", color: "text-[#10B981]" },
+ { label: "Avg Time to Hire", value: "< 48 hrs", color: "text-[#F59E0B]" },
+ { label: "Milestone Tracking", value: "Active", color: "text-(--primary-light)" },
  ].map(({ label, value, color }) => (
  <div key={label} className="flex items-center justify-between">
  <span className="text-slate-500 font-medium">{label}</span>
@@ -386,6 +367,40 @@ export default async function ClientDashboard() {
  </div>
  </Card>
  </div>
+ </div>
+
+ {/* ── MY POSTS LIFECYCLE MANAGER ── */}
+ <div className="mt-10 pt-8 border-t border-white/10">
+   <MyPostsManager
+     initialOpportunities={[
+       ...recentGigs.map((g: any) => ({
+         id: g.id,
+         type: "gig" as const,
+         title: g.title,
+         description: g.description,
+         status: g.status,
+         location: g.work_mode || g.city || "Remote",
+         compensation: g.budget,
+         createdAt: g.createdAt,
+         updatedAt: g.updatedAt,
+         applicationsCount: g._count?.applications || 0,
+         tags: g.tags,
+       })),
+       ...(userInternships || []).map((i: any) => ({
+         id: i.id,
+         type: "internship" as const,
+         title: i.title,
+         description: i.description,
+         status: i.status,
+         location: i.location || i.city || "Remote",
+         compensation: i.stipend,
+         createdAt: i.createdAt,
+         updatedAt: i.updatedAt,
+         applicationsCount: i.applyCount || 0,
+         tags: i.tags,
+       })),
+     ]}
+   />
  </div>
  </div>
  </div>

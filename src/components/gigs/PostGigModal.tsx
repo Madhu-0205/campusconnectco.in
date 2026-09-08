@@ -196,7 +196,7 @@ export default function PostGigModal() {
  <span>Student receives</span>
  <span>₹{studentGets.toLocaleString()}</span>
  </div>
- <p className="text-slate-500 mt-2 font-semibold">CampusConnect Payment Protection: Your payment is held securely in escrow until work is completed.</p>
+ <p className="text-slate-500 mt-2 font-semibold">CampusConnectCo Payment Protection: Your payment is held securely in escrow until work is completed.</p>
  </div>
  )}
 

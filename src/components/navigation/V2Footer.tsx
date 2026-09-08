@@ -25,7 +25,7 @@ export function V2Footer() {
  <div className="w-8 h-8 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm shadow-glow-primary">
  CC
  </div>
- <span className="font-heading font-semibold text-lg tracking-wide">CampusConnect</span>
+ <span className="font-heading font-semibold text-lg tracking-wide">CampusConnectCo</span>
  </div>
  <p className="text-text-2 mb-6 max-w-xs">
  The premium network for ambitious students to find internships and freelance gigs.
@@ -74,7 +74,7 @@ export function V2Footer() {
  <Reveal delay={0.4}>
  <div className="w-full flex justify-center py-12 border-t border-border">
  <h2 className="text-[12vw] md:text-[14vw] font-extrabold tracking-tighter text-black/5 select-none text-center leading-none">
- CAMPUSCONNECT
+ CAMPUSCONNECTCO
  </h2>
  </div>
  </Reveal>
@@ -82,7 +82,7 @@ export function V2Footer() {
  <Reveal delay={0.5}>
         <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-border text-sm text-text-3">
           <div className="flex items-center gap-3">
-            <p>© {new Date().getFullYear()} CampusConnect. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} CampusConnectCo. All rights reserved.</p>
             <span className="text-border">•</span>
             <a
               href="https://developer.puter.com"

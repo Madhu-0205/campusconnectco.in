@@ -3,12 +3,12 @@ import type { Metadata } from"next"
 import { AmbassadorClient } from"./AmbassadorClient"
 
 export const metadata: Metadata = {
- title:"Campus Ambassador Program | CampusConnect",
+ title:"Campus Ambassador Program | CampusConnectCo",
  description:
-"Become a CampusConnect Campus Captain. Lead your college community, earn ₹ from every student you onboard, and build your career in growth, community, and operations.",
+"Become a CampusConnectCo Campus Captain. Lead your college community, earn ₹ from every student you onboard, and build your career in growth, community, and operations.",
  openGraph: {
- title:"Campus Ambassador Program | CampusConnect",
- description:"Earn while you lead. Be the first CampusConnect Campus Captain at your college.",
+ title:"Campus Ambassador Program | CampusConnectCo",
+ description:"Earn while you lead. Be the first CampusConnectCo Campus Captain at your college.",
  images: [{ url:"/og-ambassador.jpg" }],
  },
  alternates: { canonical:"https://campusconnectco.in/ambassador" },

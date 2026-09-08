@@ -112,7 +112,7 @@ export default function ManualCollegeForm({
  </div>
  <div className="flex items-center justify-center gap-1.5 text-xs font-bold" style={{ color:"#8B5CF6" }}>
  <Sparkles className="w-3.5 h-3.5" />
- Pioneering your campus on CampusConnect!
+ Pioneering your campus on CampusConnectCo!
  </div>
  </motion.div>
  ) : (

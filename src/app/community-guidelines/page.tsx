@@ -3,16 +3,16 @@ import { Metadata } from"next";
 import LegalLayout from"@/components/legal/LegalLayout";
 
 export const metadata: Metadata = {
- title:"Community Guidelines | CampusConnect",
- description:"Read the CampusConnect Community Guidelines. Learn how we maintain a safe, respectful, and scam-free environment for students and startups.",
+ title:"Community Guidelines | CampusConnectCo",
+ description:"Read the CampusConnectCo Community Guidelines. Learn how we maintain a safe, respectful, and scam-free environment for students and startups.",
  alternates: {
  canonical:"https://campusconnectco.in/community-guidelines",
  },
  openGraph: {
- title:"Community Guidelines | CampusConnect",
- description:"Read the CampusConnect Community Guidelines.",
+ title:"Community Guidelines | CampusConnectCo",
+ description:"Read the CampusConnectCo Community Guidelines.",
  url:"https://campusconnectco.in/community-guidelines",
- siteName:"CampusConnect",
+ siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",
  }
@@ -40,7 +40,7 @@ export default function CommunityGuidelinesPage() {
  <section id="introduction">
  <h2>1. Our Core Values</h2>
  <p>
- CampusConnect is built to empower students and foster genuine connections between early-career talent and innovative startups. 
+ CampusConnectCo is built to empower students and foster genuine connections between early-career talent and innovative startups. 
  To maintain a safe, highly-productive, and trusting environment, everyone—students, recruiters, and founders—must adhere to these Community Guidelines.
  </p>
  </section>
@@ -67,7 +67,7 @@ export default function CommunityGuidelinesPage() {
  <section id="abuse-discrimination">
  <h2>4. Zero Tolerance for Abuse & Discrimination</h2>
  <p>
- CampusConnect is an inclusive space. We have a zero-tolerance policy for:
+ CampusConnectCo is an inclusive space. We have a zero-tolerance policy for:
  </p>
  <ul>
  <li>Hate speech, racism, sexism, or discrimination based on caste, religion, gender, sexual orientation, or disability.</li>
@@ -110,7 +110,7 @@ export default function CommunityGuidelinesPage() {
  <ul>
  <li>Content removal (deleting the offending post or listing).</li>
  <li>Temporary account suspension.</li>
- <li>Permanent ban from the CampusConnect platform.</li>
+ <li>Permanent ban from the CampusConnectCo platform.</li>
  <li>In extreme cases involving fraud or illegal activities, reporting to local law enforcement authorities.</li>
  </ul>
  </section>

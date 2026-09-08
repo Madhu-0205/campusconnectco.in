@@ -53,10 +53,13 @@ export async function GET(request: NextRequest) {
  };
  }
 
- // Status filter
+ // Status filter - default to active discoverable gigs only
  if (status) {
  where.status = status;
+ } else {
+ where.status = { in: ["OPEN", "active"] };
  }
+ where.deletedAt = null;
 
  // Location filter (if provided)
  if (location) {

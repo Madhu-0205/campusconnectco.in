@@ -1,11 +1,11 @@
 import { Suspense } from 'react'
 
 import { DesignNode } from '@/components/v2/inspector/DesignNode'
+import { ContextualMapLayout } from '@/components/v2/maps/ContextualMapLayout'
+import { MarkerData } from '@/components/v2/maps/MapContext'
+import { MapDataSync } from '@/components/v2/maps/MapDataSync'
 import { OpportunityDiscoveryClient } from '@/components/v2/OpportunityDiscoveryClient'
 import { QualityGate } from '@/components/v2/QualityGate'
-import { ContextualMapLayout } from '@/components/v2/maps/ContextualMapLayout'
-import { MapDataSync } from '@/components/v2/maps/MapDataSync'
-import { MarkerData } from '@/components/v2/maps/MapContext'
 import { getUnifiedOpportunities } from '@/lib/opportunities/fetcher'
 
 interface PageProps {
@@ -20,8 +20,8 @@ interface PageProps {
 }
 
 export const metadata = {
-  title: "Discover Opportunities | CampusConnect",
-  description: "Find your next gig, internship, or job on CampusConnect.",
+  title: "Discover Opportunities | CampusConnectCo",
+  description: "Find your next gig, internship, or job on CampusConnectCo.",
 }
 
 export default async function OpportunitiesDiscoveryPage({ searchParams }: PageProps) {
@@ -56,7 +56,10 @@ export default async function OpportunitiesDiscoveryPage({ searchParams }: PageP
     logoUrl: opp.logoUrl ?? undefined,
     href: opp.href,
     isFeatured: opp.isFeatured,
-    isUrgent: opp.isUrgent
+    isUrgent: opp.isUrgent,
+    distanceMeters: opp.distanceMeters,
+    distanceFormatted: opp.distanceFormatted,
+    locationType: opp.locationType
   }))
 
   const markers: MarkerData[] = opportunities
@@ -68,7 +71,13 @@ export default async function OpportunitiesDiscoveryPage({ searchParams }: PageP
       lng: opp.longitude!,
       title: opp.title,
       subtitle: opp.company,
-      isPremium: opp.isFeatured
+      location: opp.location,
+      compensation: opp.compensation,
+      url: opp.href,
+      isPremium: opp.isFeatured,
+      distanceMeters: opp.distanceMeters,
+      distanceFormatted: opp.distanceFormatted,
+      locationType: opp.locationType
     }))
 
   return (

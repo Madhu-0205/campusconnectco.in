@@ -39,7 +39,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  {
  id: 'welcome',
  role: 'assistant',
- content: initialMessage ||"Hi! I'm your CampusConnect AI assistant. I can help you write a cover letter, understand gig requirements, estimate timelines, or plan your career. What would you like help with?",
+ content: initialMessage ||"Hi! I'm your CampusConnectCo AI assistant. I can help you write a cover letter, understand gig requirements, estimate timelines, or plan your career. What would you like help with?",
  }
  ]);
  const [input, setInput] = useState('');
@@ -157,7 +157,7 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  <Sparkles className="w-4 h-4 text-amber-400" />
  </div>
  <div>
- <p className="text-sm font-black">CampusConnect AI</p>
+ <p className="text-sm font-black">CampusConnectCo AI</p>
  <p className="text-muted-foreground">
  {streaming ? (
  <span className="text-amber-400 animate-pulse">Typing...</span>

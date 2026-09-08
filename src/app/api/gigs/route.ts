@@ -5,30 +5,40 @@ import { z } from"zod";
 import { filterAndRankGigs } from"@/lib/ai/filterAndRank";
 import { moderateGig } from"@/lib/ai/moderator";
 import { protectApi, requireUser } from"@/lib/auth-checks";
-import prisma from"@/lib/prisma";
-import { generalApiLimiter } from"@/lib/rate-limit";
-import { sanitizeInput } from"@/lib/security/sanitization";
-import { createClient } from"@/lib/supabase/server";
-import { validateSessionUserId } from"@/lib/uuid-utils";
+import { isValidLifecycleTransition } from "@/lib/opportunities/lifecycle";
+import prisma from "@/lib/prisma";
+import { generalApiLimiter } from "@/lib/rate-limit";
+import { sanitizeInput } from "@/lib/security/sanitization";
+import { createClient } from "@/lib/supabase/server";
+import { validateSessionUserId } from "@/lib/uuid-utils";
 
-
-export const dynamic ="force-dynamic";
+export const dynamic = "force-dynamic";
 
 // Input Validation Schemas
 const GigCreateSchema = z.object({
- title: z.string().min(3,"Title must be at least 3 characters").max(100,"Title cannot exceed 100 characters").trim(),
- description: z.string().min(10,"Description must be at least 10 characters").max(2000,"Description cannot exceed 2000 characters").trim(),
- budget: z.coerce.number().positive("Budget must be a positive number").max(1000000,"Budget cannot exceed 1,000,000"),
- deadline: z.string().nullish().transform(val => {
- if (!val || val.trim() ==="") return null;
- const d = new Date(val);
- return isNaN(d.getTime()) ? null : d;
- }),
+  title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title cannot exceed 100 characters").trim(),
+  description: z.string().min(10, "Description must be at least 10 characters").max(2000, "Description cannot exceed 2000 characters").trim(),
+  budget: z.coerce.number().positive("Budget must be a positive number").max(1000000, "Budget cannot exceed 1,000,000"),
+  deadline: z.string().nullish().transform(val => {
+    if (!val || val.trim() === "") return null;
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? null : d;
+  }),
 });
 
 const GigPatchSchema = z.object({
- id: z.string().uuid("Invalid gig ID format"),
- status: z.string().min(1,"Status cannot be empty").max(20,"Status is too long").trim(),
+  id: z.string().uuid("Invalid gig ID format"),
+  title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title cannot exceed 100 characters").trim().optional(),
+  description: z.string().min(10, "Description must be at least 10 characters").max(2000, "Description cannot exceed 2000 characters").trim().optional(),
+  budget: z.coerce.number().positive("Budget must be a positive number").max(1000000, "Budget cannot exceed 1,000,000").optional(),
+  deadline: z.string().nullish().transform(val => {
+    if (!val || val.trim() === "") return null;
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? null : d;
+  }).optional(),
+  tags: z.string().max(200).optional().nullable(),
+  work_mode: z.string().max(50).optional(),
+  status: z.enum(["OPEN", "INACTIVE", "COMPLETED", "DELETED"]).optional(),
 });
 
 const GigQuerySchema = z.object({
@@ -103,9 +113,10 @@ export async function GET(req: Request) {
  const skip = (page - 1) * pageSize;
  const SEARCH_LIMIT = 500;
 
- const baseWhere = {
- status:"OPEN",
- budget: {
+  const baseWhere = {
+    status: "OPEN",
+    deletedAt: null,
+    budget: {
  gte: minBudget,
  lte: maxBudget,
  },
@@ -319,81 +330,114 @@ export async function POST(req: Request) {
  }
 }
 
-// PATCH - Update Gig status (e.g. mark as completed)
+// PATCH - Update Gig details or lifecycle status
 export async function PATCH(req: Request) {
- try {
- const { user, role, errorResponse } = await requireUser();
- if (errorResponse) return errorResponse;
+  try {
+    const { user, role, errorResponse } = await requireUser();
+    if (errorResponse) return errorResponse;
 
- const body = await req.json();
- 
- // Zod Validation
- const parseResult = GigPatchSchema.safeParse(body);
- if (!parseResult.success) {
- return NextResponse.json(
- { error:"Validation failed", details: parseResult.error.flatten().fieldErrors },
- { status: 400 }
- );
- }
+    const body = await req.json();
 
- const { id, status } = parseResult.data;
+    // Zod Validation
+    const parseResult = GigPatchSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
 
- const gig = await prisma.gig.findUnique({ where: { id } });
- if (!gig) return NextResponse.json({ error:"Gig not found" }, { status: 404 });
+    const { id, status, title, description, budget, deadline, tags, work_mode } = parseResult.data;
 
- // Only poster or founder/admin
- if (gig.posted_by !== user.id) {
- if (role !=="ADMIN" && role !=="FOUNDER") {
- return NextResponse.json({ error:"Forbidden" }, { status: 403 });
- }
- }
+    const gig = await prisma.gig.findUnique({ where: { id } });
+    if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
 
- const completedAt = status ==="COMPLETED" ? new Date() : null;
+    // Strict server-side ownership verification: NEVER trust client claims
+    if (gig.posted_by !== user.id && role !== "ADMIN" && role !== "FOUNDER") {
+      return NextResponse.json({ error: "Forbidden: You do not own this opportunity" }, { status: 403 });
+    }
 
- const updated = await prisma.gig.update({
- where: { id },
- data: { 
- status,
- completedAt
- }
- });
+    // Lifecycle state machine validation
+    let completedAt = gig.completedAt;
+    let deletedAt = gig.deletedAt;
 
- return NextResponse.json(updated);
- } catch (error) {
- console.error("[GIGS_PATCH_ERROR]", error);
- return NextResponse.json({ error:"Internal server error" }, { status: 500 });
- }
+    if (status) {
+      const transitionCheck = isValidLifecycleTransition(gig.status, status);
+      if (!transitionCheck.valid) {
+        return NextResponse.json({ error: transitionCheck.reason }, { status: 400 });
+      }
+
+      if (status === "COMPLETED") {
+        completedAt = new Date();
+      } else if (status === "OPEN") {
+        completedAt = null;
+      }
+      if (status === "DELETED") {
+        deletedAt = new Date();
+      }
+    }
+
+    const updateData: any = {
+      ...(title !== undefined ? { title: sanitizeInput(title) } : {}),
+      ...(description !== undefined ? { description: sanitizeInput(description) } : {}),
+      ...(budget !== undefined ? { budget: Number(budget) } : {}),
+      ...(deadline !== undefined ? { deadline } : {}),
+      ...(tags !== undefined ? { tags: tags ? sanitizeInput(tags) : null } : {}),
+      ...(work_mode !== undefined ? { work_mode } : {}),
+      ...(status !== undefined ? { status, completedAt, deletedAt } : {}),
+    };
+
+    const updated = await prisma.gig.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("[GIGS_PATCH_ERROR]", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 
-// DELETE - Remove a gig
+// DELETE - Soft-delete a gig (preserves application and transaction history)
 export async function DELETE(req: Request) {
- try {
- const { user, role, errorResponse } = await requireUser();
- if (errorResponse) return errorResponse;
+  try {
+    const { user, role, errorResponse } = await requireUser();
+    if (errorResponse) return errorResponse;
 
- const { searchParams } = new URL(req.url);
- const id = searchParams.get("id");
- if (!id) return NextResponse.json({ error:"ID required" }, { status: 400 });
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
- // UUID Guard
- if (!z.string().uuid().safeParse(id).success) {
- return NextResponse.json({ error:"Invalid ID format" }, { status: 400 });
- }
+    // UUID Guard
+    if (!z.string().uuid().safeParse(id).success) {
+      return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+    }
 
- const gig = await prisma.gig.findUnique({ where: { id } });
- if (!gig) return NextResponse.json({ error:"Gig not found" }, { status: 404 });
+    const gig = await prisma.gig.findUnique({ where: { id } });
+    if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
 
- if (gig.posted_by !== user.id) {
- if (role !=="ADMIN" && role !=="FOUNDER") {
- return NextResponse.json({ error:"Forbidden" }, { status: 403 });
- }
- }
+    if (gig.posted_by !== user.id && role !== "ADMIN" && role !== "FOUNDER") {
+      return NextResponse.json({ error: "Forbidden: You do not own this opportunity" }, { status: 403 });
+    }
 
- await prisma.gig.delete({ where: { id } });
- return NextResponse.json({ success: true });
- } catch (error) {
- console.error("[GIGS_DELETE_ERROR]", error);
- return NextResponse.json({ error:"Internal server error" }, { status: 500 });
- }
+    const transitionCheck = isValidLifecycleTransition(gig.status, "DELETED");
+    if (!transitionCheck.valid) {
+      return NextResponse.json({ error: transitionCheck.reason }, { status: 400 });
+    }
+
+    await prisma.gig.update({
+      where: { id },
+      data: {
+        status: "DELETED",
+        deletedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({ success: true, message: "Gig soft-deleted successfully" });
+  } catch (error) {
+    console.error("[GIGS_DELETE_ERROR]", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 

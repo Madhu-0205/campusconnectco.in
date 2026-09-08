@@ -91,11 +91,10 @@ export async function moderateContent(input: ModerationInput): Promise<Moderatio
  let openaiScore = 0;
  let openaiFlagged = false;
 
- const apiKey = process.env.OPENAI_API_KEY ||"";
- const isPlaceholder = apiKey ==="" || apiKey.includes("placeholder") || apiKey.includes("your_openai");
- const isGroq = apiKey.startsWith("gsk_");
+ const apiKey = process.env.OPENAI_API_KEY || "";
+ const isPlaceholder = apiKey === "" || apiKey.includes("placeholder") || apiKey.includes("your_openai");
 
- if (!isPlaceholder && !isGroq) {
+ if (!isPlaceholder) {
  try {
  const openai = getOpenAI();
  const response = await openai.moderations.create({

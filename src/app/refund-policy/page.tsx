@@ -2,7 +2,7 @@ import { RefreshCcw } from"lucide-react"
 import type { Metadata } from"next"
 
 export const metadata: Metadata = {
- title:"Refund Policy — CampusConnect",
+ title:"Refund Policy — CampusConnectCo",
 }
 
 export default function RefundPolicyPage() {
@@ -17,11 +17,11 @@ export default function RefundPolicyPage() {
  >
  {/* Radial glow */}
  <div
- className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[160px] pointer-events-none opacity-10"
+ className="absolute top-0 right-0 w-150 h-150 rounded-full blur-[160px] pointer-events-none opacity-10"
  style={{ background:"radial-gradient(circle, var(--color-primary) 0%, transparent 70%)", transform:"translate(30%, -30%)" }}
  />
 
- <div className="max-w-[860px] mx-auto px-6 sm:px-12 pt-36 pb-28 relative z-10">
+ <div className="max-w-215 mx-auto px-6 sm:px-12 pt-36 pb-28 relative z-10">
 
  {/* Header */}
  <div className="mb-16">
@@ -76,17 +76,17 @@ export default function RefundPolicyPage() {
  {
  num:"3",
  title:"Dispute Resolution",
- body:"Refunds are not guaranteed once an escrow is created, except through dispute mediation. Both parties are required to provide proof of correspondence and work. Once a refund is approved by CampusConnect dispute management, it will be executed via Razorpay and sent directly back to the client's bank account.",
+ body:"Refunds are not guaranteed once an escrow is created, except through dispute mediation. Both parties are required to provide proof of correspondence and work. Once a refund is approved by CampusConnectCo dispute management, it will be executed via Razorpay and sent directly back to the client's bank account.",
  },
  {
  num:"4",
  title:"Zero Wallet Policy",
- body:"Because CampusConnect operates as a direct marketplace, we do not issue refunds as \"wallet credits.\" All funds are credited strictly to the external account used for the original transaction.",
+ body:"Because CampusConnectCo operates as a direct marketplace, we do not issue refunds as \"wallet credits.\" All funds are credited strictly to the external account used for the original transaction.",
  },
  {
  num:"5",
  title:"Fee Retention",
- body:"If work is completed successfully and a partial refund is agreed upon between the client and freelancer, the CampusConnect platform service fee (5–7%) remains non-refundable, as it corresponds to the costs of facilitating the connection and the initial payment.",
+ body:"If work is completed successfully and a partial refund is agreed upon between the client and freelancer, the CampusConnectCo platform service fee (5–7%) remains non-refundable, as it corresponds to the costs of facilitating the connection and the initial payment.",
  },
  ].map(({ num, title, body }) => (
  <div

@@ -46,13 +46,13 @@ export function ContextualMapLayout({ children }: { children: React.ReactNode })
  <MapProvider>
  <div className="flex flex-col lg:flex-row w-full min-h-[calc(100vh-64px)] relative bg-bg-subtle">
  {/* Main Content Area */}
- <div className="flex-1 w-full lg:max-w-[calc(100%-400px)] xl:max-w-[calc(100%-500px)] relative z-10 bg-bg-subtle">
+ <div className="flex-1 w-full lg:max-w-[calc(100%-400px)] xl:max-w-[calc(100%-480px)] relative z-10 bg-bg-subtle">
  {children}
  </div>
 
  {/* Desktop Sticky Map Area */}
  {!isMobile && (
- <div className="hidden lg:block fixed top-16 right-0 bottom-0 w-100 xl:w-125 border-l border-border-subtle z-0">
+ <div className="hidden lg:block fixed top-16 right-0 bottom-0 w-100 xl:w-120 border-l border-border-subtle z-10">
  <ContextualMap />
  </div>
  )}

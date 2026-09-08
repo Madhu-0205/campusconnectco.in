@@ -119,7 +119,7 @@ export default function SignInForm() {
  <h1 className="font-black text-foreground" style={{ fontFamily:"var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
  Welcome Back
  </h1>
- <p className="text-sm mt-1">Sign in to your CampusConnect account</p>
+ <p className="text-sm mt-1">Sign in to your CampusConnectCo account</p>
  </div>
 
  {error && (

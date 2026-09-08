@@ -10,8 +10,8 @@ const aiRequestSchema = z.object({
  data: z.unknown(),
 });
 
-export const dynamic ="force-dynamic";
-export const maxDuration = 60; // Groq is fast, but we'll set it for the full logic
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
  try {

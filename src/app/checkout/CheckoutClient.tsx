@@ -153,7 +153,7 @@ function CheckoutContent({ nonce }: { nonce?: string }) {
  key: orderData.keyId,
  amount: orderData.amount,
  currency: orderData.currency,
- name:"CampusConnect",
+ name:"CampusConnectCo",
  description: `Escrow for ${gig.title}`,
  order_id: orderData.orderId,
  handler: async function (response: any) {

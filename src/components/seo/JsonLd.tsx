@@ -54,7 +54,7 @@ export function OrganizationSchema({ nonce }: { nonce?: string }) {
  const schema = {
 "@context":"https://schema.org",
 "@type":"Organization",
-"name":"CampusConnect",
+"name":"CampusConnectCo",
 "url":"https://campusconnectco.in",
 "logo":"https://campusconnectco.in/logo-v2.jpg",
 "sameAs": [
@@ -178,7 +178,7 @@ export function WebsiteSchema({ nonce }: { nonce?: string }) {
  const schema = {
 "@context":"https://schema.org",
 "@type":"WebSite",
-"name":"CampusConnect",
+"name":"CampusConnectCo",
 "url":"https://campusconnectco.in",
 "potentialAction": {
 "@type":"SearchAction",
@@ -287,8 +287,8 @@ export function WebSiteSchema({ nonce }: { nonce?: string }) {
  const schema = {
 "@context":"https://schema.org",
 "@type":"WebSite",
-"name":"CampusConnect",
-"alternateName":"CampusConnect India",
+"name":"CampusConnectCo",
+"alternateName":"CampusConnectCo India",
 "url":"https://campusconnectco.in",
 "description":"India's largest verified student opportunity platform",
 "potentialAction": {
@@ -302,7 +302,7 @@ export function WebSiteSchema({ nonce }: { nonce?: string }) {
 "publisher": {
 "@type":"Organization",
 "@id":"https://campusconnectco.in/#organization",
-"name":"CampusConnect"
+"name":"CampusConnectCo"
  }
  }
  return (
@@ -326,7 +326,7 @@ export function AggregateRatingSchema({
  const schema = {
 "@context":"https://schema.org",
 "@type":"SoftwareApplication",
-"name":"CampusConnect",
+"name":"CampusConnectCo",
 "applicationCategory":"BusinessApplication",
 "operatingSystem":"Web",
 "url":"https://campusconnectco.in",
@@ -382,7 +382,7 @@ export function ArticleSchema({
  },
 "publisher": {
 "@type":"Organization",
-"name":"CampusConnect",
+"name":"CampusConnectCo",
 "logo": {
 "@type":"ImageObject",
 "url":"https://campusconnectco.in/logo-v2.jpg"

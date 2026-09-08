@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
 
  return {
- title: `Best ${categoryName} Student Internships & Startup Roles | CampusConnect`,
+ title: `Best ${categoryName} Student Internships & Startup Roles | CampusConnectCo`,
  description: `Find top verified ${categoryName} internships, remote student projects, and college jobs in India. Earn competitive stipends with milestone escrow security.`,
  alternates: {
  canonical: `${baseUrl}/internships/category/${encodeURIComponent(categorySlug)}`,
@@ -106,16 +106,16 @@ export default async function CategoryInternshipsPage({ params }: Props) {
 
  const faqs = [
  {
- question: `What is the average stipend for ${cat.name} internships on CampusConnect?`,
+ question: `What is the average stipend for ${cat.name} internships on CampusConnectCo?`,
  answer: `The average monthly stipend for ${cat.name} internships is approximately INR ${cat.averageStipend.toLocaleString("en-IN")}, depending on candidate skill level, scope, and company stage.`,
  },
  {
  question: `What skills are required for ${cat.name} student roles?`,
- answer: `Top skills in demand for ${cat.name} include ${cat.topSkills.join(",")}. Candidates can highlight verified portfolios on CampusConnect for faster matching.`,
+ answer: `Top skills in demand for ${cat.name} include ${cat.topSkills.join(",")}. Candidates can highlight verified portfolios on CampusConnectCo for faster matching.`,
  },
  {
  question: `How are student payments protected for ${cat.name} opportunities?`,
- answer: `All payments on CampusConnect are governed by milestone escrows. Funds are locked prior to start and released upon approved project deliverables.`,
+ answer: `All payments on CampusConnectCo are governed by milestone escrows. Funds are locked prior to start and released upon approved project deliverables.`,
  },
  ];
 
@@ -240,7 +240,7 @@ export default async function CategoryInternshipsPage({ params }: Props) {
  href="/auth/sign-up"
  className="inline-block px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs transition-all"
  >
- Join CampusConnect
+ Join CampusConnectCo
  </Link>
  </div>
  ) : (
@@ -280,7 +280,7 @@ export default async function CategoryInternshipsPage({ params }: Props) {
  <h4 className="font-black uppercase tracking-wider text-xs">Milestone Escrow</h4>
  </div>
  <p className="text-[11px] text-slate-400 leading-relaxed">
- CampusConnect secures funds in milestone escrow prior to project initiation, ensuring full protection for both employers and student candidates.
+ CampusConnectCo secures funds in milestone escrow prior to project initiation, ensuring full protection for both employers and student candidates.
  </p>
  </div>
  </div>

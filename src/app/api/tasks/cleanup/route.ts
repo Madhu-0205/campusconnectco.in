@@ -38,6 +38,21 @@ export async function GET(req: Request) {
  const oneHourAgo = new Date();
  oneHourAgo.setHours(oneHourAgo.getHours() - 1);
 
+  // Note: Gigs and Posts with status "COMPLETED" represent historical business transactions,
+  // milestone escrows, and completed student portfolios. They must never be hard-deleted.
+  // We keep completedCount preserved for audit reporting.
+  const completedGigsCount = await prisma.gig.count({
+    where: {
+      status: "COMPLETED",
+    }
+  });
+
+  const completedPostsCount = await prisma.post.count({
+    where: {
+      status: "COMPLETED",
+    }
+  });
+
  // 1. Clean up Gigs completed > 1 hour ago
  const deletedGigs = await prisma.gig.deleteMany({
  where: {

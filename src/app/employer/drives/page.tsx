@@ -15,7 +15,7 @@ import { CampusDriveClient } from"../../../components/employer/CampusDriveClient
 
 
 export const metadata: Metadata = {
- title:"Campus Drives | CampusConnect Employers",
+ title:"Campus Drives | CampusConnectCo Employers",
  description:"Orchestrate virtual campus recruitment drives across 100+ colleges from a single dashboard.",
 }
 

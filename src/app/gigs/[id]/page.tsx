@@ -79,12 +79,12 @@ export default async function GigDetailPage(props: PageProps) {
 
  const faqs = [
  {
- question:"Who is eligible to apply for this gig on CampusConnect?",
- answer: `Any active college student possessing the required skills can apply. Academic verification (e.g., .edu email address) on CampusConnect is highly recommended to build E-E-A-T trust points.`
+ question:"Who is eligible to apply for this gig on CampusConnectCo?",
+ answer: `Any active college student possessing the required skills can apply. Academic verification (e.g., .edu email address) on CampusConnectCo is highly recommended to build E-E-A-T trust points.`
  },
  {
- question:"Are payments for this gig guaranteed?",
- answer: `Yes, all transactions are protected via the CampusConnect milestone escrow protocol. Clients lock funds in the platform vault before tasks begin, ensuring secure, guaranteed release upon review.`
+ question: "Are payments for this gig guaranteed?",
+ answer: `CampusConnectCo structures all projects with milestone deliverable tracking. Project funds follow transparent milestones, releasing upon student deliverable verification.`
  },
  {
  question:"What is the work mode and location of this gig?",
@@ -96,7 +96,7 @@ export default async function GigDetailPage(props: PageProps) {
 
  return (
  <article 
- className="min-h-screen text-white bg-[#08080F]"
+ className="min-h-screen bg-background text-foreground"
  data-ai-citation-title={gig.title}
  data-cc-entity="GigOpportunity"
  data-cc-verified={gig.poster.isVerified ?"true" :"false"}
@@ -108,7 +108,7 @@ export default async function GigDetailPage(props: PageProps) {
  datePosted={gig.createdAt.toISOString()}
  validThrough={gig.deadline ? gig.deadline.toISOString() : undefined}
  budget={gig.budget}
- companyName={gig.poster.name ||"CampusConnect Recruiter"}
+ companyName={gig.poster.name ||"CampusConnectCo Recruiter"}
  locationName={gig.work_mode}
  skills={tagsList}
  nonce={nonce}
@@ -120,7 +120,7 @@ export default async function GigDetailPage(props: PageProps) {
  className="sr-only" 
  data-ai-digest="true" 
  data-ai-last-updated={gig.updatedAt.toISOString()} 
- data-ai-source-origin="CampusConnect"
+ data-ai-source-origin="CampusConnectCo"
  aria-hidden="false"
  >
  <h2>Key Opportunity Facts: {gig.title}</h2>
@@ -132,7 +132,7 @@ export default async function GigDetailPage(props: PageProps) {
  <li>Required Skills: {gig.tags ||"General Skills"}</li>
  <li>Publication Timestamp: {gig.createdAt.toISOString()}</li>
  <li>Application Deadline: {gig.deadline ? gig.deadline.toISOString() :"No set deadline"}</li>
- <li>Escrow Safeguard: Locked and guaranteed via CampusConnect Escrow.</li>
+ <li>Milestone Safeguard: Transparent milestone deliverable sign-offs.</li>
  </ul>
  <p>Detailed Description: {gig.description}</p>
  </div>
@@ -149,7 +149,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in';
 
  if (!gig) {
- return { title:"Gig Not Found | CampusConnect" };
+ return { title:"Gig Not Found | CampusConnectCo" };
  }
 
  const description = gig.description.substring(0, 160);
@@ -157,7 +157,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
  const pageUrl = `${baseUrl}/gigs/${params.id}`;
 
  return {
- title: `${gig.title} | CampusConnect`,
+ title: `${gig.title} | CampusConnectCo`,
  description,
  keywords: ['campus gig', 'student freelance', 'earn money college', ...tags],
  alternates: { canonical: pageUrl },
@@ -165,7 +165,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
  title: gig.title,
  description,
  url: pageUrl,
- siteName: 'CampusConnect',
+ siteName: 'CampusConnectCo',
  type: 'article',
  publishedTime: gig.createdAt.toISOString(),
  // opengraph-image.tsx in the same segment is automatically picked up by Next.js

@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
 
  return {
- title: `Best Campus Gigs & Student Freelance Work in ${cityName} | CampusConnect`,
+ title: `Best Campus Gigs & Student Freelance Work in ${cityName} | CampusConnectCo`,
  description: `Find top college student gigs, part-time jobs, and local startup projects in ${cityName}. Earn money, build your portfolio, and receive secure milestone payments via escrow.`,
  alternates: {
  canonical: `${baseUrl}/gigs/city/${city.toLowerCase()}`,
@@ -131,15 +131,15 @@ export default async function CityGigsPage({ params }: Props) {
  const faqs = [
  {
  question: `How do I find freelance campus gigs in ${cityName}?`,
- answer: `You can browse CampusConnect's local opportunities directory for ${cityName}, filter by your skills, and apply directly. All jobs offer milestone escrow security.`
+ answer: `You can browse CampusConnectCo's local opportunities directory for ${cityName}, filter by your skills, and apply directly. All jobs offer milestone escrow security.`
  },
  {
  question: `Are local gigs in ${cityName} protected by payment security?`,
- answer: `Yes, all gigs on CampusConnect use platform-held milestone escrows, securing student payments before project development begins.`
+ answer: `Yes, all gigs on CampusConnectCo use platform-held milestone escrows, securing student payments before project development begins.`
  },
  {
- question: `Which colleges in ${cityName} have active students on CampusConnect?`,
- answer: `CampusConnect has a verified student pool from major regional colleges including ${collegesList.length > 0 ? collegesList.join(",") :"various regional universities"}.`
+ question: `Which colleges in ${cityName} have active students on CampusConnectCo?`,
+ answer: `CampusConnectCo has a verified student pool from major regional colleges including ${collegesList.length > 0 ? collegesList.join(",") :"various regional universities"}.`
  }
  ];
 
@@ -248,7 +248,7 @@ export default async function CityGigsPage({ params }: Props) {
  <div className="bg-surface/50 border border-white/5 rounded-3xl p-8 text-center space-y-4">
  <p className="text-slate-400 text-xs">No active students registered from colleges in {cityName} yet.</p>
  <Link href="/auth/sign-up" className="inline-block px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs transition-all">
- Join CampusConnect
+ Join CampusConnectCo
  </Link>
  </div>
  ) : (
@@ -288,7 +288,7 @@ export default async function CityGigsPage({ params }: Props) {
  <h4 className="font-black uppercase tracking-wider text-xs">Escrow Guarantee</h4>
  </div>
  <p className="text-[11px] text-slate-400 leading-relaxed">
- CampusConnect protects local and remote student collaborations with a secure milestone escrow system. Funds are released only upon successful task verification.
+ CampusConnectCo protects local and remote student collaborations with a secure milestone escrow system. Funds are released only upon successful task verification.
  </p>
  </div>
 

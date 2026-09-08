@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
  
  return {
- title: `${article.title} | CampusConnect`,
+ title: `${article.title} | CampusConnectCo`,
  description: article.description,
  authors: [{ name: author.name }],
  alternates: {

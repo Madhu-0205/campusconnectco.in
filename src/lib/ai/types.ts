@@ -13,8 +13,8 @@ export interface AIChatMessage {
 }
 
 export interface CopilotContextData {
-  user: {
-    id: string;
+  user?: {
+    id?: string;
     name?: string | null;
     branch?: string | null;
     year?: string | null;

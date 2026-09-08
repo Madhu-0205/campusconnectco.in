@@ -23,8 +23,8 @@ export function MasterHowItWorks() {
  },
  {
  num:"04",
- title:"Work securely",
- desc:"Communicate on-platform and get paid safely through our escrow system."
+ title:"Work with clarity",
+ desc:"Communicate directly on-platform and complete projects safely with milestone protection."
  }
  ]
 

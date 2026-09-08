@@ -7,11 +7,11 @@ import type { Metadata } from"next"
 import Link from"next/link"
 
 export const metadata: Metadata = {
- title:"Trust & Safety | CampusConnect — How We Protect Students and Employers",
+ title:"Trust & Safety | CampusConnectCo — How We Protect Students and Employers",
  description:
-"CampusConnect's 5-layer trust system: academic verification, milestone escrow, identity checks, dispute resolution, and fraud detection. Built for safe student-employer collaboration.",
+"CampusConnectCo's 5-layer trust system: academic verification, milestone escrow, identity checks, dispute resolution, and fraud detection. Built for safe student-employer collaboration.",
  openGraph: {
- title:"Trust & Safety | CampusConnect",
+ title:"Trust & Safety | CampusConnectCo",
  description:"India's safest student freelancing platform. See how we protect every transaction.",
  images: [{ url:"/og-trust.jpg" }],
  },
@@ -112,7 +112,7 @@ const FAQS = [
  a:"Payment is held in escrow before you start work. If an employer refuses to release funds after delivery without a valid dispute, our team investigates and releases payment to the student within 7 business days.",
  },
  {
- q:"How does CampusConnect verify students?",
+ q:"How does CampusConnectCo verify students?",
  a:"We verify institutional email addresses, cross-check government ID, and for select partner institutes, connect directly with registrar systems. All verified accounts display a blue BadgeCheck mark.",
  },
  {
@@ -124,7 +124,7 @@ const FAQS = [
  a:"We use a milestone-based system — you agree on deliverables upfront. If there's a dispute about quality, our team reviews the original brief and submitted work. If work meets the agreed scope, payment is released.",
  },
  {
- q:"Is CampusConnect safe for employers hiring first-time freelancers?",
+ q:"Is CampusConnectCo safe for employers hiring first-time freelancers?",
  a:"Yes. All students have verified identities, academic credentials, and reputation scores based on past gig completion. You can see their verified work portfolio before making an offer.",
  },
 ]
@@ -179,7 +179,7 @@ export default async function TrustPage() {
  </span>
  </h1>
  <p className="text-slate-400 text-lg">
- We built CampusConnect knowing students are trusting us with their first professional income and employers are trusting us with their reputation. Every feature was designed around safety.
+ We built CampusConnectCo knowing students are trusting us with their first professional income and employers are trusting us with their reputation. Every feature was designed around safety.
  </p>
  </div>
 
@@ -204,7 +204,7 @@ export default async function TrustPage() {
  <Shield size={18} className="text-[#10B981]" />
  The 5-Layer Trust System
  </h2>
- <p className="text-slate-500 mb-8 text-sm">Every transaction on CampusConnect passes through all five layers simultaneously.</p>
+ <p className="text-slate-500 mb-8 text-sm">Every transaction on CampusConnectCo passes through all five layers simultaneously.</p>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
  {TRUST_PILLARS.map(({ icon: Icon, title, subtitle, color, bg, points }, i) => (
@@ -248,7 +248,7 @@ export default async function TrustPage() {
  What the Verified Badge Means
  </h2>
  <p className="text-slate-400 text-sm mb-6">
- A blue BadgeCheck on any CampusConnect profile means that user has passed all three verification stages:
+ A blue BadgeCheck on any CampusConnectCo profile means that user has passed all three verification stages:
  </p>
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  {[

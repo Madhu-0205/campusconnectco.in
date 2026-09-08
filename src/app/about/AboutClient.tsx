@@ -163,7 +163,7 @@ export default function AboutClient() {
  variants={fadeUp}
  className="md:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed mb-12"
  >
- CampusConnect started as a question:{""}
+ CampusConnectCo started as a question:{""}
  <em className="text-white font-black italic">
  &quot;Why do students graduate with no real experience?&quot;
  </em>{""}
@@ -206,7 +206,7 @@ export default function AboutClient() {
  <div className="space-y-6 leading-relaxed text-lg">
  <p>Every year, thousands of brilliant students graduate from top engineering colleges across India — with perfect grades, zero real-world experience, and empty portfolios.</p>
  <p>The broken cycle dictates: <strong className="text-white">you need experience to get a job, but you need a job to get experience.</strong></p>
- <p>We built CampusConnect to shatter this paradox. By creating a freemium peer-to-peer marketplace and AI career hub, we enable students to build their careers <em className="text-white font-bold">before the degree is even done</em>.</p>
+ <p>We built CampusConnectCo to shatter this paradox. By creating a freemium peer-to-peer marketplace and AI career hub, we enable students to build their careers <em className="text-white font-bold">before the degree is even done</em>.</p>
  </div>
  </motion.div>
 
@@ -222,7 +222,7 @@ export default function AboutClient() {
  <div className="flex items-center gap-4 relative z-10">
  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-white" style={{ background:"linear-gradient(135deg, #ff4d1c, #ffb800)", boxShadow:"0 0 20px rgba(255,77,28,0.40)" }}>CC</div>
  <div>
- <p className="font-bold text-white">The CampusConnect Team</p>
+ <p className="font-bold text-white">The CampusConnectCo Team</p>
  <p className="text-xs" style={{ color:"var(--color-primary)" }}>Founders, 2024</p>
  </div>
  </div>

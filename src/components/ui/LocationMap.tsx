@@ -43,6 +43,9 @@ export function LocationMap({ initialLat = 20.5937, initialLng = 78.9629, onLoca
  if (map.current || !mapContainer.current || mapError) return
 
  try {
+ if (typeof window !== 'undefined') {
+ maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs')
+ }
  map.current = new maplibregl.Map({
  container: mapContainer.current,
  style: MAP_CONFIG.STYLE_URL_LIGHT,

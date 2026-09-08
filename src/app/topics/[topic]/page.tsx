@@ -22,13 +22,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
  
  return {
- title: `${cluster.name} Hub: Internships, Careers, and Guides | CampusConnect`,
+ title: `${cluster.name} Hub: Internships, Careers, and Guides | CampusConnectCo`,
  description: cluster.description,
  alternates: {
  canonical: `${baseUrl}/topics/${topic}`,
  },
  openGraph: {
- title: `${cluster.name} Hub | CampusConnect`,
+ title: `${cluster.name} Hub | CampusConnectCo`,
  description: cluster.description,
  url: `${baseUrl}/topics/${topic}`,
  type:"website",

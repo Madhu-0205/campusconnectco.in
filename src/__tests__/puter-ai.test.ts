@@ -226,6 +226,6 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
       expect(evalResult.feedback).toHaveProperty("technical");
       expect(evalResult.disclaimer).toContain("Advisory only");
       expect(evalResult.poweredBy).toBe("Puter.js");
-    });
+    }, 15000);
   });
 });

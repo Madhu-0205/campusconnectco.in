@@ -4,16 +4,16 @@ import Link from"next/link";
 import LegalLayout from"@/components/legal/LegalLayout";
 
 export const metadata: Metadata = {
- title:"Privacy Policy | CampusConnect",
- description:"Learn how CampusConnect collects, uses, and protects your personal information. GDPR-aligned privacy practices for students and employers.",
+ title:"Privacy Policy | CampusConnectCo",
+ description:"Learn how CampusConnectCo collects, uses, and protects your personal information. GDPR-aligned privacy practices for students and employers.",
  alternates: {
  canonical:"https://campusconnectco.in/privacy",
  },
  openGraph: {
- title:"Privacy Policy | CampusConnect",
- description:"Learn how CampusConnect collects, uses, and protects your personal information.",
+ title:"Privacy Policy | CampusConnectCo",
+ description:"Learn how CampusConnectCo collects, uses, and protects your personal information.",
  url:"https://campusconnectco.in/privacy",
- siteName:"CampusConnect",
+ siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",
  }
@@ -42,8 +42,8 @@ export default function PrivacyPage() {
  <section id="introduction">
  <h2>1. Introduction</h2>
  <p>
- At CampusConnect (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), your privacy is our priority. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website (campusconnectco.in) and use our platform. 
- By using CampusConnect, you consent to the data practices described in this policy, which is aligned with standard data protection principles including the GDPR and Indian IT regulations.
+ At CampusConnectCo (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), your privacy is our priority. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website (campusconnectco.in) and use our platform. 
+ By using CampusConnectCo, you consent to the data practices described in this policy, which is aligned with standard data protection principles including the GDPR and Indian IT regulations.
  </p>
  </section>
 
@@ -108,7 +108,7 @@ export default function PrivacyPage() {
  <section id="children-privacy">
  <h2>8. Children&apos;s Privacy</h2>
  <p>
- CampusConnect is intended for college students and young professionals. We do not knowingly collect personal information from children under the age of 16. If we become aware that a child under 16 has provided us with personal information, we will take steps to delete it immediately.
+ CampusConnectCo is intended for college students and young professionals. We do not knowingly collect personal information from children under the age of 16. If we become aware that a child under 16 has provided us with personal information, we will take steps to delete it immediately.
  </p>
  </section>
 
@@ -130,7 +130,7 @@ export default function PrivacyPage() {
  </p>
  <p>
  <strong>Email:</strong> privacy@campusconnectco.in<br />
- <strong>Address:</strong> CampusConnect Privacy Team, India
+ <strong>Address:</strong> CampusConnectCo Privacy Team, India
  </p>
  </section>
  </LegalLayout>

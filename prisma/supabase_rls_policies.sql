@@ -291,6 +291,12 @@ CREATE POLICY roadmap_modify_policy ON "CareerRoadmap" FOR ALL TO authenticated 
 -- -------------------------------------------------------------------------
 CREATE POLICY skill_read_policy ON "Skill" FOR SELECT TO authenticated USING (true);
 CREATE POLICY internship_read_policy ON "Internship" FOR SELECT USING (true);
+-- Creator can manage their own internships; non-owners cannot mutate
+CREATE POLICY internship_modify_policy ON "Internship"
+    FOR ALL
+    TO authenticated
+    USING (auth.uid() = "posted_by")
+    WITH CHECK (auth.uid() = "posted_by");
 CREATE POLICY announcement_read_policy ON "Announcement" FOR SELECT TO authenticated USING (true);
 CREATE POLICY settings_read_policy ON "PlatformSetting" FOR SELECT TO authenticated USING (true);
 -- Note: Write actions on these reference tables default to deny for standard users.

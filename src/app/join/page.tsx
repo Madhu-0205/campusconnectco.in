@@ -70,7 +70,7 @@ function JoinPageClient() {
  <span className="font-black text-xl tracking-tighter text-white">CC</span>
  </div>
  <span className="font-black text-2xl text-white group-hover:text-slate-200 transition-colors tracking-tight" style={{ fontFamily:"var(--font-display, 'Plus Jakarta Sans', sans-serif)" }}>
- CampusConnect
+ CampusConnectCo
  </span>
  </Link>
  </div>
@@ -153,7 +153,7 @@ function JoinPageClient() {
  <Gift className="text-primary" size={28} />
  </div>
  <div>
- <h2 className="text-2xl font-extrabold text-white">Join CampusConnect</h2>
+ <h2 className="text-2xl font-extrabold text-white">Join CampusConnectCo</h2>
  <p className="text-slate-400 mt-2 max-w-sm mx-auto">
  {error ||"Claim ₹100 cash back + 100 XP boost when you complete your first gig on the platform."}
  </p>

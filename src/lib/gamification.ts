@@ -56,7 +56,7 @@ export const BADGES = [
  { slug:"streak-100", name:"Century Club", icon:"💯", color:"#1FA971", tier:"GOLD", xpReward: 2000, rarity:"LEGENDARY", requirement: { type:"streak_days", value: 100 }, description:"100-day activity streak" },
  // Special
  { slug:"five-star", name:"Perfect Score", icon:"⭐", color:"#F59E0B", tier:"GOLD", xpReward: 500, rarity:"RARE", requirement: { type:"rating_5star", value: 5 }, description:"Received 5 consecutive 5-star ratings" },
- { slug:"early-adopter", name:"Early Adopter", icon:"🌱", color:"#10B981", tier:"LEGENDARY",xpReward: 1000, rarity:"LEGENDARY", requirement: { type:"special", value: 1 }, description:"Among the first 1000 CampusConnect users" },
+ { slug:"early-adopter", name:"Early Adopter", icon:"🌱", color:"#10B981", tier:"LEGENDARY",xpReward: 1000, rarity:"LEGENDARY", requirement: { type:"special", value: 1 }, description:"Among the first 1000 CampusConnectCo users" },
 ] as const
 
 export type XpEventType = keyof typeof XP_REWARDS

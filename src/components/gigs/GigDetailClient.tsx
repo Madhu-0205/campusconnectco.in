@@ -25,14 +25,19 @@ import {
  Sparkles,
  Brain,
  Loader2,
+ Bookmark,
+ Share2,
+ Check,
 } from"lucide-react";
 import Link from"next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
+import OpportunityOwnerControls from "@/components/opportunities/OpportunityOwnerControls";
 import { Button } from"@/components/ui/Button";
 import { Card } from"@/components/ui/Card";
 import { VerificationBadge } from"@/components/ui/VerificationBadge";
+import { useOpportunityEngagement } from "@/hooks/useOpportunityEngagement";
 import { createClient } from"@/lib/supabase/client";
 
 interface GigDetailProps {
@@ -157,6 +162,13 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
     }
   };
 
+  const { isSaved, isCopied, shareMessage, toggleSave, shareOpportunity } =
+    useOpportunityEngagement({
+      id: gig.id,
+      type: "gig",
+      title: gig.title,
+    });
+
  const userApplication = gig.applications.find(
    (app) => app.applicant.id === currentUserId
  );
@@ -256,42 +268,100 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
  return (
  <div className="min-h-screen bg-background pt-24 pb-12">
  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
- {/* Back Button */}
- <Link
- href="/get-gig"
- className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6"
- >
- <ArrowLeft size={20} />
- Back to Gigs
- </Link>
+        {/* Back Button */}
+        <Link
+          href="/opportunities?type=gig"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6"
+        >
+          <ArrowLeft size={20} />
+          Back to Gigs
+        </Link>
 
- <div className="grid lg:grid-cols-3 gap-8">
- {/* Main Content */}
- <div className="lg:col-span-2 space-y-6">
- {/* Gig Header */}
- <Card className="p-8">
- <div className="flex items-start justify-between mb-4">
- <div className="flex-1">
- <h1 className="font-heading text-3xl md:text-4xl font-black text-foreground mb-2 tracking-tight">
- {gig.title}
- </h1>
- <div className="flex flex-wrap gap-4 text-muted-foreground">
- <span className="flex items-center gap-1">
- <Calendar size={16} />
- Posted {new Date(gig.createdAt).toLocaleDateString()}
- </span>
- <span className="flex items-center gap-1">
- <Users size={16} />
- {gig._count.applications} applicant{gig._count.applications !== 1 ?"s" :""}
- </span>
- </div>
- </div>
- <span
- className={`px-3 py-1 rounded-full font-semibold ${gig.status ==="OPEN" ?"bg-green-100" :"bg-gray-100 text-gray-700" }`}
- >
- {gig.status}
- </span>
- </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Owner Lifecycle Management Controls */}
+            {isOwner && (
+              <OpportunityOwnerControls
+                opportunityId={gig.id}
+                opportunityType="gig"
+                currentStatus={gig.status}
+                initialData={{
+                  title: gig.title,
+                  description: gig.description,
+                  budget: gig.budget,
+                  deadline: gig.deadline,
+                  tags: gig.tags,
+                }}
+                redirectOnDelete={true}
+              />
+            )}
+
+            {/* Non-owner Status Indicators for Inactive / Completed */}
+            {!isOwner && (gig.status === "INACTIVE" || gig.status === "COMPLETED") && (
+              <div className={`p-4 rounded-2xl border text-sm flex items-center gap-2.5 ${
+                gig.status === "INACTIVE"
+                  ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
+                  : "border-sky-500/30 bg-sky-500/10 text-sky-300"
+              }`}>
+                {gig.status === "INACTIVE" ? <AlertCircle className="h-5 w-5 shrink-0" /> : <CheckCircle className="h-5 w-5 shrink-0" />}
+                <span>
+                  {gig.status === "INACTIVE"
+                    ? "This opportunity has been marked as inactive by the creator and is no longer accepting applications."
+                    : "This opportunity has been completed."}
+                </span>
+              </div>
+            )}
+
+            {/* Gig Header */}
+            <Card className="p-8">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h1 className="font-heading text-3xl md:text-4xl font-black text-foreground mb-2 tracking-tight">
+                    {gig.title}
+                  </h1>
+                  <div className="flex flex-wrap gap-4 text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Calendar size={16} />
+                      Posted {new Date(gig.createdAt).toLocaleDateString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users size={16} />
+                      {gig._count.applications} applicant{gig._count.applications !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 relative">
+                  <button
+                    type="button"
+                    onClick={shareOpportunity}
+                    aria-label="Share gig"
+                    className="p-2 rounded-xl border border-border hover:bg-surface-2 text-muted-foreground transition-colors cursor-pointer"
+                  >
+                    {isCopied ? <Check size={16} className="text-primary" /> : <Share2 size={16} />}
+                  </button>
+                  {shareMessage && (
+                    <span className="absolute -top-7 right-14 text-[10px] font-bold bg-slate-900 text-white px-2 py-0.5 rounded shadow-xs whitespace-nowrap">
+                      {shareMessage}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={toggleSave}
+                    aria-label={isSaved ? "Unsave gig" : "Save gig"}
+                    className={`p-2 rounded-xl border border-border transition-colors cursor-pointer ${
+                      isSaved ? "bg-primary/10 text-primary border-primary/30" : "hover:bg-surface-2 text-muted-foreground"
+                    }`}
+                  >
+                    <Bookmark size={16} className={isSaved ? "fill-current" : ""} />
+                  </button>
+                  <span
+                    className={`px-3 py-1 rounded-full font-semibold ${gig.status === "OPEN" ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300" : "bg-gray-100 text-gray-700"}`}
+                  >
+                    {gig.status}
+                  </span>
+                </div>
+              </div>
 
  {/* Key Info */}
  <div className="grid sm:grid-cols-2 gap-4 mb-6">
@@ -419,7 +489,6 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
             )}
           </Card>
         )}
-
         {/* Phase 6: AI Opportunity Summary */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-3">
@@ -772,56 +841,56 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
  </div>
  </Card>
 
- {/* Escrow Payment Timeline */}
- <Card className="p-6">
- <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
- <ShieldCheck size={20} className="text-success" />
- Payment Protection
- </h3>
- <div className="relative border-border ml-3 space-y-6 pt-2 pb-2">
- <div className="relative">
- <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status !== 'OPEN' ? 'bg-emerald-500' : 'bg-accent'}`}>
- <CheckCircle size={12} className="text-foreground" />
- </div>
- <div className="pl-6">
- <h4 className="font-bold text-foreground">Payment deposited</h4>
- <p className="text-muted-foreground mt-1">Client secures funds into escrow.</p>
- </div>
- </div>
- <div className="relative">
- <div className={`absolute -left-5.25 p-1 rounded-full ${['IN_PROGRESS', 'COMPLETED'].includes(gig.status) ? 'bg-emerald-500' : 'bg-accent'}`}>
- <Clock size={12} className="text-foreground" />
- </div>
- <div className="pl-6">
- <h4 className="font-bold text-foreground">Work in progress</h4>
- <p className="text-muted-foreground mt-1">Student begins working.</p>
- </div>
- </div>
- <div className="relative">
- <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-accent'}`}>
- <FileText size={12} className="text-foreground" />
- </div>
- <div className="pl-6">
- <h4 className="font-bold text-foreground">Work submitted</h4>
- <p className="text-muted-foreground mt-1">Client reviews the delivery.</p>
- </div>
- </div>
- <div className="relative">
- <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-accent'}`}>
- <DollarSign size={12} className="text-foreground" />
- </div>
- <div className="pl-6">
- <h4 className="font-bold text-foreground">Payment released</h4>
- <p className="text-muted-foreground mt-1">Funds transferred to student.</p>
- </div>
- </div>
- </div>
- <div className="mt-5 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
- <p className="text-emerald-800 font-medium">
- <strong>CampusConnect Payment Protection</strong> – funds are held securely until the work is completed.
- </p>
- </div>
- </Card>
+
+        {/* Milestone & Review Timeline */}
+        <Card className="p-6">
+          <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+            <ShieldCheck size={20} className="text-emerald-500" />
+            Milestone Workflow
+          </h3>
+          <div className="relative border-border ml-3 space-y-6 pt-2 pb-2">
+            <div className="relative">
+              <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status !== 'OPEN' ? 'bg-emerald-500' : 'bg-accent'}`}>
+                <CheckCircle size={12} className="text-foreground" />
+              </div>
+              <div className="pl-6">
+                <h4 className="font-bold text-foreground">Scope agreed</h4>
+                <p className="text-muted-foreground mt-1">Milestones and expectations confirmed.</p>
+              </div>
+            </div>
+            <div className="relative">
+              <div className={`absolute -left-5.25 p-1 rounded-full ${['IN_PROGRESS', 'COMPLETED'].includes(gig.status) ? 'bg-emerald-500' : 'bg-accent'}`}>
+                <Clock size={12} className="text-foreground" />
+              </div>
+              <div className="pl-6">
+                <h4 className="font-bold text-foreground">Work in progress</h4>
+                <p className="text-muted-foreground mt-1">Student delivers against milestones.</p>
+              </div>
+            </div>
+            <div className="relative">
+              <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-accent'}`}>
+                <FileText size={12} className="text-foreground" />
+              </div>
+              <div className="pl-6">
+                <h4 className="font-bold text-foreground">Work submitted</h4>
+                <p className="text-muted-foreground mt-1">Client reviews submitted deliverables.</p>
+              </div>
+            </div>
+            <div className="relative">
+              <div className={`absolute -left-5.25 p-1 rounded-full ${gig.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-accent'}`}>
+                <DollarSign size={12} className="text-foreground" />
+              </div>
+              <div className="pl-6">
+                <h4 className="font-bold text-foreground">Milestone sign-off</h4>
+                <p className="text-muted-foreground mt-1">Deliverables verified and accepted.</p>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4 pt-3 border-t border-border">
+            Platform payments are currently in transition mode. Direct settlements are handled off-platform; milestone tracking and sign-off remain active.
+          </p>
+        </Card>
+
 
  {/* Location */}
  {(gig.latitude || gig.poster.latitude) && (

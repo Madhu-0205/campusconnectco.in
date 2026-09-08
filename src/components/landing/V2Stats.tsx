@@ -22,7 +22,7 @@ export function V2Stats({
  {/* Eyebrow */}
  <div className="text-center mb-16">
  <span className="text-[10px] sm:text-xs font-mono font-bold tracking-[0.2em] uppercase text-gray-500">
- Why trust CampusConnect
+ Why trust CampusConnectCo
  </span>
  </div>
 

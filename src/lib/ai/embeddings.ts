@@ -6,11 +6,10 @@ import { getOpenAI } from './client';
 
 export async function generateEmbedding(text: string): Promise<number[]> {
  const apiKey = process.env.OPENAI_API_KEY ||"";
- const isGroq = apiKey.startsWith("gsk_");
  const isPlaceholder = apiKey ==="" || apiKey.includes("placeholder") || apiKey.includes("your_openai");
  
- const model = isGroq ? 'nomic-embed-text-v1.5' : (process.env.AI_EMBEDDING_MODEL || 'text-embedding-3-small');
- const dimensions = isGroq ? 768 : 1536;
+ const model = process.env.AI_EMBEDDING_MODEL || 'text-embedding-3-small';
+ const dimensions = 1536;
 
  if (isPlaceholder) {
  return generateHashFallback(text, dimensions);

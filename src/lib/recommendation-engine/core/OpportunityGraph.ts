@@ -37,7 +37,7 @@ export function buildOpportunityNodeFromGig(gig: Gig): OpportunityNode {
  id: gig.id,
  type:"gig",
  title: gig.title,
- company:"CampusConnect Client", // Default for gigs without org linking
+ company:"CampusConnectCo Client", // Default for gigs without org linking
  requiredSkills,
  difficulty:"intermediate", // Default mapping, could be derived from budget/tags
  location: null, // Gigs are typically remote or location-agnostic unless specified

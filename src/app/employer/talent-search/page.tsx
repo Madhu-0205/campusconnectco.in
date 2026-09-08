@@ -11,7 +11,7 @@ import { Card } from"@/components/ui/Card"
 import prisma from"@/lib/prisma"
 
 export const metadata: Metadata = {
- title:"AI Talent Search | CampusConnect Employers",
+ title:"AI Talent Search | CampusConnectCo Employers",
  description:"Find pre-vetted student talent using semantic AI search. Filter by college tier, skills, and reputation score.",
 }
 

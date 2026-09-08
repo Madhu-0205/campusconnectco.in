@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
 
   // Keep heavy native modules out of the Next.js bundle so they run as plain
   // Node.js requires (avoids pdf-parse test-fixture crash and mammoth issues).
-  serverExternalPackages: ["pdf-parse", "mammoth", "groq-sdk"],
+  serverExternalPackages: ["pdf-parse", "mammoth"],
 
   // Turbopack config (Next.js 16 default bundler)
   turbopack: {
@@ -79,7 +79,7 @@ const nextConfig: NextConfig = {
 
   webpack(config: import("webpack").Configuration) {
     // pdf-parse ships a test helper that breaks in webpack bundled envs.
-    // Since pdf-parse + mammoth + groq-sdk are in serverExternalPackages,
+    // Since pdf-parse + mammoth are in serverExternalPackages,
     // webpack never actually bundles them — this is a belt-and-suspenders guard.
     if (config.resolve) {
       config.resolve.alias = {

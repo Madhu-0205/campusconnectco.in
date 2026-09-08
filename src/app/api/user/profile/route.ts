@@ -196,7 +196,7 @@ export async function POST(req: Request) {
  const { WelcomeEmail } = await import("@/lib/email/templates/WelcomeEmail");
  await sendTransactionalEmail({
  to: user.email,
- subject:"Welcome to CampusConnect! 🎉",
+ subject:"Welcome to CampusConnectCo! 🎉",
  react: WelcomeEmail({
  name: user.name ||"there",
  role: user.role

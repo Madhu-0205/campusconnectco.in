@@ -2,7 +2,7 @@ import { Scale } from"lucide-react"
 import type { Metadata } from"next"
 
 export const metadata: Metadata = {
- title:"Terms & Conditions — CampusConnect",
+ title:"Terms & Conditions — CampusConnectCo",
 }
 
 export default function TermsPage() {
@@ -17,11 +17,11 @@ export default function TermsPage() {
  >
  {/* Radial glow */}
  <div
- className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[160px] pointer-events-none opacity-10"
+ className="absolute top-0 right-0 w-150 h-150 rounded-full blur-[160px] pointer-events-none opacity-10"
  style={{ background:"radial-gradient(circle, var(--color-primary) 0%, transparent 70%)", transform:"translate(30%, -30%)" }}
  />
 
- <div className="max-w-[860px] mx-auto px-6 sm:px-12 pt-36 pb-28 relative z-10">
+ <div className="max-w-215 mx-auto px-6 sm:px-12 pt-36 pb-28 relative z-10">
 
  {/* Header */}
  <div className="mb-16">
@@ -44,7 +44,7 @@ export default function TermsPage() {
  </h1>
 
  <p className="text-lg leading-relaxed" style={{ color:"var(--color-text-muted)" }}>
- By using CampusConnect, you agree to the following terms. Please read them carefully.
+ By using CampusConnectCo, you agree to the following terms. Please read them carefully.
  </p>
 
  <div
@@ -66,32 +66,32 @@ export default function TermsPage() {
  {
  num:"1",
  title:"Introduction",
- body:"Welcome to CampusConnect. By accessing or using our platform, you agree to comply with and be bound by the following Terms and Conditions.",
+ body:"Welcome to CampusConnectCo. By accessing or using our platform, you agree to comply with and be bound by the following Terms and Conditions.",
  },
  {
  num:"2",
  title:"Marketplace Role",
- body:"CampusConnect operates strictly as a marketplace facilitator connecting clients (users posting jobs/gigs) with freelancers (students applying for jobs/gigs). CampusConnect does NOT store, hold, or manage user funds in any internal wallet.",
+ body:"CampusConnectCo operates strictly as a marketplace facilitator connecting clients (users posting jobs/gigs) with freelancers (students applying for jobs/gigs). CampusConnectCo does NOT store, hold, or manage user funds in any internal wallet.",
  },
  {
  num:"3",
  title:"Payment Gateway",
- body:"All payments on the platform are securely processed through our authorized payment gateway partner, Razorpay. By making or receiving payments on the platform, you agree to Razorpay's Terms of Service and Privacy Policy. CampusConnect charges a transparent service fee for facilitating the marketplace transaction, which is visible during the checkout process.",
+ body:"All payments on the platform are securely processed through our authorized payment gateway partner, Razorpay. By making or receiving payments on the platform, you agree to Razorpay's Terms of Service and Privacy Policy. CampusConnectCo charges a transparent service fee for facilitating the marketplace transaction, which is visible during the checkout process.",
  },
  {
  num:"4",
  title:"Escrow & Disbursements",
- body:"Payments made by clients for gigs are held securely in an escrow-like mechanism processed directly by Razorpay (via Route or similar compliant models). Funds are disbursed to the freelancer only upon successful completion and client approval of the work. If a dispute arises, the resolution process is governed by CampusConnect's dispute policies without CampusConnect touching the capital.",
+ body:"Payments made by clients for gigs are held securely in an escrow-like mechanism processed directly by Razorpay (via Route or similar compliant models). Funds are disbursed to the freelancer only upon successful completion and client approval of the work. If a dispute arises, the resolution process is governed by CampusConnectCo's dispute policies without CampusConnectCo touching the capital.",
  },
  {
  num:"5",
  title:"User Conduct",
- body:"Users agree to provide accurate information and respect the professional environment of the platform. Any misuse of the platform, fraudulent gig postings, or attempts to circumvent the CampusConnect payment system may result in account termination.",
+ body:"Users agree to provide accurate information and respect the professional environment of the platform. Any misuse of the platform, fraudulent gig postings, or attempts to circumvent the CampusConnectCo payment system may result in account termination.",
  },
  {
  num:"6",
  title:"Changes to Terms",
- body:"CampusConnect reserves the right to modify these terms at any time. Continued use of the platform after changes have been communicated implies acceptance of the updated terms.",
+ body:"CampusConnectCo reserves the right to modify these terms at any time. Continued use of the platform after changes have been communicated implies acceptance of the updated terms.",
  },
  ].map(({ num, title, body }) => (
  <div

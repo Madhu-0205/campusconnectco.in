@@ -14,7 +14,6 @@ const ServerEnvSchema = z.object({
  CRON_SECRET: z.string().min(5,"CRON_SECRET must be set"),
  RAZORPAY_KEY_ID: z.string().min(5,"RAZORPAY_KEY_ID must be set"),
  RAZORPAY_KEY_SECRET: z.string().min(5,"RAZORPAY_KEY_SECRET must be set"),
- GROQ_API_KEY: z.string().min(5,"GROQ_API_KEY must be set"),
 });
 
 export function validateEnv(isEdge = false) {

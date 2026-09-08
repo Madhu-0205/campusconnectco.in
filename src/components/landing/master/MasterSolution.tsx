@@ -11,8 +11,8 @@ export function MasterSolution() {
  { icon: Compass, label:"Match", desc:"AI-driven recommendations" },
  { icon: MessageCircle, label:"Connect", desc:"Chat with founders directly" },
  { icon: FileText, label:"Apply", desc:"1-click verified applications" },
- { icon: CheckCircle, label:"Work", desc:"Collaborate on projects" },
- { icon: IndianRupee, label:"Get Paid", desc:"Secure escrow payments" },
+ { icon: CheckCircle, label: "Work", desc: "Collaborate on projects" },
+ { icon: IndianRupee, label: "Milestones", desc: "Protected deliverable sign-offs" },
  ]
 
  return (

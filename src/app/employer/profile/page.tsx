@@ -14,7 +14,7 @@ import prisma from"@/lib/prisma"
 
 
 export const metadata: Metadata = {
- title:"Company Profile | CampusConnect Employers",
+ title:"Company Profile | CampusConnectCo Employers",
  description:"Showcase your company to India's best student talent",
 }
 

@@ -138,11 +138,11 @@ export default async function SkillSEOPage({ params }: Props) {
  const faqs = [
  {
  question: `How do I hire vetted college students with ${decodedSkill} skills?`,
- answer: `You can browse vetted student portfolios on CampusConnect, review their skill credentials, and invite them to apply. All hires are secured using platform-controlled milestone escrows.`
+ answer: `You can browse vetted student portfolios on CampusConnectCo, review their skill credentials, and invite them to apply. All hires are secured using platform-controlled milestone escrows.`
  },
  {
  question: `What is the average project budget for ${decodedSkill} campus gigs?`,
- answer: `The average project budget for ${decodedSkill} opportunities on CampusConnect is approximately INR ${averageBudget.toLocaleString("en-IN")}, depending on scope, deadline, and complexity.`
+ answer: `The average project budget for ${decodedSkill} opportunities on CampusConnectCo is approximately INR ${averageBudget.toLocaleString("en-IN")}, depending on scope, deadline, and complexity.`
  },
  {
  question: `How are students with ${decodedSkill} credentials verified on the platform?`,
@@ -245,7 +245,7 @@ export default async function SkillSEOPage({ params }: Props) {
  <p className="text-[10px] text-slate-500 mt-0.5">{student.branch ||""} · {student.year ||""}</p>
  </div>
  </div>
- <p className="text-xs text-slate-400 line-clamp-2 italic my-3">&quot;{student.bio || 'Passionate student developer honing skills on CampusConnect.'}&quot;</p>
+ <p className="text-xs text-slate-400 line-clamp-2 italic my-3">&quot;{student.bio || 'Passionate student developer honing skills on CampusConnectCo.'}&quot;</p>
  <Link href={`/profile/${student.username || student.id}`} className="inline-flex items-center gap-1 text-xs text-primary font-bold hover:text-primary">
  View Brand Profile <ExternalLink size={12} />
  </Link>

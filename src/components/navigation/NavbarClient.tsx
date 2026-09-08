@@ -161,7 +161,7 @@ export function NavbarClient({
  CC
  </div>
  <span className="text-sm font-heading font-semibold hidden sm:block tracking-wide text-foreground">
- CampusConnect
+ CampusConnectCo
  </span>
  </Link>
 
