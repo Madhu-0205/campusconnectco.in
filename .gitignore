@@ -44,3 +44,12 @@ node_modules
 prisma/generated
 playwright-report/
 test-results/
+
+# database backups (never commit raw or encrypted dumps)
+backups/
+tmp-backup/
+*.dump
+*.backup
+*.enc
+*.sql.gz
+

@@ -1,0 +1,174 @@
+name: Automated Database Backup
+
+on:
+  schedule:
+    # Run daily at 02:00 UTC (07:30 IST)
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual backup trigger"
+        required: false
+        default: "Manual ad-hoc backup"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: database-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Generate and Upload Encrypted Backup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Validate Required Secrets
+        id: check-secrets
+        env:
+          DB_URL: ${{ secrets.DIRECT_URL || secrets.DATABASE_URL }}
+          ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          HAS_ERRORS=0
+          if [ -z "$DB_URL" ]; then
+            echo "::error::Missing DIRECT_URL or DATABASE_URL secret in GitHub Secrets."
+            HAS_ERRORS=1
+          fi
+          if [ -z "$ENCRYPTION_KEY" ]; then
+            echo "::error::Missing BACKUP_ENCRYPTION_KEY secret in GitHub Secrets. Generate with: openssl rand -base64 32"
+            HAS_ERRORS=1
+          fi
+          if [ "$HAS_ERRORS" -eq 1 ]; then
+            echo "Cannot proceed without required database connection and encryption secrets."
+            exit 1
+          fi
+
+      - name: Prepare Secure Scratch Directory
+        run: |
+          BACKUP_DIR="/tmp/cc-backup"
+          rm -rf "$BACKUP_DIR"
+          mkdir -m 700 -p "$BACKUP_DIR"
+          echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
+          TIMESTAMP=$(date -u +"%Y%m%d_%H%M%SZ")
+          echo "BACKUP_TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+
+      - name: Dump Roles, Schema, and Data via Supabase CLI
+        env:
+          DB_URL: ${{ secrets.DIRECT_URL || secrets.DATABASE_URL }}
+        run: |
+          echo "Dumping database roles (cluster-level)..."
+          supabase db dump --role-only --db-url "$DB_URL" -f "${BACKUP_DIR}/roles.sql"
+
+          echo "Dumping public schema (DDL & structures)..."
+          supabase db dump -s public --db-url "$DB_URL" -f "${BACKUP_DIR}/schema.sql"
+
+          echo "Dumping public data (records with copy/insert)..."
+          supabase db dump --data-only --use-copy -s public --db-url "$DB_URL" -f "${BACKUP_DIR}/data.sql"
+
+      - name: Validate Dump Contents and Integrity
+        run: |
+          for file in roles.sql schema.sql data.sql; do
+            if [ ! -s "${BACKUP_DIR}/${file}" ]; then
+              echo "::error::Dump file ${file} is missing or empty!"
+              exit 1
+            fi
+            FILE_SIZE=$(wc -c < "${BACKUP_DIR}/${file}" | tr -d ' ')
+            LINE_COUNT=$(wc -l < "${BACKUP_DIR}/${file}" | tr -d ' ')
+            echo "Verified ${file}: ${FILE_SIZE} bytes (${LINE_COUNT} lines)"
+          done
+
+      - name: Compress Archive and Generate Checksum
+        run: |
+          ARCHIVE_NAME="campusconnect_backup_${BACKUP_TIMESTAMP}.tar.gz"
+          echo "ARCHIVE_NAME=$ARCHIVE_NAME" >> $GITHUB_ENV
+
+          tar -czf "${BACKUP_DIR}/${ARCHIVE_NAME}" -C "${BACKUP_DIR}" roles.sql schema.sql data.sql
+          
+          if [ ! -s "${BACKUP_DIR}/${ARCHIVE_NAME}" ]; then
+            echo "::error::Compressed archive is missing or empty!"
+            exit 1
+          fi
+
+          ARCHIVE_SIZE=$(wc -c < "${BACKUP_DIR}/${ARCHIVE_NAME}" | tr -d ' ')
+          echo "Compressed archive created: ${ARCHIVE_SIZE} bytes"
+
+          # Calculate SHA-256 Checksum
+          (cd "${BACKUP_DIR}" && sha256sum "${ARCHIVE_NAME}" > "${ARCHIVE_NAME}.sha256")
+          CHECKSUM=$(cat "${BACKUP_DIR}/${ARCHIVE_NAME}.sha256" | awk '{print $1}')
+          echo "BACKUP_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+          echo "Archive SHA-256 Checksum: ${CHECKSUM}"
+
+      - name: Encrypt Backup using OpenSSL AES-256-CBC
+        env:
+          ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          ENC_NAME="${ARCHIVE_NAME}.enc"
+          echo "ENC_NAME=$ENC_NAME" >> $GITHUB_ENV
+
+          openssl enc -aes-256-cbc -salt -pbkdf2 -iter 100000 \
+            -in "${BACKUP_DIR}/${ARCHIVE_NAME}" \
+            -out "${BACKUP_DIR}/${ENC_NAME}" \
+            -pass env:ENCRYPTION_KEY
+
+          if [ ! -s "${BACKUP_DIR}/${ENC_NAME}" ]; then
+            echo "::error::Encryption failed or output file is empty!"
+            exit 1
+          fi
+
+          ENC_SIZE=$(wc -c < "${BACKUP_DIR}/${ENC_NAME}" | tr -d ' ')
+          echo "Encrypted archive created: ${ENC_SIZE} bytes"
+
+          # Verify decryption capability and checksum match
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 \
+            -in "${BACKUP_DIR}/${ENC_NAME}" \
+            -out "${BACKUP_DIR}/test_verify.tar.gz" \
+            -pass env:ENCRYPTION_KEY
+
+          VERIFY_CHECKSUM=$(sha256sum "${BACKUP_DIR}/test_verify.tar.gz" | awk '{print $1}')
+          rm -f "${BACKUP_DIR}/test_verify.tar.gz"
+
+          if [ "$VERIFY_CHECKSUM" != "$BACKUP_CHECKSUM" ]; then
+            echo "::error::Decrypted checksum does not match original archive checksum!"
+            exit 1
+          fi
+          echo "Decryption test verified successfully (checksum match)."
+
+      - name: Securely Scrub Plaintext SQL and Compressed Files
+        run: |
+          rm -f "${BACKUP_DIR}/roles.sql" "${BACKUP_DIR}/schema.sql" "${BACKUP_DIR}/data.sql" "${BACKUP_DIR}/${ARCHIVE_NAME}"
+          echo "Plaintext database dumps and unencrypted archives safely removed from runner."
+
+      - name: Upload Encrypted Backup to Private Google Drive
+        env:
+          GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.GOOGLE_DRIVE_CLIENT_ID }}
+          GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.GOOGLE_DRIVE_CLIENT_SECRET }}
+          GOOGLE_DRIVE_REFRESH_TOKEN: ${{ secrets.GOOGLE_DRIVE_REFRESH_TOKEN }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          BACKUP_DIR: ${{ env.BACKUP_DIR }}
+          ENC_NAME: ${{ env.ENC_NAME }}
+          ARCHIVE_NAME: ${{ env.ARCHIVE_NAME }}
+          BACKUP_CHECKSUM: ${{ env.BACKUP_CHECKSUM }}
+          BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          node scripts/google-drive-backup.js
+
+      - name: Final Security Cleanup
+        if: always()
+        run: |
+          rm -rf "${BACKUP_DIR}"
+          echo "Temporary backup scratch directory completely sanitized."

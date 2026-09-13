@@ -1,26 +1,35 @@
 # CampusConnect Database Disaster Recovery (DR)
 
-Supabase natively provides PostgreSQL-level backup and recovery options. Since CampusConnect uses Prisma as an ORM, schema changes and data continuity must be carefully managed in the event of an outage.
+CampusConnect currently operates on the **Supabase Free Tier**. 
 
-## 1. Automated Backups & PITR
-The CampusConnect repository initializes Supabase via the `DATABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` environment variables. The repository itself **cannot** manage backups.
+> [!IMPORTANT]
+> **Supabase Free Tier Limitations**:
+> Supabase Free does **NOT** provide managed automated backups or Point-in-Time Recovery (PITR) in the dashboard.
+> To prevent data loss, CampusConnect utilizes an automated, off-site, encrypted backup pipeline implemented via GitHub Actions.
+>
+> For the complete disaster recovery runbook, architecture, restore procedure, and manual secret setup, consult:
+> 👉 [DATABASE_BACKUP_AND_RESTORE.md](file:///Users/madhu/Desktop/campusconnectco.in-main/docs/DATABASE_BACKUP_AND_RESTORE.md)
 
-**Operator Checklist:**
-- [ ] Log into the Supabase Dashboard.
-- [ ] Select the Production Project.
-- [ ] Navigate to **Settings > Database > Backups**.
-- [ ] Verify that **Daily Snapshots** are enabled.
-- [ ] Verify that **Point-in-Time Recovery (PITR)** is enabled.
-- [ ] Confirm the retention period satisfies the company's SLA (e.g. 7 or 30 days).
+## 1. Automated Backups Architecture
+- **Workflow**: `.github/workflows/database-backup.yml`
+- **Schedule**: Daily at 02:00 UTC (07:30 IST) + ad-hoc `workflow_dispatch`.
+- **Dumps**: Logical export of cluster roles, public schema DDL, and public data records via Supabase CLI.
+- **Encryption**: OpenSSL AES-256-CBC with PBKDF2 (100,000 iterations).
+- **Storage**: Private Google Drive storage (Temporary early-stage off-site destination).
+- **Retention**: 30-day automated rolling retention.
+- **RPO**: ~24 hours (maximum data at risk in catastrophic event).
+- **RTO**: 1-2 hours (time required to decrypt and restore into an isolated recovery instance).
 
-## 2. Restore Procedure (Runbook)
-If a destructive data event occurs (e.g., accidental deletion of the `User` table or a corrupted migration):
+## 2. Restore Runbook Summary
+If a destructive data event occurs:
 
-1. **Pause Traffic**: Prevent new writes by flipping the Vercel environment variable `NEXT_PUBLIC_MAINTENANCE_MODE` to `true` (if implemented) or pausing the Vercel project.
-2. **Execute Restore**: Use the Supabase Dashboard PITR tool to roll back to the timestamp exactly 1 minute prior to the destructive event.
-3. **Verify Integrity**: Use the Supabase Table Editor to confirm the restored state.
-4. **Resync Prisma**: If the schema was corrupted, locally run `npx prisma migrate deploy` to ensure the current migration state perfectly aligns with the recovered database snapshot.
-5. **Resume Traffic**: Unpause the Vercel project.
+1. **Pause Traffic**: Prevent further writes by pausing the Vercel production deployment or enabling maintenance mode.
+2. **Provision Isolated Recovery Instance**: Spin up an isolated Supabase project or staging instance. **DO NOT RESTORE DIRECTLY OVER PRODUCTION.**
+3. **Execute Restore Script**: Use `scripts/restore-db.sh` with the target recovery database URL and the `BACKUP_ENCRYPTION_KEY`.
+4. **Verify Integrity**: Validate row counts (`User`, `gigs`, `Transaction`, `Notification`), check foreign-key integrity, and confirm RLS policies.
+5. **Resync Migrations**: Run `npx prisma migrate status` against the recovery database.
+6. **Deploy / Traffic Cutover**: Update production `DATABASE_URL` and `DIRECT_URL` in Vercel to point to the validated recovered database and resume traffic.
 
 > [!CAUTION]
-> NEVER execute `npx prisma db push` or `npx prisma migrate reset` against the production database. These commands are fundamentally destructive and will result in data loss.
+> NEVER execute `npx prisma db push` or `npx prisma migrate reset` against the production database. These commands are fundamentally destructive and will result in permanent data loss.
+
