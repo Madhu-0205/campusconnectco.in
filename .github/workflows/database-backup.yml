@@ -69,43 +69,28 @@ jobs:
       - name: Dump Roles, Schema, and Data
         env:
           DB_URL: ${{ secrets.DIRECT_URL || secrets.DATABASE_URL }}
-          DIRECT_URL: ${{ secrets.DIRECT_URL || secrets.DATABASE_URL }}
         run: |
-          # Export libpq connection parameters to ambient environment
-          # to ensure docker run -e PG* invocations inherit remote host parameters
-          eval $(node -e '
-            const u = new URL(process.env.DB_URL);
-            console.log("export PGHOST=" + JSON.stringify(u.hostname));
-            console.log("export PGPORT=" + JSON.stringify(u.port || "5432"));
-            console.log("export PGUSER=" + JSON.stringify(decodeURIComponent(u.username)));
-            console.log("export PGPASSWORD=" + JSON.stringify(decodeURIComponent(u.password)));
-            console.log("export PGDATABASE=" + JSON.stringify(decodeURIComponent(u.pathname.replace(/^\//, "")) || "postgres"));
-          ')
-
           echo "Dumping database roles (cluster-level)..."
-          if command -v pg_dumpall >/dev/null 2>&1 && pg_dumpall --version | grep -qE "17\."; then
-            PG_DUMPALL_CMD="pg_dumpall"
-          else
-            PG_DUMPALL_CMD="docker run --rm -i --network host ghcr.io/supabase/postgres:17.6.1.167 pg_dumpall"
+          if ! supabase db dump --role-only --db-url "$DB_URL" -f "${BACKUP_DIR}/roles.sql"; then
+            echo "::warning::Official supabase CLI role dump failed. Falling back to direct container dump..."
+            docker run --rm -i --network host ghcr.io/supabase/postgres:17.6.1.167 pg_dumpall \
+              --dbname="$DB_URL" \
+              --roles-only \
+              --role="postgres" \
+              --quote-all-identifiers \
+              --no-role-passwords \
+              --no-comments \
+              -w \
+            | sed -E 's/^\\(un)?restrict .*$/-- &/' \
+            | sed -E 's/^CREATE ROLE "(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)"/-- &/' \
+            | sed -E 's/^ALTER ROLE "(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)"/-- &/' \
+            | sed -E 's/ (NOSUPERUSER|NOREPLICATION)//g' \
+            | sed -E 's/^-- (.* SET "(pgaudit.*|pgrst.*|session_replication_role|statement_timeout|track_io_timing)" .*)/\1/' \
+            | sed -E 's/GRANT ".*" TO "(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)"/-- &/' \
+            | sed -E '/^--/d' \
+            | uniq > "${BACKUP_DIR}/roles.sql"
+            echo "RESET ALL;" >> "${BACKUP_DIR}/roles.sql"
           fi
-
-          $PG_DUMPALL_CMD \
-            --dbname="$DB_URL" \
-            --roles-only \
-            --role="postgres" \
-            --quote-all-identifiers \
-            --no-role-passwords \
-            --no-comments \
-            -w \
-          | sed -E 's/^\\(un)?restrict .*$/-- &/' \
-          | sed -E 's/^CREATE ROLE "(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)"/-- &/' \
-          | sed -E 's/^ALTER ROLE "(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)"/-- &/' \
-          | sed -E 's/ (NOSUPERUSER|NOREPLICATION)//g' \
-          | sed -E 's/^-- (.* SET "(pgaudit.*|pgrst.*|session_replication_role|statement_timeout|track_io_timing)" .*)/\1/' \
-          | sed -E 's/GRANT ".*" TO "(anon|authenticated|authenticator|cli_login_.*|dashboard_user|pgbouncer|postgres|service_role|supabase_.*|pgsodium_keyholder|pgsodium_keyiduser|pgsodium_keymaker|pgtle_admin)"/-- &/' \
-          | sed -E '/^--/d' \
-          | uniq > "${BACKUP_DIR}/roles.sql"
-          echo "RESET ALL;" >> "${BACKUP_DIR}/roles.sql"
 
           echo "Dumping public schema (DDL & structures)..."
           supabase db dump -s public --db-url "$DB_URL" -f "${BACKUP_DIR}/schema.sql"
