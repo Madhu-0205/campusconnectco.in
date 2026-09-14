@@ -7,12 +7,12 @@ export const metadata: Metadata = {
  title:"Privacy Policy | CampusConnectCo",
  description:"Learn how CampusConnectCo collects, uses, and protects your personal information. GDPR-aligned privacy practices for students and employers.",
  alternates: {
- canonical:"https://campusconnectco.in/privacy",
+ canonical:"https://www.campusconnectco.in/privacy",
  },
  openGraph: {
  title:"Privacy Policy | CampusConnectCo",
  description:"Learn how CampusConnectCo collects, uses, and protects your personal information.",
- url:"https://campusconnectco.in/privacy",
+ url:"https://www.campusconnectco.in/privacy",
  siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",

@@ -98,7 +98,7 @@ export function LeaderboardClient({ nonce }: { nonce?: string }) {
 "@context":"https://schema.org",
 "@type":"WebPage",
 "name":"Campus Leaderboard | CampusConnectCo",
-"url":"https://campusconnectco.in/leaderboard",
+"url":"https://www.campusconnectco.in/leaderboard",
 "description":"Top-ranked Indian students by verified gig completions and career achievement on CampusConnectCo.",
  }),
  }}

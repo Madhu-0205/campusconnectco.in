@@ -1,25 +1,42 @@
-import { NextRequest, NextResponse } from"next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-import { getSession } from"@/lib/auth-checks";
-import prisma from"@/lib/prisma";
-import { getRazorpay } from"@/lib/razorpay";
+import { requireRole } from "@/lib/auth-checks";
+import { assertPaymentsEnabled } from "@/lib/payments/config";
+import prisma from "@/lib/prisma";
+import { getRazorpay } from "@/lib/razorpay";
 
 export async function POST(req: NextRequest) {
- try {
- const user = await getSession();
- if (!user || (user.role !=="CLIENT" && user.role !=="STARTUP" && user.role !=="FOUNDER")) {
- return NextResponse.json({ error:"Unauthorized" }, { status: 401 });
- }
+  try {
+    const { errorResponse: paymentGateError } = assertPaymentsEnabled();
+    if (paymentGateError) {
+      return paymentGateError;
+    }
 
- const { gigId, workerId } = await req.json();
- if (!gigId || !workerId) {
- return NextResponse.json({ error:"gigId and workerId are required" }, { status: 400 });
- }
+    const { user, errorResponse } = await requireRole(["CLIENT", "STARTUP", "FOUNDER"]);
+    if (errorResponse || !user) {
+      return errorResponse || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
- // Validate Gig
- const gig = await prisma.gig.findUnique({ where: { id: gigId } });
- if (!gig) return NextResponse.json({ error:"Gig not found" }, { status: 404 });
- if (gig.posted_by !== user.id) return NextResponse.json({ error:"Unauthorized. You are not the gig poster." }, { status: 403 });
+    const { gigId, workerId } = await req.json();
+    if (!gigId || !workerId) {
+      return NextResponse.json({ error: "gigId and workerId are required" }, { status: 400 });
+    }
+
+    // Validate Gig
+    const gig = await prisma.gig.findUnique({ where: { id: gigId } });
+    if (!gig) return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+    if (gig.posted_by !== user.id) return NextResponse.json({ error: "Unauthorized. You are not the gig poster." }, { status: 403 });
+    if (gig.status !== "OPEN") {
+      return NextResponse.json({ error: `Gig is not open for payment (status: ${gig.status})` }, { status: 400 });
+    }
+
+    // Prevent duplicate escrow orders if already locked or released
+    const existingEscrow = await prisma.escrow.findFirst({
+      where: { gigId, status: { in: ["LOCKED", "RELEASED"] } }
+    });
+    if (existingEscrow) {
+      return NextResponse.json({ error: "Escrow already exists or completed for this gig" }, { status: 400 });
+    }
 
  // Calculate amount (Budget + 10% Platform Fee)
  const budget = gig.budget;
@@ -80,8 +97,8 @@ export async function POST(req: NextRequest) {
  });
 
  return NextResponse.json({ orderId: order.id, amount: totalAmount, key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID });
- } catch (error: any) {
- console.error("[CREATE_ORDER_ERROR]", error);
- return NextResponse.json({ error: error.message ||"Internal server error" }, { status: 500 });
- }
+  } catch (error: any) {
+    console.error("[CREATE_ORDER_ERROR]", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

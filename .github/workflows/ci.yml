@@ -44,6 +44,12 @@ jobs:
       - name: Run TypeScript type-check
         run: npm run type-check
 
+      - name: Validate Prisma Schema
+        run: npx prisma validate
+
+      - name: Run Automated Test Suite
+        run: npm test
+
       - name: Run Production Build
         run: npm run build
         env:

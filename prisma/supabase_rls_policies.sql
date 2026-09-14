@@ -63,12 +63,19 @@ ALTER TABLE "PlatformSetting" ENABLE ROW LEVEL SECURITY;
 -- =========================================================================
 
 -- -------------------------------------------------------------------------
--- USER TABLE POLICIES
+-- USER TABLE POLICIES (Least Privilege & Data Privacy Hardening)
 -- -------------------------------------------------------------------------
--- Users can view any other user's public profile (required for network browsing)
+-- Authenticated users can select their own full profile record.
+-- Direct table queries from Supabase client are scoped to the user's own ID.
+-- Public profile browsing is handled via API routes or a public view without banking fields.
 CREATE POLICY user_select_policy ON "User"
     FOR SELECT
-    USING (true);
+    TO authenticated
+    USING (auth.uid() = id);
+
+-- Column-level security: Ensure sensitive banking credentials cannot be selected by anon/authenticated roles directly
+REVOKE SELECT ("accNumber", "ifscCode", "bankName", "upiId", "resumeData") ON "User" FROM anon, authenticated;
+GRANT SELECT ("id", "name", "full_name", "role", "bio", "skills", "portfolio", "linkedin", "github", "instagram", "image", "avatar_url", "branch", "college", "year", "username", "city", "state", "country") ON "User" TO authenticated;
 
 -- Only the user themselves can insert, update, or delete their profile record
 CREATE POLICY user_modify_policy ON "User"

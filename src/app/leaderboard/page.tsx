@@ -11,7 +11,7 @@ export const metadata: Metadata = {
  description:"India's most ambitious students, ranked by verified work and real earnings.",
  images: [{ url:"/og-leaderboard.jpg" }],
  },
- alternates: { canonical:"https://campusconnectco.in/leaderboard" },
+ alternates: { canonical:"https://www.campusconnectco.in/leaderboard" },
 }
 
 import { headers } from"next/headers"

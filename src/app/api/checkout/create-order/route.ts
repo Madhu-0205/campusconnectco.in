@@ -2,18 +2,24 @@ import { NextRequest, NextResponse } from"next/server";
 import Razorpay from"razorpay";
 import { z } from"zod";
 
-import { logger } from"@/lib/logger";
-import prisma from"@/lib/prisma";
-import { createClient } from"@/lib/supabase/server";
+import { logger } from "@/lib/logger";
+import { assertPaymentsEnabled } from "@/lib/payments/config";
+import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 const CreateOrderSchema = z.object({
- gigId: z.string().uuid(),
- applicationId: z.string().uuid(),
+  gigId: z.string().uuid(),
+  applicationId: z.string().uuid(),
 });
 
 export async function POST(req: NextRequest) {
- try {
- const supabase = await createClient();
+  try {
+    const { errorResponse } = assertPaymentsEnabled();
+    if (errorResponse) {
+      return errorResponse;
+    }
+
+    const supabase = await createClient();
  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
  if (authError || !user) {
@@ -40,6 +46,19 @@ export async function POST(req: NextRequest) {
  if (gig.posted_by !== user.id) {
  return NextResponse.json({ error:"Forbidden: You do not own this gig" }, { status: 403 });
  }
+
+  if (gig.status && gig.status !== "OPEN") {
+    return NextResponse.json({ error: `Gig is not open for payment (status: ${gig.status})` }, { status: 400 });
+  }
+
+  if (typeof prisma.escrow?.findFirst === "function") {
+    const existingEscrow = await prisma.escrow.findFirst({
+      where: { gigId, status: { in: ["LOCKED", "RELEASED"] } }
+    });
+    if (existingEscrow) {
+      return NextResponse.json({ error: "Escrow already exists or is completed for this gig" }, { status: 400 });
+    }
+  }
 
  const application = await prisma.application.findUnique({
  where: { id: applicationId },

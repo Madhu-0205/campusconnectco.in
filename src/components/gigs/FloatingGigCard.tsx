@@ -2,9 +2,9 @@
 
 import { motion, AnimatePresence } from"framer-motion";
 import {
- X, Star, MapPin, Clock, MessageSquare, Heart, CheckCircle2,
- Share2, User, ChevronRight, ShieldCheck, Zap
-} from"lucide-react";
+  X, Star, MapPin, Clock, MessageSquare, Heart, CheckCircle2,
+  Share2, User, ChevronRight, ShieldCheck
+} from "lucide-react";
 import Image from"next/image";
 import { useRouter } from"next/navigation";
 import { useState, useEffect } from"react";
@@ -107,13 +107,6 @@ export function FloatingGigCard({ isOpen, onClose, gig }: FloatingGigCardProps) 
  const handleContact = (e: React.MouseEvent) => {
  e.stopPropagation();
  router.push(`/messages?userId=${gig.seller.id}`);
- onClose();
- };
-
- const handleOrder = (e: React.MouseEvent) => {
- e.stopPropagation();
- // Route to checkout or escrow creation
- router.push(`/checkout?gigId=${gig.id}&package=${selectedPackage}`);
  onClose();
  };
 
@@ -318,11 +311,15 @@ export function FloatingGigCard({ isOpen, onClose, gig }: FloatingGigCardProps) 
  {/* Action Buttons */}
  <motion.div layout="position" className="flex flex-col gap-3 mt-6">
  <Button
- onClick={handleOrder}
- className="w-full h-14 rounded-2xl bg-foreground text-background hover:opacity-90 font-black text-lg shadow-md shadow-sm active:scale-95 transition-all"
+ disabled={true}
+ aria-disabled="true"
+ className="w-full h-14 rounded-2xl bg-muted text-muted-foreground font-black text-base border border-border/80 cursor-not-allowed opacity-90 transition-none shadow-none"
  >
- <Zap size={18} className="mr-2" /> Book Now (₹{currentPackage.price.toLocaleString()})
+ <Clock size={18} className="mr-2 text-amber-500" /> Bookings Coming Soon
  </Button>
+ <p className="text-center text-xxs text-muted-foreground -mt-1">
+ Online payments &amp; booking will be available on CampusConnectCo soon.
+ </p>
 
  <div className="flex gap-3">
  <Button

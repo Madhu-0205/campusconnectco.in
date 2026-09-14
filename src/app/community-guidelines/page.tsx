@@ -6,12 +6,12 @@ export const metadata: Metadata = {
  title:"Community Guidelines | CampusConnectCo",
  description:"Read the CampusConnectCo Community Guidelines. Learn how we maintain a safe, respectful, and scam-free environment for students and startups.",
  alternates: {
- canonical:"https://campusconnectco.in/community-guidelines",
+ canonical:"https://www.campusconnectco.in/community-guidelines",
  },
  openGraph: {
  title:"Community Guidelines | CampusConnectCo",
  description:"Read the CampusConnectCo Community Guidelines.",
- url:"https://campusconnectco.in/community-guidelines",
+ url:"https://www.campusconnectco.in/community-guidelines",
  siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",

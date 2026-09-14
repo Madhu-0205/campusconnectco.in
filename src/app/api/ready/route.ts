@@ -44,9 +44,9 @@ export async function GET() {
  console.error("[Readiness Check Failed]:", error);
  return NextResponse.json(
  {
- status:"not_ready",
+ status: "not_ready",
  timestamp: new Date().toISOString(),
- error: error instanceof Error ? error.message : String(error)
+ error: "Service dependency check failed"
  },
  { status: 503 }
  );

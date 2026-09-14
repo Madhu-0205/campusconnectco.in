@@ -85,7 +85,7 @@ export async function updateSession(request: NextRequest) {
     path === '/community-guidelines' ||
     path === '/cookies' ||
     path === '/companies' ||
-    path === '/opportunities' ||
+    path.startsWith('/opportunities') ||
     path === '/editorial' ||
     path === '/design-system' ||
     path === '/v2-catalog' ||
@@ -99,6 +99,7 @@ export async function updateSession(request: NextRequest) {
     path === '/api/live' ||
     path === '/api/stats' ||
     path.startsWith('/api/opportunities') ||
+    path.startsWith('/api/search') ||
     path.startsWith('/api/skills') ||
     path.startsWith('/api/colleges') ||
     path.startsWith('/api/recommendations') ||
@@ -110,6 +111,7 @@ export async function updateSession(request: NextRequest) {
     path.startsWith('/api/analytics/track') ||
     path.startsWith('/api/growth/referral/lookup') ||
     path.startsWith('/api/public/gigs/trending') ||
+    path === '/api/report' ||
     path.startsWith('/skills') ||
     path.startsWith('/skill-selector') ||
     path.startsWith('/browse-gigs') ||

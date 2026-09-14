@@ -98,158 +98,77 @@ vi.mock("../lib/supabase/server", () => {
 const globalFetch = global.fetch;
 
 describe("Checkout and Payout Cron Integrations", () => {
- beforeEach(() => {
- vi.clearAllMocks();
- global.fetch = globalFetch;
- process.env.RAZORPAY_KEY_ID ="rzp_test_placeholder";
- process.env.RAZORPAY_KEY_SECRET ="placeholder_secret";
- });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    global.fetch = globalFetch;
+  });
 
- describe("Razorpay Webhook Endpoint", () => {
- it("should process mock/local webhook payments without signature validation in test mode", async () => {
- const mockTxRecord = {
- id:"tx-abc-123",
- gigId:"gig-uuid",
- buyerId:"buyer-user-id",
- sellerId:"seller-user-id",
- amount: 2000,
- platformFee: 200,
- sellerPayout: 1800,
- status:"PENDING",
- };
- vi.mocked(prisma.transaction.findFirst).mockResolvedValue(mockTxRecord as any);
+  describe("Razorpay Webhook Endpoint (Payment Lock Mode)", () => {
+    it("should return HTTP 503 PAYMENTS_COMING_SOON while payments are disabled", async () => {
+      const payload = {
+        event: "order.paid",
+        orderId: "order_mock_12345",
+      };
 
- const payload = {
- event:"order.paid",
- orderId:"order_mock_12345",
- payload: {
- payment: {
- entity: {
- id:"pay_xyz",
- amount: 200000,
- order_id:"order_mock_12345",
- },
- },
- },
- };
+      const req = new NextRequest("http://localhost/api/checkout/webhook", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
- const req = new NextRequest("http://localhost/api/checkout/webhook", {
- method:"POST",
- headers: {
-"content-type":"application/json",
- },
- body: JSON.stringify(payload),
- });
+      const response = await checkoutWebhookHandler(req);
+      expect(response.status).toBe(503);
 
- const response = await checkoutWebhookHandler(req);
- expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data.code).toBe("PAYMENTS_COMING_SOON");
+      expect(data.error).toBe("Payments are coming soon.");
 
- const data = await response.json();
- expect(data.success).toBe(true);
+      // Ensure no transaction or escrow was modified
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+  });
 
- expect(prisma.$transaction).toHaveBeenCalled();
- });
- });
+  describe("Create Checkout Order Endpoint (Payment Lock Mode)", () => {
+    it("should return HTTP 503 PAYMENTS_COMING_SOON and not create any database orders", async () => {
+      const req = new NextRequest("http://localhost/api/checkout/create-order", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          gigId: "f8f53a47-ef99-4475-b6d8-9cc0ccae491d",
+          applicationId: "ca252e3d-0d67-4e78-bc57-0a35db4db59a",
+        }),
+      });
 
- describe("Create Checkout Order Endpoint", () => {
- it("should generate simulated mock Razorpay order details for development sandbox", async () => {
- const mockGig = {
- id:"f8f53a47-ef99-4475-b6d8-9cc0ccae491d",
- title:"Test Gig",
- posted_by:"buyer-user-id",
- budget: 5000,
- };
- const mockApp = {
- id:"ca252e3d-0d67-4e78-bc57-0a35db4db59a",
- applicantId:"seller-user-id",
- gigId:"f8f53a47-ef99-4475-b6d8-9cc0ccae491d",
- };
+      const response = await createOrderHandler(req);
+      expect(response.status).toBe(503);
 
- vi.mocked(prisma.gig.findUnique).mockResolvedValue(mockGig as any);
- vi.mocked(prisma.application.findUnique).mockResolvedValue(mockApp as any);
+      const data = await response.json();
+      expect(data.code).toBe("PAYMENTS_COMING_SOON");
+      expect(data.error).toBe("Payments are coming soon.");
 
- const req = new NextRequest("http://localhost/api/checkout/create-order", {
- method:"POST",
- headers: {"content-type":"application/json" },
- body: JSON.stringify({
- gigId: mockGig.id,
- applicationId: mockApp.id,
- }),
- });
+      expect(prisma.transaction.create).not.toHaveBeenCalled();
+    });
+  });
 
- const response = await createOrderHandler(req);
- expect(response.status).toBe(200);
+  describe("Auto-Release Payments Cron Endpoint (Payment Lock Mode)", () => {
+    it("should return HTTP 503 PAYMENTS_COMING_SOON and prevent any external provider transfers", async () => {
+      const req = new NextRequest("http://localhost/api/cron/release-payments", {
+        method: "GET",
+        headers: {
+          authorization: `Bearer super_cron_secret_token`,
+        },
+      });
 
- const data = await response.json();
- expect(data.mock).toBe(true);
- expect(data.amount).toBe(500000);
- expect(data.keyId).toBe("rzp_test_placeholder");
+      const response = await releasePaymentsCronHandler(req);
+      expect(response.status).toBe(503);
 
- expect(prisma.transaction.create).toHaveBeenCalled();
- });
- });
+      const data = await response.json();
+      expect(data.code).toBe("PAYMENTS_COMING_SOON");
+      expect(data.error).toBe("Payments are coming soon.");
 
- describe("Auto-Release Payments Cron Endpoint", () => {
- it("should process bank payout release logic for eligible transactions", async () => {
- process.env.CRON_SECRET ="super_cron_secret_token";
-
- const mockEligibleTx = [
- {
- id:"tx-eligible-01",
- buyerId:"buyer-1",
- sellerId:"seller-2",
- amount: 1000,
- platformFee: 100,
- sellerPayout: 900,
- status:"COMPLETED",
- releaseAt: new Date(Date.now() - 3600),
- },
- ];
- vi.mocked(prisma.transaction.findMany).mockResolvedValue(mockEligibleTx as any);
-
- const req = new NextRequest("http://localhost/api/cron/release-payments", {
- method:"GET",
- headers: {
- authorization: `Bearer super_cron_secret_token`,
- },
- });
-
- // Mock database calls inside transaction block to prevent `tx.transaction.findUnique` crashes
- const mockTxRecord = {
- id:"tx-eligible-01",
- status:"COMPLETED",
- };
- const mockSellerDetails = {
- upiId:"seller2@upi",
- accNumber: null,
- ifscCode: null,
- name:"Test Seller",
- email:"seller@test.com",
- };
-
- vi.mocked(prisma.$transaction).mockImplementation(async (cb: any) => {
- const mockTx = {
- transaction: {
- findUnique: vi.fn().mockResolvedValue(mockTxRecord),
- update: vi.fn().mockResolvedValue({}),
- },
- user: {
- findUnique: vi.fn().mockResolvedValue(mockSellerDetails),
- },
- transactionAudit: {
- create: vi.fn().mockResolvedValue({}),
- },
- };
- await cb(mockTx as any);
- return Promise.resolve();
- });
-
- const response = await releasePaymentsCronHandler(req);
- expect(response.status).toBe(200);
-
- const data = await response.json();
- expect(data.success).toBe(true);
- expect(data.processed).toBe(1);
- });
- });
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+  });
 });

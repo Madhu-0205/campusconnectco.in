@@ -1,148 +1,98 @@
 "use client";
 
-import { X, ShieldCheck } from"lucide-react";
-import Script from"next/script";
-import { useState } from"react";
+import { X, Clock, ShieldCheck } from "lucide-react";
 
-import { Button } from"@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 interface PaymentModalProps {
- isOpen: boolean;
- onClose: () => void;
- gigId: string;
- workerId: string;
- gigTitle: string;
- budget: number;
- onSuccess: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  gigId: string;
+  workerId: string;
+  gigTitle: string;
+  budget: number;
+  onSuccess: () => void;
 }
 
-export function PaymentModal({ isOpen, onClose, gigId, workerId, gigTitle, budget, onSuccess }: PaymentModalProps) {
- const [loading, setLoading] = useState(false);
+export function PaymentModal({ isOpen, onClose, gigTitle, budget }: PaymentModalProps) {
+  if (!isOpen) return null;
 
- const platformFee = budget * 0.10;
- const totalAmount = budget + platformFee;
+  const platformFee = budget * 0.10;
+  const totalAmount = budget + platformFee;
 
- const handlePayment = async () => {
- setLoading(true);
- try {
- // 1. Create Order via API
- const res = await fetch("/api/payments/escrow/create-order", {
- method:"POST",
- headers: {"Content-Type":"application/json" },
- body: JSON.stringify({ gigId, workerId })
- });
- const data = await res.json();
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in">
+      <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-white/10 animate-in slide-in-from-bottom-4 relative">
+        {/* Header */}
+        <div className="p-6 pb-0 flex items-center justify-between">
+          <h2 className="text-xl font-black flex items-center gap-2">
+            <ShieldCheck className="text-primary h-6 w-6" />
+            Milestone Settlement
+          </h2>
+          <button 
+            onClick={onClose} 
+            className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"
+            aria-label="Close modal"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
- if (!res.ok) throw new Error(data.error ||"Failed to create order");
+        {/* Coming Soon Notice */}
+        <div className="mx-6 mt-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3">
+          <Clock size={18} className="text-amber-400 shrink-0 mt-0.5" />
+          <div className="text-xs text-amber-200/90 leading-relaxed">
+            <p className="font-bold text-amber-300 mb-0.5">Payments Coming Soon</p>
+            Secure platform escrow funding and automated settlements will be available on CampusConnectCo in a future release. Deliverable tracking remains active.
+          </div>
+        </div>
 
- // 2. Open Razorpay Checkout
- const options = {
- key: data.key,
- amount: Math.round(totalAmount * 100), // Expected in paise
- currency:"INR",
- name:"CampusConnectCo",
- description: `Escrow Lock: ${gigTitle}`,
- image:"/logo-v2.jpg",
- order_id: data.orderId,
- handler: async function (response: any) {
- try {
- // 3. Verify Payment
- const verifyRes = await fetch("/api/payments/escrow/verify", {
- method:"POST",
- headers: {"Content-Type":"application/json" },
- body: JSON.stringify({
- razorpay_order_id: response.razorpay_order_id,
- razorpay_payment_id: response.razorpay_payment_id,
- razorpay_signature: response.razorpay_signature,
- gigId
- })
- });
+        {/* Body */}
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Assignment for: <strong className="text-foreground">{gigTitle}</strong>
+          </p>
 
- if (verifyRes.ok) {
- onSuccess();
- onClose();
- } else {
- alert("Payment verification failed. Please contact support.");
- }
- } catch (error) {
- console.error("Verification error", error);
- alert("An error occurred during verification.");
- }
- },
- theme: { color:"#1FA971" },
- };
+          <div className="bg-background rounded-2xl p-5 space-y-3 border border-white/5">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Gig Budget</span>
+              <span className="font-bold">₹{budget.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Platform Fee (10% est.)</span>
+              <span className="font-bold text-muted-foreground">+ ₹{platformFee.toLocaleString()}</span>
+            </div>
+            <div className="pt-3 border-t border-white/5 flex justify-between items-center">
+              <span className="font-black text-slate-300">Total Valuation</span>
+              <span className="text-xl font-black text-primary">₹{totalAmount.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
 
- const rzp = new (window as any).Razorpay(options);
- rzp.on("payment.failed", function (response: any) {
- console.error("Payment failed", response.error);
- alert(`Payment failed: ${response.error.description}`);
- });
- rzp.open();
- } catch (error: any) {
- console.error("Payment error", error);
- alert(`Payment initialization failed: ${error.message}`);
- } finally {
- setLoading(false);
- }
- };
+        {/* Footer */}
+        <div className="p-6 pt-0 space-y-3">
+          <Button 
+            disabled={true}
+            aria-disabled="true"
+            className="w-full rounded-2xl h-14 text-sm font-black uppercase tracking-widest bg-slate-800 text-slate-400 border border-slate-700/60 cursor-not-allowed opacity-90 shadow-none hover:bg-slate-800"
+          >
+            <Clock size={16} className="mr-2 text-amber-400" />
+            Payments Coming Soon
+          </Button>
 
- if (!isOpen) return null;
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="w-full rounded-2xl h-11 text-xs font-bold border-white/10 hover:bg-white/5"
+          >
+            Close
+          </Button>
 
- return (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in">
- <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
- 
- <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-white/10 animate-in slide-in-from-bottom-4 relative">
- {/* Header */}
- <div className="p-6 pb-0 flex items-center justify-between">
- <h2 className="text-xl font-black flex items-center gap-2">
- <ShieldCheck className="text-primary h-6 w-6" />
- Secure Escrow Lock
- </h2>
- <button onClick={onClose} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
- <X size={18} />
- </button>
- </div>
-
- {/* Body */}
- <div className="p-6 space-y-6">
- <p className="text-sm text-muted-foreground leading-relaxed">
- To formally assign this gig and guarantee payment to the student upon successful completion, please lock the total budget into CampusConnectCo Escrow.
- </p>
-
- <div className="bg-background rounded-2xl p-5 space-y-3 border border-white/5">
- <div className="flex justify-between text-sm">
- <span className="text-muted-foreground">Gig Budget</span>
- <span className="font-bold">₹{budget.toLocaleString()}</span>
- </div>
- <div className="flex justify-between text-sm">
- <span className="text-muted-foreground">Platform Fee (10%)</span>
- <span className="font-bold text-orange-400">+ ₹{platformFee.toLocaleString()}</span>
- </div>
- <div className="pt-3 border-t border-white/5 flex justify-between items-center">
- <span className="font-black text-slate-300">Total to Lock</span>
- <span className="text-xl font-black text-primary">₹{totalAmount.toLocaleString()}</span>
- </div>
- </div>
- </div>
-
- {/* Footer */}
- <div className="p-6 pt-0">
- <Button 
- onClick={handlePayment} 
- disabled={loading}
- className="w-full rounded-2xl h-14 text-base font-black uppercase tracking-widest shadow-xl"
- style={{
- background:"linear-gradient(135deg, var(--color-primary), #FF4500)",
- }}
- >
- {loading ?"Processing..." :"Proceed to Payment"}
- </Button>
- <p className="text-center text-xs text-muted-foreground mt-4 flex items-center justify-center gap-1">
- <ShieldCheck size={12} /> Powered securely by Razorpay
- </p>
- </div>
- </div>
- </div>
- );
+          <p className="text-center text-xxs text-muted-foreground">
+            Direct transactions are currently gated for platform launch.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }

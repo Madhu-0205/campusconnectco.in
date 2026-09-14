@@ -82,14 +82,76 @@ export function isValidLifecycleTransition(
 }
 
 /**
+ * Determines whether a deadline timestamp has passed.
+ */
+export function isOpportunityExpired(deadline?: Date | string | null, now: Date = new Date()): boolean {
+  if (!deadline) return false;
+  const d = typeof deadline === "string" ? new Date(deadline) : deadline;
+  return !isNaN(d.getTime()) && d.getTime() < now.getTime();
+}
+
+/**
+ * Authoritative definition of an active opportunity:
+ * 1. Not deleted: deletedAt === null
+ * 2. Active status: "OPEN" or "active"
+ * 3. Deadline valid: deadline is null OR deadline >= now
+ */
+export function isOpportunityActive(
+  statusOrObj:
+    | string
+    | null
+    | undefined
+    | {
+        status?: string | null;
+        deadline?: Date | string | null;
+        deletedAt?: Date | string | null;
+      },
+  deadline?: Date | string | null,
+  deletedAt?: Date | string | null,
+  now: Date = new Date()
+): boolean {
+  if (statusOrObj && typeof statusOrObj === "object" && !(statusOrObj instanceof String)) {
+    const obj = statusOrObj as {
+      status?: string | null;
+      deadline?: Date | string | null;
+      deletedAt?: Date | string | null;
+    };
+    const effectiveNow = deadline instanceof Date ? deadline : now;
+    return isOpportunityActive(obj.status, obj.deadline, obj.deletedAt, effectiveNow);
+  }
+
+  const status = statusOrObj as string | null | undefined;
+  if (!status || deletedAt) return false;
+  const s = status.toUpperCase();
+  const isActiveStatus = s === "OPEN" || s === "ACTIVE";
+  if (!isActiveStatus) return false;
+  if (isOpportunityExpired(deadline, now)) return false;
+  return true;
+}
+
+/**
  * Returns whether an opportunity should be discoverable in public feeds,
- * search, nearby geocoding queries, and MapLibre markers.
+ * search, recommendations, sitemap, nearby queries, and MapLibre markers.
  */
 export function isPubliclyDiscoverable(
   status: string | null | undefined,
-  deletedAt?: Date | string | null
+  deletedAt?: Date | string | null,
+  deadline?: Date | string | null,
+  now: Date = new Date()
 ): boolean {
-  if (!status || deletedAt) return false;
-  const s = status.toUpperCase();
-  return s === "OPEN" || s === "ACTIVE";
+  return isOpportunityActive(status, deadline, deletedAt, now);
+}
+
+/**
+ * Generates authoritative Prisma WHERE filter conditions for active opportunities.
+ * Guaranteed consistent across discovery, recommendations, search suggestions, and sitemap.
+ */
+export function getActiveOpportunityPrismaFilter(now: Date = new Date()) {
+  return {
+    deletedAt: null,
+    OR: [
+      { deadline: null },
+      { deadline: { gte: now } }
+    ]
+  };
 }

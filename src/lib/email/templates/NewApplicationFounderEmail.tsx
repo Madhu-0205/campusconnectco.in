@@ -18,7 +18,7 @@ interface NewApplicationFounderEmailProps {
  applicationId: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
 
 export const NewApplicationFounderEmail = ({ 
  founderName,

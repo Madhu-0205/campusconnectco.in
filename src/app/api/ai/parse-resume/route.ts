@@ -29,10 +29,29 @@ export async function POST(req: Request) {
  return NextResponse.json({ error: 'fileUrl is required' }, { status: 400 });
  }
 
+ let resolvedUrl = fileUrl;
+ if (resolvedUrl.startsWith('/api/resumes/')) {
+ const parts = resolvedUrl.split('/').filter(Boolean);
+ if (parts.length === 4 && parts[0] === 'api' && parts[1] === 'resumes') {
+ const targetUserId = parts[2];
+ const fileName = parts[3];
+ if (targetUserId !== user.id) {
+ return NextResponse.json({ error: "Unauthorized: Cannot access another user's resume" }, { status: 403 });
+ }
+ const { createAdminClient } = await import('@/lib/supabase/admin');
+ const adminClient = createAdminClient();
+ const { data, error } = await adminClient.storage.from('resumes').createSignedUrl(`${targetUserId}/${fileName}`, 120);
+ if (error || !data?.signedUrl) {
+ return NextResponse.json({ error: 'Failed to access uploaded resume storage' }, { status: 500 });
+ }
+ resolvedUrl = data.signedUrl;
+ }
+ }
+
  // Process synchronously
  let resumeData;
  try {
- resumeData = await parseResume(fileUrl);
+ resumeData = await parseResume(resolvedUrl);
  } catch (err: any) {
  console.error("[parseResume Error]:", err);
  return NextResponse.json({ error: err.message || 'Failed to parse resume' }, { status: 422 });
@@ -70,6 +89,6 @@ export async function POST(req: Request) {
  return NextResponse.json({ status: 'completed', result: resumeData, message: 'Resume processed successfully' });
  } catch (e: any) {
  console.error("[parse-resume API Route Error]:", e);
- return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
+ return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
  }
 }

@@ -264,6 +264,100 @@ export function formatDistance(
   return `${prefix}${km} km away`
 }
 
+export type DistanceBand = '0-5km' | '5-10km' | '10-25km' | '25-50km' | '50-100km' | '100+km'
+
+/**
+ * Categorizes distance in meters into human-meaningful distance bands.
+ */
+export function getDistanceBand(distanceMeters?: number | null): DistanceBand | null {
+  if (typeof distanceMeters !== 'number' || !Number.isFinite(distanceMeters) || distanceMeters < 0) {
+    return null
+  }
+  const km = distanceMeters / 1000
+  if (km <= 5) return '0-5km'
+  if (km <= 10) return '5-10km'
+  if (km <= 25) return '10-25km'
+  if (km <= 50) return '25-50km'
+  if (km <= 100) return '50-100km'
+  return '100+km'
+}
+
+export interface LocationContextResult {
+  badge: string
+  distanceBand?: DistanceBand | null
+  isRemote: boolean
+  isApproximate: boolean
+}
+
+/**
+ * Truthfully resolves a location badge respecting privacy, accuracy, and college context.
+ * Never claims an opportunity is 'near you' if user coordinates are unavailable or fallback.
+ */
+export function resolveLocationContext(params: {
+  distanceMeters?: number | null
+  isApproximateDistance?: boolean
+  workMode?: string | null
+  city?: string | null
+  isNearCollege?: boolean
+  collegeName?: string | null
+}): LocationContextResult {
+  const { distanceMeters, isApproximateDistance = false, workMode = 'remote', city, isNearCollege = false, collegeName } = params
+  const isRemote = (workMode || '').toLowerCase().includes('remote')
+
+  if (isRemote) {
+    return {
+      badge: 'Remote — No commute required',
+      isRemote: true,
+      isApproximate: false
+    }
+  }
+
+  if (typeof distanceMeters === 'number' && Number.isFinite(distanceMeters)) {
+    const band = getDistanceBand(distanceMeters)
+    if (isNearCollege) {
+      return {
+        badge: collegeName ? `Near ${collegeName}` : 'Near your college',
+        distanceBand: band,
+        isRemote: false,
+        isApproximate: isApproximateDistance
+      }
+    }
+
+    if (isApproximateDistance) {
+      const km = (distanceMeters / 1000).toFixed(1)
+      return {
+        badge: `Approx. ${km} km away${city ? ` (${city})` : ''}`,
+        distanceBand: band,
+        isRemote: false,
+        isApproximate: true
+      }
+    }
+
+    const km = (distanceMeters / 1000).toFixed(1)
+    return {
+      badge: `${km} km away${city ? ` (${city})` : ''}`,
+      distanceBand: band,
+      isRemote: false,
+      isApproximate: false
+    }
+  }
+
+  if (city) {
+    const modeLabel = (workMode || '').toLowerCase().includes('hybrid') ? 'Hybrid' : 'On-site'
+    return {
+      badge: `${modeLabel} — ${city}`,
+      isRemote: false,
+      isApproximate: true
+    }
+  }
+
+  return {
+    badge: workMode || 'Location unspecified',
+    isRemote: false,
+    isApproximate: true
+  }
+}
+
 /**
  * Determines whether a distance is within the specified radius in kilometers.
  * Comparison is mathematically strict and inclusive: distanceMeters <= radiusKm * 1000.

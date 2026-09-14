@@ -15,7 +15,7 @@ export const metadata: Metadata = {
  description:"India's safest student freelancing platform. See how we protect every transaction.",
  images: [{ url:"/og-trust.jpg" }],
  },
- alternates: { canonical:"https://campusconnectco.in/trust" },
+ alternates: { canonical:"https://www.campusconnectco.in/trust" },
 }
 
 const TRUST_PILLARS = [
@@ -32,19 +32,19 @@ const TRUST_PILLARS = [
 "College registrar API integration (for select institutes)",
  ],
  },
- {
- icon: CreditCard,
- title:"Milestone Escrow",
- subtitle:"Payment held securely until work is approved",
- color:"text-[#10B981]",
- bg:"bg-[#10B981]/10 border-[#10B981]/20",
- points: [
-"Employer funds held in escrow before work starts",
-"Released only on student delivery + employer approval",
-"Automatic release after 7 days if no disputes",
-"Razorpay-powered payment infrastructure",
- ],
- },
+  {
+    icon: CreditCard,
+    title: "Milestone Escrow (Coming Soon)",
+    subtitle: "Secure payments & milestone protection in development",
+    color: "text-[#10B981]",
+    bg: "bg-[#10B981]/10 border-[#10B981]/20",
+    points: [
+      "Platform-secured payment infrastructure (Coming Soon)",
+      "Deliverable sign-off and milestone tracking active today",
+      "Dedicated dispute resolution and verification",
+      "Escrow release upon student delivery + client approval (Future Release)",
+    ],
+  },
  {
  icon: Eye,
  title:"Work Quality Verification",

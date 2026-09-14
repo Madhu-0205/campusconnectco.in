@@ -4,10 +4,12 @@ import { protectApi } from"@/lib/auth-checks";
 import prisma from"@/lib/prisma";
 
 export async function GET() {
- const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
- if (errorResponse) return errorResponse;
+ const auth = await protectApi(["FOUNDER", "ADMIN"]);
+ if (auth.errorResponse) return auth.errorResponse;
 
  try {
+ const escrowWhere = auth.role === "ADMIN" ? {} : { clientId: auth.user!.id };
+
  const [
  escrows,
  totalLocked,
@@ -18,6 +20,7 @@ export async function GET() {
  refundedAmount,
  ] = await Promise.all([
  prisma.escrow.findMany({ take: 50,
+ where: escrowWhere,
  include: {
  gig: { select: { title: true } },
  client: { select: { name: true, email: true } },
@@ -25,12 +28,12 @@ export async function GET() {
  },
  orderBy: { createdAt:"desc" },
  }),
- prisma.escrow.count({ where: { status:"LOCKED" } }),
- prisma.escrow.count({ where: { status:"RELEASED" } }),
- prisma.escrow.count({ where: { status:"REFUNDED" } }),
- prisma.escrow.aggregate({ where: { status:"LOCKED" }, _sum: { amount: true } }),
- prisma.escrow.aggregate({ where: { status:"RELEASED" }, _sum: { payout: true } }),
- prisma.escrow.aggregate({ where: { status:"REFUNDED" }, _sum: { amount: true } }),
+ prisma.escrow.count({ where: { status:"LOCKED", ...escrowWhere } }),
+ prisma.escrow.count({ where: { status:"RELEASED", ...escrowWhere } }),
+ prisma.escrow.count({ where: { status:"REFUNDED", ...escrowWhere } }),
+ prisma.escrow.aggregate({ where: { status:"LOCKED", ...escrowWhere }, _sum: { amount: true } }),
+ prisma.escrow.aggregate({ where: { status:"RELEASED", ...escrowWhere }, _sum: { payout: true } }),
+ prisma.escrow.aggregate({ where: { status:"REFUNDED", ...escrowWhere }, _sum: { amount: true } }),
  ]);
 
  return NextResponse.json({

@@ -6,12 +6,12 @@ export const metadata: Metadata = {
  title:"Terms & Conditions | CampusConnectCo",
  description:"Read the Terms and Conditions for using CampusConnectCo. Learn about user responsibilities, student conduct, and content ownership.",
  alternates: {
- canonical:"https://campusconnectco.in/terms",
+ canonical:"https://www.campusconnectco.in/terms",
  },
  openGraph: {
  title:"Terms & Conditions | CampusConnectCo",
  description:"Read the Terms and Conditions for using CampusConnectCo.",
- url:"https://campusconnectco.in/terms",
+ url:"https://www.campusconnectco.in/terms",
  siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",

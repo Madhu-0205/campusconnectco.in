@@ -9,16 +9,19 @@ import {
   X,
   Crosshair,
   ArrowUpDown,
-  RotateCw
+  RotateCw,
+  SlidersHorizontal,
+  Sparkles
 } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import React, { useState, useEffect, useCallback, useTransition, useRef } from "react"
+import React, { useState, useEffect, useCallback, useTransition, useRef, useMemo } from "react"
 
-import { FilterBar, FilterOption } from "@/components/v2/FilterBar"
+import { FilterBar, FilterOption, SearchSuggestionItem } from "@/components/v2/FilterBar"
 import { useMapContext } from "@/components/v2/maps/MapContext"
 import { Opportunity, OpportunityFeed } from "@/components/v2/OpportunityFeed"
 import { useDeviceLocation, DeviceLocation } from "@/hooks/useDeviceLocation"
 import { getAccuracyDescription } from "@/lib/geo/distance"
+import { parseSearchIntent } from "@/lib/search/intent"
 
 interface OpportunityDiscoveryClientProps {
   gigs: Opportunity[]
@@ -61,10 +64,53 @@ export function OpportunityDiscoveryClient({
 
   // Local state for filters
   const [localSearch, setLocalSearch] = useState(searchParams.get("q") || "")
+  const [localLocation, setLocalLocation] = useState(searchParams.get("location") || "")
   const [localCategory, setLocalCategory] = useState(searchParams.get("category") || "all")
   const [localType, setLocalType] = useState(searchParams.get("type") || "all")
   const [localWorkMode, setLocalWorkMode] = useState<"all" | "on-site" | "remote" | "hybrid">((searchParams.get("workMode") as any) || "all")
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false)
   
+  // Search suggestions & Intent state
+  const [suggestions, setSuggestions] = useState<SearchSuggestionItem[]>([])
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false)
+
+  // Fetch real-entity search suggestions
+  useEffect(() => {
+    if (!localSearch || localSearch.trim().length < 2) {
+      setSuggestions([])
+      return
+    }
+    const timer = setTimeout(async () => {
+      setIsLoadingSuggestions(true)
+      try {
+        const res = await fetch(`/api/search/suggestions?q=${encodeURIComponent(localSearch.trim())}`)
+        if (res.ok) {
+          const data = await res.json()
+          setSuggestions(data.suggestions || [])
+        }
+      } catch {
+        // Ignore network errors
+      } finally {
+        setIsLoadingSuggestions(false)
+      }
+    }, 200)
+
+    return () => clearTimeout(timer)
+  }, [localSearch])
+
+  // Parse natural search intent from user input
+  const parsedIntent = useMemo(() => {
+    if (!localSearch || localSearch.trim().length < 3) return null
+    const intent = parseSearchIntent(localSearch)
+    const hasFilters = Boolean(
+      intent.detectedFilters.type ||
+      intent.detectedFilters.workMode ||
+      intent.detectedFilters.location ||
+      intent.detectedFilters.nearMe
+    )
+    return hasFilters ? intent : null
+  }, [localSearch])
+
   // Geolocation & Radius state
   const {
     status: geoStatus,
@@ -98,7 +144,7 @@ export function OpportunityDiscoveryClient({
   }, [mapContext])
   const lastFetchedKeyRef = useRef("")
 
-  // Fetch opportunities with geolocation, radius, and workMode parameters
+  // Fetch opportunities with geolocation, radius, location, and workMode parameters
   const fetchNearbyOpportunities = useCallback(async (
     loc: DeviceLocation | null,
     radius: number | "all",
@@ -108,9 +154,10 @@ export function OpportunityDiscoveryClient({
     typ: string,
     wm: "all" | "on-site" | "remote" | "hybrid" = "all",
     pageIndex: number = 0,
-    force: boolean = false
+    force: boolean = false,
+    locText: string = ""
   ) => {
-    const fetchKey = `${loc ? `${loc.lat.toFixed(4)},${loc.lng.toFixed(4)}` : 'none'}-${radius}-${sort}-${q}-${cat}-${typ}-${wm}-${pageIndex}`
+    const fetchKey = `${loc ? `${loc.lat.toFixed(4)},${loc.lng.toFixed(4)}` : 'none'}-${radius}-${sort}-${q}-${cat}-${typ}-${wm}-${locText}-${pageIndex}`
     if (!force && lastFetchedKeyRef.current === fetchKey) return
     lastFetchedKeyRef.current = fetchKey
 
@@ -118,6 +165,7 @@ export function OpportunityDiscoveryClient({
     try {
       const params = new URLSearchParams()
       if (q.trim()) params.set("q", q.trim())
+      if (locText.trim()) params.set("location", locText.trim())
       if (cat !== "all") params.set("category", cat)
       if (typ !== "all") params.set("type", typ)
       if (wm !== "all") params.set("workMode", wm)
@@ -153,11 +201,14 @@ export function OpportunityDiscoveryClient({
   useEffect(() => {
     const handler = setTimeout(() => {
       if (hasUserRequestedLocation && deviceLoc) {
-        fetchNearbyOpportunities(deviceLoc, activeRadius, activeSort, localSearch, localCategory, localType, localWorkMode, page)
+        fetchNearbyOpportunities(deviceLoc, activeRadius, activeSort, localSearch, localCategory, localType, localWorkMode, page, false, localLocation)
       } else {
         const params = new URLSearchParams(searchParams.toString())
         if (localSearch.trim()) params.set("q", localSearch)
         else params.delete("q")
+
+        if (localLocation.trim()) params.set("location", localLocation)
+        else params.delete("location")
         
         if (localCategory !== "all") params.set("category", localCategory)
         else params.delete("category")
@@ -170,6 +221,7 @@ export function OpportunityDiscoveryClient({
 
         if (
           searchParams.get("q") !== localSearch ||
+          searchParams.get("location") !== localLocation ||
           searchParams.get("category") !== localCategory ||
           searchParams.get("type") !== localType ||
           searchParams.get("workMode") !== localWorkMode
@@ -186,6 +238,7 @@ export function OpportunityDiscoveryClient({
     return () => clearTimeout(handler)
   }, [
     localSearch,
+    localLocation,
     localCategory,
     localType,
     localWorkMode,
@@ -300,8 +353,30 @@ export function OpportunityDiscoveryClient({
     setLocalCategory(id === localCategory ? "all" : id)
   }
 
+  const handleSelectSuggestion = (item: SearchSuggestionItem) => {
+    if (item.filterKey === "type") {
+      setLocalType(item.filterValue)
+    } else if (item.filterKey === "location") {
+      setLocalLocation(item.filterValue)
+    } else if (item.filterKey === "category") {
+      setLocalCategory(item.filterValue)
+    } else {
+      setLocalSearch(item.filterValue)
+    }
+  }
+
+  const handleApplyIntent = () => {
+    if (!parsedIntent) return
+    if (parsedIntent.detectedFilters.type) setLocalType(parsedIntent.detectedFilters.type)
+    if (parsedIntent.detectedFilters.workMode) setLocalWorkMode(parsedIntent.detectedFilters.workMode)
+    if (parsedIntent.detectedFilters.location) setLocalLocation(parsedIntent.detectedFilters.location)
+    if (parsedIntent.detectedFilters.nearMe && !isLocationActive) handleUseLocation()
+    setLocalSearch(parsedIntent.keyword)
+  }
+
   const handleResetAllFilters = () => {
     setLocalSearch("")
+    setLocalLocation("")
     setLocalType("all")
     setLocalCategory("all")
     setLocalWorkMode("all")
@@ -314,7 +389,7 @@ export function OpportunityDiscoveryClient({
 
   const handlePageChange = (newPage: number) => {
     if (deviceLoc && hasUserRequestedLocation) {
-      fetchNearbyOpportunities(deviceLoc, activeRadius, activeSort, localSearch, localCategory, localType, localWorkMode, newPage)
+      fetchNearbyOpportunities(deviceLoc, activeRadius, activeSort, localSearch, localCategory, localType, localWorkMode, newPage, false, localLocation)
     } else {
       const params = new URLSearchParams(searchParams.toString())
       if (newPage > 0) params.set("page", newPage.toString())
@@ -337,6 +412,10 @@ export function OpportunityDiscoveryClient({
               activeFilters={[localType]}
               onFilterToggle={handleTypeToggle}
               onSearch={setLocalSearch}
+              searchValue={localSearch}
+              suggestions={suggestions}
+              isLoadingSuggestions={isLoadingSuggestions}
+              onSelectSuggestion={handleSelectSuggestion}
               className="w-full"
             />
           </div>
@@ -397,6 +476,65 @@ export function OpportunityDiscoveryClient({
           </div>
         </div>
 
+        {/* Natural Search Intent Banner */}
+        {parsedIntent && (
+          <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-primary/5 border border-primary/20 text-xs text-foreground">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-primary flex items-center gap-1">
+                <Sparkles size={13} />
+                Smart Intent:
+              </span>
+              {parsedIntent.detectedFilters.type && (
+                <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 font-medium">
+                  {parsedIntent.detectedFilters.type === "internship" ? "Internships" : "Campus Gigs"}
+                </span>
+              )}
+              {parsedIntent.detectedFilters.workMode && (
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 font-medium">
+                  {parsedIntent.detectedFilters.workMode}
+                </span>
+              )}
+              {parsedIntent.detectedFilters.location && (
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 font-medium">
+                  📍 {parsedIntent.detectedFilters.location}
+                </span>
+              )}
+              {parsedIntent.detectedFilters.nearMe && (
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 font-medium">
+                  🎯 Near Me
+                </span>
+              )}
+              {parsedIntent.keyword && (
+                <span className="text-muted-foreground">
+                  Keyword: <strong className="text-foreground">{parsedIntent.keyword}</strong>
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={handleApplyIntent}
+              className="px-2.5 py-1 rounded-lg bg-primary text-white text-[11px] font-semibold hover:bg-primary/90 transition-colors shadow-xs"
+            >
+              Apply Intent Filters
+            </button>
+          </div>
+        )}
+
+        {/* Active City Location Chip */}
+        {localLocation && (
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-700 border border-blue-500/20 text-xs font-medium w-fit">
+            <span>Location: <strong className="capitalize">{localLocation}</strong></span>
+            <button
+              type="button"
+              onClick={() => setLocalLocation("")}
+              className="p-0.5 hover:bg-blue-500/20 rounded text-blue-700"
+              title="Remove location filter"
+            >
+              <X size={11} />
+            </button>
+          </div>
+        )}
+
         {/* Location Accuracy Notice for Coarse/Degraded Accuracy */}
         {isLocationActive && (deviceLoc?.accuracyTier === "degraded" || deviceLoc?.accuracyTier === "poor") && (
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs">
@@ -422,39 +560,77 @@ export function OpportunityDiscoveryClient({
           </div>
         )}
 
+        {/* Mobile Filter Toggle Button */}
+        <div className="flex md:hidden items-center justify-between pt-2 border-t border-border/50">
+          <span className="text-xs font-semibold text-muted-foreground">
+            {isLocationActive ? "Location Active" : "Filters & Sorting"}
+          </span>
+          <button
+            onClick={() => setIsMobileFiltersOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-2 border border-border text-xs font-semibold hover:bg-surface-3 transition-colors"
+          >
+            <SlidersHorizontal size={14} />
+            Filters
+          </button>
+        </div>
+
         {/* Filters & Controls: Work Mode + Category + Sort */}
-        <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
+        {/* Desktop inline view, Mobile drawer view */}
+        <div className={`
+          flex-col gap-2 pt-2 md:pt-2 md:border-t border-border/50
+          md:flex 
+          ${isMobileFiltersOpen 
+            ? "fixed inset-0 z-50 bg-white/95 backdrop-blur-md p-6 flex flex-col pt-16 overflow-y-auto" 
+            : "hidden"
+          }
+        `}>
+          {isMobileFiltersOpen && (
+            <div className="absolute top-4 right-4 flex items-center justify-between w-[calc(100%-2rem)]">
+              <span className="text-lg font-bold text-foreground">Filters</span>
+              <button 
+                onClick={() => setIsMobileFiltersOpen(false)}
+                className="p-2 bg-surface-2 rounded-full text-foreground hover:bg-surface-3 transition-colors"
+                aria-label="Close filters"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          )}
+
           {/* Work Mode and Sort Row */}
-          <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <div className={`flex ${isMobileFiltersOpen ? 'flex-col gap-4' : 'items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar'}`}>
             {/* Work Mode Toggle Pills */}
-            <div className="flex items-center gap-1.5">
+            <div className={`flex ${isMobileFiltersOpen ? 'flex-col items-start gap-2' : 'items-center gap-1.5'}`}>
               <span className="text-[10px] uppercase font-bold text-muted-foreground mr-0.5">Mode:</span>
-              {WORK_MODE_FILTERS.map(wm => (
-                <button
-                  key={wm.id}
-                  type="button"
-                  onClick={() => setLocalWorkMode(wm.id)}
-                  className={`whitespace-nowrap px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-colors ${
-                    localWorkMode === wm.id
-                      ? "bg-primary text-primary-foreground shadow-2xs font-bold"
-                      : "bg-surface-2 text-muted-foreground hover:text-foreground border border-border/60"
-                  }`}
-                >
-                  {wm.label}
-                </button>
-              ))}
+              <div className="flex flex-wrap gap-1.5">
+                {WORK_MODE_FILTERS.map(wm => (
+                  <button
+                    key={wm.id}
+                    type="button"
+                    onClick={() => setLocalWorkMode(wm.id)}
+                    className={`whitespace-nowrap px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-colors ${
+                      localWorkMode === wm.id
+                        ? "bg-primary text-primary-foreground shadow-2xs font-bold"
+                        : "bg-surface-2 text-muted-foreground hover:text-foreground border border-border/60"
+                    }`}
+                  >
+                    {wm.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Sort Toggle */}
-            <div className="flex items-center gap-1 shrink-0 pl-2 border-l border-border/50">
+            <div className={`flex items-center gap-1 shrink-0 ${isMobileFiltersOpen ? 'w-full' : 'pl-2 border-l border-border/50'}`}>
               <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
                 <ArrowUpDown size={11} />
+                {isMobileFiltersOpen && <span className="ml-1">Sort By</span>}
               </span>
               <select
                 value={activeSort}
                 onChange={e => handleSortChange(e.target.value as any)}
                 aria-label="Sort opportunities"
-                className="bg-surface-2 border border-border text-xs rounded-lg px-2 py-1 text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+                className={`bg-surface-2 border border-border text-xs rounded-lg px-2 py-1 text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-primary ${isMobileFiltersOpen ? 'flex-1 ml-2 py-2 text-sm' : ''}`}
               >
                 {isLocationActive && <option value="distance">Nearest First</option>}
                 <option value="newest">Newest First</option>
@@ -465,30 +641,32 @@ export function OpportunityDiscoveryClient({
           </div>
 
           {/* Category Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          <div className={`flex ${isMobileFiltersOpen ? 'flex-col gap-2 mt-2' : 'items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar'}`}>
             <span className="text-[10px] uppercase font-bold text-muted-foreground mr-0.5">Category:</span>
-            {CATEGORY_FILTERS.map(f => (
-              <button
-                key={f.id}
-                onClick={() => handleCategoryToggle(f.id)}
-                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                  localCategory === f.id
-                    ? "bg-primary/10 text-primary border border-primary/20 font-bold"
-                    : "bg-surface-2 text-muted-foreground border border-border-subtle hover:text-foreground"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+            <div className="flex flex-wrap gap-1.5">
+              {CATEGORY_FILTERS.map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => handleCategoryToggle(f.id)}
+                  className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    localCategory === f.id
+                      ? "bg-primary/10 text-primary border border-primary/20 font-bold"
+                      : "bg-surface-2 text-muted-foreground border border-border-subtle hover:text-foreground"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Active Geolocation Radius Selector */}
           {isLocationActive && (
-            <div className="flex items-center gap-2 pt-1 border-t border-border/40 text-xs">
+            <div className={`flex ${isMobileFiltersOpen ? 'flex-col gap-2 mt-2' : 'items-center gap-2 pt-1 border-t border-border/40 text-xs'}`}>
               <span className="text-muted-foreground font-semibold text-[11px] uppercase tracking-wider shrink-0 flex items-center gap-1">
                 <Navigation size={10} className="text-primary" /> Radius:
               </span>
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {RADIUS_OPTIONS.map(opt => (
                   <button
                     key={opt.label}
@@ -504,6 +682,17 @@ export function OpportunityDiscoveryClient({
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+
+          {isMobileFiltersOpen && (
+            <div className="mt-8 pt-4 border-t border-border/50">
+              <button 
+                onClick={() => setIsMobileFiltersOpen(false)}
+                className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-sm"
+              >
+                View Results
+              </button>
             </div>
           )}
         </div>

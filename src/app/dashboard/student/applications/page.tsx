@@ -154,10 +154,11 @@ export default function StudentApplicationsPage() {
  </div>
 
  <div className="flex items-center justify-between md:justify-end gap-10">
- <div className="text-right">
- <p className="font-black text-foreground tracking-tighter">₹{app.gig.budget.toLocaleString()}</p>
- <p className="font-black text-muted-foreground text-xs uppercase tracking-widest">Fixed Budget</p>
- </div>
+                <div className="text-right">
+                  <p className="font-black text-foreground tracking-tighter">₹{app.gig.budget.toLocaleString()}</p>
+                  <p className="font-black text-muted-foreground text-xs uppercase tracking-widest">Fixed Budget</p>
+                  <span className="text-[10px] font-bold text-amber-500/90 block">Payments Coming Soon</span>
+                </div>
 
  {app.status === 'ACCEPTED' && app.gig.status !== 'COMPLETED' ? (
  <button

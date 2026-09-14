@@ -55,8 +55,8 @@ export function OrganizationSchema({ nonce }: { nonce?: string }) {
 "@context":"https://schema.org",
 "@type":"Organization",
 "name":"CampusConnectCo",
-"url":"https://campusconnectco.in",
-"logo":"https://campusconnectco.in/logo-v2.jpg",
+"url":"https://www.campusconnectco.in",
+"logo":"https://www.campusconnectco.in/logo-v2.jpg",
 "sameAs": [
 "https://linkedin.com/company/campusconnectcoin",
 "https://github.com/campusconnectcoin"
@@ -149,7 +149,7 @@ export function JobPostingSchema({
 "hiringOrganization": {
 "@type":"Organization",
 "name": companyName,
-"sameAs":"https://campusconnectco.in"
+"sameAs":"https://www.campusconnectco.in"
  },
 "jobLocationType":"TELECOMMUTE",
 "baseSalary": {
@@ -179,12 +179,12 @@ export function WebsiteSchema({ nonce }: { nonce?: string }) {
 "@context":"https://schema.org",
 "@type":"WebSite",
 "name":"CampusConnectCo",
-"url":"https://campusconnectco.in",
+"url":"https://www.campusconnectco.in",
 "potentialAction": {
 "@type":"SearchAction",
 "target": {
 "@type":"EntryPoint",
-"urlTemplate":"https://campusconnectco.in/search?q={search_term_string}"
+"urlTemplate":"https://www.campusconnectco.in/search?q={search_term_string}"
  },
 "query-input":"required name=search_term_string"
  }
@@ -289,19 +289,19 @@ export function WebSiteSchema({ nonce }: { nonce?: string }) {
 "@type":"WebSite",
 "name":"CampusConnectCo",
 "alternateName":"CampusConnectCo India",
-"url":"https://campusconnectco.in",
+"url":"https://www.campusconnectco.in",
 "description":"India's largest verified student opportunity platform",
 "potentialAction": {
 "@type":"SearchAction",
 "target": {
 "@type":"EntryPoint",
-"urlTemplate":"https://campusconnectco.in/search?q={search_term_string}"
+"urlTemplate":"https://www.campusconnectco.in/search?q={search_term_string}"
  },
 "query-input":"required name=search_term_string"
  },
 "publisher": {
 "@type":"Organization",
-"@id":"https://campusconnectco.in/#organization",
+"@id":"https://www.campusconnectco.in/#organization",
 "name":"CampusConnectCo"
  }
  }
@@ -329,7 +329,7 @@ export function AggregateRatingSchema({
 "name":"CampusConnectCo",
 "applicationCategory":"BusinessApplication",
 "operatingSystem":"Web",
-"url":"https://campusconnectco.in",
+"url":"https://www.campusconnectco.in",
 "offers": {
 "@type":"Offer",
 "price":"0",
@@ -385,7 +385,7 @@ export function ArticleSchema({
 "name":"CampusConnectCo",
 "logo": {
 "@type":"ImageObject",
-"url":"https://campusconnectco.in/logo-v2.jpg"
+"url":"https://www.campusconnectco.in/logo-v2.jpg"
  }
  }
  }
@@ -397,5 +397,3 @@ export function ArticleSchema({
  />
  )
 }
-
-

@@ -3,16 +3,18 @@
 import { 
   MapPin, Clock, DollarSign, Calendar, 
   ArrowLeft, Share2, Bookmark, CheckCircle2, ShieldCheck,
-  ExternalLink, Briefcase, Check
+  ExternalLink, Briefcase, Check, Flag
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 import OpportunityOwnerControls from "@/components/opportunities/OpportunityOwnerControls";
+import { ReportModal } from "@/components/opportunities/ReportModal";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useOpportunityEngagement } from "@/hooks/useOpportunityEngagement";
+import { isOpportunityActive, isOpportunityExpired } from "@/lib/opportunities/lifecycle";
 import { createClient } from "@/lib/supabase/client";
 
 interface InternshipRecord {
@@ -28,6 +30,7 @@ interface InternshipRecord {
   applicationLink?: string | null;
   posted_by?: string | null;
   status?: string | null;
+  deadline?: Date | string | null;
 }
 
 interface InternshipDetailsClientProps {
@@ -37,6 +40,7 @@ interface InternshipDetailsClientProps {
 export default function InternshipDetailsClient({ internship }: InternshipDetailsClientProps) {
   const supabase = createClient();
   const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
+  const [isReportModalOpen, setIsReportModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -45,6 +49,7 @@ export default function InternshipDetailsClient({ internship }: InternshipDetail
   }, [supabase]);
 
   const isOwner = Boolean(currentUserId && internship.posted_by && currentUserId === internship.posted_by);
+  const isExpired = isOpportunityExpired(internship.deadline);
   const isInactive = internship.status === "INACTIVE";
   const isCompleted = internship.status === "COMPLETED";
 
@@ -97,6 +102,15 @@ export default function InternshipDetailsClient({ internship }: InternshipDetail
               </div>
             )}
 
+            {!isOwner && isExpired && !isInactive && !isCompleted && (
+              <div className="p-4 rounded-2xl border text-sm flex items-center gap-2.5 border-amber-500/30 bg-amber-500/10 text-amber-700">
+                <Clock className="h-5 w-5 shrink-0" />
+                <span>
+                  The application deadline for this internship passed on {new Date(internship.deadline!).toLocaleDateString()}. This opportunity is no longer accepting new submissions.
+                </span>
+              </div>
+            )}
+
             <header className="space-y-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -109,6 +123,14 @@ export default function InternshipDetailsClient({ internship }: InternshipDetail
                   </div>
                 </div>
                 <div className="hidden sm:flex gap-3 relative">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setIsReportModalOpen(true)}
+                    aria-label="Report internship"
+                    className="rounded-2xl border border-slate-200 hover:bg-rose-50 hover:text-rose-600 h-12 w-12 p-0 text-slate-600 cursor-pointer"
+                  >
+                    <Flag size={20} />
+                  </Button>
                   <Button 
                     variant="ghost" 
                     onClick={shareOpportunity}
@@ -209,6 +231,10 @@ export default function InternshipDetailsClient({ internship }: InternshipDetail
                     <div className="flex items-center gap-2 text-sky-600 font-bold">
                       <CheckCircle2 size={16} /> Position Completed
                     </div>
+                  ) : isExpired ? (
+                    <div className="flex items-center gap-2 text-amber-600 font-bold">
+                      <Clock size={16} /> Applications Closed (Deadline Passed)
+                    </div>
                   ) : (
                     <div className="flex items-center gap-2 text-emerald-600 font-bold">
                       <CheckCircle2 size={16} /> Open & Accepting Applications
@@ -223,25 +249,25 @@ export default function InternshipDetailsClient({ internship }: InternshipDetail
                   </div>
                 </div>
 
-                {isInactive || isCompleted ? (
-                  <Button disabled className="w-full h-14 rounded-2xl text-base font-bold bg-slate-100 text-slate-400 cursor-not-allowed">
-                    {isInactive ? "Applications Paused" : "Opportunity Closed"}
+                {isInactive || isCompleted || isExpired ? (
+                  <Button disabled className="w-full h-14 rounded-2xl text-base font-bold bg-slate-100 text-slate-400 cursor-not-allowed hidden lg:flex">
+                    {isExpired ? "Applications Closed" : isInactive ? "Applications Paused" : "Opportunity Closed"}
                   </Button>
                 ) : internship.applicationLink ? (
-                  <Button asChild className="w-full h-14 rounded-2xl text-base font-black bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25">
+                  <Button asChild className="w-full h-14 rounded-2xl text-base font-black bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 hidden lg:flex">
                     <a href={internship.applicationLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                       Apply on Company Site <ExternalLink size={18} />
                     </a>
                   </Button>
                 ) : (
-                  <Button asChild className="w-full h-14 rounded-2xl text-base font-black bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25">
+                  <Button asChild className="w-full h-14 rounded-2xl text-base font-black bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 hidden lg:flex">
                     <Link href={`/auth/sign-up?returnUrl=/internships/${internship.id || ""}`}>
                       Apply with Profile
                     </Link>
                   </Button>
                 )}
 
-                <p className="text-[11px] text-center text-slate-400 leading-tight">
+                <p className="text-[11px] text-center text-slate-400 leading-tight hidden lg:block">
                   By applying, you agree to follow the CampusConnectCo Student Honor Code.
                 </p>
               </CardContent>
@@ -249,6 +275,35 @@ export default function InternshipDetailsClient({ internship }: InternshipDetail
           </div>
         </div>
       </div>
+
+      {/* Mobile Sticky CTA */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 lg:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.05)] pb-safe">
+        {isInactive || isCompleted || isExpired ? (
+          <Button disabled className="w-full h-14 rounded-2xl text-base font-bold bg-slate-100 text-slate-400 cursor-not-allowed">
+            {isExpired ? "Applications Closed" : isInactive ? "Applications Paused" : "Opportunity Closed"}
+          </Button>
+        ) : internship.applicationLink ? (
+          <Button asChild className="w-full h-14 rounded-2xl text-base font-black bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25">
+            <a href={internship.applicationLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+              Apply on Company Site <ExternalLink size={18} />
+            </a>
+          </Button>
+        ) : (
+          <Button asChild className="w-full h-14 rounded-2xl text-base font-black bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25">
+            <Link href={`/auth/sign-up?returnUrl=/internships/${internship.id || ""}`}>
+              Apply with Profile
+            </Link>
+          </Button>
+        )}
+      </div>
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        entityId={internship.id || ""}
+        entityType="internship"
+        title={internship.title || undefined}
+      />
     </div>
   );
 }

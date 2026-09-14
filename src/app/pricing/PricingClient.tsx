@@ -1,9 +1,8 @@
 "use client"
 import { motion } from"framer-motion"
 import {
- CheckCircle2, ChevronDown, ShieldCheck,
- MessageSquare
-} from"lucide-react"
+  CheckCircle2, ChevronDown, ShieldCheck
+} from "lucide-react";
 import Link from"next/link"
 import { useState } from"react"
 
@@ -16,7 +15,7 @@ const studentFeatures = [
 "Unlimited gig applications",
 "AI Resume analyzer & ATS scorer",
 "WhatsApp gig alerts",
-"Escrow-protected payments",
+"Milestone tracking & sign-off (Payments Coming Soon)",
 "SmartMatch AI recommendations",
 "Career AI chat assistant",
 "Public portfolio page",
@@ -26,7 +25,7 @@ const startupFreeTier = [
 "Post up to 2 gigs/month",
 "Access all student profiles",
 "15% platform fee per completed gig",
-"Escrow protection on all payments",
+"Milestone tracking (Payments Coming Soon)",
 "Basic applicant ranking",
 ]
 
@@ -42,30 +41,30 @@ const startupGrowthTier = [
 ]
 
 const faqs = [
- {
- q:"How does escrow work?",
- a:"When a startup accepts a student for a gig, they deposit the payment into our escrow system (powered by Razorpay Route). Funds are only released to the student after the startup approves the completed work. This guarantees students always get paid.",
- },
- {
- q:"Who pays the platform fee — student or startup?",
- a:"Always the startup — never the student. Students use CampusConnectCo completely free of charge. The platform fee is added on top of the gig value when startups post and fund escrow.",
- },
- {
- q:"Can I switch between tiers?",
- a:"Yes! You can upgrade or downgrade your startup subscription at any time. The new rate applies from the next billing cycle.",
- },
- {
- q:"Is there a placement fee for internships?",
- a:"Yes, for internship placements (longer-term roles), we charge a one-time placement fee of 5–8% of the student's first month stipend, paid by the startup.",
- },
- {
- q:"What if there's a dispute on a gig?",
- a:"Our team reviews all disputes within 24 hours. Funds remain safely in escrow until resolution. If the dispute is resolved in the student's favour, payment is released. If not, it's refunded to the startup.",
- },
- {
- q:"Do I need to pay anything to post my first gig?",
- a:"No. Startups on the Free tier can post 2 gigs per month at no subscription cost. You only pay when a gig is completed successfully. The 15% platform fee is deducted from the escrow at settlement.",
- },
+  {
+    q: "How does escrow work?",
+    a: "CampusConnectCo is actively developing platform escrow and settlement features. Once enabled, employers will fund milestones into secure platform escrow, released upon mutual deliverable sign-off. Milestone tracking and work verification are live today.",
+  },
+  {
+    q: "Who pays the platform fee — student or startup?",
+    a: "Always the startup — never the student. Students use CampusConnectCo completely free of charge. The platform fee is added on top of the gig value when startups post and fund escrow.",
+  },
+  {
+    q: "Can I switch between tiers?",
+    a: "Yes! You can upgrade or downgrade your startup subscription at any time. The new rate applies from the next billing cycle.",
+  },
+  {
+    q: "Is there a placement fee for internships?",
+    a: "Yes, for internship placements (longer-term roles), we charge a one-time placement fee of 5–8% of the student's first month stipend, paid by the startup.",
+  },
+  {
+    q: "What if there's a dispute on a gig?",
+    a: "Our team reviews all disputes within 24 hours. Once escrow is active, funds will remain safely held until resolution. If the dispute is resolved in the student's favour, payment is released. If not, it's refunded to the startup.",
+  },
+  {
+    q: "Do I need to pay anything to post my first gig?",
+    a: "No. Startups on the Free tier can post 2 gigs per month at no subscription cost. When platform payments launch, the platform fee will apply at milestone settlement.",
+  },
 ]
 
 function FAQItem({ q, a }: { q: string; a: string }) {

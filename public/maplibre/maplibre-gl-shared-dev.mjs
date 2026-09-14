@@ -1,6 +1,6 @@
 /**
 * MapLibre GL JS
-* @license 3-Clause BSD. Full text of license: https://github.com/maplibre/maplibre-gl-js/blob/v6.2.0/LICENSE.txt
+* @license 3-Clause BSD. Full text of license: https://github.com/maplibre/maplibre-gl-js/blob/v6.9.0/LICENSE.txt
 */
 //#region \0rolldown/runtime.js
 var __create = Object.create;
@@ -359,8 +359,15 @@ function unitBezier$1(p1x, p1y, p2x, p2y) {
 //#endregion
 //#region src/util/offscreen_canvas_supported.ts
 let supportsOffscreenCanvas;
+/**
+* @returns true if the browser can rasterise into an `OffscreenCanvas`, false otherwise.
+*
+* The browser is probed once and the answer cached. The `getContext` result has to be coerced to a
+* boolean for that: it is null when there is no 2d context, and `??=` reads a cached null as
+* "not probed yet".
+*/
 function offscreenCanvasSupported() {
-	supportsOffscreenCanvas ??= typeof OffscreenCanvas !== "undefined" && new OffscreenCanvas(1, 1).getContext("2d") && typeof createImageBitmap === "function";
+	supportsOffscreenCanvas ??= typeof OffscreenCanvas !== "undefined" && !!new OffscreenCanvas(1, 1).getContext("2d") && typeof createImageBitmap === "function";
 	return supportsOffscreenCanvas;
 }
 //#endregion
@@ -434,6 +441,15 @@ function invert$5(out, a) {
 	out[2] = -a2 * det;
 	out[3] = a0 * det;
 	return out;
+}
+/**
+* Calculates the determinant of a mat2
+*
+* @param {ReadonlyMat2} a the source matrix
+* @returns {Number} determinant of a
+*/
+function determinant$3(a) {
+	return a[0] * a[3] - a[2] * a[1];
 }
 /**
 * Rotates a mat2 by the given angle
@@ -1197,6 +1213,19 @@ function scaleAndAdd$2(out, a, b, scale) {
 	return out;
 }
 /**
+* Calculates the euclidian distance between two vec3's
+*
+* @param {ReadonlyVec3} a the first operand
+* @param {ReadonlyVec3} b the second operand
+* @returns {Number} distance between a and b
+*/
+function distance$2(a, b) {
+	var x = b[0] - a[0];
+	var y = b[1] - a[1];
+	var z = b[2] - a[2];
+	return Math.sqrt(x * x + y * y + z * z);
+}
+/**
 * Negates the components of a vec3
 *
 * @param {vec3} out the receiving vector
@@ -1434,6 +1463,23 @@ function create$3() {
 	return out;
 }
 /**
+* Creates a new vec4 initialized with the given values
+*
+* @param {Number} x X component
+* @param {Number} y Y component
+* @param {Number} z Z component
+* @param {Number} w W component
+* @returns {vec4} a new 4D vector
+*/
+function fromValues$3(x, y, z, w) {
+	var out = new ARRAY_TYPE(4);
+	out[0] = x;
+	out[1] = y;
+	out[2] = z;
+	out[3] = w;
+	return out;
+}
+/**
 * Multiplies two vec4's
 *
 * @param {vec4} out the receiving vector
@@ -1561,6 +1607,23 @@ function setAxisAngle(out, axis, rad) {
 	out[1] = s * axis[1];
 	out[2] = s * axis[2];
 	out[3] = Math.cos(rad);
+	return out;
+}
+/**
+* Multiplies two quat's
+*
+* @param {quat} out the receiving quaternion
+* @param {ReadonlyQuat} a the first operand
+* @param {ReadonlyQuat} b the second operand
+* @returns {quat} out
+*/
+function multiply$2(out, a, b) {
+	var ax = a[0], ay = a[1], az = a[2], aw = a[3];
+	var bx = b[0], by = b[1], bz = b[2], bw = b[3];
+	out[0] = ax * bw + aw * bx + ay * bz - az * by;
+	out[1] = ay * bw + aw * by + az * bx - ax * bz;
+	out[2] = az * bw + aw * bz + ax * by - ay * bx;
+	out[3] = aw * bw - ax * bx - ay * by - az * bz;
 	return out;
 }
 /**
@@ -1699,6 +1762,17 @@ function fromEuler(out, x, y, z) {
 	return out;
 }
 /**
+* Creates a new quat initialized with the given values
+*
+* @param {Number} x X component
+* @param {Number} y Y component
+* @param {Number} z Z component
+* @param {Number} w W component
+* @returns {quat} a new quaternion
+* @function
+*/
+var fromValues$2 = fromValues$3;
+/**
 * Normalize a quat
 *
 * @param {quat} out the receiving quaternion
@@ -1778,18 +1852,6 @@ function create() {
 	return out;
 }
 /**
-* Creates a new vec2 initialized with values from an existing vector
-*
-* @param {ReadonlyVec2} a vector to clone
-* @returns {vec2} a new 2D vector
-*/
-function clone$1(a) {
-	var out = new ARRAY_TYPE(2);
-	out[0] = a[0];
-	out[1] = a[1];
-	return out;
-}
-/**
 * Creates a new vec2 initialized with the given values
 *
 * @param {Number} x X component
@@ -1803,32 +1865,6 @@ function fromValues(x, y) {
 	return out;
 }
 /**
-* Adds two vec2's
-*
-* @param {vec2} out the receiving vector
-* @param {ReadonlyVec2} a the first operand
-* @param {ReadonlyVec2} b the second operand
-* @returns {vec2} out
-*/
-function add(out, a, b) {
-	out[0] = a[0] + b[0];
-	out[1] = a[1] + b[1];
-	return out;
-}
-/**
-* Subtracts vector b from vector a
-*
-* @param {vec2} out the receiving vector
-* @param {ReadonlyVec2} a the first operand
-* @param {ReadonlyVec2} b the second operand
-* @returns {vec2} out
-*/
-function subtract(out, a, b) {
-	out[0] = a[0] - b[0];
-	out[1] = a[1] - b[1];
-	return out;
-}
-/**
 * Scales a vec2 by a scalar number
 *
 * @param {vec2} out the receiving vector
@@ -1839,20 +1875,6 @@ function subtract(out, a, b) {
 function scale(out, a, b) {
 	out[0] = a[0] * b;
 	out[1] = a[1] * b;
-	return out;
-}
-/**
-* Adds two vec2's after scaling the second operand by a scalar value
-*
-* @param {vec2} out the receiving vector
-* @param {ReadonlyVec2} a the first operand
-* @param {ReadonlyVec2} b the second operand
-* @param {Number} scale the amount to scale b by before adding
-* @returns {vec2} out
-*/
-function scaleAndAdd(out, a, b, scale) {
-	out[0] = a[0] + b[0] * scale;
-	out[1] = a[1] + b[1] * scale;
 	return out;
 }
 /**
@@ -1876,21 +1898,6 @@ function squaredLength(a) {
 	return x * x + y * y;
 }
 /**
-* Normalize a vec2
-*
-* @param {vec2} out the receiving vector
-* @param {ReadonlyVec2} a vector to normalize
-* @returns {vec2} out
-*/
-function normalize(out, a) {
-	var x = a[0], y = a[1];
-	var len = x * x + y * y;
-	if (len > 0) len = 1 / Math.sqrt(len);
-	out[0] = a[0] * len;
-	out[1] = a[1] * len;
-	return out;
-}
-/**
 * Calculates the dot product of two vec2's
 *
 * @param {ReadonlyVec2} a the first operand
@@ -1899,30 +1906,6 @@ function normalize(out, a) {
 */
 function dot$1(a, b) {
 	return a[0] * b[0] + a[1] * b[1];
-}
-/**
-* Rotate a 2D vector
-* @param {vec2} out The receiving vec2
-* @param {ReadonlyVec2} a The vec2 point to rotate
-* @param {ReadonlyVec2} b The origin of the rotation
-* @param {Number} rad The angle of rotation in radians
-* @returns {vec2} out
-*/
-function rotate(out, a, b, rad) {
-	var p0 = a[0] - b[0], p1 = a[1] - b[1], sinC = Math.sin(rad), cosC = Math.cos(rad);
-	out[0] = p0 * cosC - p1 * sinC + b[0];
-	out[1] = p0 * sinC + p1 * cosC + b[1];
-	return out;
-}
-/**
-* Get the smallest angle between two 2D vectors
-* @param {ReadonlyVec2} a The first operand
-* @param {ReadonlyVec2} b The second operand
-* @returns {Number} The angle in radians
-*/
-function angle(a, b) {
-	var ax = a[0], ay = a[1], bx = b[0], by = b[1];
-	return Math.abs(Math.atan2(ay * bx - ax * by, ax * bx + ay * by));
 }
 /**
 * Set the components of a vec2 to zero
@@ -1935,11 +1918,6 @@ function zero(out) {
 	out[1] = 0;
 	return out;
 }
-/**
-* Alias for {@link vec2.subtract}
-* @function
-*/
-var sub = subtract;
 /**
 * Alias for {@link vec2.squaredLength}
 * @function
@@ -2532,7 +2510,6 @@ function isImageBitmap(image) {
 * @returns - A  promise resolved when the conversion is finished
 */
 const arrayBufferToImageBitmap = async (data, options) => {
-	if (data.byteLength === 0) return createImageBitmap(new ImageData(1, 1), options);
 	const blob = new Blob([new Uint8Array(data)], { type: "image/png" });
 	try {
 		return createImageBitmap(blob, options);
@@ -2562,7 +2539,7 @@ const arrayBufferToImage = (data) => {
 		};
 		img.onerror = () => reject(/* @__PURE__ */ new Error("Could not load image. Please make sure to use a supported image type such as PNG or JPEG. Note that SVGs are not supported."));
 		const blob = new Blob([new Uint8Array(data)], { type: "image/png" });
-		img.src = data.byteLength ? URL.createObjectURL(blob) : transparentPngUrl;
+		img.src = URL.createObjectURL(blob);
 	});
 };
 /**
@@ -3167,23 +3144,23 @@ var Evented = class {
 		return this;
 	}
 	fire(event, properties) {
-		if (typeof event === "string") event = new Event(event, properties || {});
-		const type = event.type;
+		const firedEvent = typeof event === "string" ? new Event(event, properties || {}) : event;
+		const type = firedEvent.type;
 		if (this.listens(type)) {
-			event.target = this;
-			const listeners = this._listeners?.[type] ? this._listeners[type].slice() : [];
-			for (const listener of listeners) listener.call(this, event);
-			const oneTimeListeners = this._oneTimeListeners?.[type] ? this._oneTimeListeners[type].slice() : [];
+			firedEvent.target = this;
+			const listeners = this._listeners?.[type]?.slice() ?? [];
+			for (const listener of listeners) listener.call(this, firedEvent);
+			const oneTimeListeners = this._oneTimeListeners?.[type]?.slice() ?? [];
 			for (const listener of oneTimeListeners) {
 				_removeEventListener(type, listener, this._oneTimeListeners);
-				listener.call(this, event);
+				listener.call(this, firedEvent);
 			}
 			const parent = this._eventedParent;
 			if (parent) {
-				extend(event, typeof this._eventedParentData === "function" ? this._eventedParentData() : this._eventedParentData);
-				parent.fire(event);
+				extend(firedEvent, typeof this._eventedParentData === "function" ? this._eventedParentData() : this._eventedParentData);
+				parent.fire(firedEvent);
 			}
-		} else if (event instanceof ErrorEvent) console.error(event.error);
+		} else if (firedEvent instanceof ErrorEvent) console.error(firedEvent.error);
 		return this;
 	}
 	/**
@@ -3193,7 +3170,7 @@ var Evented = class {
 	* @returns `true` if there is at least one registered listener for specified event type, `false` otherwise
 	*/
 	listens(type) {
-		return this._listeners?.[type]?.length > 0 || this._oneTimeListeners?.[type]?.length > 0 || this._eventedParent?.listens(type);
+		return Boolean(this._listeners?.[type]?.length || this._oneTimeListeners?.[type]?.length || this._eventedParent?.listens(type));
 	}
 	/**
 	* Bubble all events fired by this instance of Evented to this parent instance of Evented.
@@ -3204,7 +3181,9 @@ var Evented = class {
 		return this;
 	}
 };
-const latest = {
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/reference/v8.mjs
+var v8_default = {
 	$version: 8,
 	$root: {
 		"version": {
@@ -3515,10 +3494,7 @@ const latest = {
 			"type": "enum",
 			"values": { "image": {} }
 		},
-		"url": {
-			"required": true,
-			"type": "string"
-		},
+		"url": { "type": "string" },
 		"coordinates": {
 			"required": true,
 			"type": "array",
@@ -3858,9 +3834,9 @@ const latest = {
 			"requires": ["icon-image"],
 			"expression": {
 				"interpolated": false,
-				"parameters": ["zoom"]
+				"parameters": ["zoom", "feature"]
 			},
-			"property-type": "data-constant"
+			"property-type": "data-driven"
 		},
 		"icon-size": {
 			"type": "number",
@@ -4315,6 +4291,31 @@ const latest = {
 			"type": "boolean",
 			"default": false,
 			"requires": ["text-field", "icon-image"],
+			"expression": {
+				"interpolated": false,
+				"parameters": ["zoom"]
+			},
+			"property-type": "data-constant"
+		},
+		"symbol-height-offset": {
+			"type": "number",
+			"default": 0,
+			"units": "meters",
+			"requires": [{ "symbol-placement": ["point"] }],
+			"expression": {
+				"interpolated": true,
+				"parameters": ["zoom", "feature"]
+			},
+			"property-type": "data-driven"
+		},
+		"symbol-height-anchor": {
+			"type": "enum",
+			"values": {
+				"ground": {},
+				"absolute": {}
+			},
+			"default": "ground",
+			"requires": ["symbol-height-offset"],
 			"expression": {
 				"interpolated": false,
 				"parameters": ["zoom"]
@@ -4796,7 +4797,6 @@ const latest = {
 		"fill-extrusion-height": {
 			"type": "number",
 			"default": 0,
-			"minimum": 0,
 			"units": "meters",
 			"transition": true,
 			"expression": {
@@ -4812,7 +4812,6 @@ const latest = {
 		"fill-extrusion-base": {
 			"type": "number",
 			"default": 0,
-			"minimum": 0,
 			"units": "meters",
 			"transition": true,
 			"requires": ["fill-extrusion-height"],
@@ -5847,6 +5846,11 @@ const latest = {
 		}
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/reference/latest.mjs
+const latest = v8_default;
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/ref_properties.mjs
 const refProperties = [
 	"type",
 	"source",
@@ -5856,6 +5860,8 @@ const refProperties = [
 	"filter",
 	"layout"
 ];
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/deref.mjs
 function deref(layer, parent) {
 	const result = {};
 	for (const k in layer) if (k !== "ref") result[k] = layer[k];
@@ -5881,6 +5887,8 @@ function derefLayers(layers) {
 	for (let i = 0; i < layers.length; i++) if ("ref" in layers[i]) layers[i] = deref(layers[i], map[layers[i].ref]);
 	return layers;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/deep_equal.mjs
 /**
 * Deeply compares two object literals.
 *
@@ -5900,6 +5908,8 @@ function deepEqual(a, b) {
 	}
 	return a === b;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/diff.mjs
 /**
 * The main reason for this method is to allow type check when adding a command to the array.
 * @param commands - The commands array to add to
@@ -5948,11 +5958,13 @@ function diffSources(before, after, commands, sourcesRemoved) {
 	for (sourceId in after) {
 		if (!Object.prototype.hasOwnProperty.call(after, sourceId)) continue;
 		if (!Object.prototype.hasOwnProperty.call(before, sourceId)) addSource(sourceId, after, commands);
-		else if (!deepEqual(before[sourceId], after[sourceId])) if (before[sourceId].type === "geojson" && after[sourceId].type === "geojson" && canUpdateGeoJSON(before, after, sourceId)) addCommand(commands, {
-			command: "setGeoJSONSourceData",
-			args: [sourceId, after[sourceId].data]
-		});
-		else updateSource(sourceId, after, commands, sourcesRemoved);
+		else if (!deepEqual(before[sourceId], after[sourceId])) {
+			if (before[sourceId].type === "geojson" && after[sourceId].type === "geojson" && canUpdateGeoJSON(before, after, sourceId)) addCommand(commands, {
+				command: "setGeoJSONSourceData",
+				args: [sourceId, after[sourceId].data]
+			});
+			else updateSource(sourceId, after, commands, sourcesRemoved);
+		}
 	}
 }
 function diffLayerPropertyChanges(before, after, commands, layerId, klass, command) {
@@ -6156,6 +6168,10 @@ function diff(before, after) {
 			command: "setGlyphs",
 			args: [after.glyphs]
 		});
+		if (!deepEqual(before["font-faces"], after["font-faces"])) commands.push({
+			command: "setFontFaces",
+			args: [after["font-faces"]]
+		});
 		if (!deepEqual(before.transition, after.transition)) commands.push({
 			command: "setTransition",
 			args: [after.transition]
@@ -6198,6 +6214,8 @@ function diff(before, after) {
 	}
 	return commands;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/error/validation_error.mjs
 var ValidationError = class {
 	constructor(key, value, message, identifier, severity = "error") {
 		this.message = (key ? `${key}: ` : "") + message;
@@ -6206,36 +6224,8 @@ var ValidationError = class {
 		if (value !== null && value !== void 0 && value.__line__) this.line = value.__line__;
 	}
 };
-var ExpressionParsingError = class extends Error {
-	constructor(key, message) {
-		super(message);
-		this.message = message;
-		this.key = key;
-	}
-};
-/**
-* Tracks `let` bindings during expression parsing.
-* @private
-*/
-var Scope = class Scope {
-	constructor(parent, bindings = []) {
-		this.parent = parent;
-		this.bindings = {};
-		for (const [name, expression] of bindings) this.bindings[name] = expression;
-	}
-	concat(bindings) {
-		return new Scope(this, bindings);
-	}
-	get(name) {
-		if (this.bindings[name]) return this.bindings[name];
-		if (this.parent) return this.parent.get(name);
-		throw new Error(`${name} not found in scope.`);
-	}
-	has(name) {
-		if (this.bindings[name]) return true;
-		return this.parent ? this.parent.has(name) : false;
-	}
-};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types.mjs
 const NullType = { kind: "null" };
 const NumberType = { kind: "number" };
 const StringType = { kind: "string" };
@@ -6330,6 +6320,8 @@ function verifyType(provided, sample) {
 	if (provided.kind === "array" && sample.kind === "array") return provided.itemType.kind === sample.itemType.kind && typeof provided.N === "number";
 	return provided.kind === sample.kind;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/color_spaces.mjs
 const Xn = .96422;
 const Yn = 1;
 const Zn = .82521;
@@ -6423,12 +6415,16 @@ function hslToRgb([h, s, l, alpha]) {
 		alpha
 	];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/get_own.mjs
 const hasOwnProperty = Object.hasOwn || function hasOwnProperty(object, key) {
 	return Object.prototype.hasOwnProperty.call(object, key);
 };
 function getOwn(object, key) {
 	return hasOwnProperty(object, key) ? object[key] : void 0;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/parse_css_color.mjs
 /**
 * CSS color parser compliant with CSS Color 4 Specification.
 * Supports: named colors, `transparent` keyword, all rgb hex notations,
@@ -7305,6 +7301,8 @@ const namedColors = {
 		50
 	]
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/interpolate-primitives.mjs
 function interpolateNumber(from, to, t) {
 	return from + t * (to - from);
 }
@@ -7313,6 +7311,8 @@ function interpolateArray(from, to, t) {
 		return interpolateNumber(d, to[i], t);
 	});
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/color.mjs
 /**
 * Checks whether the specified color space is one of the supported interpolation color spaces.
 *
@@ -7495,23 +7495,8 @@ var Color = class Color {
 		}
 	}
 };
-var Collator = class {
-	constructor(caseSensitive, diacriticSensitive, locale) {
-		if (caseSensitive) this.sensitivity = diacriticSensitive ? "variant" : "case";
-		else this.sensitivity = diacriticSensitive ? "accent" : "base";
-		this.locale = locale;
-		this.collator = new Intl.Collator(this.locale ? this.locale : [], {
-			sensitivity: this.sensitivity,
-			usage: "search"
-		});
-	}
-	compare(lhs, rhs) {
-		return this.collator.compare(lhs, rhs);
-	}
-	resolvedLocale() {
-		return new Intl.Collator(this.locale ? this.locale : []).resolvedOptions().locale;
-	}
-};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/formatted.mjs
 const VERTICAL_ALIGN_OPTIONS = [
 	"bottom",
 	"center",
@@ -7547,6 +7532,8 @@ var Formatted = class Formatted {
 		return this.sections.map((section) => section.text).join("");
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/padding.mjs
 /**
 * A set of four numbers representing padding around a box. Create instances from
 * bare arrays or numeric values using the static method `Padding.parse`.
@@ -7605,6 +7592,8 @@ var Padding = class Padding {
 		return new Padding(interpolateArray(from.values, to.values, t));
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/number_array.mjs
 /**
 * An array of numbers. Create instances from
 * bare arrays or numeric values using the static method `NumberArray.parse`.
@@ -7633,6 +7622,8 @@ var NumberArray = class NumberArray {
 		return new NumberArray(interpolateArray(from.values, to.values, t));
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/color_array.mjs
 /**
 * An array of colors. Create instances from
 * bare arrays or strings using the static method `ColorArray.parse`.
@@ -7674,6 +7665,8 @@ var ColorArray = class ColorArray {
 		return new ColorArray(colors);
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/runtime_error.mjs
 var RuntimeError = class extends Error {
 	constructor(message, path) {
 		super(message);
@@ -7684,6 +7677,8 @@ var RuntimeError = class extends Error {
 		return this.message;
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/variable_anchor_offset_collection.mjs
 /** Set of valid anchor positions, as a set for validation */
 const anchors = /* @__PURE__ */ new Set([
 	"center",
@@ -7734,6 +7729,8 @@ var VariableAnchorOffsetCollection = class VariableAnchorOffsetCollection {
 		return new VariableAnchorOffsetCollection(output);
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/resolved_image.mjs
 var ResolvedImage = class ResolvedImage {
 	constructor(options) {
 		this.name = options.name;
@@ -7750,6 +7747,8 @@ var ResolvedImage = class ResolvedImage {
 		});
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/projection_definition.mjs
 var ProjectionDefinition = class ProjectionDefinition {
 	constructor(from, to, transition) {
 		this.from = from;
@@ -7774,6 +7773,27 @@ var ProjectionDefinition = class ProjectionDefinition {
 		if (typeof input === "string") return new ProjectionDefinition(input, input, 1);
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/types/collator.mjs
+var Collator = class {
+	constructor(caseSensitive, diacriticSensitive, locale) {
+		if (caseSensitive) this.sensitivity = diacriticSensitive ? "variant" : "case";
+		else this.sensitivity = diacriticSensitive ? "accent" : "base";
+		this.locale = locale;
+		this.collator = new Intl.Collator(this.locale ? this.locale : [], {
+			sensitivity: this.sensitivity,
+			usage: "search"
+		});
+	}
+	compare(lhs, rhs) {
+		return this.collator.compare(lhs, rhs);
+	}
+	resolvedLocale() {
+		return new Intl.Collator(this.locale ? this.locale : []).resolvedOptions().locale;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/values.mjs
 function validateRGBA(r, g, b, a) {
 	if (!(typeof r === "number" && r >= 0 && r <= 255 && typeof g === "number" && g >= 0 && g <= 255 && typeof b === "number" && b >= 0 && b <= 255)) return `Invalid rgba value [${(typeof a === "number" ? [
 		r,
@@ -7839,6 +7859,8 @@ function valueToString(value) {
 	else if (value instanceof Color || value instanceof ProjectionDefinition || value instanceof Formatted || value instanceof Padding || value instanceof NumberArray || value instanceof ColorArray || value instanceof VariableAnchorOffsetCollection || value instanceof ResolvedImage) return value.toString();
 	else return JSON.stringify(value);
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/literal.mjs
 var Literal = class Literal {
 	constructor(type, value) {
 		this.type = type;
@@ -7846,7 +7868,7 @@ var Literal = class Literal {
 	}
 	static parse(args, context) {
 		if (args.length !== 2) return context.error(`'literal' expression requires exactly one argument, but found ${args.length - 1} instead.`);
-		if (!isValue(args[1])) return context.error("invalid value");
+		if (!isValue(args[1])) return context.error(`invalid value of type "${typeof args[1]}"`);
 		const value = args[1];
 		let type = typeOf(value);
 		const expected = context.expectedType;
@@ -7861,183 +7883,8 @@ var Literal = class Literal {
 		return true;
 	}
 };
-const types$1 = {
-	string: StringType,
-	number: NumberType,
-	boolean: BooleanType,
-	object: ObjectType
-};
-var Assertion = class Assertion {
-	constructor(type, args, key) {
-		this.type = type;
-		this.args = args;
-		this.key = key;
-	}
-	static parse(args, context) {
-		if (args.length < 2) return context.error("Expected at least one argument.");
-		let i = 1;
-		let type;
-		const name = args[0];
-		if (name === "array") {
-			let itemType;
-			if (args.length > 2) {
-				const type = args[1];
-				if (typeof type !== "string" || !(type in types$1) || type === "object") return context.error("The item type argument of \"array\" must be one of string, number, boolean", 1);
-				itemType = types$1[type];
-				i++;
-			} else itemType = ValueType;
-			let N;
-			if (args.length > 3) {
-				if (args[2] !== null && (typeof args[2] !== "number" || args[2] < 0 || args[2] !== Math.floor(args[2]))) return context.error("The length argument to \"array\" must be a positive integer literal", 2);
-				N = args[2];
-				i++;
-			}
-			type = array(itemType, N);
-		} else {
-			if (!types$1[name]) throw new Error(`Types doesn't contain name = ${name}`);
-			type = types$1[name];
-		}
-		const parsed = [];
-		for (; i < args.length; i++) {
-			const input = context.parse(args[i], i, ValueType);
-			if (!input) return null;
-			parsed.push(input);
-		}
-		return new Assertion(type, parsed, context.key);
-	}
-	evaluate(ctx) {
-		for (let i = 0; i < this.args.length; i++) {
-			const value = this.args[i].evaluate(ctx);
-			if (!checkSubtype(this.type, typeOf(value))) return value;
-			else if (i === this.args.length - 1) throw new RuntimeError(`Expected value to be of type ${typeToString(this.type)}, but found ${typeToString(typeOf(value))} instead.`, this.key);
-		}
-		throw new Error();
-	}
-	eachChild(fn) {
-		this.args.forEach(fn);
-	}
-	outputDefined() {
-		return this.args.every((arg) => arg.outputDefined());
-	}
-};
-const types = {
-	"to-boolean": BooleanType,
-	"to-color": ColorType,
-	"to-number": NumberType,
-	"to-string": StringType
-};
-/**
-* Special form for error-coalescing coercion expressions "to-number",
-* "to-color".  Since these coercions can fail at runtime, they accept multiple
-* arguments, only evaluating one at a time until one succeeds.
-*
-* @private
-*/
-var Coercion = class Coercion {
-	constructor(type, args, key) {
-		this.type = type;
-		this.args = args;
-		this.key = key;
-	}
-	static parse(args, context) {
-		if (args.length < 2) return context.error("Expected at least one argument.");
-		const name = args[0];
-		if (!types[name]) throw new Error(`Can't parse ${name} as it is not part of the known types`);
-		if ((name === "to-boolean" || name === "to-string") && args.length !== 2) return context.error("Expected one argument.");
-		const type = types[name];
-		const parsed = [];
-		for (let i = 1; i < args.length; i++) {
-			const input = context.parse(args[i], i, ValueType);
-			if (!input) return null;
-			parsed.push(input);
-		}
-		return new Coercion(type, parsed, context.key);
-	}
-	evaluate(ctx) {
-		switch (this.type.kind) {
-			case "boolean": return Boolean(this.args[0].evaluate(ctx));
-			case "color": {
-				let input;
-				let error;
-				for (const arg of this.args) {
-					input = arg.evaluate(ctx);
-					error = null;
-					if (input instanceof Color) return input;
-					else if (typeof input === "string") {
-						const c = ctx.parseColor(input);
-						if (c) return c;
-					} else if (Array.isArray(input)) {
-						if (input.length < 3 || input.length > 4) error = `Invalid rgba value ${JSON.stringify(input)}: expected an array containing either three or four numeric values.`;
-						else error = validateRGBA(input[0], input[1], input[2], input[3]);
-						if (!error) return new Color(input[0] / 255, input[1] / 255, input[2] / 255, input[3]);
-					}
-				}
-				throw new RuntimeError(error || `Could not parse color from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
-			}
-			case "padding": {
-				let input;
-				for (const arg of this.args) {
-					input = arg.evaluate(ctx);
-					const pad = Padding.parse(input);
-					if (pad) return pad;
-				}
-				throw new RuntimeError(`Could not parse padding from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
-			}
-			case "numberArray": {
-				let input;
-				for (const arg of this.args) {
-					input = arg.evaluate(ctx);
-					const val = NumberArray.parse(input);
-					if (val) return val;
-				}
-				throw new RuntimeError(`Could not parse numberArray from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
-			}
-			case "colorArray": {
-				let input;
-				for (const arg of this.args) {
-					input = arg.evaluate(ctx);
-					const val = ColorArray.parse(input);
-					if (val) return val;
-				}
-				throw new RuntimeError(`Could not parse colorArray from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
-			}
-			case "variableAnchorOffsetCollection": {
-				let input;
-				for (const arg of this.args) {
-					input = arg.evaluate(ctx);
-					const coll = VariableAnchorOffsetCollection.parse(input);
-					if (coll) return coll;
-				}
-				throw new RuntimeError(`Could not parse variableAnchorOffsetCollection from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
-			}
-			case "number": {
-				let value = null;
-				for (const arg of this.args) {
-					value = arg.evaluate(ctx);
-					if (value === null) return 0;
-					const num = Number(value);
-					if (isNaN(num)) continue;
-					return num;
-				}
-				throw new RuntimeError(`Could not convert ${JSON.stringify(value)} to number.`, this.key);
-			}
-			case "formatted": return Formatted.fromString(valueToString(this.args[0].evaluate(ctx)));
-			case "resolvedImage": return ResolvedImage.fromString(valueToString(this.args[0].evaluate(ctx)));
-			case "projectionDefinition": {
-				const input = this.args[0].evaluate(ctx);
-				if (ProjectionDefinition.parse(input)) return input;
-				throw new RuntimeError(`Could not parse projectionDefinition from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
-			}
-			default: return valueToString(this.args[0].evaluate(ctx));
-		}
-	}
-	eachChild(fn) {
-		this.args.forEach(fn);
-	}
-	outputDefined() {
-		return this.args.every((arg) => arg.outputDefined());
-	}
-};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/evaluation_context.mjs
 const geometryTypes = [
 	"Unknown",
 	"Point",
@@ -8078,443 +7925,8 @@ var EvaluationContext = class {
 		return cached;
 	}
 };
-/**
-* State associated parsing at a given point in an expression tree.
-* @private
-*/
-var ParsingContext = class ParsingContext {
-	constructor(registry, isConstantFunc, path = [], expectedType, scope = new Scope(), errors = []) {
-		this.registry = registry;
-		this.path = path;
-		this.key = path.map((part) => `[${part}]`).join("");
-		this.scope = scope;
-		this.errors = errors;
-		this.expectedType = expectedType;
-		this._isConstant = isConstantFunc;
-	}
-	/**
-	* @param expr the JSON expression to parse
-	* @param index the optional argument index if this expression is an argument of a parent expression that's being parsed
-	* @param options
-	* @param options.omitTypeAnnotations set true to omit inferred type annotations.  Caller beware: with this option set, the parsed expression's type will NOT satisfy `expectedType` if it would normally be wrapped in an inferred annotation.
-	* @private
-	*/
-	parse(expr, index, expectedType, bindings, options = {}) {
-		if (index) return this.concat(index, expectedType, bindings)._parse(expr, options);
-		return this._parse(expr, options);
-	}
-	_parse(expr, options) {
-		if (expr === null || typeof expr === "string" || typeof expr === "boolean" || typeof expr === "number") expr = ["literal", expr];
-		const key = this.key;
-		function annotate(parsed, type, typeAnnotation) {
-			if (typeAnnotation === "assert") return new Assertion(type, [parsed], key);
-			else if (typeAnnotation === "coerce") return new Coercion(type, [parsed], key);
-			else return parsed;
-		}
-		if (Array.isArray(expr)) {
-			if (expr.length === 0) return this.error("Expected an array with at least one element. If you wanted a literal array, use [\"literal\", []].");
-			const op = expr[0];
-			if (typeof op !== "string") {
-				this.error(`Expression name must be a string, but found ${typeof op} instead. If you wanted a literal array, use ["literal", [...]].`, 0);
-				return null;
-			}
-			const Expr = this.registry[op];
-			if (Expr) {
-				let parsed = Expr.parse(expr, this);
-				if (!parsed) return null;
-				if (this.expectedType) {
-					const expected = this.expectedType;
-					const actual = parsed.type;
-					if ((expected.kind === "string" || expected.kind === "number" || expected.kind === "boolean" || expected.kind === "object" || expected.kind === "array") && actual.kind === "value") parsed = annotate(parsed, expected, options.typeAnnotation || "assert");
-					else if ("projectionDefinition" === expected.kind && [
-						"string",
-						"array",
-						"value"
-					].includes(actual.kind) || [
-						"color",
-						"formatted",
-						"resolvedImage"
-					].includes(expected.kind) && ["value", "string"].includes(actual.kind) || ["padding", "numberArray"].includes(expected.kind) && [
-						"value",
-						"number",
-						"array"
-					].includes(actual.kind) || "colorArray" === expected.kind && [
-						"value",
-						"string",
-						"array"
-					].includes(actual.kind) || "variableAnchorOffsetCollection" === expected.kind && ["value", "array"].includes(actual.kind)) parsed = annotate(parsed, expected, options.typeAnnotation || "coerce");
-					else if (this.checkSubtype(expected, actual)) return null;
-				}
-				if (!(parsed instanceof Literal) && parsed.type.kind !== "resolvedImage" && this._isConstant(parsed)) {
-					const ec = new EvaluationContext();
-					try {
-						parsed = new Literal(parsed.type, parsed.evaluate(ec));
-					} catch (e) {
-						this.error(e.message);
-						return null;
-					}
-				}
-				return parsed;
-			}
-			return this.error(`Unknown expression "${op}". If you wanted a literal array, use ["literal", [...]].`, 0);
-		} else if (typeof expr === "undefined") return this.error("'undefined' value invalid. Use null instead.");
-		else if (typeof expr === "object") return this.error("Bare objects invalid. Use [\"literal\", {...}] instead.");
-		else return this.error(`Expected an array, but found ${typeof expr} instead.`);
-	}
-	/**
-	* Returns a copy of this context suitable for parsing the subexpression at
-	* index `index`, optionally appending to 'let' binding map.
-	*
-	* Note that `errors` property, intended for collecting errors while
-	* parsing, is copied by reference rather than cloned.
-	* @private
-	*/
-	concat(index, expectedType, bindings) {
-		const path = typeof index === "number" ? this.path.concat(index) : this.path;
-		const scope = bindings ? this.scope.concat(bindings) : this.scope;
-		return new ParsingContext(this.registry, this._isConstant, path, expectedType || null, scope, this.errors);
-	}
-	/**
-	* Push a parsing (or type checking) error into the `this.errors`
-	* @param error The message
-	* @param keys Optionally specify the source of the error at a child
-	* of the current expression at `this.key`.
-	* @private
-	*/
-	error(error, ...keys) {
-		const key = `${this.key}${keys.map((k) => `[${k}]`).join("")}`;
-		this.errors.push(new ExpressionParsingError(key, error));
-	}
-	/**
-	* Returns null if `t` is a subtype of `expected`; otherwise returns an
-	* error message and also pushes it to `this.errors`.
-	* @param expected The expected type
-	* @param t The actual type
-	* @returns null if `t` is a subtype of `expected`; otherwise returns an error message
-	*/
-	checkSubtype(expected, t) {
-		const error = checkSubtype(expected, t);
-		if (error) this.error(error);
-		return error;
-	}
-};
-var Let = class Let {
-	constructor(bindings, result) {
-		this.type = result.type;
-		this.bindings = [].concat(bindings);
-		this.result = result;
-	}
-	evaluate(ctx) {
-		return this.result.evaluate(ctx);
-	}
-	eachChild(fn) {
-		for (const binding of this.bindings) fn(binding[1]);
-		fn(this.result);
-	}
-	static parse(args, context) {
-		if (args.length < 4) return context.error(`Expected at least 3 arguments, but found ${args.length - 1} instead.`);
-		const bindings = [];
-		for (let i = 1; i < args.length - 1; i += 2) {
-			const name = args[i];
-			if (typeof name !== "string") return context.error(`Expected string, but found ${typeof name} instead.`, i);
-			if (/[^a-zA-Z0-9_]/.test(name)) return context.error("Variable names must contain only alphanumeric characters or '_'.", i);
-			const value = context.parse(args[i + 1], i + 1);
-			if (!value) return null;
-			bindings.push([name, value]);
-		}
-		const result = context.parse(args[args.length - 1], args.length - 1, context.expectedType, bindings);
-		if (!result) return null;
-		return new Let(bindings, result);
-	}
-	outputDefined() {
-		return this.result.outputDefined();
-	}
-};
-var Var = class Var {
-	constructor(name, boundExpression) {
-		this.type = boundExpression.type;
-		this.name = name;
-		this.boundExpression = boundExpression;
-	}
-	static parse(args, context) {
-		if (args.length !== 2 || typeof args[1] !== "string") return context.error("'var' expression requires exactly one string literal argument.");
-		const name = args[1];
-		if (!context.scope.has(name)) return context.error(`Unknown variable "${name}". Make sure "${name}" has been bound in an enclosing "let" expression before using it.`, 1);
-		return new Var(name, context.scope.get(name));
-	}
-	evaluate(ctx) {
-		return this.boundExpression.evaluate(ctx);
-	}
-	eachChild() {}
-	outputDefined() {
-		return false;
-	}
-};
-var At = class At {
-	constructor(type, index, input, key) {
-		this.type = type;
-		this.index = index;
-		this.input = input;
-		this.key = key;
-	}
-	static parse(args, context) {
-		if (args.length !== 3) return context.error(`Expected 2 arguments, but found ${args.length - 1} instead.`);
-		const index = context.parse(args[1], 1, NumberType);
-		const input = context.parse(args[2], 2, array(context.expectedType || ValueType));
-		if (!index || !input) return null;
-		const t = input.type;
-		return new At(t.itemType, index, input, context.key);
-	}
-	evaluate(ctx) {
-		const index = this.index.evaluate(ctx);
-		const array = this.input.evaluate(ctx);
-		if (index < 0) throw new RuntimeError(`Array index out of bounds: ${index} < 0.`, this.key);
-		if (index >= array.length) throw new RuntimeError(`Array index out of bounds: ${index} > ${array.length - 1}.`, this.key);
-		if (index !== Math.floor(index)) throw new RuntimeError(`Array index must be an integer, but found ${index} instead.`, this.key);
-		return array[index];
-	}
-	eachChild(fn) {
-		fn(this.index);
-		fn(this.input);
-	}
-	outputDefined() {
-		return false;
-	}
-};
-var In = class In {
-	constructor(needle, haystack, key) {
-		this.needle = needle;
-		this.haystack = haystack;
-		this.key = key;
-		this.type = BooleanType;
-	}
-	static parse(args, context) {
-		if (args.length !== 3) return context.error(`Expected 2 arguments, but found ${args.length - 1} instead.`);
-		const needle = context.parse(args[1], 1, ValueType);
-		const haystack = context.parse(args[2], 2, ValueType);
-		if (!needle || !haystack) return null;
-		if (!isValidType(needle.type, [
-			BooleanType,
-			StringType,
-			NumberType,
-			NullType,
-			ValueType
-		])) return context.error(`Expected first argument to be of type boolean, string, number or null, but found ${typeToString(needle.type)} instead`);
-		return new In(needle, haystack, context.key);
-	}
-	evaluate(ctx) {
-		const needle = this.needle.evaluate(ctx);
-		const haystack = this.haystack.evaluate(ctx);
-		if (!haystack) return false;
-		if (!isValidNativeType(needle, [
-			"boolean",
-			"string",
-			"number",
-			"null"
-		])) throw new RuntimeError(`Expected first argument to be of type boolean, string, number or null, but found ${typeToString(typeOf(needle))} instead.`, this.key);
-		if (!isValidNativeType(haystack, ["string", "array"])) throw new RuntimeError(`Expected second argument to be of type array or string, but found ${typeToString(typeOf(haystack))} instead.`, this.key);
-		return haystack.indexOf(needle) >= 0;
-	}
-	eachChild(fn) {
-		fn(this.needle);
-		fn(this.haystack);
-	}
-	outputDefined() {
-		return true;
-	}
-};
-var IndexOf = class IndexOf {
-	constructor(needle, haystack, key, fromIndex) {
-		this.needle = needle;
-		this.haystack = haystack;
-		this.key = key;
-		this.fromIndex = fromIndex;
-		this.type = NumberType;
-	}
-	static parse(args, context) {
-		if (args.length <= 2 || args.length >= 5) return context.error(`Expected 2 or 3 arguments, but found ${args.length - 1} instead.`);
-		const needle = context.parse(args[1], 1, ValueType);
-		const haystack = context.parse(args[2], 2, ValueType);
-		if (!needle || !haystack) return null;
-		if (!isValidType(needle.type, [
-			BooleanType,
-			StringType,
-			NumberType,
-			NullType,
-			ValueType
-		])) return context.error(`Expected first argument to be of type boolean, string, number or null, but found ${typeToString(needle.type)} instead`);
-		if (args.length === 4) {
-			const fromIndex = context.parse(args[3], 3, NumberType);
-			if (!fromIndex) return null;
-			return new IndexOf(needle, haystack, context.key, fromIndex);
-		} else return new IndexOf(needle, haystack, context.key);
-	}
-	evaluate(ctx) {
-		const needle = this.needle.evaluate(ctx);
-		const haystack = this.haystack.evaluate(ctx);
-		if (!isValidNativeType(needle, [
-			"boolean",
-			"string",
-			"number",
-			"null"
-		])) throw new RuntimeError(`Expected first argument to be of type boolean, string, number or null, but found ${typeToString(typeOf(needle))} instead.`, this.key);
-		let fromIndex;
-		if (this.fromIndex) fromIndex = this.fromIndex.evaluate(ctx);
-		if (isValidNativeType(haystack, ["string"])) {
-			const rawIndex = haystack.indexOf(needle, fromIndex);
-			if (rawIndex === -1) return -1;
-			else return [...haystack.slice(0, rawIndex)].length;
-		} else if (isValidNativeType(haystack, ["array"])) return haystack.indexOf(needle, fromIndex);
-		else throw new RuntimeError(`Expected second argument to be of type array or string, but found ${typeToString(typeOf(haystack))} instead.`, this.key);
-	}
-	eachChild(fn) {
-		fn(this.needle);
-		fn(this.haystack);
-		if (this.fromIndex) fn(this.fromIndex);
-	}
-	outputDefined() {
-		return false;
-	}
-};
-var Match = class Match {
-	constructor(inputType, outputType, input, cases, outputs, otherwise) {
-		this.inputType = inputType;
-		this.type = outputType;
-		this.input = input;
-		this.cases = cases;
-		this.outputs = outputs;
-		this.otherwise = otherwise;
-	}
-	static parse(args, context) {
-		if (args.length < 5) return context.error(`Expected at least 4 arguments, but found only ${args.length - 1}.`);
-		if (args.length % 2 !== 1) return context.error("Expected an even number of arguments.");
-		let inputType;
-		let outputType;
-		if (context.expectedType && context.expectedType.kind !== "value") outputType = context.expectedType;
-		const cases = {};
-		const outputs = [];
-		for (let i = 2; i < args.length - 1; i += 2) {
-			let labels = args[i];
-			const value = args[i + 1];
-			if (!Array.isArray(labels)) labels = [labels];
-			const labelContext = context.concat(i);
-			if (labels.length === 0) return labelContext.error("Expected at least one branch label.");
-			for (const label of labels) {
-				if (typeof label !== "number" && typeof label !== "string") return labelContext.error("Branch labels must be numbers or strings.");
-				else if (typeof label === "number" && Math.abs(label) > Number.MAX_SAFE_INTEGER) return labelContext.error(`Branch labels must be integers no larger than ${Number.MAX_SAFE_INTEGER}.`);
-				else if (typeof label === "number" && Math.floor(label) !== label) return labelContext.error("Numeric branch labels must be integer values.");
-				else if (!inputType) inputType = typeOf(label);
-				else if (labelContext.checkSubtype(inputType, typeOf(label))) return null;
-				if (typeof cases[String(label)] !== "undefined") return labelContext.error("Branch labels must be unique.");
-				cases[String(label)] = outputs.length;
-			}
-			const result = context.parse(value, i, outputType);
-			if (!result) return null;
-			outputType = outputType || result.type;
-			outputs.push(result);
-		}
-		const input = context.parse(args[1], 1, ValueType);
-		if (!input) return null;
-		const otherwise = context.parse(args[args.length - 1], args.length - 1, outputType);
-		if (!otherwise) return null;
-		if (input.type.kind !== "value" && context.concat(1).checkSubtype(inputType, input.type)) return null;
-		return new Match(inputType, outputType, input, cases, outputs, otherwise);
-	}
-	evaluate(ctx) {
-		const input = this.input.evaluate(ctx);
-		return (typeOf(input) === this.inputType && this.outputs[this.cases[input]] || this.otherwise).evaluate(ctx);
-	}
-	eachChild(fn) {
-		fn(this.input);
-		this.outputs.forEach(fn);
-		fn(this.otherwise);
-	}
-	outputDefined() {
-		return this.outputs.every((out) => out.outputDefined()) && this.otherwise.outputDefined();
-	}
-};
-var Case = class Case {
-	constructor(type, branches, otherwise) {
-		this.type = type;
-		this.branches = branches;
-		this.otherwise = otherwise;
-	}
-	static parse(args, context) {
-		if (args.length < 4) return context.error(`Expected at least 3 arguments, but found only ${args.length - 1}.`);
-		if (args.length % 2 !== 0) return context.error("Expected an odd number of arguments.");
-		let outputType;
-		if (context.expectedType && context.expectedType.kind !== "value") outputType = context.expectedType;
-		const branches = [];
-		for (let i = 1; i < args.length - 1; i += 2) {
-			const test = context.parse(args[i], i, BooleanType);
-			if (!test) return null;
-			const result = context.parse(args[i + 1], i + 1, outputType);
-			if (!result) return null;
-			branches.push([test, result]);
-			outputType = outputType || result.type;
-		}
-		const otherwise = context.parse(args[args.length - 1], args.length - 1, outputType);
-		if (!otherwise) return null;
-		if (!outputType) throw new Error("Can't infer output type");
-		return new Case(outputType, branches, otherwise);
-	}
-	evaluate(ctx) {
-		for (const [test, expression] of this.branches) if (test.evaluate(ctx)) return expression.evaluate(ctx);
-		return this.otherwise.evaluate(ctx);
-	}
-	eachChild(fn) {
-		for (const [test, expression] of this.branches) {
-			fn(test);
-			fn(expression);
-		}
-		fn(this.otherwise);
-	}
-	outputDefined() {
-		return this.branches.every(([_, out]) => out.outputDefined()) && this.otherwise.outputDefined();
-	}
-};
-var Slice = class Slice {
-	constructor(type, input, beginIndex, key, endIndex) {
-		this.type = type;
-		this.input = input;
-		this.beginIndex = beginIndex;
-		this.key = key;
-		this.endIndex = endIndex;
-	}
-	static parse(args, context) {
-		if (args.length <= 2 || args.length >= 5) return context.error(`Expected 2 or 3 arguments, but found ${args.length - 1} instead.`);
-		const input = context.parse(args[1], 1, ValueType);
-		const beginIndex = context.parse(args[2], 2, NumberType);
-		if (!input || !beginIndex) return null;
-		if (!isValidType(input.type, [
-			array(ValueType),
-			StringType,
-			ValueType
-		])) return context.error(`Expected first argument to be of type array or string, but found ${typeToString(input.type)} instead`);
-		if (args.length === 4) {
-			const endIndex = context.parse(args[3], 3, NumberType);
-			if (!endIndex) return null;
-			return new Slice(input.type, input, beginIndex, context.key, endIndex);
-		} else return new Slice(input.type, input, beginIndex, context.key);
-	}
-	evaluate(ctx) {
-		const input = this.input.evaluate(ctx);
-		const beginIndex = this.beginIndex.evaluate(ctx);
-		let endIndex;
-		if (this.endIndex) endIndex = this.endIndex.evaluate(ctx);
-		if (isValidNativeType(input, ["string"])) return [...input].slice(beginIndex, endIndex).join("");
-		else if (isValidNativeType(input, ["array"])) return input.slice(beginIndex, endIndex);
-		else throw new RuntimeError(`Expected first argument to be of type array or string, but found ${typeToString(typeOf(input))} instead.`, this.key);
-	}
-	eachChild(fn) {
-		fn(this.input);
-		fn(this.beginIndex);
-		if (this.endIndex) fn(this.endIndex);
-	}
-	outputDefined() {
-		return false;
-	}
-};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/stops.mjs
 /**
 * Returns the index of the last stop <= input, or 0 if it doesn't exist.
 * @private
@@ -8537,6 +7949,8 @@ function findStopLessThanOrEqualTo(stops, input, key) {
 	}
 	return 0;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/step.mjs
 var Step = class Step {
 	constructor(type, input, stops, key) {
 		this.type = type;
@@ -8589,6 +8003,8 @@ var Step = class Step {
 		return this.outputs.every((out) => out.outputDefined());
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/node_modules/@mapbox/unitbezier/index.mjs
 function unitBezier(p1x, p1y, p2x, p2y) {
 	const cx = 3 * p1x;
 	const bx = 3 * (p2x - p1x) - cx;
@@ -8620,6 +8036,8 @@ function unitBezier(p1x, p1y, p2x, p2y) {
 		return ((ay * t + by) * t + cy) * t;
 	};
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/interpolate.mjs
 var Interpolate = class Interpolate {
 	constructor(type, operator, interpolation, input, stops, key) {
 		this.type = type;
@@ -8780,6 +8198,719 @@ const interpolateFactory = {
 	variableAnchorOffsetCollection: VariableAnchorOffsetCollection.interpolate,
 	array: interpolateArray
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/format.mjs
+var FormatExpression = class FormatExpression {
+	constructor(sections) {
+		this.type = FormattedType;
+		this.sections = sections;
+	}
+	static parse(args, context) {
+		if (args.length < 2) return context.error("Expected at least one argument.");
+		const firstArg = args[1];
+		if (!Array.isArray(firstArg) && typeof firstArg === "object") return context.error("First argument must be an image or text section.");
+		const sections = [];
+		let nextTokenMayBeObject = false;
+		for (let i = 1; i <= args.length - 1; ++i) {
+			const arg = args[i];
+			if (nextTokenMayBeObject && typeof arg === "object" && !Array.isArray(arg)) {
+				nextTokenMayBeObject = false;
+				let scale = null;
+				if (arg["font-scale"]) {
+					scale = context.parse(arg["font-scale"], 1, NumberType);
+					if (!scale) return null;
+				}
+				let font = null;
+				if (arg["text-font"]) {
+					font = context.parse(arg["text-font"], 1, array(StringType));
+					if (!font) return null;
+				}
+				let textColor = null;
+				if (arg["text-color"]) {
+					textColor = context.parse(arg["text-color"], 1, ColorType);
+					if (!textColor) return null;
+				}
+				let verticalAlign = null;
+				if (arg["vertical-align"]) {
+					if (typeof arg["vertical-align"] === "string" && !VERTICAL_ALIGN_OPTIONS.includes(arg["vertical-align"])) return context.error(`'vertical-align' must be one of: 'bottom', 'center', 'top' but found '${arg["vertical-align"]}' instead.`);
+					verticalAlign = context.parse(arg["vertical-align"], 1, StringType);
+					if (!verticalAlign) return null;
+				}
+				const lastExpression = sections[sections.length - 1];
+				lastExpression.scale = scale;
+				lastExpression.font = font;
+				lastExpression.textColor = textColor;
+				lastExpression.verticalAlign = verticalAlign;
+			} else {
+				const content = context.parse(args[i], 1, ValueType);
+				if (!content) return null;
+				const kind = content.type.kind;
+				if (kind !== "string" && kind !== "value" && kind !== "null" && kind !== "resolvedImage") return context.error("Formatted text type must be 'string', 'value', 'image' or 'null'.");
+				nextTokenMayBeObject = true;
+				sections.push({
+					content,
+					scale: null,
+					font: null,
+					textColor: null,
+					verticalAlign: null
+				});
+			}
+		}
+		return new FormatExpression(sections);
+	}
+	evaluate(ctx) {
+		const evaluateSection = (section) => {
+			const evaluatedContent = section.content.evaluate(ctx);
+			if (typeOf(evaluatedContent) === ResolvedImageType) return new FormattedSection("", evaluatedContent, null, null, null, section.verticalAlign ? section.verticalAlign.evaluate(ctx) : null);
+			return new FormattedSection(valueToString(evaluatedContent), null, section.scale ? section.scale.evaluate(ctx) : null, section.font ? section.font.evaluate(ctx).join(",") : null, section.textColor ? section.textColor.evaluate(ctx) : null, section.verticalAlign ? section.verticalAlign.evaluate(ctx) : null);
+		};
+		return new Formatted(this.sections.map(evaluateSection));
+	}
+	eachChild(fn) {
+		for (const section of this.sections) {
+			fn(section.content);
+			if (section.scale) fn(section.scale);
+			if (section.font) fn(section.font);
+			if (section.textColor) fn(section.textColor);
+			if (section.verticalAlign) fn(section.verticalAlign);
+		}
+	}
+	outputDefined() {
+		return false;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/node_modules/quickselect/index.mjs
+/**
+* Rearranges items so that all items in the [left, k] are the smallest.
+* The k-th element will have the (k - left + 1)-th smallest value in [left, right].
+*
+* @template T
+* @param {T[]} arr the array to partially sort (in place)
+* @param {number} k middle index for partial sorting (as defined above)
+* @param {number} [left=0] left index of the range to sort
+* @param {number} [right=arr.length-1] right index
+* @param {(a: T, b: T) => number} [compare = (a, b) => a - b] compare function
+*/
+function quickselect(arr, k, left = 0, right = arr.length - 1, compare = defaultCompare) {
+	while (right > left) {
+		if (right - left > 600) {
+			const n = right - left + 1;
+			const m = k - left + 1;
+			const z = Math.log(n);
+			const s = .5 * Math.exp(2 * z / 3);
+			const sd = .5 * Math.sqrt(z * s * (n - s) / n) * (m - n / 2 < 0 ? -1 : 1);
+			quickselect(arr, k, Math.max(left, Math.floor(k - m * s / n + sd)), Math.min(right, Math.floor(k + (n - m) * s / n + sd)), compare);
+		}
+		const t = arr[k];
+		let i = left;
+		/** @type {number} */
+		let j = right;
+		swap$2(arr, left, k);
+		if (compare(arr[right], t) > 0) swap$2(arr, left, right);
+		while (i < j) {
+			swap$2(arr, i, j);
+			i++;
+			j--;
+			while (compare(arr[i], t) < 0) i++;
+			while (compare(arr[j], t) > 0) j--;
+		}
+		if (compare(arr[left], t) === 0) swap$2(arr, left, j);
+		else {
+			j++;
+			swap$2(arr, j, right);
+		}
+		if (j <= k) left = j + 1;
+		if (k <= j) right = j - 1;
+	}
+}
+/**
+* @template T
+* @param {T[]} arr
+* @param {number} i
+* @param {number} j
+*/
+function swap$2(arr, i, j) {
+	const tmp = arr[i];
+	arr[i] = arr[j];
+	arr[j] = tmp;
+}
+/**
+* @template T
+* @param {T} a
+* @param {T} b
+* @returns {number}
+*/
+function defaultCompare(a, b) {
+	return a < b ? -1 : a > b ? 1 : 0;
+}
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/classify_rings.mjs
+/**
+* Classifies an array of rings into polygons with outer rings and holes
+* @param rings - the rings to classify
+* @param maxRings - the maximum number of rings to include in a polygon, use 0 to include all rings
+* @returns an array of polygons with internal rings as holes
+*/
+function classifyRings$1(rings, maxRings) {
+	if (rings.length <= 1) return [rings];
+	const polygons = [];
+	let polygon;
+	let ccw;
+	for (const ring of rings) {
+		const area = calculateSignedArea(ring);
+		if (area === 0) continue;
+		ring.area = Math.abs(area);
+		if (ccw === void 0) ccw = area < 0;
+		if (ccw === area < 0) {
+			if (polygon) polygons.push(polygon);
+			polygon = [ring];
+		} else polygon.push(ring);
+	}
+	if (polygon) polygons.push(polygon);
+	if (maxRings > 1) for (let j = 0; j < polygons.length; j++) {
+		if (polygons[j].length <= maxRings) continue;
+		quickselect(polygons[j], maxRings, 1, polygons[j].length - 1, compareAreas);
+		polygons[j] = polygons[j].slice(0, maxRings);
+	}
+	return polygons;
+}
+function compareAreas(a, b) {
+	return b.area - a.area;
+}
+/**
+* Returns the signed area for the polygon ring.  Positive areas are exterior rings and
+* have a clockwise winding.  Negative areas are interior rings and have a counter clockwise
+* ordering.
+*
+* @param ring - Exterior or interior ring
+* @returns Signed area
+*/
+function calculateSignedArea(ring) {
+	let sum = 0;
+	for (let i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
+		p1 = ring[i];
+		p2 = ring[j];
+		sum += (p2.x - p1.x) * (p1.y + p2.y);
+	}
+	return sum;
+}
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/assertion.mjs
+const types$1 = {
+	string: StringType,
+	number: NumberType,
+	boolean: BooleanType,
+	object: ObjectType
+};
+var Assertion = class Assertion {
+	constructor(type, args, key) {
+		this.type = type;
+		this.args = args;
+		this.key = key;
+	}
+	static parse(args, context) {
+		if (args.length < 2) return context.error("Expected at least one argument.");
+		let i = 1;
+		let type;
+		const name = args[0];
+		if (name === "array") {
+			let itemType;
+			if (args.length > 2) {
+				const type = args[1];
+				if (typeof type !== "string" || !(type in types$1) || type === "object") return context.error("The item type argument of \"array\" must be one of string, number, boolean", 1);
+				itemType = types$1[type];
+				i++;
+			} else itemType = ValueType;
+			let N;
+			if (args.length > 3) {
+				if (args[2] !== null && (typeof args[2] !== "number" || args[2] < 0 || args[2] !== Math.floor(args[2]))) return context.error("The length argument to \"array\" must be a positive integer literal", 2);
+				N = args[2];
+				i++;
+			}
+			type = array(itemType, N);
+		} else {
+			if (!types$1[name]) throw new Error(`Types doesn't contain name = ${name}`);
+			type = types$1[name];
+		}
+		const parsed = [];
+		for (; i < args.length; i++) {
+			const input = context.parse(args[i], i, ValueType);
+			if (!input) return null;
+			parsed.push(input);
+		}
+		return new Assertion(type, parsed, context.key);
+	}
+	evaluate(ctx) {
+		for (let i = 0; i < this.args.length; i++) {
+			const value = this.args[i].evaluate(ctx);
+			if (!checkSubtype(this.type, typeOf(value))) return value;
+			else if (i === this.args.length - 1) throw new RuntimeError(`Expected value to be of type ${typeToString(this.type)}, but found ${typeToString(typeOf(value))} instead.`, this.key);
+		}
+		throw new Error();
+	}
+	eachChild(fn) {
+		this.args.forEach(fn);
+	}
+	outputDefined() {
+		return this.args.every((arg) => arg.outputDefined());
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/coercion.mjs
+const types = {
+	"to-boolean": BooleanType,
+	"to-color": ColorType,
+	"to-number": NumberType,
+	"to-string": StringType
+};
+/**
+* Special form for error-coalescing coercion expressions "to-number",
+* "to-color".  Since these coercions can fail at runtime, they accept multiple
+* arguments, only evaluating one at a time until one succeeds.
+*
+* @private
+*/
+var Coercion = class Coercion {
+	constructor(type, args, key) {
+		this.type = type;
+		this.args = args;
+		this.key = key;
+	}
+	static parse(args, context) {
+		if (args.length < 2) return context.error("Expected at least one argument.");
+		const name = args[0];
+		if (!types[name]) throw new Error(`Can't parse ${name} as it is not part of the known types`);
+		if ((name === "to-boolean" || name === "to-string") && args.length !== 2) return context.error("Expected one argument.");
+		const type = types[name];
+		const parsed = [];
+		for (let i = 1; i < args.length; i++) {
+			const input = context.parse(args[i], i, ValueType);
+			if (!input) return null;
+			parsed.push(input);
+		}
+		return new Coercion(type, parsed, context.key);
+	}
+	evaluate(ctx) {
+		switch (this.type.kind) {
+			case "boolean": return Boolean(this.args[0].evaluate(ctx));
+			case "color": {
+				let input;
+				let error;
+				for (const arg of this.args) {
+					input = arg.evaluate(ctx);
+					error = null;
+					if (input instanceof Color) return input;
+					else if (typeof input === "string") {
+						const c = ctx.parseColor(input);
+						if (c) return c;
+					} else if (Array.isArray(input)) {
+						if (input.length < 3 || input.length > 4) error = `Invalid rgba value ${JSON.stringify(input)}: expected an array containing either three or four numeric values.`;
+						else error = validateRGBA(input[0], input[1], input[2], input[3]);
+						if (!error) return new Color(input[0] / 255, input[1] / 255, input[2] / 255, input[3]);
+					}
+				}
+				throw new RuntimeError(error || `Could not parse color from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
+			}
+			case "padding": {
+				let input;
+				for (const arg of this.args) {
+					input = arg.evaluate(ctx);
+					const pad = Padding.parse(input);
+					if (pad) return pad;
+				}
+				throw new RuntimeError(`Could not parse padding from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
+			}
+			case "numberArray": {
+				let input;
+				for (const arg of this.args) {
+					input = arg.evaluate(ctx);
+					const val = NumberArray.parse(input);
+					if (val) return val;
+				}
+				throw new RuntimeError(`Could not parse numberArray from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
+			}
+			case "colorArray": {
+				let input;
+				for (const arg of this.args) {
+					input = arg.evaluate(ctx);
+					const val = ColorArray.parse(input);
+					if (val) return val;
+				}
+				throw new RuntimeError(`Could not parse colorArray from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
+			}
+			case "variableAnchorOffsetCollection": {
+				let input;
+				for (const arg of this.args) {
+					input = arg.evaluate(ctx);
+					const coll = VariableAnchorOffsetCollection.parse(input);
+					if (coll) return coll;
+				}
+				throw new RuntimeError(`Could not parse variableAnchorOffsetCollection from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
+			}
+			case "number": {
+				let value = null;
+				for (const arg of this.args) {
+					value = arg.evaluate(ctx);
+					if (value === null) return 0;
+					const num = Number(value);
+					if (isNaN(num)) continue;
+					return num;
+				}
+				throw new RuntimeError(`Could not convert ${JSON.stringify(value)} to number.`, this.key);
+			}
+			case "formatted": return Formatted.fromString(valueToString(this.args[0].evaluate(ctx)));
+			case "resolvedImage": return ResolvedImage.fromString(valueToString(this.args[0].evaluate(ctx)));
+			case "projectionDefinition": {
+				const input = this.args[0].evaluate(ctx);
+				if (ProjectionDefinition.parse(input)) return input;
+				throw new RuntimeError(`Could not parse projectionDefinition from value '${typeof input === "string" ? input : JSON.stringify(input)}'`, this.key);
+			}
+			default: return valueToString(this.args[0].evaluate(ctx));
+		}
+	}
+	eachChild(fn) {
+		this.args.forEach(fn);
+	}
+	outputDefined() {
+		return this.args.every((arg) => arg.outputDefined());
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/let.mjs
+var Let = class Let {
+	constructor(bindings, result) {
+		this.type = result.type;
+		this.bindings = [].concat(bindings);
+		this.result = result;
+	}
+	evaluate(ctx) {
+		return this.result.evaluate(ctx);
+	}
+	eachChild(fn) {
+		for (const binding of this.bindings) fn(binding[1]);
+		fn(this.result);
+	}
+	static parse(args, context) {
+		if (args.length < 4) return context.error(`Expected at least 3 arguments, but found ${args.length - 1} instead.`);
+		const bindings = [];
+		for (let i = 1; i < args.length - 1; i += 2) {
+			const name = args[i];
+			if (typeof name !== "string") return context.error(`Expected string, but found ${typeof name} instead.`, i);
+			if (/[^a-zA-Z0-9_]/.test(name)) return context.error("Variable names must contain only alphanumeric characters or '_'.", i);
+			const value = context.parse(args[i + 1], i + 1);
+			if (!value) return null;
+			bindings.push([name, value]);
+		}
+		const result = context.parse(args[args.length - 1], args.length - 1, context.expectedType, bindings);
+		if (!result) return null;
+		return new Let(bindings, result);
+	}
+	outputDefined() {
+		return this.result.outputDefined();
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/var.mjs
+var Var = class Var {
+	constructor(name, boundExpression) {
+		this.type = boundExpression.type;
+		this.name = name;
+		this.boundExpression = boundExpression;
+	}
+	static parse(args, context) {
+		if (args.length !== 2 || typeof args[1] !== "string") return context.error("'var' expression requires exactly one string literal argument.");
+		const name = args[1];
+		if (!context.scope.has(name)) return context.error(`Unknown variable "${name}". Make sure "${name}" has been bound in an enclosing "let" expression before using it.`, 1);
+		return new Var(name, context.scope.get(name));
+	}
+	evaluate(ctx) {
+		return this.boundExpression.evaluate(ctx);
+	}
+	eachChild() {}
+	outputDefined() {
+		return false;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/at.mjs
+var At = class At {
+	constructor(type, index, input, key) {
+		this.type = type;
+		this.index = index;
+		this.input = input;
+		this.key = key;
+	}
+	static parse(args, context) {
+		if (args.length !== 3) return context.error(`Expected 2 arguments, but found ${args.length - 1} instead.`);
+		const index = context.parse(args[1], 1, NumberType);
+		const input = context.parse(args[2], 2, array(context.expectedType || ValueType));
+		if (!index || !input) return null;
+		const t = input.type;
+		return new At(t.itemType, index, input, context.key);
+	}
+	evaluate(ctx) {
+		const index = this.index.evaluate(ctx);
+		const array = this.input.evaluate(ctx);
+		if (index < 0) throw new RuntimeError(`Array index out of bounds: ${index} < 0.`, this.key);
+		if (index >= array.length) throw new RuntimeError(`Array index out of bounds: ${index} > ${array.length - 1}.`, this.key);
+		if (index !== Math.floor(index)) throw new RuntimeError(`Array index must be an integer, but found ${index} instead.`, this.key);
+		return array[index];
+	}
+	eachChild(fn) {
+		fn(this.index);
+		fn(this.input);
+	}
+	outputDefined() {
+		return false;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/in.mjs
+var In = class In {
+	constructor(needle, haystack, key) {
+		this.needle = needle;
+		this.haystack = haystack;
+		this.key = key;
+		this.type = BooleanType;
+	}
+	static parse(args, context) {
+		if (args.length !== 3) return context.error(`Expected 2 arguments, but found ${args.length - 1} instead.`);
+		const needle = context.parse(args[1], 1, ValueType);
+		const haystack = context.parse(args[2], 2, ValueType);
+		if (!needle || !haystack) return null;
+		if (!isValidType(needle.type, [
+			BooleanType,
+			StringType,
+			NumberType,
+			NullType,
+			ValueType
+		])) return context.error(`Expected first argument to be of type boolean, string, number or null, but found ${typeToString(needle.type)} instead`);
+		return new In(needle, haystack, context.key);
+	}
+	evaluate(ctx) {
+		const needle = this.needle.evaluate(ctx);
+		const haystack = this.haystack.evaluate(ctx);
+		if (!haystack) return false;
+		if (!isValidNativeType(needle, [
+			"boolean",
+			"string",
+			"number",
+			"null"
+		])) throw new RuntimeError(`Expected first argument to be of type boolean, string, number or null, but found ${typeToString(typeOf(needle))} instead.`, this.key);
+		if (!isValidNativeType(haystack, ["string", "array"])) throw new RuntimeError(`Expected second argument to be of type array or string, but found ${typeToString(typeOf(haystack))} instead.`, this.key);
+		return haystack.indexOf(needle) >= 0;
+	}
+	eachChild(fn) {
+		fn(this.needle);
+		fn(this.haystack);
+	}
+	outputDefined() {
+		return true;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/index_of.mjs
+var IndexOf = class IndexOf {
+	constructor(needle, haystack, key, fromIndex) {
+		this.needle = needle;
+		this.haystack = haystack;
+		this.key = key;
+		this.fromIndex = fromIndex;
+		this.type = NumberType;
+	}
+	static parse(args, context) {
+		if (args.length <= 2 || args.length >= 5) return context.error(`Expected 2 or 3 arguments, but found ${args.length - 1} instead.`);
+		const needle = context.parse(args[1], 1, ValueType);
+		const haystack = context.parse(args[2], 2, ValueType);
+		if (!needle || !haystack) return null;
+		if (!isValidType(needle.type, [
+			BooleanType,
+			StringType,
+			NumberType,
+			NullType,
+			ValueType
+		])) return context.error(`Expected first argument to be of type boolean, string, number or null, but found ${typeToString(needle.type)} instead`);
+		if (args.length === 4) {
+			const fromIndex = context.parse(args[3], 3, NumberType);
+			if (!fromIndex) return null;
+			return new IndexOf(needle, haystack, context.key, fromIndex);
+		} else return new IndexOf(needle, haystack, context.key);
+	}
+	evaluate(ctx) {
+		const needle = this.needle.evaluate(ctx);
+		const haystack = this.haystack.evaluate(ctx);
+		if (!isValidNativeType(needle, [
+			"boolean",
+			"string",
+			"number",
+			"null"
+		])) throw new RuntimeError(`Expected first argument to be of type boolean, string, number or null, but found ${typeToString(typeOf(needle))} instead.`, this.key);
+		let fromIndex;
+		if (this.fromIndex) fromIndex = this.fromIndex.evaluate(ctx);
+		if (isValidNativeType(haystack, ["string"])) {
+			const rawIndex = haystack.indexOf(needle, fromIndex);
+			if (rawIndex === -1) return -1;
+			else return [...haystack.slice(0, rawIndex)].length;
+		} else if (isValidNativeType(haystack, ["array"])) return haystack.indexOf(needle, fromIndex);
+		else throw new RuntimeError(`Expected second argument to be of type array or string, but found ${typeToString(typeOf(haystack))} instead.`, this.key);
+	}
+	eachChild(fn) {
+		fn(this.needle);
+		fn(this.haystack);
+		if (this.fromIndex) fn(this.fromIndex);
+	}
+	outputDefined() {
+		return false;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/match.mjs
+var Match = class Match {
+	constructor(inputType, outputType, input, cases, outputs, otherwise) {
+		this.inputType = inputType;
+		this.type = outputType;
+		this.input = input;
+		this.cases = cases;
+		this.outputs = outputs;
+		this.otherwise = otherwise;
+	}
+	static parse(args, context) {
+		if (args.length < 5) return context.error(`Expected at least 4 arguments, but found only ${args.length - 1}.`);
+		if (args.length % 2 !== 1) return context.error("Expected an even number of arguments.");
+		let inputType;
+		let outputType;
+		if (context.expectedType && context.expectedType.kind !== "value") outputType = context.expectedType;
+		const cases = {};
+		const outputs = [];
+		for (let i = 2; i < args.length - 1; i += 2) {
+			let labels = args[i];
+			const value = args[i + 1];
+			if (!Array.isArray(labels)) labels = [labels];
+			const labelContext = context.concat(i);
+			if (labels.length === 0) return labelContext.error("Expected at least one branch label.");
+			for (const label of labels) {
+				if (typeof label !== "number" && typeof label !== "string") return labelContext.error("Branch labels must be numbers or strings.");
+				else if (typeof label === "number" && Math.abs(label) > Number.MAX_SAFE_INTEGER) return labelContext.error(`Branch labels must be integers no larger than ${Number.MAX_SAFE_INTEGER}.`);
+				else if (typeof label === "number" && Math.floor(label) !== label) return labelContext.error("Numeric branch labels must be integer values.");
+				else if (!inputType) inputType = typeOf(label);
+				else if (labelContext.checkSubtype(inputType, typeOf(label))) return null;
+				if (typeof cases[String(label)] !== "undefined") return labelContext.error("Branch labels must be unique.");
+				cases[String(label)] = outputs.length;
+			}
+			const result = context.parse(value, i, outputType);
+			if (!result) return null;
+			outputType = outputType || result.type;
+			outputs.push(result);
+		}
+		const input = context.parse(args[1], 1, ValueType);
+		if (!input) return null;
+		const otherwise = context.parse(args[args.length - 1], args.length - 1, outputType);
+		if (!otherwise) return null;
+		if (input.type.kind !== "value" && context.concat(1).checkSubtype(inputType, input.type)) return null;
+		return new Match(inputType, outputType, input, cases, outputs, otherwise);
+	}
+	evaluate(ctx) {
+		const input = this.input.evaluate(ctx);
+		return (typeOf(input) === this.inputType && this.outputs[this.cases[input]] || this.otherwise).evaluate(ctx);
+	}
+	eachChild(fn) {
+		fn(this.input);
+		this.outputs.forEach(fn);
+		fn(this.otherwise);
+	}
+	outputDefined() {
+		return this.outputs.every((out) => out.outputDefined()) && this.otherwise.outputDefined();
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/case.mjs
+var Case = class Case {
+	constructor(type, branches, otherwise) {
+		this.type = type;
+		this.branches = branches;
+		this.otherwise = otherwise;
+	}
+	static parse(args, context) {
+		if (args.length < 4) return context.error(`Expected at least 3 arguments, but found only ${args.length - 1}.`);
+		if (args.length % 2 !== 0) return context.error("Expected an odd number of arguments.");
+		let outputType;
+		if (context.expectedType && context.expectedType.kind !== "value") outputType = context.expectedType;
+		const branches = [];
+		for (let i = 1; i < args.length - 1; i += 2) {
+			const test = context.parse(args[i], i, BooleanType);
+			if (!test) return null;
+			const result = context.parse(args[i + 1], i + 1, outputType);
+			if (!result) return null;
+			branches.push([test, result]);
+			outputType = outputType || result.type;
+		}
+		const otherwise = context.parse(args[args.length - 1], args.length - 1, outputType);
+		if (!otherwise) return null;
+		if (!outputType) throw new Error("Can't infer output type");
+		return new Case(outputType, branches, otherwise);
+	}
+	evaluate(ctx) {
+		for (const [test, expression] of this.branches) if (test.evaluate(ctx)) return expression.evaluate(ctx);
+		return this.otherwise.evaluate(ctx);
+	}
+	eachChild(fn) {
+		for (const [test, expression] of this.branches) {
+			fn(test);
+			fn(expression);
+		}
+		fn(this.otherwise);
+	}
+	outputDefined() {
+		return this.branches.every(([_, out]) => out.outputDefined()) && this.otherwise.outputDefined();
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/slice.mjs
+var Slice = class Slice {
+	constructor(type, input, beginIndex, key, endIndex) {
+		this.type = type;
+		this.input = input;
+		this.beginIndex = beginIndex;
+		this.key = key;
+		this.endIndex = endIndex;
+	}
+	static parse(args, context) {
+		if (args.length <= 2 || args.length >= 5) return context.error(`Expected 2 or 3 arguments, but found ${args.length - 1} instead.`);
+		const input = context.parse(args[1], 1, ValueType);
+		const beginIndex = context.parse(args[2], 2, NumberType);
+		if (!input || !beginIndex) return null;
+		if (!isValidType(input.type, [
+			array(ValueType),
+			StringType,
+			ValueType
+		])) return context.error(`Expected first argument to be of type array or string, but found ${typeToString(input.type)} instead`);
+		if (args.length === 4) {
+			const endIndex = context.parse(args[3], 3, NumberType);
+			if (!endIndex) return null;
+			return new Slice(input.type, input, beginIndex, context.key, endIndex);
+		} else return new Slice(input.type, input, beginIndex, context.key);
+	}
+	evaluate(ctx) {
+		const input = this.input.evaluate(ctx);
+		const beginIndex = this.beginIndex.evaluate(ctx);
+		let endIndex;
+		if (this.endIndex) endIndex = this.endIndex.evaluate(ctx);
+		if (isValidNativeType(input, ["string"])) return [...input].slice(beginIndex, endIndex).join("");
+		else if (isValidNativeType(input, ["array"])) return input.slice(beginIndex, endIndex);
+		else throw new RuntimeError(`Expected first argument to be of type array or string, but found ${typeToString(typeOf(input))} instead.`, this.key);
+	}
+	eachChild(fn) {
+		fn(this.input);
+		fn(this.beginIndex);
+		if (this.endIndex) fn(this.endIndex);
+	}
+	outputDefined() {
+		return false;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/coalesce.mjs
 var Coalesce = class Coalesce {
 	constructor(type, args) {
 		this.type = type;
@@ -8823,6 +8954,8 @@ var Coalesce = class Coalesce {
 		return this.args.every((arg) => arg.outputDefined());
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/comparison.mjs
 function isComparableType(op, type) {
 	if (op === "==" || op === "!=") return type.kind === "boolean" || type.kind === "string" || type.kind === "number" || type.kind === "null" || type.kind === "value";
 	else return type.kind === "string" || type.kind === "number" || type.kind === "value";
@@ -8944,6 +9077,8 @@ const LessThan = makeComparison("<", lt, ltCollate);
 const GreaterThan = makeComparison(">", gt, gtCollate);
 const LessThanOrEqual = makeComparison("<=", lteq, lteqCollate);
 const GreaterThanOrEqual = makeComparison(">=", gteq, gteqCollate);
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/collator.mjs
 var CollatorExpression = class CollatorExpression {
 	constructor(caseSensitive, diacriticSensitive, locale) {
 		this.type = CollatorType;
@@ -8978,6 +9113,8 @@ var CollatorExpression = class CollatorExpression {
 		return false;
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/number_format.mjs
 var NumberFormat = class NumberFormat {
 	constructor(number, locale, currency, unit, minFractionDigits, maxFractionDigits) {
 		this.type = StringType;
@@ -9043,85 +9180,8 @@ var NumberFormat = class NumberFormat {
 		return false;
 	}
 };
-var FormatExpression = class FormatExpression {
-	constructor(sections) {
-		this.type = FormattedType;
-		this.sections = sections;
-	}
-	static parse(args, context) {
-		if (args.length < 2) return context.error("Expected at least one argument.");
-		const firstArg = args[1];
-		if (!Array.isArray(firstArg) && typeof firstArg === "object") return context.error("First argument must be an image or text section.");
-		const sections = [];
-		let nextTokenMayBeObject = false;
-		for (let i = 1; i <= args.length - 1; ++i) {
-			const arg = args[i];
-			if (nextTokenMayBeObject && typeof arg === "object" && !Array.isArray(arg)) {
-				nextTokenMayBeObject = false;
-				let scale = null;
-				if (arg["font-scale"]) {
-					scale = context.parse(arg["font-scale"], 1, NumberType);
-					if (!scale) return null;
-				}
-				let font = null;
-				if (arg["text-font"]) {
-					font = context.parse(arg["text-font"], 1, array(StringType));
-					if (!font) return null;
-				}
-				let textColor = null;
-				if (arg["text-color"]) {
-					textColor = context.parse(arg["text-color"], 1, ColorType);
-					if (!textColor) return null;
-				}
-				let verticalAlign = null;
-				if (arg["vertical-align"]) {
-					if (typeof arg["vertical-align"] === "string" && !VERTICAL_ALIGN_OPTIONS.includes(arg["vertical-align"])) return context.error(`'vertical-align' must be one of: 'bottom', 'center', 'top' but found '${arg["vertical-align"]}' instead.`);
-					verticalAlign = context.parse(arg["vertical-align"], 1, StringType);
-					if (!verticalAlign) return null;
-				}
-				const lastExpression = sections[sections.length - 1];
-				lastExpression.scale = scale;
-				lastExpression.font = font;
-				lastExpression.textColor = textColor;
-				lastExpression.verticalAlign = verticalAlign;
-			} else {
-				const content = context.parse(args[i], 1, ValueType);
-				if (!content) return null;
-				const kind = content.type.kind;
-				if (kind !== "string" && kind !== "value" && kind !== "null" && kind !== "resolvedImage") return context.error("Formatted text type must be 'string', 'value', 'image' or 'null'.");
-				nextTokenMayBeObject = true;
-				sections.push({
-					content,
-					scale: null,
-					font: null,
-					textColor: null,
-					verticalAlign: null
-				});
-			}
-		}
-		return new FormatExpression(sections);
-	}
-	evaluate(ctx) {
-		const evaluateSection = (section) => {
-			const evaluatedContent = section.content.evaluate(ctx);
-			if (typeOf(evaluatedContent) === ResolvedImageType) return new FormattedSection("", evaluatedContent, null, null, null, section.verticalAlign ? section.verticalAlign.evaluate(ctx) : null);
-			return new FormattedSection(valueToString(evaluatedContent), null, section.scale ? section.scale.evaluate(ctx) : null, section.font ? section.font.evaluate(ctx).join(",") : null, section.textColor ? section.textColor.evaluate(ctx) : null, section.verticalAlign ? section.verticalAlign.evaluate(ctx) : null);
-		};
-		return new Formatted(this.sections.map(evaluateSection));
-	}
-	eachChild(fn) {
-		for (const section of this.sections) {
-			fn(section.content);
-			if (section.scale) fn(section.scale);
-			if (section.font) fn(section.font);
-			if (section.textColor) fn(section.textColor);
-			if (section.verticalAlign) fn(section.verticalAlign);
-		}
-	}
-	outputDefined() {
-		return false;
-	}
-};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/image.mjs
 var ImageExpression = class ImageExpression {
 	constructor(input) {
 		this.type = ResolvedImageType;
@@ -9146,6 +9206,8 @@ var ImageExpression = class ImageExpression {
 		return false;
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/length.mjs
 var Length = class Length {
 	constructor(input, key) {
 		this.input = input;
@@ -9172,6 +9234,8 @@ var Length = class Length {
 		return false;
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/geometry_util.mjs
 const EXTENT = 8192;
 function getTileCoordinates(p, canonical) {
 	const x = mercatorXfromLng$1(p[0]);
@@ -9266,6 +9330,8 @@ function twoSided(p1, p2, q1, q2) {
 	if (det1 > 0 && det2 < 0 || det1 < 0 && det2 > 0) return true;
 	return false;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/within.mjs
 function getTilePolygon(coordinates, bbox, canonical) {
 	const polygon = [];
 	for (let i = 0; i < coordinates.length; i++) {
@@ -9426,6 +9492,8 @@ var Within = class Within {
 		return true;
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/node_modules/tinyqueue/index.mjs
 var TinyQueue$1 = class {
 	constructor(data = [], compare = (a, b) => a < b ? -1 : a > b ? 1 : 0) {
 		this.data = data;
@@ -9477,118 +9545,8 @@ var TinyQueue$1 = class {
 		data[pos] = item;
 	}
 };
-/**
-* Rearranges items so that all items in the [left, k] are the smallest.
-* The k-th element will have the (k - left + 1)-th smallest value in [left, right].
-*
-* @template T
-* @param {T[]} arr the array to partially sort (in place)
-* @param {number} k middle index for partial sorting (as defined above)
-* @param {number} [left=0] left index of the range to sort
-* @param {number} [right=arr.length-1] right index
-* @param {(a: T, b: T) => number} [compare = (a, b) => a - b] compare function
-*/
-function quickselect(arr, k, left = 0, right = arr.length - 1, compare = defaultCompare) {
-	while (right > left) {
-		if (right - left > 600) {
-			const n = right - left + 1;
-			const m = k - left + 1;
-			const z = Math.log(n);
-			const s = .5 * Math.exp(2 * z / 3);
-			const sd = .5 * Math.sqrt(z * s * (n - s) / n) * (m - n / 2 < 0 ? -1 : 1);
-			quickselect(arr, k, Math.max(left, Math.floor(k - m * s / n + sd)), Math.min(right, Math.floor(k + (n - m) * s / n + sd)), compare);
-		}
-		const t = arr[k];
-		let i = left;
-		/** @type {number} */
-		let j = right;
-		swap$2(arr, left, k);
-		if (compare(arr[right], t) > 0) swap$2(arr, left, right);
-		while (i < j) {
-			swap$2(arr, i, j);
-			i++;
-			j--;
-			while (compare(arr[i], t) < 0) i++;
-			while (compare(arr[j], t) > 0) j--;
-		}
-		if (compare(arr[left], t) === 0) swap$2(arr, left, j);
-		else {
-			j++;
-			swap$2(arr, j, right);
-		}
-		if (j <= k) left = j + 1;
-		if (k <= j) right = j - 1;
-	}
-}
-/**
-* @template T
-* @param {T[]} arr
-* @param {number} i
-* @param {number} j
-*/
-function swap$2(arr, i, j) {
-	const tmp = arr[i];
-	arr[i] = arr[j];
-	arr[j] = tmp;
-}
-/**
-* @template T
-* @param {T} a
-* @param {T} b
-* @returns {number}
-*/
-function defaultCompare(a, b) {
-	return a < b ? -1 : a > b ? 1 : 0;
-}
-/**
-* Classifies an array of rings into polygons with outer rings and holes
-* @param rings - the rings to classify
-* @param maxRings - the maximum number of rings to include in a polygon, use 0 to include all rings
-* @returns an array of polygons with internal rings as holes
-*/
-function classifyRings$1(rings, maxRings) {
-	if (rings.length <= 1) return [rings];
-	const polygons = [];
-	let polygon;
-	let ccw;
-	for (const ring of rings) {
-		const area = calculateSignedArea(ring);
-		if (area === 0) continue;
-		ring.area = Math.abs(area);
-		if (ccw === void 0) ccw = area < 0;
-		if (ccw === area < 0) {
-			if (polygon) polygons.push(polygon);
-			polygon = [ring];
-		} else polygon.push(ring);
-	}
-	if (polygon) polygons.push(polygon);
-	if (maxRings > 1) for (let j = 0; j < polygons.length; j++) {
-		if (polygons[j].length <= maxRings) continue;
-		quickselect(polygons[j], maxRings, 1, polygons[j].length - 1, compareAreas);
-		polygons[j] = polygons[j].slice(0, maxRings);
-	}
-	return polygons;
-}
-function compareAreas(a, b) {
-	return b.area - a.area;
-}
-/**
-* Returns the signed area for the polygon ring.  Positive areas are exterior rings and
-* have a clockwise winding.  Negative areas are interior rings and have a counter clockwise
-* ordering.
-*
-* @param ring - Exterior or interior ring
-* @returns Signed area
-*/
-function calculateSignedArea(ring) {
-	let sum = 0;
-	for (let i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
-		p1 = ring[i];
-		p2 = ring[j];
-		sum += (p2.x - p1.x) * (p1.y + p2.y);
-	}
-	return sum;
-}
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/cheap_ruler.mjs
 const RE = 6378.137;
 const E2 = .0066943799901413165;
 const RAD = Math.PI / 180;
@@ -9670,6 +9628,8 @@ var CheapRuler = class {
 		return deg;
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/distance.mjs
 const MinPointsSize = 100;
 const MinLinePointsSize = 50;
 function compareDistPair(a, b) {
@@ -10036,6 +9996,42 @@ var Distance = class Distance {
 		return true;
 	}
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/semiliteral.mjs
+var Semiliteral = class Semiliteral {
+	constructor(arr) {
+		let elementType = null;
+		for (const expr of arr) if (!elementType) elementType = expr.type;
+		else if (elementType === expr.type) continue;
+		else {
+			elementType = ValueType;
+			break;
+		}
+		this.type = array(elementType ?? ValueType, arr.length);
+		this.arr = arr;
+	}
+	static parse(args, context) {
+		if (args.length !== 2) return context.error(`'semiliteral' expression requires exactly one argument, but found ${args.length - 1} instead.`);
+		if (!isValue(args[1])) return context.error(`invalid value of type "${typeof args[1]}"`);
+		const value = args[1];
+		const type = typeOf(value);
+		if (type.kind === "array") {
+			const parsed = value.map((item) => context.parse(item, null, ValueType));
+			return new Semiliteral(parsed);
+		} else return new Literal(type, value);
+	}
+	evaluate(ctx) {
+		return this.arr.map((arg) => arg.evaluate(ctx));
+	}
+	eachChild(fn) {
+		this.arr.forEach(fn);
+	}
+	outputDefined() {
+		return this.arr.every((arg) => arg.outputDefined());
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/global_state.mjs
 var GlobalState = class GlobalState {
 	constructor(key) {
 		this.key = key;
@@ -10058,7 +10054,9 @@ var GlobalState = class GlobalState {
 		return false;
 	}
 };
-const expressions = {
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/definitions/index.mjs
+const expressions$1 = {
 	"==": Equals,
 	"!=": NotEquals,
 	">": GreaterThan,
@@ -10085,6 +10083,7 @@ const expressions = {
 	number: Assertion,
 	"number-format": NumberFormat,
 	object: Assertion,
+	semiliteral: Semiliteral,
 	slice: Slice,
 	step: Step,
 	string: Assertion,
@@ -10097,6 +10096,164 @@ const expressions = {
 	distance: Distance,
 	"global-state": GlobalState
 };
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/parsing_error.mjs
+var ExpressionParsingError = class extends Error {
+	constructor(key, message) {
+		super(message);
+		this.message = message;
+		this.key = key;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/scope.mjs
+/**
+* Tracks `let` bindings during expression parsing.
+* @private
+*/
+var Scope = class Scope {
+	constructor(parent, bindings = []) {
+		this.parent = parent;
+		this.bindings = {};
+		for (const [name, expression] of bindings) this.bindings[name] = expression;
+	}
+	concat(bindings) {
+		return new Scope(this, bindings);
+	}
+	get(name) {
+		if (this.bindings[name]) return this.bindings[name];
+		if (this.parent) return this.parent.get(name);
+		throw new Error(`${name} not found in scope.`);
+	}
+	has(name) {
+		if (this.bindings[name]) return true;
+		return this.parent ? this.parent.has(name) : false;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/parsing_context.mjs
+/**
+* State associated parsing at a given point in an expression tree.
+* @private
+*/
+var ParsingContext = class ParsingContext {
+	constructor(registry, isConstantFunc, path = [], expectedType, scope = new Scope(), errors = []) {
+		this.registry = registry;
+		this.path = path;
+		this.key = path.map((part) => `[${part}]`).join("");
+		this.scope = scope;
+		this.errors = errors;
+		this.expectedType = expectedType;
+		this._isConstant = isConstantFunc;
+	}
+	/**
+	* @param expr the JSON expression to parse
+	* @param index the optional argument index if this expression is an argument of a parent expression that's being parsed
+	* @param options
+	* @param options.omitTypeAnnotations set true to omit inferred type annotations.  Caller beware: with this option set, the parsed expression's type will NOT satisfy `expectedType` if it would normally be wrapped in an inferred annotation.
+	* @private
+	*/
+	parse(expr, index, expectedType, bindings, options = {}) {
+		if (index) return this.concat(index, expectedType, bindings)._parse(expr, options);
+		return this._parse(expr, options);
+	}
+	_parse(expr, options) {
+		if (expr === null || typeof expr === "string" || typeof expr === "boolean" || typeof expr === "number") expr = ["literal", expr];
+		const key = this.key;
+		function annotate(parsed, type, typeAnnotation) {
+			if (typeAnnotation === "assert") return new Assertion(type, [parsed], key);
+			else if (typeAnnotation === "coerce") return new Coercion(type, [parsed], key);
+			else return parsed;
+		}
+		if (Array.isArray(expr)) {
+			if (expr.length === 0) return this.error("Expected an array with at least one element. If you wanted a literal array, use [\"literal\", []].");
+			const op = expr[0];
+			if (typeof op !== "string") {
+				this.error(`Expression name must be a string, but found ${typeof op} instead. If you wanted a literal array, use ["literal", [...]].`, 0);
+				return null;
+			}
+			const Expr = this.registry[op];
+			if (Expr) {
+				let parsed = Expr.parse(expr, this);
+				if (!parsed) return null;
+				if (this.expectedType) {
+					const expected = this.expectedType;
+					const actual = parsed.type;
+					if ((expected.kind === "string" || expected.kind === "number" || expected.kind === "boolean" || expected.kind === "object" || expected.kind === "array") && actual.kind === "value") parsed = annotate(parsed, expected, options.typeAnnotation || "assert");
+					else if ("projectionDefinition" === expected.kind && [
+						"string",
+						"array",
+						"value"
+					].includes(actual.kind) || [
+						"color",
+						"formatted",
+						"resolvedImage"
+					].includes(expected.kind) && ["value", "string"].includes(actual.kind) || ["padding", "numberArray"].includes(expected.kind) && [
+						"value",
+						"number",
+						"array"
+					].includes(actual.kind) || "colorArray" === expected.kind && [
+						"value",
+						"string",
+						"array"
+					].includes(actual.kind) || "variableAnchorOffsetCollection" === expected.kind && ["value", "array"].includes(actual.kind)) parsed = annotate(parsed, expected, options.typeAnnotation || "coerce");
+					else if (this.checkSubtype(expected, actual)) return null;
+				}
+				if (!(parsed instanceof Literal) && parsed.type.kind !== "resolvedImage" && this._isConstant(parsed)) {
+					const ec = new EvaluationContext();
+					try {
+						parsed = new Literal(parsed.type, parsed.evaluate(ec));
+					} catch (e) {
+						this.error(e.message);
+						return null;
+					}
+				}
+				return parsed;
+			}
+			return this.error(`Unknown expression "${op}". If you wanted a literal array, use ["literal", [...]].`, 0);
+		} else if (typeof expr === "undefined") return this.error("'undefined' value invalid. Use null instead.");
+		else if (typeof expr === "object") return this.error("Bare objects invalid. Use [\"literal\", {...}] instead.");
+		else return this.error(`Expected an array, but found ${typeof expr} instead.`);
+	}
+	/**
+	* Returns a copy of this context suitable for parsing the subexpression at
+	* index `index`, optionally appending to 'let' binding map.
+	*
+	* Note that `errors` property, intended for collecting errors while
+	* parsing, is copied by reference rather than cloned.
+	* @private
+	*/
+	concat(index, expectedType, bindings) {
+		const path = typeof index === "number" ? this.path.concat(index) : this.path;
+		const scope = bindings ? this.scope.concat(bindings) : this.scope;
+		return new ParsingContext(this.registry, this._isConstant, path, expectedType || null, scope, this.errors);
+	}
+	/**
+	* Push a parsing (or type checking) error into the `this.errors`
+	* @param error The message
+	* @param keys Optionally specify the source of the error at a child
+	* of the current expression at `this.key`.
+	* @private
+	*/
+	error(error, ...keys) {
+		const key = `${this.key}${keys.map((k) => `[${k}]`).join("")}`;
+		this.errors.push(new ExpressionParsingError(key, error));
+	}
+	/**
+	* Returns null if `t` is a subtype of `expected`; otherwise returns an
+	* error message and also pushes it to `this.errors`.
+	* @param expected The expected type
+	* @param t The actual type
+	* @returns null if `t` is a subtype of `expected`; otherwise returns an error message
+	*/
+	checkSubtype(expected, t) {
+		const error = checkSubtype(expected, t);
+		if (error) this.error(error);
+		return error;
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/compound_expression.mjs
 var CompoundExpression = class CompoundExpression {
 	constructor(name, type, evaluate, args, key) {
 		this.name = name;
@@ -10196,7 +10353,7 @@ function binarySearch(v, a, i, j) {
 function varargs(type) {
 	return { type };
 }
-CompoundExpression.register(expressions, {
+CompoundExpression.register(expressions$1, {
 	error: [
 		ErrorType,
 		[StringType],
@@ -10670,18 +10827,8 @@ function isGlobalPropertyConstant(e, properties) {
 	});
 	return result;
 }
-function success(value) {
-	return {
-		result: "success",
-		value
-	};
-}
-function error(value) {
-	return {
-		result: "error",
-		value
-	};
-}
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/properties.mjs
 function supportsPropertyExpression(spec) {
 	return spec["property-type"] === "data-driven" || spec["property-type"] === "cross-faded-data-driven";
 }
@@ -10691,10 +10838,18 @@ function supportsZoomExpression(spec) {
 function supportsInterpolation(spec) {
 	return !!spec.expression && spec.expression.interpolated;
 }
+/**
+* Matches a `<property>-transition` key and captures the property it belongs to.
+*/
+const transitionPropertyRegExp = /^(.*)-transition$/;
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/extend.mjs
 function extendBy(output, ...inputs) {
 	for (const input of inputs) for (const k in input) output[k] = input[k];
 	return output;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/get_type.mjs
 function getType(val) {
 	if (val instanceof Number) return "number";
 	else if (val instanceof String) return "string";
@@ -10703,7 +10858,9 @@ function getType(val) {
 	else if (val === null) return "null";
 	else return typeof val;
 }
-function isFunction(value) {
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/function/index.mjs
+function isFunction$1(value) {
 	return typeof value === "object" && value !== null && !Array.isArray(value) && typeOf(value) === ObjectType;
 }
 function identityFunction(x) {
@@ -10910,6 +11067,22 @@ function interpolationFactor(input, base, lowerValue, upperValue) {
 	else if (base === 1) return progress / difference;
 	else return (Math.pow(base, progress) - 1) / (Math.pow(base, difference) - 1);
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/result.mjs
+function success(value) {
+	return {
+		result: "success",
+		value
+	};
+}
+function error(value) {
+	return {
+		result: "error",
+		value
+	};
+}
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/index.mjs
 var StyleExpression = class {
 	constructor(expression, rootKey, propertySpec, globalState) {
 		this.expression = expression;
@@ -10978,7 +11151,7 @@ function assertRootKey(rootKey) {
 	if (!rootKey) throw new Error("rootKey must identify the location of the expression in the style JSON, e.g. \"layers[3].paint.line-width\".");
 }
 function isExpression(expression) {
-	return Array.isArray(expression) && expression.length > 0 && typeof expression[0] === "string" && expression[0] in expressions;
+	return Array.isArray(expression) && expression.length > 0 && typeof expression[0] === "string" && expression[0] in expressions$1;
 }
 /**
 * Parse and typecheck the given style spec JSON expression.  If
@@ -10991,7 +11164,7 @@ function isExpression(expression) {
 */
 function createExpression(expression, rootKey, propertySpec, globalState) {
 	assertRootKey(rootKey);
-	const parser = new ParsingContext(expressions, isExpressionConstant, [], propertySpec ? getExpectedType(propertySpec) : void 0);
+	const parser = new ParsingContext(expressions$1, isExpressionConstant, [], propertySpec ? getExpectedType(propertySpec) : void 0);
 	const parsed = parser.parse(expression, void 0, void 0, void 0, propertySpec && propertySpec.type === "string" ? { typeAnnotation: "coerce" } : void 0);
 	if (!parsed) return error(parser.errors);
 	return success(new StyleExpression(parsed, rootKey, propertySpec, globalState));
@@ -11106,7 +11279,7 @@ var StylePropertyFunction = class StylePropertyFunction {
 	}
 };
 function normalizePropertyExpression(value, rootKey, specification, globalState) {
-	if (isFunction(value)) return new StylePropertyFunction(value, rootKey, specification);
+	if (isFunction$1(value)) return new StylePropertyFunction(value, rootKey, specification);
 	else if (isExpression(value)) {
 		const expression = createPropertyExpression(value, rootKey, specification, globalState);
 		if (expression.result === "error") throw new Error(expression.value.map((err) => `${err.key}: ${err.message}`).join(", "));
@@ -11170,7 +11343,7 @@ function getExpectedType(spec) {
 	return types[spec.type];
 }
 function getDefaultValue(spec) {
-	if (spec.type === "color" && isFunction(spec.default)) return new Color(0, 0, 0, 0);
+	if (spec.type === "color" && isFunction$1(spec.default)) return new Color(0, 0, 0, 0);
 	switch (spec.type) {
 		case "color": return Color.parse(spec.default) || null;
 		case "padding": return Padding.parse(spec.default) || null;
@@ -11193,6 +11366,8 @@ function addGlobalState(globals, globalState) {
 		globalState
 	};
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/feature_filter/index.mjs
 function classifyChildren(children) {
 	let sawLegacy = false;
 	for (const child of children) {
@@ -11404,6 +11579,8 @@ function convertHasOp$1(property) {
 function convertNegation(filter) {
 	return ["!", filter];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/group_by_layout.mjs
 function stringify$1(obj) {
 	const type = typeof obj;
 	if (type === "number" || type === "boolean" || type === "string" || obj === void 0 || obj === null) return JSON.stringify(obj);
@@ -11449,6 +11626,8 @@ function groupByLayout(layers, cachedKeys) {
 	for (const k in groups) result.push(groups[k]);
 	return result;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/empty.mjs
 function emptyStyle() {
 	const style = {};
 	const version = latest["$version"];
@@ -11464,12 +11643,16 @@ function emptyStyle() {
 	}
 	return style;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_constants.mjs
 function validateConstants(options) {
 	const key = options.key;
 	const constants = options.value;
 	if (constants) return [new ValidationError(key, constants, "constants have been deprecated as of v8")];
 	else return [];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/unbundle_jsonlint.mjs
 function unbundle(value) {
 	if (value instanceof Number || value instanceof String || value instanceof Boolean) return value.valueOf();
 	else return value;
@@ -11483,6 +11666,8 @@ function deepUnbundle(value) {
 	}
 	return unbundle(value);
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_object.mjs
 function validateObject(options) {
 	const key = options.key;
 	const object = options.value;
@@ -11525,6 +11710,8 @@ function validateObject(options) {
 	}
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_array.mjs
 function validateArray(options) {
 	const array = options.value;
 	const arraySpec = options.valueSpec;
@@ -11554,6 +11741,8 @@ function validateArray(options) {
 	}));
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_number.mjs
 function validateNumber(options) {
 	const key = options.key;
 	const value = options.value;
@@ -11565,6 +11754,8 @@ function validateNumber(options) {
 	if ("maximum" in valueSpec && value > valueSpec.maximum) return [new ValidationError(key, value, `${value} is greater than the maximum value ${valueSpec.maximum}`)];
 	return [];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_function.mjs
 function validateFunction(options) {
 	const functionValueSpec = options.valueSpec;
 	const functionType = unbundle(options.value.type);
@@ -11688,6 +11879,8 @@ function validateFunction(options) {
 		});
 	}
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_expression.mjs
 function validateExpression(options) {
 	const expression = (options.expressionContext === "property" ? createPropertyExpression : createExpression)(deepUnbundle(options.value), options.key, options.valueSpec);
 	if (expression.result === "error") return expression.value.map((error) => {
@@ -11703,6 +11896,8 @@ function validateExpression(options) {
 	}
 	return [];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_boolean.mjs
 function validateBoolean(options) {
 	const value = options.value;
 	const key = options.key;
@@ -11710,6 +11905,8 @@ function validateBoolean(options) {
 	if (type !== "boolean") return [new ValidationError(key, value, `boolean expected, ${type} found`)];
 	return [];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_color.mjs
 function validateColor(options) {
 	const key = options.key;
 	const value = options.value;
@@ -11718,6 +11915,8 @@ function validateColor(options) {
 	if (!Color.parse(String(value))) return [new ValidationError(key, value, `color expected, "${value}" found`)];
 	return [];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_enum.mjs
 function validateEnum(options) {
 	const key = options.key;
 	const value = options.value;
@@ -11728,6 +11927,8 @@ function validateEnum(options) {
 	} else if (Object.keys(valueSpec.values).indexOf(unbundle(value)) === -1) errors.push(new ValidationError(key, value, `expected one of [${Object.keys(valueSpec.values).join(", ")}], ${JSON.stringify(value)} found`));
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_filter.mjs
 function getValueAtPath(value, path) {
 	let current = value;
 	for (const index of path) current = current[index];
@@ -11810,6 +12011,8 @@ function validateNonExpressionFilter(options) {
 	}
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_property.mjs
 function validateProperty(options, propertyType) {
 	const key = options.key;
 	const validateSpec = options.validateSpec;
@@ -11819,7 +12022,7 @@ function validateProperty(options, propertyType) {
 	const propertyKey = options.objectKey;
 	const layerSpec = styleSpec[`${propertyType}_${options.layerType}`];
 	if (!layerSpec) return [];
-	const transitionMatch = propertyKey.match(/^(.*)-transition$/);
+	const transitionMatch = propertyKey.match(transitionPropertyRegExp);
 	if (propertyType === "paint" && transitionMatch && layerSpec[transitionMatch[1]] && layerSpec[transitionMatch[1]].transition) return validateSpec({
 		key,
 		value,
@@ -11833,7 +12036,7 @@ function validateProperty(options, propertyType) {
 	if (getType(value) === "string" && supportsPropertyExpression(valueSpec) && !valueSpec.tokens && (tokenMatch = /^{([^}]+)}$/.exec(value))) return [new ValidationError(key, value, `"${propertyKey}" does not support interpolation syntax\nUse an identity property function instead: \`{ "type": "identity", "property": ${JSON.stringify(tokenMatch[1])} }\`.`)];
 	const errors = [];
 	if (options.layerType === "symbol") {
-		if (propertyKey === "text-font" && isFunction(deepUnbundle(value)) && unbundle(value.type) === "identity") errors.push(new ValidationError(key, value, "\"text-font\" does not support identity functions"));
+		if (propertyKey === "text-font" && isFunction$1(deepUnbundle(value)) && unbundle(value.type) === "identity") errors.push(new ValidationError(key, value, "\"text-font\" does not support identity functions"));
 	}
 	return errors.concat(validateSpec({
 		key: options.key,
@@ -11846,12 +12049,18 @@ function validateProperty(options, propertyType) {
 		propertyKey
 	}));
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_paint_property.mjs
 function validatePaintProperty(options) {
 	return validateProperty(options, "paint");
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_layout_property.mjs
 function validateLayoutProperty(options) {
 	return validateProperty(options, "layout");
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_layer.mjs
 function validateLayer(options) {
 	let errors = [];
 	const layer = options.value;
@@ -11886,18 +12095,20 @@ function validateLayer(options) {
 		if (!parent) errors.push(new ValidationError(key, layer.ref, `ref layer "${ref}" not found`));
 		else if (parent.ref) errors.push(new ValidationError(key, layer.ref, "ref cannot reference another ref layer"));
 		else type = unbundle(parent.type);
-	} else if (type !== "background") if (!layer.source) errors.push(new ValidationError(key, layer, "missing required property \"source\""));
-	else {
-		const source = style.sources && style.sources[layer.source];
-		const sourceType = source && unbundle(source.type);
-		if (!source) errors.push(new ValidationError(key, layer.source, `source "${layer.source}" not found`));
-		else if (sourceType === "vector" && type === "raster") errors.push(new ValidationError(key, layer.source, `layer "${layer.id}" requires a raster source`));
-		else if (sourceType !== "raster-dem" && type === "hillshade") errors.push(new ValidationError(key, layer.source, `layer "${layer.id}" requires a raster-dem source`));
-		else if (sourceType !== "raster-dem" && type === "color-relief") errors.push(new ValidationError(key, layer.source, `layer "${layer.id}" requires a raster-dem source`));
-		else if (sourceType === "raster" && type !== "raster") errors.push(new ValidationError(key, layer.source, `layer "${layer.id}" requires a vector source`));
-		else if (sourceType === "vector" && !layer["source-layer"]) errors.push(new ValidationError(key, layer, `layer "${layer.id}" must specify a "source-layer"`));
-		else if (sourceType === "raster-dem" && type !== "hillshade" && type !== "color-relief") errors.push(new ValidationError(key, layer.source, "raster-dem source can only be used with layer type 'hillshade' or 'color-relief'."));
-		else if (type === "line" && layer.paint && layer.paint["line-gradient"] && (sourceType !== "geojson" || !source.lineMetrics)) errors.push(new ValidationError(key, layer, `layer "${layer.id}" specifies a line-gradient, which requires a GeoJSON source with \`lineMetrics\` enabled.`));
+	} else if (type !== "background") {
+		if (!layer.source) errors.push(new ValidationError(key, layer, "missing required property \"source\""));
+		else {
+			const source = style.sources && style.sources[layer.source];
+			const sourceType = source && unbundle(source.type);
+			if (!source) errors.push(new ValidationError(key, layer.source, `source "${layer.source}" not found`));
+			else if (sourceType === "vector" && type === "raster") errors.push(new ValidationError(key, layer.source, `layer "${layer.id}" requires a raster source`));
+			else if (sourceType !== "raster-dem" && type === "hillshade") errors.push(new ValidationError(key, layer.source, `layer "${layer.id}" requires a raster-dem source`));
+			else if (sourceType !== "raster-dem" && type === "color-relief") errors.push(new ValidationError(key, layer.source, `layer "${layer.id}" requires a raster-dem source`));
+			else if (sourceType === "raster" && type !== "raster") errors.push(new ValidationError(key, layer.source, `layer "${layer.id}" requires a vector source`));
+			else if (sourceType === "vector" && !layer["source-layer"]) errors.push(new ValidationError(key, layer, `layer "${layer.id}" must specify a "source-layer"`));
+			else if (sourceType === "raster-dem" && type !== "hillshade" && type !== "color-relief") errors.push(new ValidationError(key, layer.source, "raster-dem source can only be used with layer type 'hillshade' or 'color-relief'."));
+			else if (type === "line" && layer.paint && layer.paint["line-gradient"] && (sourceType !== "geojson" || !source.lineMetrics)) errors.push(new ValidationError(key, layer, `layer "${layer.id}" specifies a line-gradient, which requires a GeoJSON source with \`lineMetrics\` enabled.`));
+		}
 	}
 	if (type === "raster" && layer.paint?.resampling && layer.paint?.["raster-resampling"]) errors.push(new ValidationError(key, layer.paint, `layer "${layer.id}" redundantly specifies "resampling" and "raster-resampling" paint properties, but only one is allowed. It is advised to use "resampling".`));
 	errors = errors.concat(validateObject({
@@ -11954,6 +12165,8 @@ function validateLayer(options) {
 	}));
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_string.mjs
 function validateString(options) {
 	const value = options.value;
 	const key = options.key;
@@ -11961,6 +12174,8 @@ function validateString(options) {
 	if (type !== "string") return [new ValidationError(key, value, `string expected, ${type} found`)];
 	return [];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_raster_dem_source.mjs
 function validateRasterDEMSource(options) {
 	const sourceName = options.sourceName ?? "";
 	const rasterDEM = options.value;
@@ -11994,6 +12209,8 @@ function validateRasterDEMSource(options) {
 	else errors.push(new ValidationError(key, rasterDEM[key], `unknown property "${key}"`));
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_source.mjs
 const objectElementValidators = { promoteId: validatePromoteId };
 function validateSource(options) {
 	const value = options.value;
@@ -12105,6 +12322,8 @@ function validatePromoteId({ key, value }) {
 		return errors;
 	}
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_light.mjs
 function validateLight(options) {
 	const light = options.value;
 	const styleSpec = options.styleSpec;
@@ -12118,7 +12337,7 @@ function validateLight(options) {
 		return errors;
 	}
 	for (const key in light) {
-		const transitionMatch = key.match(/^(.*)-transition$/);
+		const transitionMatch = key.match(transitionPropertyRegExp);
 		if (transitionMatch && lightSpec[transitionMatch[1]] && lightSpec[transitionMatch[1]].transition) errors = errors.concat(options.validateSpec({
 			key,
 			value: light[key],
@@ -12139,6 +12358,8 @@ function validateLight(options) {
 	}
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_sky.mjs
 function validateSky(options) {
 	const sky = options.value;
 	const styleSpec = options.styleSpec;
@@ -12148,16 +12369,28 @@ function validateSky(options) {
 	if (sky === void 0) return [];
 	else if (rootType !== "object") return [new ValidationError("sky", sky, `object expected, ${rootType} found`)];
 	let errors = [];
-	for (const key in sky) if (skySpec[key]) errors = errors.concat(options.validateSpec({
-		key,
-		value: sky[key],
-		valueSpec: skySpec[key],
-		style,
-		styleSpec
-	}));
-	else errors = errors.concat([new ValidationError(key, sky[key], `unknown property "${key}"`)]);
+	for (const key in sky) {
+		const transitionMatch = key.match(transitionPropertyRegExp);
+		if (transitionMatch && skySpec[transitionMatch[1]] && skySpec[transitionMatch[1]].transition) errors = errors.concat(options.validateSpec({
+			key,
+			value: sky[key],
+			valueSpec: styleSpec.transition,
+			style,
+			styleSpec
+		}));
+		else if (skySpec[key]) errors = errors.concat(options.validateSpec({
+			key,
+			value: sky[key],
+			valueSpec: skySpec[key],
+			style,
+			styleSpec
+		}));
+		else errors = errors.concat([new ValidationError(key, sky[key], `unknown property "${key}"`)]);
+	}
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_terrain.mjs
 function validateTerrain(options) {
 	const terrain = options.value;
 	const styleSpec = options.styleSpec;
@@ -12181,14 +12414,20 @@ function validateTerrain(options) {
 	else errors = errors.concat([new ValidationError(key, terrain[key], `unknown property "${key}"`)]);
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_formatted.mjs
 function validateFormatted(options) {
 	if (validateString(options).length === 0) return [];
 	return validateExpression(options);
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_image.mjs
 function validateImage(options) {
 	if (validateString(options).length === 0) return [];
 	return validateExpression(options);
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_padding.mjs
 function validatePadding(options) {
 	const key = options.key;
 	const value = options.value;
@@ -12209,6 +12448,8 @@ function validatePadding(options) {
 		valueSpec: {}
 	});
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_number_array.mjs
 function validateNumberArray(options) {
 	const key = options.key;
 	const value = options.value;
@@ -12229,6 +12470,8 @@ function validateNumberArray(options) {
 		valueSpec: {}
 	});
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_color_array.mjs
 function validateColorArray(options) {
 	const key = options.key;
 	const value = options.value;
@@ -12247,6 +12490,8 @@ function validateColorArray(options) {
 		valueSpec: {}
 	});
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_variable_anchor_offset_collection.mjs
 function validateVariableAnchorOffsetCollection(options) {
 	const key = options.key;
 	const value = options.value;
@@ -12274,6 +12519,8 @@ function validateVariableAnchorOffsetCollection(options) {
 	}
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_sprite.mjs
 function validateSprite(options) {
 	let errors = [];
 	const sprite = options.value;
@@ -12309,6 +12556,8 @@ function validateSprite(options) {
 		return errors;
 	}
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_projection.mjs
 function validateProjection(options) {
 	const projection = options.value;
 	const styleSpec = options.styleSpec;
@@ -12328,6 +12577,8 @@ function validateProjection(options) {
 	else errors = errors.concat([new ValidationError(key, projection[key], `unknown property "${key}"`)]);
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_projectiondefinition.mjs
 function validateProjectionDefinition(options) {
 	const key = options.key;
 	let value = options.value;
@@ -12348,18 +12599,45 @@ function isPropertyValueSpecification(value) {
 function isProjectionDefinitionValue(value) {
 	return Array.isArray(value) && value.length === 3 && typeof value[0] === "string" && typeof value[1] === "string" && typeof value[2] === "number";
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/util/is_object_literal.mjs
 function isObjectLiteral(anything) {
 	return Boolean(anything) && anything.constructor === Object;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_state.mjs
 function validateState(options) {
 	if (!isObjectLiteral(options.value)) return [new ValidationError(options.key, options.value, `object expected, ${getType(options.value)} found`)];
 	return [];
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_font_faces.mjs
+const MAX_CODE_POINT = 1114111;
+/**
+* A single unicode range, as described by the [CSS descriptor with the same name](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range):
+* a single code point (`U+26`), a range of code points (`U+0-7F`) or a wildcard range (`U+4??`).
+* At most six hexadecimal digits are allowed on either side.
+*/
+const UNICODE_RANGE_REGEX = /^u\+(?:([0-9a-f]{1,6})(?:-([0-9a-f]{1,6}))?|([0-9a-f]{0,5}\?{1,6}))$/i;
+function validateUnicodeRange(key, value) {
+	if (getType(value) !== "string") return [];
+	const range = `${value}`;
+	const invalid = () => [new ValidationError(key, value, `invalid unicode range, expected a value such as "U+26", "U+0-10FFFF" or "U+4??"`)];
+	const match = range.match(UNICODE_RANGE_REGEX);
+	if (!match) return invalid();
+	const [, start, end, wildcard] = match;
+	if (wildcard !== void 0) return wildcard.length > 6 ? invalid() : [];
+	const startCodePoint = parseInt(start, 16);
+	const endCodePoint = end === void 0 ? startCodePoint : parseInt(end, 16);
+	if (startCodePoint > MAX_CODE_POINT || endCodePoint > MAX_CODE_POINT) return [new ValidationError(key, value, `unicode range is out of bounds, the maximum code point is U+10FFFF`)];
+	if (startCodePoint > endCodePoint) return [new ValidationError(key, value, `unicode range start must not be greater than its end, but ${range} is`)];
+	return [];
+}
 function validateFontFaces(options) {
-	const key = options.key;
+	const key = options.key ?? "font-faces";
 	const value = options.value;
 	const validateSpec = options.validateSpec;
-	const styleSpec = options.styleSpec;
+	const styleSpec = options.styleSpec ?? v8_default;
 	const style = options.style;
 	if (!isObjectLiteral(value)) return [new ValidationError(key, value, `object expected, ${getType(value)} found`)];
 	const errors = [];
@@ -12381,18 +12659,26 @@ function validateFontFaces(options) {
 					value: "string"
 				}
 			};
-			for (const [i, fontFace] of fontValue.entries()) errors.push(...validateObject({
-				key: `${key}.${fontName}[${i}]`,
-				value: fontFace,
-				valueSpec: fontFaceSpec,
-				styleSpec,
-				style,
-				validateSpec
-			}));
+			for (const [i, fontFace] of fontValue.entries()) {
+				const fontFaceKey = `${key}.${fontName}[${i}]`;
+				errors.push(...validateObject({
+					key: fontFaceKey,
+					value: fontFace,
+					valueSpec: fontFaceSpec,
+					styleSpec,
+					style,
+					validateSpec
+				}));
+				const unicodeRanges = isObjectLiteral(fontFace) ? fontFace["unicode-range"] : void 0;
+				if (getType(unicodeRanges) !== "array") continue;
+				for (const [j, unicodeRange] of unicodeRanges.entries()) errors.push(...validateUnicodeRange(`${fontFaceKey}.unicode-range[${j}]`, unicodeRange));
+			}
 		} else errors.push(new ValidationError(`${key}.${fontName}`, fontValue, `string or array expected, ${fontValueType} found`));
 	}
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate.mjs
 const VALIDATORS = {
 	"*"() {
 		return [];
@@ -12445,11 +12731,13 @@ function validate(options) {
 	const valueSpec = options.valueSpec;
 	const styleSpec = options.styleSpec;
 	options.validateSpec = validate;
-	if (valueSpec.expression && isFunction(unbundle(value))) return validateFunction(options);
+	if (valueSpec.expression && isFunction$1(unbundle(value))) return validateFunction(options);
 	else if (valueSpec.expression && isExpression(deepUnbundle(value))) return validateExpression(options);
 	else if (valueSpec.type && VALIDATORS[valueSpec.type]) return VALIDATORS[valueSpec.type](options);
 	else return validateObject(extendBy({}, options, { valueSpec: valueSpec.type ? styleSpec[valueSpec.type] : valueSpec }));
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate/validate_glyphs_url.mjs
 function validateGlyphsUrl(options) {
 	const value = options.value;
 	const key = options.key;
@@ -12459,6 +12747,8 @@ function validateGlyphsUrl(options) {
 	if (value.indexOf("{range}") === -1) errors.push(new ValidationError(key, value, "\"glyphs\" url must include a \"{range}\" token"));
 	return errors;
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/validate_style.min.mjs
 /**
 * Validate a MapLibre style against the style specification.
 * Use this when running in the browser.
@@ -12499,6 +12789,7 @@ function validateStyleMin(style, styleSpec = latest) {
 validateStyleMin.source = wrapCleanErrors(injectValidateSpec(validateSource));
 validateStyleMin.sprite = wrapCleanErrors(injectValidateSpec(validateSprite));
 validateStyleMin.glyphs = wrapCleanErrors(injectValidateSpec(validateGlyphsUrl));
+validateStyleMin.fontFaces = wrapCleanErrors(injectValidateSpec(validateFontFaces));
 validateStyleMin.light = wrapCleanErrors(injectValidateSpec(validateLight));
 validateStyleMin.sky = wrapCleanErrors(injectValidateSpec(validateSky));
 validateStyleMin.terrain = wrapCleanErrors(injectValidateSpec(validateTerrain));
@@ -12522,6 +12813,8 @@ function wrapCleanErrors(inner) {
 		return sortErrors(inner.apply(this, args));
 	};
 }
+//#endregion
+//#region node_modules/@maplibre/maplibre-gl-style-spec/dist/expression/visibility.mjs
 const visibilitySpec = {
 	type: "enum",
 	"property-type": "data-constant",
@@ -12809,9 +13102,9 @@ register("StyleExpression", StyleExpression, { omit: ["_evaluator"] });
 register("ZoomDependentExpression", ZoomDependentExpression);
 register("ZoomConstantExpression", ZoomConstantExpression);
 register("CompoundExpression", CompoundExpression, { omit: ["_evaluate"] });
-for (const name in expressions) {
-	if (expressions[name]._classRegistryKey) continue;
-	register(`Expression_${name}`, expressions[name]);
+for (const name in expressions$1) {
+	if (expressions$1[name]._classRegistryKey) continue;
+	register(`Expression_${name}`, expressions$1[name]);
 }
 function isArrayBuffer(value) {
 	return value && typeof ArrayBuffer !== "undefined" && (value instanceof ArrayBuffer || value.constructor?.name === "ArrayBuffer");
@@ -12927,224 +13220,6 @@ var ZoomHistory = class {
 	}
 };
 //#endregion
-//#region src/util/unicode_properties.g.ts
-/**
-* Returns whether the fallback fonts specified by the
-* `localIdeographFontFamily` map option apply to the given codepoint. 
-*/
-function codePointUsesLocalIdeographFontFamily(codePoint) {
-	return /[\u02EA\u02EB\u1100-\u11FF\u2E80-\u2FDF\u3000-\u30FF\u3105-\u312F\u3131-\u318E\u31A0-\u4DBF\u4E00-\uA48C\uA490-\uA4C6\uA960-\uA97C\uAC00-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFE10-\uFE1F\uFE30-\uFE4F\uFF00-\uFFEF]|\uD81B[\uDFE0-\uDFFF]|[\uD81C-\uD822\uD840-\uD868\uD86A-\uD86D\uD86F-\uD872\uD874-\uD879\uD880-\uD883\uD885-\uD88C][\uDC00-\uDFFF]|\uD823[\uDC00-\uDCD5\uDCFF-\uDD1E\uDD80-\uDDF2]|\uD82B[\uDFF0-\uDFFF]|\uD82C[\uDC00-\uDEFB]|\uD83C[\uDE00-\uDEFF]|\uD869[\uDC00-\uDEDF\uDF00-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEAD\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0\uDFF0-\uDFFF]|\uD87B[\uDC00-\uDE5D]|\uD87E[\uDC00-\uDE1D]|\uD884[\uDC00-\uDF4A\uDF50-\uDFFF]|\uD88D[\uDC00-\uDC79]/gim.test(String.fromCodePoint(codePoint));
-}
-/**
-* Returns whether the given codepoint participates in ideographic line
-* breaking.
-*/
-function codePointAllowsIdeographicBreaking(codePoint) {
-	return /[\u02EA\u02EB\u2E80-\u2FDF\u2FF0-\u303F\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FD-\u30FF\u3105-\u312F\u31A0-\u4DBF\u4E00-\uA48C\uA490-\uA4C6\uF900-\uFA6D\uFA70-\uFAD9\uFE10-\uFE1F\uFE30-\uFE4F\uFF00-\uFFEF]|\uD81B[\uDFE0-\uDFFF]|[\uD81C-\uD822\uD840-\uD868\uD86A-\uD86D\uD86F-\uD872\uD874-\uD879\uD880-\uD883\uD885-\uD88C][\uDC00-\uDFFF]|\uD823[\uDC00-\uDCD5\uDCFF-\uDD1E\uDD80-\uDDF2]|\uD82B[\uDFF0-\uDFFF]|\uD82C[\uDC00-\uDEFB]|\uD83C[\uDE00-\uDEFF]|\uD869[\uDC00-\uDEDF\uDF00-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEAD\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0\uDFF0-\uDFFF]|\uD87B[\uDC00-\uDE5D]|\uD87E[\uDC00-\uDE1D]|\uD884[\uDC00-\uDF4A\uDF50-\uDFFF]|\uD88D[\uDC00-\uDC79]/gim.test(String.fromCodePoint(codePoint));
-}
-/**
-* Returns true if the given Unicode codepoint identifies a character with
-* upright orientation.
-*
-* A character has upright orientation if it is drawn upright (unrotated)
-* whether the line is oriented horizontally or vertically, even if both
-* adjacent characters can be rotated. For example, a Chinese character is
-* always drawn upright. An uprightly oriented character causes an adjacent
-* “neutral” character to be drawn upright as well.
-*/
-function codePointHasUprightVerticalOrientation(codePoint) {
-	return /[\u02EA\u02EB\u1100-\u11FF\u1400-\u167F\u18B0-\u18F5\u2E80-\u2E99\u2E9B-\u2EF3\u2F00-\u2FD5\u2FF0-\u3007\u3012\u3013\u3020-\u302F\u3031-\u303F\u3041-\u3096\u309D-\u30FB\u30FD-\u30FF\u3105-\u312F\u3131-\u318E\u3190-\uA48C\uA490-\uA4C6\uA960-\uA97C\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFE10-\uFE1F\uFE30-\uFE48\uFE50-\uFE57\uFE5F-\uFE62\uFE67-\uFE6F\uFF00-\uFF07\uFF0A-\uFF0C\uFF0E-\uFF19\uFF1F-\uFF3A\uFF3C\uFF3E\uFF40-\uFF5A\uFFE0-\uFFE2\uFFE4-\uFFE7]|\uD802[\uDD80-\uDD9F]|\uD805[\uDD80-\uDDFF]|\uD806[\uDE00-\uDEBF]|\uD811[\uDC00-\uDE7F]|\uD81B[\uDFE0-\uDFE4\uDFF0-\uDFF6]|[\uD81C-\uD822\uD83D\uD840-\uD868\uD86A-\uD86D\uD86F-\uD872\uD874-\uD879\uD880-\uD883\uD885-\uD88C][\uDC00-\uDFFF]|\uD823[\uDC00-\uDCD5\uDCFF-\uDD1E\uDD80-\uDDF2]|\uD82B[\uDFF0-\uDFF3\uDFF5-\uDFFB\uDFFD\uDFFE]|\uD82C[\uDC00-\uDD22\uDD30-\uDEFB]|\uD833[\uDEC0-\uDFCF]|\uD834[\uDC00-\uDDFF\uDEE0-\uDF7F]|\uD836[\uDC00-\uDEAF]|\uD83C[\uDC00-\uDE00\uDF00-\uDFFF]|\uD83E[\uDD00-\uDEFF]|\uD869[\uDC00-\uDEDF\uDF00-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEAD\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0\uDFF0-\uDFFF]|\uD87B[\uDC00-\uDE5D]|\uD87E[\uDC00-\uDE1D]|\uD884[\uDC00-\uDF4A\uDF50-\uDFFF]|\uD88D[\uDC00-\uDC79]/gim.test(String.fromCodePoint(codePoint));
-}
-/**
-* Returns true if the given Unicode codepoint identifies a character with
-* neutral orientation.
-*
-* A character has neutral orientation if it may be drawn rotated or unrotated
-* when the line is oriented vertically, depending on the orientation of the
-* adjacent characters. For example, along a vertically oriented line, the
-* vulgar fraction ½ is drawn upright among Chinese characters but rotated among
-* Latin letters. A neutrally oriented character does not influence whether an
-* adjacent character is drawn upright or rotated.
-*/
-function codePointHasNeutralVerticalOrientation(codePoint) {
-	return /[\xA7\xA9\xAE\xB1\xBC-\xBE\xD7\xF7\u2016\u2020\u2021\u2030\u2031\u203B\u203C\u2042\u2047-\u2049\u2051\u2100-\u218F\u221E\u2234\u2235\u2300-\u2307\u230C-\u231F\u2324-\u2328\u232B\u237D-\u239A\u23BE-\u23CD\u23CF\u23D1-\u23DB\u23E2-\u2422\u2424-\u24FF\u25A0-\u2619\u2620-\u2767\u2776-\u2793\u2B12-\u2B2F\u2B50-\u2B59\u2BB8-\u2BEB\u3000-\u303F\u30A0-\u30FF\uE000-\uF8FF\uFE30-\uFE6F\uFF00-\uFFEF\uFFFC\uFFFD]|[\uDB80-\uDBFF][\uDC00-\uDFFF]/gim.test(String.fromCodePoint(codePoint));
-}
-/**
-* Returns whether the give codepoint is likely to require complex text shaping.
-*/
-function codePointRequiresComplexTextShaping(codePoint) {
-	return /[\u0900-\u0DFF\u0F00-\u109F\u1780-\u17FF]/gim.test(String.fromCodePoint(codePoint));
-}
-//#endregion
-//#region src/util/script_detection.ts
-function charIsWhitespace(char) {
-	return /\s/u.test(String.fromCodePoint(char));
-}
-function allowsVerticalWritingMode(chars) {
-	for (const char of chars) if (codePointHasUprightVerticalOrientation(char.codePointAt(0))) return true;
-	return false;
-}
-function allowsLetterSpacing(chars) {
-	for (const char of chars) if (!charAllowsLetterSpacing(char.codePointAt(0))) return false;
-	return true;
-}
-/**
-* Returns a regular expression matching the given script codes, excluding any
-* code that the execution environment lacks support for in regular expressions.
-*/
-function sanitizedRegExpFromScriptCodes(scriptCodes) {
-	const supportedPropertyEscapes = scriptCodes.map((code) => {
-		try {
-			return new RegExp(`\\p{sc=${code}}`, "u").source;
-		} catch {
-			return null;
-		}
-	}).filter((pe) => pe);
-	return new RegExp(supportedPropertyEscapes.join("|"), "u");
-}
-const cursiveScriptRegExp = sanitizedRegExpFromScriptCodes([
-	"Arab",
-	"Dupl",
-	"Mong",
-	"Ougr",
-	"Syrc"
-]);
-function charAllowsLetterSpacing(char) {
-	return !cursiveScriptRegExp.test(String.fromCodePoint(char));
-}
-/**
-* Returns true if the given Unicode codepoint identifies a character with
-* rotated orientation.
-*
-* A character has rotated orientation if it is drawn rotated when the line is
-* oriented vertically, even if both adjacent characters are upright. For
-* example, a Latin letter is drawn rotated along a vertical line. A rotated
-* character causes an adjacent “neutral” character to be drawn rotated as well.
-*/
-function charHasRotatedVerticalOrientation(char) {
-	return !(codePointHasUprightVerticalOrientation(char) || codePointHasNeutralVerticalOrientation(char));
-}
-function charInComplexShapingScript(char) {
-	return /\p{sc=Arab}/u.test(String.fromCodePoint(char));
-}
-const rtlScriptRegExp = sanitizedRegExpFromScriptCodes([
-	"Adlm",
-	"Arab",
-	"Armi",
-	"Avst",
-	"Chrs",
-	"Cprt",
-	"Egyp",
-	"Elym",
-	"Gara",
-	"Hatr",
-	"Hebr",
-	"Hung",
-	"Khar",
-	"Lydi",
-	"Mand",
-	"Mani",
-	"Mend",
-	"Merc",
-	"Mero",
-	"Narb",
-	"Nbat",
-	"Nkoo",
-	"Orkh",
-	"Palm",
-	"Phli",
-	"Phlp",
-	"Phnx",
-	"Prti",
-	"Rohg",
-	"Samr",
-	"Sarb",
-	"Sogo",
-	"Syrc",
-	"Thaa",
-	"Todr",
-	"Yezi"
-]);
-function charInRTLScript(char) {
-	return rtlScriptRegExp.test(String.fromCodePoint(char));
-}
-function charInSupportedScript(char, canRenderRTL) {
-	if (!canRenderRTL && charInRTLScript(char)) return false;
-	return !codePointRequiresComplexTextShaping(char);
-}
-function stringContainsRTLText(chars) {
-	for (const char of chars) if (charInRTLScript(char.codePointAt(0))) return true;
-	return false;
-}
-function isStringInSupportedScript(chars, canRenderRTL) {
-	for (const char of chars) if (!charInSupportedScript(char.codePointAt(0), canRenderRTL)) return false;
-	return true;
-}
-//#endregion
-//#region src/source/rtl_text_plugin_worker.ts
-var RTLWorkerPlugin = class {
-	constructor() {
-		this.TIMEOUT = 5e3;
-		this.applyArabicShaping = null;
-		this.processBidirectionalText = null;
-		this.processStyledBidirectionalText = null;
-		this.pluginStatus = "unavailable";
-		this.pluginURL = null;
-		this.loadScriptResolve = () => {};
-	}
-	setState(state) {
-		this.pluginStatus = state.pluginStatus;
-		this.pluginURL = state.pluginURL;
-	}
-	getState() {
-		return {
-			pluginStatus: this.pluginStatus,
-			pluginURL: this.pluginURL
-		};
-	}
-	setMethods(rtlTextPlugin) {
-		if (rtlWorkerPlugin.isParsed()) throw new Error("RTL text plugin already registered.");
-		this.applyArabicShaping = rtlTextPlugin.applyArabicShaping;
-		this.processBidirectionalText = rtlTextPlugin.processBidirectionalText;
-		this.processStyledBidirectionalText = rtlTextPlugin.processStyledBidirectionalText;
-		this.loadScriptResolve();
-	}
-	isParsed() {
-		return this.applyArabicShaping != null && this.processBidirectionalText != null && this.processStyledBidirectionalText != null;
-	}
-	getRTLTextPluginStatus() {
-		return this.pluginStatus;
-	}
-	async syncState(incomingState, loadScript) {
-		if (this.isParsed()) return this.getState();
-		if (incomingState.pluginStatus !== "loading") {
-			this.setState(incomingState);
-			return incomingState;
-		}
-		const urlToLoad = incomingState.pluginURL;
-		const loadScriptPromise = new Promise((resolve) => {
-			this.loadScriptResolve = resolve;
-		});
-		const dontWaitForeverTimeoutPromise = new Promise((resolve) => setTimeout(() => resolve(), this.TIMEOUT));
-		await loadScript(urlToLoad);
-		await Promise.race([loadScriptPromise, dontWaitForeverTimeoutPromise]);
-		if (this.isParsed()) {
-			const loadedState = {
-				pluginStatus: "loaded",
-				pluginURL: urlToLoad
-			};
-			this.setState(loadedState);
-			return loadedState;
-		}
-		this.setState({
-			pluginStatus: "error",
-			pluginURL: ""
-		});
-		throw new Error(`RTL Text Plugin failed to import scripts from ${urlToLoad}`);
-	}
-};
-const rtlWorkerPlugin = new RTLWorkerPlugin();
-//#endregion
 //#region src/style/evaluation_parameters.ts
 /**
 * @internal
@@ -13153,7 +13228,6 @@ const rtlWorkerPlugin = new RTLWorkerPlugin();
 */
 var EvaluationParameters = class {
 	constructor(zoom, options) {
-		this.isSupportedScript = isSupportedScript;
 		this.zoom = zoom;
 		if (options) {
 			this.now = options.now || 0;
@@ -13186,9 +13260,6 @@ var EvaluationParameters = class {
 		};
 	}
 };
-function isSupportedScript(str) {
-	return isStringInSupportedScript(str, rtlWorkerPlugin.getRTLTextPluginStatus() === "loaded");
-}
 //#endregion
 //#region src/style/properties.ts
 const TRANSITION_SUFFIX = "-transition";
@@ -14294,21 +14365,24 @@ register("StructArrayLayout8ui16", StructArrayLayout8ui16);
 * [0] - Int16[4]
 * [8] - Uint16[4]
 * [16] - Int16[4]
+* [24] - Float32[1]
 *
 */
-var StructArrayLayout4i4ui4i24 = class extends StructArray {
+var StructArrayLayout4i4ui4i1f28 = class extends StructArray {
 	_refreshViews() {
 		this.uint8 = new Uint8Array(this.arrayBuffer);
 		this.int16 = new Int16Array(this.arrayBuffer);
 		this.uint16 = new Uint16Array(this.arrayBuffer);
+		this.float32 = new Float32Array(this.arrayBuffer);
 	}
-	emplaceBack(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) {
+	emplaceBack(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) {
 		const i = this.length;
 		this.resize(i + 1);
-		return this.emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
+		return this.emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12);
 	}
-	emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) {
-		const o2 = i * 12;
+	emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) {
+		const o2 = i * 14;
+		const o4 = i * 7;
 		this.int16[o2 + 0] = v0;
 		this.int16[o2 + 1] = v1;
 		this.int16[o2 + 2] = v2;
@@ -14321,11 +14395,12 @@ var StructArrayLayout4i4ui4i24 = class extends StructArray {
 		this.int16[o2 + 9] = v9;
 		this.int16[o2 + 10] = v10;
 		this.int16[o2 + 11] = v11;
+		this.float32[o4 + 6] = v12;
 		return i;
 	}
 };
-StructArrayLayout4i4ui4i24.prototype.bytesPerElement = 24;
-register("StructArrayLayout4i4ui4i24", StructArrayLayout4i4ui4i24);
+StructArrayLayout4i4ui4i1f28.prototype.bytesPerElement = 28;
+register("StructArrayLayout4i4ui4i1f28", StructArrayLayout4i4ui4i1f28);
 /**
 * @internal
 * Implementation of the StructArray layout:
@@ -14547,9 +14622,10 @@ register("StructArrayLayout3ui6", StructArrayLayout3ui6);
 * [36] - Uint8[3]
 * [40] - Uint32[1]
 * [44] - Int16[1]
+* [48] - Float32[1]
 *
 */
-var StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48 = class extends StructArray {
+var StructArrayLayout2i2ui3ul3ui2f3ub1ul1i1f52 = class extends StructArray {
 	_refreshViews() {
 		this.uint8 = new Uint8Array(this.arrayBuffer);
 		this.int16 = new Int16Array(this.arrayBuffer);
@@ -14557,15 +14633,15 @@ var StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48 = class extends StructArray {
 		this.uint32 = new Uint32Array(this.arrayBuffer);
 		this.float32 = new Float32Array(this.arrayBuffer);
 	}
-	emplaceBack(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16) {
+	emplaceBack(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17) {
 		const i = this.length;
 		this.resize(i + 1);
-		return this.emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16);
+		return this.emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17);
 	}
-	emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16) {
-		const o2 = i * 24;
-		const o4 = i * 12;
-		const o1 = i * 48;
+	emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17) {
+		const o2 = i * 26;
+		const o4 = i * 13;
+		const o1 = i * 52;
 		this.int16[o2 + 0] = v0;
 		this.int16[o2 + 1] = v1;
 		this.uint16[o2 + 2] = v2;
@@ -14583,11 +14659,12 @@ var StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48 = class extends StructArray {
 		this.uint8[o1 + 38] = v14;
 		this.uint32[o4 + 10] = v15;
 		this.int16[o2 + 22] = v16;
+		this.float32[o4 + 12] = v17;
 		return i;
 	}
 };
-StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48.prototype.bytesPerElement = 48;
-register("StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48", StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48);
+StructArrayLayout2i2ui3ul3ui2f3ub1ul1i1f52.prototype.bytesPerElement = 52;
+register("StructArrayLayout2i2ui3ul3ui2f3ub1ul1i1f52", StructArrayLayout2i2ui3ul3ui2f3ub1ul1i1f52);
 /**
 * @internal
 * Implementation of the StructArray layout:
@@ -14596,9 +14673,10 @@ register("StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48", StructArrayLayout2i2ui3ul3u
 * [48] - Uint32[1]
 * [52] - Float32[2]
 * [60] - Uint16[2]
+* [64] - Float32[1]
 *
 */
-var StructArrayLayout8i15ui1ul2f2ui64 = class extends StructArray {
+var StructArrayLayout8i15ui1ul2f2ui1f68 = class extends StructArray {
 	_refreshViews() {
 		this.uint8 = new Uint8Array(this.arrayBuffer);
 		this.int16 = new Int16Array(this.arrayBuffer);
@@ -14606,14 +14684,14 @@ var StructArrayLayout8i15ui1ul2f2ui64 = class extends StructArray {
 		this.uint32 = new Uint32Array(this.arrayBuffer);
 		this.float32 = new Float32Array(this.arrayBuffer);
 	}
-	emplaceBack(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27) {
+	emplaceBack(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28) {
 		const i = this.length;
 		this.resize(i + 1);
-		return this.emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27);
+		return this.emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28);
 	}
-	emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27) {
-		const o2 = i * 32;
-		const o4 = i * 16;
+	emplace(i, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28) {
+		const o2 = i * 34;
+		const o4 = i * 17;
 		this.int16[o2 + 0] = v0;
 		this.int16[o2 + 1] = v1;
 		this.int16[o2 + 2] = v2;
@@ -14642,11 +14720,12 @@ var StructArrayLayout8i15ui1ul2f2ui64 = class extends StructArray {
 		this.float32[o4 + 14] = v25;
 		this.uint16[o2 + 30] = v26;
 		this.uint16[o2 + 31] = v27;
+		this.float32[o4 + 16] = v28;
 		return i;
 	}
 };
-StructArrayLayout8i15ui1ul2f2ui64.prototype.bytesPerElement = 64;
-register("StructArrayLayout8i15ui1ul2f2ui64", StructArrayLayout8i15ui1ul2f2ui64);
+StructArrayLayout8i15ui1ul2f2ui1f68.prototype.bytesPerElement = 68;
+register("StructArrayLayout8i15ui1ul2f2ui1f68", StructArrayLayout8i15ui1ul2f2ui1f68);
 /**
 * @internal
 * Implementation of the StructArray layout:
@@ -14912,10 +14991,13 @@ var PlacedSymbolStruct = class extends Struct {
 	get associatedIconIndex() {
 		return this._structArray.int16[this._pos2 + 22];
 	}
+	get heightOffset() {
+		return this._structArray.float32[this._pos4 + 12];
+	}
 };
-PlacedSymbolStruct.prototype.size = 48;
+PlacedSymbolStruct.prototype.size = 52;
 /** @internal */
-var PlacedSymbolArray = class extends StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48 {
+var PlacedSymbolArray = class extends StructArrayLayout2i2ui3ul3ui2f3ub1ul1i1f52 {
 	/**
 	* Return the PlacedSymbolStruct at the given location in the array.
 	* @param index - The index of the element.
@@ -15014,10 +15096,13 @@ var SymbolInstanceStruct = class extends Struct {
 	get textAnchorOffsetEndIndex() {
 		return this._structArray.uint16[this._pos2 + 31];
 	}
+	get heightOffset() {
+		return this._structArray.float32[this._pos4 + 16];
+	}
 };
-SymbolInstanceStruct.prototype.size = 64;
+SymbolInstanceStruct.prototype.size = 68;
 /** @internal */
-var SymbolInstanceArray = class extends StructArrayLayout8i15ui1ul2f2ui64 {
+var SymbolInstanceArray = class extends StructArrayLayout8i15ui1ul2f2ui1f68 {
 	/**
 	* Return the SymbolInstanceStruct at the given location in the array.
 	* @param index - The index of the element.
@@ -15105,7 +15190,7 @@ var LineLayoutArray = class extends StructArrayLayout2i4ub8 {};
 var LineExtLayoutArray = class extends StructArrayLayout2f8 {};
 var PatternLayoutArray = class extends StructArrayLayout10ui20 {};
 var DashLayoutArray = class extends StructArrayLayout8ui16 {};
-var SymbolLayoutArray = class extends StructArrayLayout4i4ui4i24 {};
+var SymbolLayoutArray = class extends StructArrayLayout4i4ui4i1f28 {};
 var SymbolDynamicLayoutArray = class extends StructArrayLayout3f12 {};
 var SymbolOpacityArray = class extends StructArrayLayout1ul4 {};
 var CollisionBoxLayoutArray = class extends StructArrayLayout2i2i2i12 {};
@@ -15670,8 +15755,10 @@ var SourceExpressionBinder = class {
 		}
 	}
 	upload(context) {
-		if (this.paintVertexArray?.arrayBuffer.byteLength) if (this.paintVertexBuffer?.buffer) this.paintVertexBuffer.updateData(this.paintVertexArray);
-		else this.paintVertexBuffer = context.createVertexBuffer(this.paintVertexArray, this.paintVertexAttributes, this.expression.isStateDependent);
+		if (this.paintVertexArray?.arrayBuffer.byteLength) {
+			if (this.paintVertexBuffer?.buffer) this.paintVertexBuffer.updateData(this.paintVertexArray);
+			else this.paintVertexBuffer = context.createVertexBuffer(this.paintVertexArray, this.paintVertexAttributes, this.expression.isStateDependent);
+		}
 	}
 	destroy() {
 		if (this.paintVertexBuffer) this.paintVertexBuffer.destroy();
@@ -15716,8 +15803,10 @@ var CompositeExpressionBinder = class {
 		}
 	}
 	upload(context) {
-		if (this.paintVertexArray?.arrayBuffer.byteLength) if (this.paintVertexBuffer?.buffer) this.paintVertexBuffer.updateData(this.paintVertexArray);
-		else this.paintVertexBuffer = context.createVertexBuffer(this.paintVertexArray, this.paintVertexAttributes, this.expression.isStateDependent);
+		if (this.paintVertexArray?.arrayBuffer.byteLength) {
+			if (this.paintVertexBuffer?.buffer) this.paintVertexBuffer.updateData(this.paintVertexArray);
+			else this.paintVertexBuffer = context.createVertexBuffer(this.paintVertexArray, this.paintVertexAttributes, this.expression.isStateDependent);
+		}
 	}
 	destroy() {
 		if (this.paintVertexBuffer) this.paintVertexBuffer.destroy();
@@ -16175,6 +16264,7 @@ var CircleBucket = class {
 		if (!this.stateDependentLayers.length) return;
 		this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, { imagePositions });
 	}
+	addFeatures(_parameters) {}
 	isEmpty() {
 		return this.layoutVertexArray.length === 0;
 	}
@@ -16436,10 +16526,10 @@ function intersectionTestMapMap({ queryGeometry, size }, point) {
 	return polygonIntersectsBufferedPoint(queryGeometry, point, size);
 }
 function intersectionTestMapViewport({ queryGeometry, size, transform, unwrappedTileID, getElevation }, point) {
-	return polygonIntersectsBufferedPoint(queryGeometry, point, size * (transform.projectTileCoordinates(point.x, point.y, unwrappedTileID, getElevation).signedDistanceFromCamera / transform.cameraToCenterDistance));
+	return polygonIntersectsBufferedPoint(queryGeometry, point, size * (transform.projectTileCoordinates(point.x, point.y, unwrappedTileID, getElevation?.(point.x, point.y)).signedDistanceFromCamera / transform.cameraToCenterDistance));
 }
 function intersectionTestViewportMap({ queryGeometry, size, transform, unwrappedTileID, getElevation }, point) {
-	const w = transform.projectTileCoordinates(point.x, point.y, unwrappedTileID, getElevation).signedDistanceFromCamera;
+	const w = transform.projectTileCoordinates(point.x, point.y, unwrappedTileID, getElevation?.(point.x, point.y)).signedDistanceFromCamera;
 	const adjustedSize = size * (transform.cameraToCenterDistance / w);
 	return polygonIntersectsBufferedPoint(queryGeometry, projectPoint(point, transform, unwrappedTileID, getElevation), adjustedSize);
 }
@@ -16459,7 +16549,7 @@ function circleIntersection({ queryGeometry, size, transform, unwrappedTileID, g
 	return false;
 }
 function projectPoint(tilePoint, transform, unwrappedTileID, getElevation) {
-	const clipPoint = transform.projectTileCoordinates(tilePoint.x, tilePoint.y, unwrappedTileID, getElevation).point;
+	const clipPoint = transform.projectTileCoordinates(tilePoint.x, tilePoint.y, unwrappedTileID, getElevation?.(tilePoint.x, tilePoint.y)).point;
 	return new Point((clipPoint.x * .5 + .5) * transform.width, (-clipPoint.y * .5 + .5) * transform.height);
 }
 function projectQueryGeometry$1(queryGeometry, transform, unwrappedTileID, getElevation) {
@@ -16831,6 +16921,9 @@ var Texture = class {
 			gl.deleteTexture(this.texture);
 			this.texture = gl.createTexture();
 			this._ownedHandle = this.texture;
+			this.magFilter = void 0;
+			this.minFilter = void 0;
+			this.wrap = void 0;
 		}
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		context.pixelStoreUnpackFlipY.set(false);
@@ -16870,7 +16963,7 @@ var Texture = class {
 				this._updateDomImage(image, x, y, gl);
 			}
 		}
-		if (this.useMipmap) gl.generateMipmap(gl.TEXTURE_2D);
+		if (this.useMipmap && !(hasDataProperty(image) && image.data === null)) gl.generateMipmap(gl.TEXTURE_2D);
 		context.pixelStoreUnpackFlipY.setDefault();
 		context.pixelStoreUnpack.setDefault();
 		context.pixelStoreUnpackPremultiplyAlpha.setDefault();
@@ -16891,22 +16984,36 @@ var Texture = class {
 		if (wantPremultiply && data) data = premultiplyAlpha(data);
 		gl.texSubImage2D(gl.TEXTURE_2D, 0, x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 	}
-	bind(filter, wrap, minFilter) {
+	bind(magFilter, wrap, minFilter) {
 		const { context } = this;
 		const { gl } = context;
 		if (this.texture !== this._ownedHandle) this.texture = this._ownedHandle;
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
-		if (minFilter === gl.LINEAR_MIPMAP_NEAREST && !this.useMipmap) minFilter = gl.LINEAR;
-		if (filter !== this.filter) {
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter || filter);
-			this.filter = filter;
+		if ((minFilter === gl.LINEAR_MIPMAP_NEAREST || minFilter === gl.LINEAR_MIPMAP_LINEAR) && !this.useMipmap) minFilter = gl.LINEAR;
+		const effectiveMinFilter = minFilter || magFilter;
+		if (magFilter !== this.magFilter) {
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter);
+			this.magFilter = magFilter;
+		}
+		if (effectiveMinFilter !== this.minFilter) {
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, effectiveMinFilter);
+			this.minFilter = effectiveMinFilter;
 		}
 		if (wrap !== this.wrap) {
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap);
 			this.wrap = wrap;
 		}
+	}
+	/**
+	* Builds the mip chain after the texture was drawn into as a framebuffer attachment.
+	* An allocation without pixels (`data: null`) gets no chain from `update`, so a render target is built once, here, after the draw.
+	*/
+	generateMipmap() {
+		if (!this.useMipmap) return;
+		const { gl } = this.context;
+		gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		gl.generateMipmap(gl.TEXTURE_2D);
 	}
 	destroy() {
 		const { gl } = this.context;
@@ -16935,8 +17042,8 @@ var DEMData = class DEMData {
 	/**
 	* Constructs a `DEMData` object
 	* @param uid - the tile's unique id
-	* @param data - RGBAImage data has uniform 1px padding on all sides: square tile edge size defines stride
-	// and dim is calculated as stride - 2.
+	* @param data - RGBAImage data has uniform 2px padding on all sides: square tile edge size defines stride
+	// and dim is calculated as stride - 4.
 	* @param encoding - the encoding type of the data
 	* @param redFactor - the red channel factor used to unpack the data, used for `custom` encoding only
 	* @param greenFactor - the green channel factor used to unpack the data, used for `custom` encoding only
@@ -16955,7 +17062,7 @@ var DEMData = class DEMData {
 			return;
 		}
 		this.stride = data.height;
-		const dim = this.dim = data.height - 2;
+		const dim = this.dim = data.height - 4;
 		this.data = new Uint32Array(data.data.buffer);
 		DEMData.byteViewCache.set(this, new Uint8Array(this.data.buffer));
 		switch (encoding) {
@@ -16977,16 +17084,12 @@ var DEMData = class DEMData {
 				this.blueFactor = .1;
 				this.baseShift = 1e4;
 		}
-		for (let x = 0; x < dim; x++) {
-			this.data[this._idx(-1, x)] = this.data[this._idx(0, x)];
-			this.data[this._idx(dim, x)] = this.data[this._idx(dim - 1, x)];
-			this.data[this._idx(x, -1)] = this.data[this._idx(x, 0)];
-			this.data[this._idx(x, dim)] = this.data[this._idx(x, dim - 1)];
+		for (let y = -2; y < dim + 2; y++) {
+			const offset = this._idx(0, Math.max(0, Math.min(dim - 1, y)));
+			if (y < 0 || y >= dim) this.data.copyWithin(this._idx(0, y), offset, offset + dim);
+			this.data.fill(this.data[offset], this._idx(-2, y), this._idx(0, y));
+			this.data.fill(this.data[offset + dim - 1], this._idx(dim, y), this._idx(dim + 1, y) + 1);
 		}
-		this.data[this._idx(-1, -1)] = this.data[this._idx(0, 0)];
-		this.data[this._idx(dim, -1)] = this.data[this._idx(dim - 1, 0)];
-		this.data[this._idx(-1, dim)] = this.data[this._idx(0, dim - 1)];
-		this.data[this._idx(dim, dim)] = this.data[this._idx(dim - 1, dim - 1)];
 		const pixels = this._getByteView();
 		this.min = Number.MAX_SAFE_INTEGER;
 		this.max = Number.MIN_SAFE_INTEGER;
@@ -17007,7 +17110,7 @@ var DEMData = class DEMData {
 		const cy = Math.floor(y);
 		if (cx < -1 || cx >= this.dim || cy < -1 || cy >= this.dim) throw new RangeError(`Out of range source coordinates for DEM data. x: ${x}, y: ${y}, dim: ${this.dim}`);
 		const pixels = this._getByteView();
-		const index = ((cy + 1) * this.stride + cx + 1) * 4;
+		const index = ((cy + 2) * this.stride + cx + 2) * 4;
 		const strideByteWidth = this.stride * 4;
 		const tx = x - cx;
 		const ty = y - cy;
@@ -17026,8 +17129,8 @@ var DEMData = class DEMData {
 		];
 	}
 	_idx(x, y) {
-		if (x < -1 || x >= this.dim + 1 || y < -1 || y >= this.dim + 1) throw new RangeError(`Out of range source coordinates for DEM data. x: ${x}, y: ${y}, dim: ${this.dim}`);
-		return (y + 1) * this.stride + (x + 1);
+		if (x < -2 || x >= this.dim + 2 || y < -2 || y >= this.dim + 2) throw new RangeError(`Out of range source coordinates for DEM data. x: ${x}, y: ${y}, dim: ${this.dim}`);
+		return (y + 2) * this.stride + (x + 2);
 	}
 	unpack(r, g, b) {
 		return r * this.redFactor + g * this.greenFactor + b * this.blueFactor - this.baseShift;
@@ -17046,15 +17149,15 @@ var DEMData = class DEMData {
 		let xMin = dx * this.dim, xMax = dx * this.dim + this.dim, yMin = dy * this.dim, yMax = dy * this.dim + this.dim;
 		switch (dx) {
 			case -1:
-				xMin = xMax - 1;
+				xMin = xMax - 2;
 				break;
-			case 1: xMax = xMin + 1;
+			case 1: xMax = xMin + 2;
 		}
 		switch (dy) {
 			case -1:
-				yMin = yMax - 1;
+				yMin = yMax - 2;
 				break;
-			case 1: yMax = yMin + 1;
+			case 1: yMax = yMin + 2;
 		}
 		const ox = -dx * this.dim;
 		const oy = -dy * this.dim;
@@ -18280,8 +18383,10 @@ function subdivideVertexLine(linePoints, granularity, isRing = false) {
 	const first = linePoints[0];
 	const last = linePoints[linePoints.length - 1];
 	const addLastToFirstSegment = isRing && (first.x !== last.x || first.y !== last.y);
-	if (granularity < 2) if (addLastToFirstSegment) return [...linePoints, linePoints[0]];
-	else return [...linePoints];
+	if (granularity < 2) {
+		if (addLastToFirstSegment) return [...linePoints, linePoints[0]];
+		else return [...linePoints];
+	}
 	const cellSize = Math.floor(EXTENT$1 / granularity);
 	const finalLineVertices = [];
 	finalLineVertices.push(new Point(linePoints[0].x, linePoints[0].y));
@@ -18580,6 +18685,7 @@ var FillBucket = class {
 		this.layerIds = this.layers.map((layer) => layer.id);
 		this.index = options.index;
 		this.hasDependencies = false;
+		this.sdfPatterns = {};
 		this.patternFeatures = [];
 		this.layoutVertexArray = new FillLayoutArray();
 		this.indexArray = new TriangleIndexArray();
@@ -18627,8 +18733,31 @@ var FillBucket = class {
 		if (!this.stateDependentLayers.length) return;
 		this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, { imagePositions });
 	}
-	addFeatures(options, canonical, imagePositions) {
-		for (const feature of this.patternFeatures) this.addFeature(feature, feature.geometry, feature.index, canonical, imagePositions, options.subdivisionGranularity);
+	addFeatures({ options, canonical, patternPositions, patternMap }) {
+		this.detectSdfPatterns(patternMap);
+		for (const feature of this.patternFeatures) this.addFeature(feature, feature.geometry, feature.index, canonical, patternPositions, options.subdivisionGranularity);
+	}
+	detectSdfPatterns(imageMap) {
+		for (const feature of this.patternFeatures) for (const layerId in feature.patterns) {
+			const pattern = feature.patterns[layerId];
+			this.recordSdfPattern(layerId, imageMap[pattern.min]);
+			this.recordSdfPattern(layerId, imageMap[pattern.mid]);
+			this.recordSdfPattern(layerId, imageMap[pattern.max]);
+		}
+		for (const layer of this.layers) {
+			const pattern = layer.paint.get("fill-pattern").constantOr(null);
+			if (pattern) {
+				this.recordSdfPattern(layer.id, imageMap[pattern.from.toString()]);
+				this.recordSdfPattern(layer.id, imageMap[pattern.to.toString()]);
+			}
+		}
+	}
+	recordSdfPattern(layerId, image) {
+		if (!image) return;
+		const isSdf = image.sdf === true;
+		const existing = this.sdfPatterns[layerId];
+		if (existing === void 0) this.sdfPatterns[layerId] = isSdf;
+		else if (existing !== isSdf) warnOnce(`Style sheet warning: Cannot mix SDF and non-SDF fill patterns in layer "${layerId}"`);
 	}
 	isEmpty() {
 		return this.layoutVertexArray.length === 0;
@@ -18736,6 +18865,128 @@ const centroidAttributes = createLayout([{
 const members$2 = layout$3.members;
 layout$3.size;
 layout$3.alignment;
+//#endregion
+//#region src/geo/bounds.ts
+/** A 2-d bounding box covering an X and Y range. */
+var Bounds = class Bounds {
+	constructor() {
+		this.minX = Infinity;
+		this.maxX = -Infinity;
+		this.minY = Infinity;
+		this.maxY = -Infinity;
+	}
+	/**
+	* Expands this bounding box to include point.
+	*
+	* @param point - The point to include in this bounding box
+	* @returns This mutated bounding box
+	*/
+	extend(point) {
+		this.minX = Math.min(this.minX, point.x);
+		this.minY = Math.min(this.minY, point.y);
+		this.maxX = Math.max(this.maxX, point.x);
+		this.maxY = Math.max(this.maxY, point.y);
+		return this;
+	}
+	/**
+	* Expands this bounding box by a fixed amount in each direction.
+	*
+	* @param amount - The amount to expand the box by, or contract if negative
+	* @returns This mutated bounding box
+	*/
+	expandBy(amount) {
+		this.minX -= amount;
+		this.minY -= amount;
+		this.maxX += amount;
+		this.maxY += amount;
+		if (this.minX > this.maxX || this.minY > this.maxY) {
+			this.minX = Infinity;
+			this.maxX = -Infinity;
+			this.minY = Infinity;
+			this.maxY = -Infinity;
+		}
+		return this;
+	}
+	/**
+	* Shrinks this bounding box by a fixed amount in each direction.
+	*
+	* @param amount - The amount to shrink the box by
+	* @returns This mutated bounding box
+	*/
+	shrinkBy(amount) {
+		return this.expandBy(-amount);
+	}
+	/**
+	* Returns a new bounding box that contains all of the corners of this bounding
+	* box with a transform applied. Does not modify this bounding box.
+	*
+	* @param fn - The function to apply to each corner
+	* @returns A new bounding box containing all of the mapped points.
+	*/
+	map(fn) {
+		const result = new Bounds();
+		result.extend(fn(new Point(this.minX, this.minY)));
+		result.extend(fn(new Point(this.maxX, this.minY)));
+		result.extend(fn(new Point(this.minX, this.maxY)));
+		result.extend(fn(new Point(this.maxX, this.maxY)));
+		return result;
+	}
+	/**
+	* Creates a new bounding box that includes all points provided.
+	*
+	* @param points - The points to include inside the bounding box
+	* @returns The new bounding box
+	*/
+	static fromPoints(points) {
+		const result = new Bounds();
+		for (const p of points) result.extend(p);
+		return result;
+	}
+	contains(point) {
+		return point.x >= this.minX && point.x <= this.maxX && point.y >= this.minY && point.y <= this.maxY;
+	}
+	empty() {
+		return this.minX > this.maxX;
+	}
+	width() {
+		return this.maxX - this.minX;
+	}
+	height() {
+		return this.maxY - this.minY;
+	}
+	covers(other) {
+		return !this.empty() && !other.empty() && other.minX >= this.minX && other.maxX <= this.maxX && other.minY >= this.minY && other.maxY <= this.maxY;
+	}
+	intersects(other) {
+		return !this.empty() && !other.empty() && other.minX <= this.maxX && other.maxX >= this.minX && other.minY <= this.maxY && other.maxY >= this.minY;
+	}
+};
+//#endregion
+//#region src/data/extent_bounds.ts
+/**
+* The bounding box covering the entire extent of a tile.
+*/
+const EXTENT_BOUNDS = Bounds.fromPoints([new Point(0, 0), new Point(EXTENT$1, EXTENT$1)]);
+/**
+* Whether an edge runs along one of the lines the tile was cut out of the world at. Clipping happens
+* on the buffer rectangle, outside the tile, so an axis parallel edge out there belongs to the cut
+* rather than to the feature. Such an edge is shared with the neighbouring tile, which cuts the same
+* feature somewhere else, so geometry derived from it has to stay identical in both tiles.
+* @param p1 - First vertex of the edge
+* @param p2 - Second vertex of the edge
+* @returns True when the edge lies on a clip line.
+*/
+function isBoundaryEdge(p1, p2) {
+	return p1.x === p2.x && (p1.x < 0 || p1.x > 8192) || p1.y === p2.y && (p1.y < 0 || p1.y > 8192);
+}
+/**
+* Whether a ring lies completely off one side of the tile, and so cannot contribute a visible pixel.
+* @param ring - Ring to test
+* @returns True when every vertex is beyond the same edge of the tile.
+*/
+function isEntirelyOutside(ring) {
+	return ring.every((p) => p.x < 0) || ring.every((p) => p.x > 8192) || ring.every((p) => p.y < 0) || ring.every((p) => p.y > 8192);
+}
 //#endregion
 //#region node_modules/@mapbox/vector-tile/index.js
 /** @import {PbfReader} from 'pbf' */
@@ -19340,8 +19591,16 @@ function cameraMercatorCoordinateFromCenterAndRotation(center, elevation, pitch,
 	const { x, y, z } = cameraDirectionFromPitchBearing(pitch, bearing);
 	const dxMercator = dMercator * -x;
 	const dyMercator = dMercator * -y;
-	const dzMercator = dMercator * -z;
+	const dzMercator = dMercator * z;
 	return new MercatorCoordinate(centerMercator.x + dxMercator, centerMercator.y + dyMercator, centerMercator.z + dzMercator);
+}
+/**
+* Returns the position of the camera in mercator coordinates, with its altitude in `z`.
+* Computed from the center, pitch, bearing and camera distance, so it holds for any projection.
+*/
+function cameraMercatorCoordinate(transform) {
+	const pixelPerMeter = mercatorZfromAltitude(1, transform.center.lat) * transform.worldSize;
+	return cameraMercatorCoordinateFromCenterAndRotation(transform.center, transform.elevation, transform.pitch, transform.bearing, transform.cameraToCenterDistance / pixelPerMeter);
 }
 function cameraDirectionFromPitchBearing(pitch, bearing) {
 	const pitchRadians = degreesToRadians(pitch);
@@ -19373,55 +19632,90 @@ function getTileUnitsForMeters(distanceInMeters, canonical) {
 	const tileUnitsPerMercator = (1 << canonical.z) * EXTENT$1;
 	return distanceInMeters * meterInMercator * tileUnitsPerMercator;
 }
+/**
+* Rounds the corners of a single ring.
+*
+* Corners that tile clipping created are left sharp: they belong to the cut rather than to the
+* feature, and the neighbouring tile cuts the same feature elsewhere, so rounding them would leave
+* the two halves out of step. Every vertex ends up on the integer tile grid, because triangulation,
+* subdivision and the vertex buffers snap and deduplicate vertices there - arcs finer than a tile
+* unit would otherwise be merged only after they were triangulated, turning the mesh into spikes.
+*
+* A ring that collapses into fewer than three distinct vertices is returned unchanged.
+* @param ring - Ring to round, closed or open
+* @param distanceInTileUnits - Corner rounding distance, already converted to tile units
+*/
 function roundRing(ring, distanceInTileUnits) {
 	if (!ring || ring.length < 3) return ring;
 	const isClosed = ring[0].x === ring[ring.length - 1].x && ring[0].y === ring[ring.length - 1].y;
 	const vertexCount = isClosed ? ring.length - 1 : ring.length;
 	if (vertexCount < 3) return ring;
-	const vertices = ring.map((p) => fromValues(p.x, p.y));
 	const newRing = [];
 	for (let i = 0; i < vertexCount; i++) {
-		const prev = vertices[(i - 1 + vertexCount) % vertexCount];
-		const current = vertices[i];
-		const next = vertices[(i + 1) % vertexCount];
-		appendRoundCorner(newRing, prev, current, next, distanceInTileUnits);
+		const previous = ring[(i - 1 + vertexCount) % vertexCount];
+		const current = ring[i];
+		const next = ring[(i + 1) % vertexCount];
+		if (isBoundaryEdge(previous, current) || isBoundaryEdge(current, next)) {
+			newRing.push(current.clone());
+			continue;
+		}
+		appendRoundCorner(newRing, previous, current, next, distanceInTileUnits);
 	}
-	if (isClosed && newRing.length > 0) newRing.push(clone$1(newRing[0]));
-	return newRing.map((p) => new Point(p[0], p[1]));
+	const snapped = snapToIntegerGrid(newRing);
+	if (snapped.length < 3) return ring;
+	if (isClosed) snapped.push(snapped[0].clone());
+	return snapped;
 }
+/**
+* Rounds every vertex to the integer tile grid, dropping vertices that collapse onto their neighbour.
+* The ring is treated as closed, so the wrap-around duplicate is dropped as well.
+* @param ring - Ring to snap
+*/
+function snapToIntegerGrid(ring) {
+	const snapped = [];
+	for (const p of ring) {
+		const point = p.round();
+		const previous = snapped[snapped.length - 1];
+		if (previous?.x === point.x && previous?.y === point.y) continue;
+		snapped.push(point);
+	}
+	while (snapped.length > 1 && snapped[0].x === snapped[snapped.length - 1].x && snapped[0].y === snapped[snapped.length - 1].y) snapped.pop();
+	return snapped;
+}
+/**
+* Appends the arc that replaces one corner, or the corner itself when it is too shallow or too sharp
+* to round.
+* @param newRing - Ring being built, the arc points are appended to it
+* @param prev - Vertex before the corner
+* @param current - The corner
+* @param next - Vertex after the corner
+* @param distanceInTileUnits - Corner rounding distance, already converted to tile units
+*/
 function appendRoundCorner(newRing, prev, current, next, distanceInTileUnits) {
-	const ua = sub(create(), prev, current);
-	const ub = sub(create(), next, current);
-	const lenA = length(ua);
-	const lenB = length(ub);
+	const ua = prev.sub(current);
+	const ub = next.sub(current);
+	const lenA = ua.mag();
+	const lenB = ub.mag();
 	if (lenA < 1e-6 || lenB < 1e-6) {
-		newRing.push(clone$1(current));
+		newRing.push(current.clone());
 		return;
 	}
-	scale(ua, ua, 1 / lenA);
-	scale(ub, ub, 1 / lenB);
-	const dot = dot$1(ua, ub);
+	ua._div(lenA);
+	ub._div(lenB);
+	const dot = ua.x * ub.x + ua.y * ub.y;
 	if (Math.abs(dot) > Math.cos(5 * Math.PI / 180)) {
-		newRing.push(clone$1(current));
+		newRing.push(current.clone());
 		return;
 	}
 	const maxEdgeLenPercent = .2;
 	const r = Math.min(distanceInTileUnits, lenA * maxEdgeLenPercent, lenB * maxEdgeLenPercent);
-	const tangentA = scaleAndAdd(create(), current, ua, r);
-	const tangentB = scaleAndAdd(create(), current, ub, r);
-	const bisector = add(create(), ua, ub);
-	normalize(bisector, bisector);
+	const tangentA = current.add(ua.mult(r));
+	const tangentB = current.add(ub.mult(r));
 	const cosHalfTheta = Math.sqrt((1 + dot) / 2);
-	const center = scaleAndAdd(create(), current, bisector, r / cosHalfTheta);
-	const radiusA = sub(create(), tangentA, center);
-	const radiusB = sub(create(), tangentB, center);
-	const sweepAngle = angle(radiusA, radiusB);
-	const direction = Math.sign(radiusA[0] * radiusB[1] - radiusA[1] * radiusB[0]);
-	const numSegments = Math.max(2, Math.ceil(sweepAngle / (Math.PI / 6) - 1e-6));
-	for (let s = 0; s <= numSegments; s++) {
-		const angle = direction * sweepAngle * (s / numSegments);
-		newRing.push(rotate(create(), tangentA, center, angle));
-	}
+	const center = current.add(ua.add(ub)._unit()._mult(r / cosHalfTheta));
+	const sweepAngle = tangentA.sub(center).angleWith(tangentB.sub(center));
+	const numSegments = Math.max(2, Math.ceil(Math.abs(sweepAngle) / (Math.PI / 6) - 1e-6));
+	for (let s = 0; s <= numSegments; s++) newRing.push(tangentA.rotateAround(sweepAngle * (s / numSegments), center));
 }
 //#endregion
 //#region src/data/bucket/fill_extrusion_bucket.ts
@@ -19470,10 +19764,10 @@ var FillExtrusionBucket = class {
 			options.featureIndex.insert(feature, bucketFeature.geometry, index, sourceLayerIndex, this.index, true);
 		}
 	}
-	addFeatures(options, canonical, imagePositions) {
+	addFeatures({ options, canonical, patternPositions }) {
 		for (const feature of this.features) {
 			const { geometry } = feature;
-			this.addFeature(feature, geometry, feature.index, canonical, imagePositions, options.subdivisionGranularity);
+			this.addFeature(feature, geometry, feature.index, canonical, patternPositions, options.subdivisionGranularity);
 		}
 	}
 	update(states, vtLayer, imagePositions) {
@@ -19589,12 +19883,6 @@ function accumulatePointsToCentroid(centroid, geometry) {
 	}
 }
 register("FillExtrusionBucket", FillExtrusionBucket, { omit: ["layers", "features"] });
-function isBoundaryEdge(p1, p2) {
-	return p1.x === p2.x && (p1.x < 0 || p1.x > 8192) || p1.y === p2.y && (p1.y < 0 || p1.y > 8192);
-}
-function isEntirelyOutside(ring) {
-	return ring.every((p) => p.x < 0) || ring.every((p) => p.x > 8192) || ring.every((p) => p.y < 0) || ring.every((p) => p.y > 8192);
-}
 //#endregion
 //#region src/style/style_layer/fill_extrusion_style_layer_properties.g.ts
 let layout$2;
@@ -21755,8 +22043,8 @@ var LineBucket = class {
 			dashPositions
 		});
 	}
-	addFeatures(options, canonical, imagePositions, dashPositions) {
-		for (const feature of this.patternFeatures) this.addFeature(feature, feature.geometry, feature.index, canonical, imagePositions, dashPositions, options.subdivisionGranularity);
+	addFeatures({ options, canonical, patternPositions, dashPositions }) {
+		for (const feature of this.patternFeatures) this.addFeature(feature, feature.geometry, feature.index, canonical, patternPositions, dashPositions, options.subdivisionGranularity);
 	}
 	isEmpty() {
 		return this.layoutVertexArray.length === 0;
@@ -22125,6 +22413,11 @@ const symbolLayoutAttributes = createLayout([
 		name: "a_pixeloffset",
 		components: 4,
 		type: "Int16"
+	},
+	{
+		name: "a_height_offset",
+		components: 1,
+		type: "Float32"
 	}
 ], 4);
 const dynamicLayoutAttributes = createLayout([{
@@ -22299,6 +22592,10 @@ createLayout([
 	{
 		type: "Int16",
 		name: "associatedIconIndex"
+	},
+	{
+		type: "Float32",
+		name: "heightOffset"
 	}
 ]);
 createLayout([
@@ -22413,6 +22710,10 @@ createLayout([
 	{
 		type: "Uint16",
 		name: "textAnchorOffsetEndIndex"
+	},
+	{
+		type: "Float32",
+		name: "heightOffset"
 	}
 ]);
 createLayout([{
@@ -22442,13 +22743,843 @@ createLayout([{
 	name: "textOffset"
 }]);
 //#endregion
+//#region src/source/rtl_text_plugin_worker.ts
+var RTLWorkerPlugin = class {
+	constructor() {
+		this.TIMEOUT = 5e3;
+		this.applyArabicShaping = null;
+		this.processBidirectionalText = null;
+		this.processStyledBidirectionalText = null;
+		this.pluginStatus = "unavailable";
+		this.pluginURL = null;
+		this.loadScriptResolve = () => {};
+	}
+	setState(state) {
+		this.pluginStatus = state.pluginStatus;
+		this.pluginURL = state.pluginURL;
+	}
+	getState() {
+		return {
+			pluginStatus: this.pluginStatus,
+			pluginURL: this.pluginURL
+		};
+	}
+	setMethods(rtlTextPlugin) {
+		if (rtlWorkerPlugin.isParsed()) throw new Error("RTL text plugin already registered.");
+		this.applyArabicShaping = rtlTextPlugin.applyArabicShaping;
+		this.processBidirectionalText = rtlTextPlugin.processBidirectionalText;
+		this.processStyledBidirectionalText = rtlTextPlugin.processStyledBidirectionalText;
+		this.loadScriptResolve();
+	}
+	isParsed() {
+		return this.applyArabicShaping != null && this.processBidirectionalText != null && this.processStyledBidirectionalText != null;
+	}
+	getRTLTextPluginStatus() {
+		return this.pluginStatus;
+	}
+	async syncState(incomingState, loadScript) {
+		if (this.isParsed()) return this.getState();
+		if (incomingState.pluginStatus !== "loading") {
+			this.setState(incomingState);
+			return incomingState;
+		}
+		const urlToLoad = incomingState.pluginURL;
+		const loadScriptPromise = new Promise((resolve) => {
+			this.loadScriptResolve = resolve;
+		});
+		const dontWaitForeverTimeoutPromise = new Promise((resolve) => setTimeout(() => resolve(), this.TIMEOUT));
+		await loadScript(urlToLoad);
+		await Promise.race([loadScriptPromise, dontWaitForeverTimeoutPromise]);
+		if (this.isParsed()) {
+			const loadedState = {
+				pluginStatus: "loaded",
+				pluginURL: urlToLoad
+			};
+			this.setState(loadedState);
+			return loadedState;
+		}
+		this.setState({
+			pluginStatus: "error",
+			pluginURL: ""
+		});
+		throw new Error(`RTL Text Plugin failed to import scripts from ${urlToLoad}`);
+	}
+};
+const rtlWorkerPlugin = new RTLWorkerPlugin();
+//#endregion
+//#region src/util/unicode_properties.g.ts
+/**
+* Returns whether the given codepoint belongs to a script that is written cursively, whose letters
+* therefore cannot be spaced apart.
+*/
+function codePointIsInCursiveScript(codePoint) {
+	return /[\u0600-\u0604\u0606-\u060B\u060D-\u061A\u061C-\u061E\u0620-\u063F\u0641-\u064A\u0656-\u066F\u0671-\u06DC\u06DE-\u070D\u070F-\u074A\u074D-\u077F\u07C0-\u07FA\u07FD-\u07FF\u0840-\u085B\u085E\u0860-\u086A\u0870-\u0891\u0897-\u08E1\u08E3-\u08FF\u1800\u1801\u1804\u1806-\u1819\u1820-\u1878\u1880-\u18AA\uA840-\uA877\uFB50-\uFD3D\uFD40-\uFDCF\uFDF0-\uFDFF\uFE70-\uFE74\uFE76-\uFEFC]|\uD802[\uDEC0-\uDEE6\uDEEB-\uDEF6\uDF80-\uDF91\uDF99-\uDF9C\uDFA9-\uDFAF]|\uD803[\uDD00-\uDD27\uDD30-\uDD39\uDE60-\uDE7E\uDEC2-\uDEC7\uDED0-\uDED8\uDEFA-\uDEFF\uDF30-\uDF59\uDF70-\uDF89\uDFB0-\uDFCB]|\uD805[\uDE60-\uDE6C]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99\uDC9C-\uDC9F]|\uD83A[\uDD00-\uDD4B\uDD50-\uDD59\uDD5E\uDD5F]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB\uDEF0\uDEF1]/gim.test(String.fromCodePoint(codePoint));
+}
+/**
+* Returns whether the given codepoint belongs to a script that is written horizontally from right
+* to left.
+*/
+function codePointIsInRTLScript(codePoint) {
+	return /[\u0591-\u05C7\u05D0-\u05EA\u05EF-\u05F4\u0600-\u0604\u0606-\u060B\u060D-\u061A\u061C-\u061E\u0620-\u063F\u0641-\u064A\u0656-\u066F\u0671-\u06DC\u06DE-\u070D\u070F-\u074A\u074D-\u07B1\u07C0-\u07FA\u07FD-\u082D\u0830-\u083E\u0840-\u085B\u085E\u0860-\u086A\u0870-\u0891\u0897-\u08E1\u08E3-\u08FF\uFB1D-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFD3D\uFD40-\uFDCF\uFDF0-\uFDFF\uFE70-\uFE74\uFE76-\uFEFC]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC57-\uDC9E\uDCA7-\uDCAF\uDCE0-\uDCF2\uDCF4\uDCF5\uDCFB-\uDD1B\uDD1F-\uDD39\uDD3F-\uDD59\uDD80-\uDDB7\uDDBC-\uDDCF\uDDD2-\uDE03\uDE05\uDE06\uDE0C-\uDE13\uDE15-\uDE17\uDE19-\uDE35\uDE38-\uDE3A\uDE3F-\uDE48\uDE50-\uDE58\uDE60-\uDE9F\uDEC0-\uDEE6\uDEEB-\uDEF6\uDF00-\uDF35\uDF39-\uDF55\uDF58-\uDF72\uDF78-\uDF91\uDF99-\uDF9C\uDFA9-\uDFAF]|\uD803[\uDC00-\uDC48\uDC80-\uDCB2\uDCC0-\uDCF2\uDCFA-\uDD27\uDD30-\uDD39\uDD40-\uDD65\uDD69-\uDD85\uDD8E\uDD8F\uDE60-\uDE7E\uDE80-\uDEA9\uDEAB-\uDEAD\uDEB0\uDEB1\uDEC2-\uDEC7\uDED0-\uDED8\uDEFA-\uDF27\uDF30-\uDF59\uDF70-\uDF89\uDFB0-\uDFCB\uDFE0-\uDFF6]|\uD83A[\uDC00-\uDCC4\uDCC7-\uDCD6\uDD00-\uDD4B\uDD50-\uDD59\uDD5E\uDD5F]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB\uDEF0\uDEF1]/gim.test(String.fromCodePoint(codePoint));
+}
+/**
+* Returns whether the fallback fonts specified by the
+* `localIdeographFontFamily` map option apply to the given codepoint. 
+*/
+function codePointUsesLocalIdeographFontFamily(codePoint) {
+	return /[\u02EA\u02EB\u1100-\u11FF\u2E80-\u2FDF\u3000-\u30FF\u3105-\u312F\u3131-\u318E\u31A0-\u4DBF\u4E00-\uA48C\uA490-\uA4C6\uA960-\uA97C\uAC00-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFE10-\uFE1F\uFE30-\uFE4F\uFF00-\uFFEF]|\uD81B[\uDFE0-\uDFFF]|[\uD81C-\uD822\uD840-\uD868\uD86A-\uD86D\uD86F-\uD872\uD874-\uD879\uD880-\uD883\uD885-\uD88C][\uDC00-\uDFFF]|\uD823[\uDC00-\uDCD5\uDCFF-\uDD1E\uDD80-\uDDF2]|\uD82B[\uDFF0-\uDFFF]|\uD82C[\uDC00-\uDEFB]|\uD83C[\uDE00-\uDEFF]|\uD869[\uDC00-\uDEDF\uDF00-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEAD\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0\uDFF0-\uDFFF]|\uD87B[\uDC00-\uDE5D]|\uD87E[\uDC00-\uDE1D]|\uD884[\uDC00-\uDF4A\uDF50-\uDFFF]|\uD88D[\uDC00-\uDC79]/gim.test(String.fromCodePoint(codePoint));
+}
+/**
+* Returns whether the given codepoint participates in ideographic line
+* breaking.
+*/
+function codePointAllowsIdeographicBreaking(codePoint) {
+	return /[\u02EA\u02EB\u2E80-\u2FDF\u2FF0-\u303F\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FD-\u30FF\u3105-\u312F\u31A0-\u4DBF\u4E00-\uA48C\uA490-\uA4C6\uF900-\uFA6D\uFA70-\uFAD9\uFE10-\uFE1F\uFE30-\uFE4F\uFF00-\uFFEF]|\uD81B[\uDFE0-\uDFFF]|[\uD81C-\uD822\uD840-\uD868\uD86A-\uD86D\uD86F-\uD872\uD874-\uD879\uD880-\uD883\uD885-\uD88C][\uDC00-\uDFFF]|\uD823[\uDC00-\uDCD5\uDCFF-\uDD1E\uDD80-\uDDF2]|\uD82B[\uDFF0-\uDFFF]|\uD82C[\uDC00-\uDEFB]|\uD83C[\uDE00-\uDEFF]|\uD869[\uDC00-\uDEDF\uDF00-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEAD\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0\uDFF0-\uDFFF]|\uD87B[\uDC00-\uDE5D]|\uD87E[\uDC00-\uDE1D]|\uD884[\uDC00-\uDF4A\uDF50-\uDFFF]|\uD88D[\uDC00-\uDC79]/gim.test(String.fromCodePoint(codePoint));
+}
+/**
+* Returns true if the given Unicode codepoint identifies a character with
+* upright orientation.
+*
+* A character has upright orientation if it is drawn upright (unrotated)
+* whether the line is oriented horizontally or vertically, even if both
+* adjacent characters can be rotated. For example, a Chinese character is
+* always drawn upright. An uprightly oriented character causes an adjacent
+* “neutral” character to be drawn upright as well.
+*/
+function codePointHasUprightVerticalOrientation(codePoint) {
+	return /[\u02EA\u02EB\u1100-\u11FF\u1401-\u167F\u18B0-\u18FF\u2065\u20DD-\u20E0\u20E2-\u20E4\u2B97\u2BF0-\u2BFF\u2E50\u2E51\u2E80-\u3007\u3012\u3013\u3020-\u302F\u3031-\u30FB\u30FD-\uA4CF\uA960-\uA97F\uAC00-\uD7FF\uF900-\uFAFF\uFE10-\uFE1F\uFE30-\uFE48\uFE50-\uFE57\uFE5F-\uFE62\uFE67-\uFE6F\uFF00-\uFF07\uFF0A-\uFF0C\uFF0E-\uFF19\uFF1F-\uFF3A\uFF3C\uFF3E\uFF40-\uFF5A\uFFE0-\uFFE2\uFFE4-\uFFE7\uFFF0-\uFFF8]|\uD802[\uDD80-\uDD9F]|\uD805[\uDD80-\uDDFF]|\uD806[\uDE00-\uDEBF]|[\uD80C-\uD810\uD81C-\uD822\uD83C\uD83D\uD840-\uD87E\uD880-\uD8BE][\uDC00-\uDFFF]|\uD811[\uDC00-\uDE7F]|\uD81B[\uDFE0-\uDFFF]|\uD823[\uDC00-\uDDFF]|\uD82B[\uDFF0-\uDFFF]|\uD82C[\uDC00-\uDEFF]|\uD833[\uDEC0-\uDFCF]|\uD834[\uDC00-\uDDFF\uDEE0-\uDF7F]|\uD836[\uDC00-\uDEAF]|\uD83E[\uDD00-\uDEFF]|[\uD87F\uD8BF][\uDC00-\uDFFD]/gim.test(String.fromCodePoint(codePoint));
+}
+/**
+* Returns true if the given Unicode codepoint identifies a character with
+* neutral orientation.
+*
+* A character has neutral orientation if it may be drawn rotated or unrotated
+* when the line is oriented vertically, depending on the orientation of the
+* adjacent characters. For example, along a vertically oriented line, the
+* vulgar fraction ½ is drawn upright among Chinese characters but rotated among
+* Latin letters. A neutrally oriented character does not influence whether an
+* adjacent character is drawn upright or rotated.
+*/
+function codePointHasNeutralVerticalOrientation(codePoint) {
+	return /[\xA7\xA9\xAE\xB1\xBC-\xBE\xD7\xF7\u2016\u2020\u2021\u2030\u2031\u203B\u203C\u2042\u2047-\u2049\u2051\u2100-\u218F\u221E\u2234\u2235\u2300-\u2307\u230C-\u231F\u2324-\u2328\u232B\u237D-\u239A\u23BE-\u23CD\u23CF\u23D1-\u23DB\u23E2-\u2422\u2424-\u24FF\u25A0-\u2619\u2620-\u2767\u2776-\u2793\u2B12-\u2B2F\u2B50-\u2B59\u2BB8-\u2BEB\u3000-\u303F\u30A0-\u30FF\uE000-\uF8FF\uFE30-\uFE6F\uFF00-\uFFEF\uFFFC\uFFFD]|[\uDB80-\uDBFF][\uDC00-\uDFFF]/gim.test(String.fromCodePoint(codePoint));
+}
+/**
+* Returns whether the text could hold a grapheme cluster of more than one codepoint, and so is worth
+* segmenting. A negative answer means every codepoint of it stands alone.
+*/
+function textCanContainGraphemeClusters(text) {
+	return /[\r\u0300-\u036F\u0483-\u0489\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u0600-\u0605\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DD\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED\u070F\u0711\u0730-\u074A\u07A6-\u07B0\u07EB-\u07F3\u07FD\u0816-\u0819\u081B-\u0823\u0825-\u0827\u0829-\u082D\u0859-\u085B\u0890\u0891\u0897-\u089F\u08CA-\u0903\u093A-\u093C\u093E-\u094F\u0951-\u0957\u0962\u0963\u0981-\u0983\u09BC\u09BE-\u09C4\u09C7\u09C8\u09CB-\u09CD\u09D7\u09E2\u09E3\u09FE\u0A01-\u0A03\u0A3C\u0A3E-\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A70\u0A71\u0A75\u0A81-\u0A83\u0ABC\u0ABE-\u0AC5\u0AC7-\u0AC9\u0ACB-\u0ACD\u0AE2\u0AE3\u0AFA-\u0AFF\u0B01-\u0B03\u0B3C\u0B3E-\u0B44\u0B47\u0B48\u0B4B-\u0B4D\u0B55-\u0B57\u0B62\u0B63\u0B82\u0BBE-\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCD\u0BD7\u0C00-\u0C04\u0C3C\u0C3E-\u0C44\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C62\u0C63\u0C81-\u0C83\u0CBC\u0CBE-\u0CC4\u0CC6-\u0CC8\u0CCA-\u0CCD\u0CD5\u0CD6\u0CE2\u0CE3\u0CF3\u0D00-\u0D03\u0D3B\u0D3C\u0D3E-\u0D44\u0D46-\u0D48\u0D4A-\u0D4E\u0D57\u0D62\u0D63\u0D81-\u0D83\u0DCA\u0DCF-\u0DD4\u0DD6\u0DD8-\u0DDF\u0DF2\u0DF3\u0E31\u0E33-\u0E3A\u0E47-\u0E4E\u0EB1\u0EB3-\u0EBC\u0EC8-\u0ECE\u0F18\u0F19\u0F35\u0F37\u0F39\u0F3E\u0F3F\u0F71-\u0F84\u0F86\u0F87\u0F8D-\u0F97\u0F99-\u0FBC\u0FC6\u102D-\u1037\u1039-\u103E\u1056-\u1059\u105E-\u1060\u1071-\u1074\u1082\u1084-\u1086\u108D\u109D\u1100-\u11FF\u135D-\u135F\u1712-\u1715\u1732-\u1734\u1752\u1753\u1772\u1773\u17B4-\u17D3\u17DD\u180B-\u180D\u180F\u1885\u1886\u18A9\u1920-\u192B\u1930-\u193B\u1A17-\u1A1B\u1A55-\u1A5E\u1A60\u1A62\u1A65-\u1A7C\u1A7F\u1AB0-\u1ADD\u1AE0-\u1AEB\u1B00-\u1B04\u1B34-\u1B44\u1B6B-\u1B73\u1B80-\u1B82\u1BA1-\u1BAD\u1BE6-\u1BF3\u1C24-\u1C37\u1CD0-\u1CD2\u1CD4-\u1CE8\u1CED\u1CF4\u1CF7-\u1CF9\u1DC0-\u1DFF\u200C\u200D\u20D0-\u20F0\u2CEF-\u2CF1\u2D7F\u2DE0-\u2DFF\u302A-\u302F\u3099\u309A\uA66F-\uA672\uA674-\uA67D\uA69E\uA69F\uA6F0\uA6F1\uA802\uA806\uA80B\uA823-\uA827\uA82C\uA880\uA881\uA8B4-\uA8C5\uA8E0-\uA8F1\uA8FF\uA926-\uA92D\uA947-\uA953\uA960-\uA97C\uA980-\uA983\uA9B3-\uA9C0\uA9E5\uAA29-\uAA36\uAA43\uAA4C\uAA4D\uAA7C\uAAB0\uAAB2-\uAAB4\uAAB7\uAAB8\uAABE\uAABF\uAAC1\uAAEB-\uAAEF\uAAF5\uAAF6\uABE3-\uABEA\uABEC\uABED\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uFB1E\uFE00-\uFE0F\uFE20-\uFE2F\uFF9E\uFF9F]|\uD800[\uDDFD\uDEE0\uDF76-\uDF7A]|\uD802[\uDE01-\uDE03\uDE05\uDE06\uDE0C-\uDE0F\uDE38-\uDE3A\uDE3F\uDEE5\uDEE6]|\uD803[\uDD24-\uDD27\uDD69-\uDD6D\uDEAB\uDEAC\uDEFA-\uDEFF\uDF46-\uDF50\uDF82-\uDF85]|\uD804[\uDC00-\uDC02\uDC38-\uDC46\uDC70\uDC73\uDC74\uDC7F-\uDC82\uDCB0-\uDCBA\uDCBD\uDCC2\uDCCD\uDD00-\uDD02\uDD27-\uDD34\uDD45\uDD46\uDD73\uDD80-\uDD82\uDDB3-\uDDC0\uDDC2\uDDC3\uDDC9-\uDDCC\uDDCE\uDDCF\uDE2C-\uDE37\uDE3E\uDE41\uDEDF-\uDEEA\uDF00-\uDF03\uDF3B\uDF3C\uDF3E-\uDF44\uDF47\uDF48\uDF4B-\uDF4D\uDF57\uDF62\uDF63\uDF66-\uDF6C\uDF70-\uDF74\uDFB8-\uDFC0\uDFC2\uDFC5\uDFC7-\uDFCA\uDFCC-\uDFD2\uDFE1\uDFE2]|\uD805[\uDC35-\uDC46\uDC5E\uDCB0-\uDCC3\uDDAF-\uDDB5\uDDB8-\uDDC0\uDDDC\uDDDD\uDE30-\uDE40\uDEAB-\uDEB7\uDF1D-\uDF1F\uDF22-\uDF2B]|\uD806[\uDC2C-\uDC3A\uDD30-\uDD35\uDD37\uDD38\uDD3B-\uDD43\uDDD1-\uDDD7\uDDDA-\uDDE0\uDDE4\uDE01-\uDE0A\uDE33-\uDE39\uDE3B-\uDE3E\uDE47\uDE51-\uDE5B\uDE84-\uDE99\uDF60-\uDF67]|\uD807[\uDC2F-\uDC36\uDC38-\uDC3F\uDC92-\uDCA7\uDCA9-\uDCB6\uDD31-\uDD36\uDD3A\uDD3C\uDD3D\uDD3F-\uDD47\uDD8A-\uDD8E\uDD90\uDD91\uDD93-\uDD97\uDEF3-\uDEF6\uDF00-\uDF03\uDF34-\uDF3A\uDF3E-\uDF42\uDF5A]|\uD80D[\uDC40\uDC47-\uDC55]|\uD818[\uDD1E-\uDD2F]|\uD81A[\uDEF0-\uDEF4\uDF30-\uDF36]|\uD81B[\uDD63\uDD67-\uDD6A\uDF4F\uDF51-\uDF87\uDF8F-\uDF92\uDFE4\uDFF0\uDFF1]|\uD82F[\uDC9D\uDC9E]|\uD833[\uDF00-\uDF2D\uDF30-\uDF46]|\uD834[\uDD65-\uDD69\uDD6D-\uDD72\uDD7B-\uDD82\uDD85-\uDD8B\uDDAA-\uDDAD\uDE42-\uDE44]|\uD836[\uDE00-\uDE36\uDE3B-\uDE6C\uDE75\uDE84\uDE9B-\uDE9F\uDEA1-\uDEAF]|\uD838[\uDC00-\uDC06\uDC08-\uDC18\uDC1B-\uDC21\uDC23\uDC24\uDC26-\uDC2A\uDC8F\uDD30-\uDD36\uDEAE\uDEEC-\uDEEF]|\uD839[\uDCEC-\uDCEF\uDDEE\uDDEF\uDEE3\uDEE6\uDEEE\uDEEF\uDEF5]|\uD83A[\uDCD0-\uDCD6\uDD44-\uDD4A]|\uD83C[\uDDE6-\uDDFF\uDFFB-\uDFFF]|\uDB40[\uDC20-\uDC7F\uDD00-\uDDEF]/.test(text);
+}
+/**
+* Returns whether the given codepoint belongs to a script that does not put spaces between words,
+* and so can only be wrapped by asking the word segmenter where its words are.
+*/
+function codePointIsWrittenWithoutSpaces(codePoint) {
+	return /[\u0E01-\u0E3A\u0E40-\u0E4E\u0E81\u0E82\u0E84\u0E86-\u0E8A\u0E8C-\u0EA3\u0EA5\u0EA7-\u0EBD\u0EC0-\u0EC4\u0EC6\u0EC8-\u0ECE\u0EDC-\u0EDF\u0F00-\u0F47\u0F49-\u0F6C\u0F71-\u0F97\u0F99-\u0FBC\u0FBE-\u0FCC\u0FCE-\u0FD4\u0FD9\u0FDA\u1000-\u103F\u1050-\u108F\u109A-\u109F\u1780-\u17D3\u17D7\u17DC\u17DD\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u19DE\u19DF\u1A20-\u1A5E\u1A60-\u1A7C\u1AA0-\u1AAD\u1B00-\u1B4C\u1B4E-\u1B7F\uA980-\uA9CD\uA9D0-\uA9D9\uA9DE-\uA9EF\uA9FA-\uA9FE\uAA60-\uAAC2\uAADB-\uAADF]|\uD805[\uDF00-\uDF1A\uDF1D-\uDF2B\uDF3A\uDF3B\uDF3F-\uDF46]/gim.test(String.fromCodePoint(codePoint));
+}
+/**
+* Returns whether two grapheme clusters found by `Intl.Segmenter` are really one unit of writing,
+* and so have to be measured and drawn as a whole.
+*
+* The segmenter follows the tailored rules CLDR uses for stepping a cursor through text, which put a
+* boundary after an invisible stacker and before a spacing mark. Laying text out wants the untailored
+* rules of UAX #29 instead: `လ`, `ာ` and `း` are one Burmese syllable, not three.
+*/
+function canCombineGraphemes(former, latter) {
+	return /(?:[\u1039\u17D2\u1A60\u1BAB\u200D\uAAF6]|\uD802\uDE3F|\uD804[\uDD33\uDFD0]|\uD806[\uDD3E\uDE47\uDE99]|\uD807[\uDD45\uDD97\uDF42])$/.test(former) || /^\p{gc=Mc}/u.test(latter);
+}
+/**
+* The joining type of each Arabic character, as `start,length` code point ranges delta-encoded in
+* base 36, one entry per type. Anything absent from all of them is non-joining.
+*/
+const ENCODED_JOINING_TYPES = {
+	C: "18g,1;g2,3;4nb,1",
+	D: "17k,1;5,1;1,1;1,5;4,d;1,7;1,2;z,2;8,g;i,12;1,2;9,1;1,1;1,2;14,3;2,1;28,9;3,f;2,4;1,1;2,3;2,6;7a,1;2,5;1,1;g,a;5,2;2,6;1,f",
+	R: "17m,4;1,1;1,1;5,4;l,1;14,3;1,3;g,i;12,1;2,9;1,1;1,1;2,2;1,1;o,2;2x,3;f,2;4,1;1,2;3,2;6u,j;b,1;r,3;1,1;2,2;6,1",
+	T: "174,b;1,1;1a,l;g,1;2t,7;2,6;2,2;1,4;bt,9;16,o;1,t;1clb,1"
+};
+/**
+* Each Arabic letter's Presentation Forms code points, as `[isolated, final, initial, medial]`.
+* A shape the letter is not written in is 0.
+*/
+const PRESENTATION_FORMS = {
+	1569: [
+		65152,
+		0,
+		0,
+		0
+	],
+	1570: [
+		65153,
+		65154,
+		0,
+		0
+	],
+	1571: [
+		65155,
+		65156,
+		0,
+		0
+	],
+	1572: [
+		65157,
+		65158,
+		0,
+		0
+	],
+	1573: [
+		65159,
+		65160,
+		0,
+		0
+	],
+	1574: [
+		65161,
+		65162,
+		65163,
+		65164
+	],
+	1575: [
+		65165,
+		65166,
+		0,
+		0
+	],
+	1576: [
+		65167,
+		65168,
+		65169,
+		65170
+	],
+	1577: [
+		65171,
+		65172,
+		0,
+		0
+	],
+	1578: [
+		65173,
+		65174,
+		65175,
+		65176
+	],
+	1579: [
+		65177,
+		65178,
+		65179,
+		65180
+	],
+	1580: [
+		65181,
+		65182,
+		65183,
+		65184
+	],
+	1581: [
+		65185,
+		65186,
+		65187,
+		65188
+	],
+	1582: [
+		65189,
+		65190,
+		65191,
+		65192
+	],
+	1583: [
+		65193,
+		65194,
+		0,
+		0
+	],
+	1584: [
+		65195,
+		65196,
+		0,
+		0
+	],
+	1585: [
+		65197,
+		65198,
+		0,
+		0
+	],
+	1586: [
+		65199,
+		65200,
+		0,
+		0
+	],
+	1587: [
+		65201,
+		65202,
+		65203,
+		65204
+	],
+	1588: [
+		65205,
+		65206,
+		65207,
+		65208
+	],
+	1589: [
+		65209,
+		65210,
+		65211,
+		65212
+	],
+	1590: [
+		65213,
+		65214,
+		65215,
+		65216
+	],
+	1591: [
+		65217,
+		65218,
+		65219,
+		65220
+	],
+	1592: [
+		65221,
+		65222,
+		65223,
+		65224
+	],
+	1593: [
+		65225,
+		65226,
+		65227,
+		65228
+	],
+	1594: [
+		65229,
+		65230,
+		65231,
+		65232
+	],
+	1601: [
+		65233,
+		65234,
+		65235,
+		65236
+	],
+	1602: [
+		65237,
+		65238,
+		65239,
+		65240
+	],
+	1603: [
+		65241,
+		65242,
+		65243,
+		65244
+	],
+	1604: [
+		65245,
+		65246,
+		65247,
+		65248
+	],
+	1605: [
+		65249,
+		65250,
+		65251,
+		65252
+	],
+	1606: [
+		65253,
+		65254,
+		65255,
+		65256
+	],
+	1607: [
+		65257,
+		65258,
+		65259,
+		65260
+	],
+	1608: [
+		65261,
+		65262,
+		0,
+		0
+	],
+	1609: [
+		65263,
+		65264,
+		64488,
+		64489
+	],
+	1610: [
+		65265,
+		65266,
+		65267,
+		65268
+	],
+	1611: [
+		65136,
+		0,
+		0,
+		65137
+	],
+	1612: [
+		65138,
+		0,
+		0,
+		0
+	],
+	1613: [
+		65140,
+		0,
+		0,
+		0
+	],
+	1614: [
+		65142,
+		0,
+		0,
+		65143
+	],
+	1615: [
+		65144,
+		0,
+		0,
+		65145
+	],
+	1616: [
+		65146,
+		0,
+		0,
+		65147
+	],
+	1617: [
+		65148,
+		0,
+		0,
+		65149
+	],
+	1618: [
+		65150,
+		0,
+		0,
+		65151
+	],
+	1649: [
+		64336,
+		64337,
+		0,
+		0
+	],
+	1655: [
+		64477,
+		0,
+		0,
+		0
+	],
+	1657: [
+		64358,
+		64359,
+		64360,
+		64361
+	],
+	1658: [
+		64350,
+		64351,
+		64352,
+		64353
+	],
+	1659: [
+		64338,
+		64339,
+		64340,
+		64341
+	],
+	1662: [
+		64342,
+		64343,
+		64344,
+		64345
+	],
+	1663: [
+		64354,
+		64355,
+		64356,
+		64357
+	],
+	1664: [
+		64346,
+		64347,
+		64348,
+		64349
+	],
+	1667: [
+		64374,
+		64375,
+		64376,
+		64377
+	],
+	1668: [
+		64370,
+		64371,
+		64372,
+		64373
+	],
+	1670: [
+		64378,
+		64379,
+		64380,
+		64381
+	],
+	1671: [
+		64382,
+		64383,
+		64384,
+		64385
+	],
+	1672: [
+		64392,
+		64393,
+		0,
+		0
+	],
+	1676: [
+		64388,
+		64389,
+		0,
+		0
+	],
+	1677: [
+		64386,
+		64387,
+		0,
+		0
+	],
+	1678: [
+		64390,
+		64391,
+		0,
+		0
+	],
+	1681: [
+		64396,
+		64397,
+		0,
+		0
+	],
+	1688: [
+		64394,
+		64395,
+		0,
+		0
+	],
+	1700: [
+		64362,
+		64363,
+		64364,
+		64365
+	],
+	1702: [
+		64366,
+		64367,
+		64368,
+		64369
+	],
+	1705: [
+		64398,
+		64399,
+		64400,
+		64401
+	],
+	1709: [
+		64467,
+		64468,
+		64469,
+		64470
+	],
+	1711: [
+		64402,
+		64403,
+		64404,
+		64405
+	],
+	1713: [
+		64410,
+		64411,
+		64412,
+		64413
+	],
+	1715: [
+		64406,
+		64407,
+		64408,
+		64409
+	],
+	1722: [
+		64414,
+		64415,
+		0,
+		0
+	],
+	1723: [
+		64416,
+		64417,
+		64418,
+		64419
+	],
+	1726: [
+		64426,
+		64427,
+		64428,
+		64429
+	],
+	1728: [
+		64420,
+		64421,
+		0,
+		0
+	],
+	1729: [
+		64422,
+		64423,
+		64424,
+		64425
+	],
+	1733: [
+		64480,
+		64481,
+		0,
+		0
+	],
+	1734: [
+		64473,
+		64474,
+		0,
+		0
+	],
+	1735: [
+		64471,
+		64472,
+		0,
+		0
+	],
+	1736: [
+		64475,
+		64476,
+		0,
+		0
+	],
+	1737: [
+		64482,
+		64483,
+		0,
+		0
+	],
+	1739: [
+		64478,
+		64479,
+		0,
+		0
+	],
+	1740: [
+		64508,
+		64509,
+		64510,
+		64511
+	],
+	1744: [
+		64484,
+		64485,
+		64486,
+		64487
+	],
+	1746: [
+		64430,
+		64431,
+		0,
+		0
+	],
+	1747: [
+		64432,
+		64433,
+		0,
+		0
+	]
+};
+/** The lam-alef ligatures, keyed by the pair of letters they replace, as `[isolated, final]`. */
+const LIGATURES = {
+	"لآ": [65269, 65270],
+	"لأ": [65271, 65272],
+	"لإ": [65273, 65274],
+	"لا": [65275, 65276]
+};
+//#endregion
+//#region src/symbol/arabic_shaping.ts
+/** Lam, which is the only letter that has to be written as a ligature with the letter after it. */
+const LAM = 1604;
+/**
+* The blocks the Arabic script is written from, which is what makes shaping worth doing at all.
+*
+* Arabic proper, then its supplement and two extensions, then the two blocks of shapes this file
+* rewrites letters into, so that text already shaped is recognised as needing to be looked at again.
+*/
+const ARABIC = /[\u0600-\u06ff\u0750-\u077f\u0870-\u089f\u08a0-\u08ff\ufb50-\ufdff\ufe70-\ufeff]/;
+/**
+* Unpacks the `start,length` ranges of one joining type into the code points they stand for.
+*
+* The ranges are delta-encoded against the end of the range before them, so each is read relative to
+* where the last one stopped.
+*/
+function decodeRanges(encoded, type, into) {
+	let previousEnd = 0;
+	for (const range of encoded.split(";")) {
+		const [delta, length] = range.split(",").map((value) => parseInt(value, 36));
+		const start = previousEnd + delta;
+		for (let codePoint = start; codePoint < start + length; codePoint++) into.set(codePoint, type);
+		previousEnd = start + length;
+	}
+}
+const joiningTypes = /* @__PURE__ */ new Map();
+for (const [type, encoded] of Object.entries(ENCODED_JOINING_TYPES)) decodeRanges(encoded, type, joiningTypes);
+/** Anything the Unicode database does not give a joining type stands on its own. */
+function joiningType(codePoint) {
+	return joiningTypes.get(codePoint) ?? "U";
+}
+/** Whether the character before this one reaches forward to touch it. */
+function joinsForward(type) {
+	return type === "D" || type === "L" || type === "C";
+}
+/** Whether the character after this one reaches back to touch it. */
+function joinsBackward(type) {
+	return type === "D" || type === "R" || type === "C";
+}
+/**
+* The shape a letter takes given what it can reach on either side.
+*
+* A dual-joining letter takes all four shapes, while one that joins on a single side only ever
+* stands alone or closes a word. A letter that never joins is left as it was written: it has one
+* shape, so naming it by a presentation form would say nothing the code point does not already say.
+*/
+function formFor(type, joinedBefore, joinedAfter) {
+	if (type === "D") {
+		if (joinedBefore && joinedAfter) return 3;
+		if (joinedBefore) return 1;
+		if (joinedAfter) return 2;
+		return 0;
+	}
+	if (type === "R") return joinedBefore ? 1 : 0;
+	if (type === "L") return joinedAfter ? 2 : 0;
+	return null;
+}
+/** Splits text into characters, noting the joining type of each. */
+function toCharacters(text) {
+	return [...text].map((character) => {
+		const codePoint = character.codePointAt(0);
+		return {
+			codePoint,
+			type: joiningType(codePoint),
+			form: null
+		};
+	});
+}
+/**
+* Works out the shape of every letter in the text.
+*
+* Transparent characters are looked straight through, so a letter joins to its neighbour across any
+* vowel points written between them.
+*/
+function assignLetterForms(characters) {
+	const visible = characters.filter((character) => character.type !== "T");
+	for (let i = 0; i < visible.length; i++) {
+		const character = visible[i];
+		const joinedBefore = i > 0 && joinsForward(visible[i - 1].type);
+		const joinedAfter = i + 1 < visible.length && joinsBackward(visible[i + 1].type);
+		character.form = formFor(character.type, joinedBefore, joinedAfter);
+	}
+}
+/**
+* Gives each vowel point the shape it takes over the letter it is written on.
+*
+* A mark sits higher and narrower over a letter that carries on into the next one than it does over
+* one that ends a word, so it takes its shape from whether its letter joins forwards.
+*/
+function assignMarkForms(characters) {
+	let letterJoinsForward = false;
+	for (const character of characters) if (character.type === "T") character.form = letterJoinsForward ? 3 : 0;
+	else letterJoinsForward = character.form === 2 || character.form === 3;
+}
+/**
+* Replaces each lam followed by an alef with the single character the pair is written as.
+*
+* The ligature closes a word when the lam it was made from reached back to the letter before it, and
+* otherwise stands alone. Vowel points written between the two letters are kept, and follow the
+* ligature they belong to.
+*/
+function applyLigatures(characters) {
+	const result = [];
+	for (let i = 0; i < characters.length; i++) {
+		const lam = characters[i];
+		if (lam.codePoint !== LAM) {
+			result.push(lam);
+			continue;
+		}
+		let next = i + 1;
+		while (next < characters.length && characters[next].type === "T") next++;
+		const alef = characters[next];
+		const ligature = alef && LIGATURES[String.fromCodePoint(LAM, alef.codePoint)];
+		if (!ligature) {
+			result.push(lam);
+			continue;
+		}
+		const joinedBefore = lam.form === 3 || lam.form === 1;
+		result.push({
+			codePoint: ligature[joinedBefore ? 1 : 0],
+			type: "R",
+			form: 0
+		});
+		result.push(...characters.slice(i + 1, next));
+		i = next;
+	}
+	return result;
+}
+/**
+* The presentation form of this character, or the character itself where there is none to use.
+*
+* Not every shape exists to be asked for: a dammatan is only ever encoded as it looks on its own,
+* so a dammatan written over a joined letter falls back to that one shape rather than to the
+* unshaped mark, which is what the letters around it have already been shaped to expect.
+*/
+function toPresentationForm(character) {
+	if (character.form === null) return character.codePoint;
+	const forms = PRESENTATION_FORMS[character.codePoint];
+	if (!forms) return character.codePoint;
+	return forms[character.form] || forms[0] || character.codePoint;
+}
+/**
+* Rewrites Arabic letters as the shape they take in the word they sit in.
+*
+* Arabic is cursive: a letter is written differently depending on whether the letters beside it
+* reach out to touch it. MapLibre draws one glyph at a time and asks for each by code point, so the
+* shape has to be chosen here and named by the Presentation Forms-B code point that stands for it.
+*
+* Text with no Arabic in it is returned unchanged.
+*/
+function applyArabicShaping(text) {
+	if (!ARABIC.test(text)) return text;
+	const characters = toCharacters(text);
+	assignLetterForms(characters);
+	assignMarkForms(characters);
+	return applyLigatures(characters).map((character) => String.fromCodePoint(toPresentationForm(character))).join("");
+}
+//#endregion
 //#region src/symbol/transform_text.ts
 function transformTextInternal(text, layer, feature) {
 	const transform = layer.layout.get("text-transform").evaluate(feature, {});
 	if (transform === "uppercase") text = text.toLocaleUpperCase();
 	else if (transform === "lowercase") text = text.toLocaleLowerCase();
-	if (rtlWorkerPlugin.applyArabicShaping) text = rtlWorkerPlugin.applyArabicShaping(text);
-	return text;
+	return (rtlWorkerPlugin.applyArabicShaping ?? applyArabicShaping)(text);
 }
 function transformText(text, layer, feature) {
 	for (const section of text.sections) section.text = transformTextInternal(section.text, layer, feature);
@@ -22510,6 +23641,113 @@ function mergeLines(features) {
 		}
 	}
 	return mergedFeatures.filter((f) => f.geometry);
+}
+//#endregion
+//#region src/util/graphemes.ts
+const hasSegmenter = typeof Intl !== "undefined" && "Segmenter" in Intl;
+/**
+* Decides where the grapheme clusters are, corrected by {@link canCombineGraphemes} where CLDR's
+* cursor rules split a unit of writing. Built on first use: constructing the first `Intl.Segmenter`
+* initializes ICU, which costs several milliseconds that the main thread, which never shapes text,
+* should not pay at import.
+*/
+let graphemeSegmenter;
+/**
+* Decides where the words are, drawing on the browser's own dictionaries. Built on first use.
+*/
+let wordSegmenter;
+/**
+* Splits text into grapheme clusters, or into codepoints where the environment cannot do better.
+*
+* A codepoint is not a unit of writing: `שְׁ` is a letter with two vowel points under it, which comes
+* apart when drawn a codepoint at a time and holds together when drawn as one cluster.
+*
+* Text holding none of the characters a cluster can be built from skips the segmenter, which costs
+* far more than the test that rules it out.
+*/
+function toGraphemes(text) {
+	if (!hasSegmenter || !textCanContainGraphemeClusters(text)) return [...text];
+	graphemeSegmenter ??= new Intl.Segmenter(void 0, { granularity: "grapheme" });
+	const graphemes = [];
+	for (const { segment } of graphemeSegmenter.segment(text)) {
+		const last = graphemes.length - 1;
+		if (last >= 0 && canCombineGraphemes(graphemes[last], segment)) graphemes[last] += segment;
+		else graphemes.push(segment);
+	}
+	return graphemes;
+}
+/**
+* The offsets, in UTF-16 code units, at which a word begins.
+*
+* Only scripts that do not space their words ask for these, having no punctuation to break a line
+* at. Without a segmenter, falls back to the boundaries a regular expression can find.
+*/
+function wordBoundaries(text) {
+	const boundaries = /* @__PURE__ */ new Set();
+	if (hasSegmenter) {
+		wordSegmenter ??= new Intl.Segmenter(void 0, { granularity: "word" });
+		for (const { index } of wordSegmenter.segment(text)) boundaries.add(index);
+		return boundaries;
+	}
+	let index = 0;
+	for (const part of text.split(/\b|(?=\p{Ideo})/u)) {
+		boundaries.add(index);
+		index += part.length;
+	}
+	return boundaries;
+}
+/**
+* Whether a grapheme is more than one codepoint, and so has to be drawn as a whole.
+*
+* Written without allocating: this runs over every grapheme of every label.
+*/
+function isCluster(grapheme) {
+	const first = grapheme.codePointAt(0);
+	return grapheme.length > (first > 65535 ? 2 : 1);
+}
+//#endregion
+//#region src/util/script_detection.ts
+function charIsWhitespace(char) {
+	return /\s/u.test(String.fromCodePoint(char));
+}
+function allowsVerticalWritingMode(chars) {
+	for (const char of chars) if (codePointHasUprightVerticalOrientation(char.codePointAt(0))) return true;
+	return false;
+}
+function allowsLetterSpacing(chars) {
+	for (const char of chars) if (!charAllowsLetterSpacing(char.codePointAt(0))) return false;
+	return true;
+}
+/**
+* Whether the letters around this character can be spaced apart from it.
+*
+* A cursive script joins its letters up, so spacing them apart takes the word apart.
+*/
+function charAllowsLetterSpacing(char) {
+	return !codePointIsInCursiveScript(char);
+}
+/**
+* Returns true if the given Unicode codepoint identifies a character with
+* rotated orientation.
+*
+* A character has rotated orientation if it is drawn rotated when the line is
+* oriented vertically, even if both adjacent characters are upright. For
+* example, a Latin letter is drawn rotated along a vertical line. A rotated
+* character causes an adjacent “neutral” character to be drawn rotated as well.
+*/
+function charHasRotatedVerticalOrientation(char) {
+	return !(codePointHasUprightVerticalOrientation(char) || codePointHasNeutralVerticalOrientation(char));
+}
+function charInComplexShapingScript(char) {
+	return /\p{sc=Arab}/u.test(String.fromCodePoint(char));
+}
+/** Whether this character belongs to a script that is written horizontally from right to left. */
+function charInRTLScript(char) {
+	return codePointIsInRTLScript(char);
+}
+function stringContainsRTLText(chars) {
+	for (const char of chars) if (charInRTLScript(char.codePointAt(0))) return true;
+	return false;
 }
 //#endregion
 //#region src/util/verticalize_punctuation.ts
@@ -22626,8 +23864,12 @@ function verticalizePunctuation(input) {
 //#region src/symbol/tagged_string.ts
 const PUAbegin = 57344;
 const PUAend = 63743;
+/**
+* Characters a line may end on.
+*/
 const breakable = {
 	[10]: true,
+	[13]: true,
 	[32]: true,
 	[38]: true,
 	[41]: true,
@@ -22641,12 +23883,27 @@ const breakable = {
 	[8211]: true,
 	[8231]: true
 };
+/**
+* Characters a line may begin with, whatever precedes them.
+*/
 const breakableBefore = { [40]: true };
-function getGlyphAdvance(codePoint, section, glyphMap, imagePositions, spacing, layoutTextSize) {
+/**
+* Returns how far a grapheme cluster advances the pen, including any letter spacing after it.
+*
+* Where a font file covers the cluster it advances as the one shape it is drawn as. Where none does
+* it is drawn a codepoint at a time, and has to be measured the same way. See `shapeLines`.
+*/
+function getGlyphAdvance(grapheme, section, glyphMap, imagePositions, spacing, layoutTextSize) {
 	if ("fontStack" in section) {
-		const glyph = glyphMap[section.fontStack]?.[codePoint];
-		if (!glyph) return 0;
-		return glyph.metrics.advance * section.scale + spacing;
+		const positions = glyphMap[section.fontStack];
+		const glyph = positions?.[grapheme];
+		if (glyph) return glyph.metrics.advance * section.scale + spacing;
+		let advance = 0;
+		for (const char of grapheme) {
+			const fallback = positions?.[char];
+			if (fallback) advance += fallback.metrics.advance * section.scale + spacing;
+		}
+		return advance;
 	} else {
 		const imagePosition = imagePositions[section.imageName];
 		if (!imagePosition) return 0;
@@ -22655,13 +23912,31 @@ function getGlyphAdvance(codePoint, section, glyphMap, imagePositions, spacing, 
 }
 function calculateBadness(lineWidth, targetWidth, penalty, isLastBreak) {
 	const raggedness = Math.pow(lineWidth - targetWidth, 2);
-	if (isLastBreak) if (lineWidth < targetWidth) return raggedness / 2;
-	else return raggedness * 2;
+	if (isLastBreak) {
+		if (lineWidth < targetWidth) return raggedness / 2;
+		else return raggedness * 2;
+	}
 	return raggedness + Math.abs(penalty) * penalty;
 }
+/**
+* Whether a grapheme cluster is entirely whitespace, and so can be trimmed off the end of a line.
+*/
+function isWhitespaceGrapheme(grapheme) {
+	return /^\s+$/u.test(grapheme);
+}
+/**
+* Scores a candidate break, lower being better: a newline is one the text asked for, an opening
+* bracket left at the end of a line is merely allowed.
+*
+* `codePoint` and `nextCodePoint` are the first codepoints of the clusters either side, which is
+* what decides how a cluster breaks -- a CRLF is one cluster, so a newline is seen as its CR.
+*
+* @param penalizableIdeographicBreak - whether this falls between ideographs in text that also
+* carries zero-width space hints, which are the better places to break
+*/
 function calculatePenalty(codePoint, nextCodePoint, penalizableIdeographicBreak) {
 	let penalty = 0;
-	if (codePoint === 10) penalty -= 1e4;
+	if (codePoint === 10 || codePoint === 13) penalty -= 1e4;
 	if (penalizableIdeographicBreak) penalty += 150;
 	if (codePoint === 40 || codePoint === 65288) penalty += 50;
 	if (nextCodePoint === 41 || nextCodePoint === 65289) penalty += 50;
@@ -22694,6 +23969,15 @@ var TaggedString = class TaggedString {
 		this.sections = sections;
 		this.sectionIndex = sectionIndex;
 		this.imageSectionID = null;
+		this._graphemes = null;
+	}
+	/**
+	* The units this text is laid out in: grapheme clusters, so that a letter and the marks that
+	* belong to it stay together.
+	*/
+	graphemes() {
+		this._graphemes ??= toGraphemes(this.text);
+		return this._graphemes;
 	}
 	static fromFeature(text, defaultFontStack) {
 		const result = new TaggedString();
@@ -22702,7 +23986,7 @@ var TaggedString = class TaggedString {
 		return result;
 	}
 	length() {
-		return [...this.text].length;
+		return this.graphemes().length;
 	}
 	getSection(index) {
 		return this.sections[this.sectionIndex[index]];
@@ -22712,6 +23996,7 @@ var TaggedString = class TaggedString {
 	}
 	verticalizePunctuation() {
 		this.text = verticalizePunctuation(this.text);
+		this._graphemes = null;
 	}
 	/**
 	* Returns whether the text contains zero-width spaces.
@@ -22722,24 +24007,32 @@ var TaggedString = class TaggedString {
 	hasZeroWidthSpaces() {
 		return this.text.includes("​");
 	}
+	/**
+	* Drops the whitespace at each end of the line.
+	*
+	* Counted in clusters, which is what `sectionIndex` is indexed by: a CRLF is one cluster of two
+	* code units, so counting code units would leave the sections short of the text.
+	*/
 	trim() {
-		const leadingWhitespace = this.text.match(/^\s*/);
-		const leadingLength = leadingWhitespace ? leadingWhitespace[0].length : 0;
-		const trailingWhitespace = this.text.match(/\S\s*$/);
-		const trailingLength = trailingWhitespace ? trailingWhitespace[0].length - 1 : 0;
-		this.text = this.text.substring(leadingLength, this.text.length - trailingLength);
-		this.sectionIndex = this.sectionIndex.slice(leadingLength, this.sectionIndex.length - trailingLength);
+		const graphemes = this.graphemes();
+		let start = 0;
+		while (start < graphemes.length && isWhitespaceGrapheme(graphemes[start])) start++;
+		let end = graphemes.length;
+		while (end > start && isWhitespaceGrapheme(graphemes[end - 1])) end--;
+		this.text = graphemes.slice(start, end).join("");
+		this.sectionIndex = this.sectionIndex.slice(start, end);
+		this._graphemes = null;
 	}
 	substring(start, end) {
-		const text = [...this.text].slice(start, end).join("");
+		const text = this.graphemes().slice(start, end).join("");
 		const sectionIndex = this.sectionIndex.slice(start, end);
 		return new TaggedString(text, this.sections, sectionIndex);
 	}
 	/**
-	* Converts a UTF-16 character index to a UTF-16 code unit (JavaScript character index).
+	* Converts a grapheme cluster index to a UTF-16 code unit (JavaScript character index).
 	*/
-	toCodeUnitIndex(unicodeIndex) {
-		return [...this.text].slice(0, unicodeIndex).join("").length;
+	toCodeUnitIndex(graphemeIndex) {
+		return this.graphemes().slice(0, graphemeIndex).join("").length;
 	}
 	toString() {
 		return this.text;
@@ -22765,15 +24058,29 @@ var TaggedString = class TaggedString {
 			maxImageHeight
 		};
 	}
+	/**
+	* Appends one section's text, recording which section each cluster it adds belongs to.
+	*
+	* A cluster belongs to the section its first character came from, so a section that only joins
+	* the cluster before it -- an accent given its own formatting -- adds none of its own. Only the
+	* last cluster and the new text are segmented, not the label from the start.
+	*/
+	_appendSection(text, sectionIndex) {
+		const graphemes = this.graphemes();
+		const tail = graphemes.length > 0 ? graphemes[graphemes.length - 1] : "";
+		const joined = toGraphemes(tail + text);
+		this.text += text;
+		this._graphemes = graphemes.slice(0, tail ? -1 : void 0).concat(joined);
+		const added = joined.length - (tail ? 1 : 0);
+		for (let i = 0; i < added; i++) this.sectionIndex.push(sectionIndex);
+	}
 	addTextSection(section, defaultFontStack) {
-		this.text += section.text;
 		this.sections.push({
 			scale: section.scale || 1,
 			verticalAlign: section.verticalAlign || "bottom",
 			fontStack: section.fontStack || defaultFontStack
 		});
-		const index = this.sections.length - 1;
-		this.sectionIndex.push(...[...section.text].map(() => index));
+		this._appendSection(section.text, this.sections.length - 1);
 	}
 	addImageSection(section) {
 		const imageName = section.image ? section.image.name : "";
@@ -22786,13 +24093,12 @@ var TaggedString = class TaggedString {
 			warnOnce(`Reached maximum number of images 6401`);
 			return;
 		}
-		this.text += String.fromCharCode(nextImageSectionCharCode);
 		this.sections.push({
 			scale: 1,
 			verticalAlign: section.verticalAlign || "bottom",
 			imageName
 		});
-		this.sectionIndex.push(this.sections.length - 1);
+		this._appendSection(String.fromCharCode(nextImageSectionCharCode), this.sections.length - 1);
 	}
 	getNextImageSectionCharCode() {
 		if (!this.imageSectionID) {
@@ -22802,49 +24108,922 @@ var TaggedString = class TaggedString {
 		if (this.imageSectionID >= PUAend) return null;
 		return ++this.imageSectionID;
 	}
+	/**
+	* Returns the cluster indices to break at for lines of roughly `maxWidth`, weighing each
+	* candidate by how ragged it leaves the line.
+	*
+	* Breaks fall between clusters, never inside one, at a character or image a line may end on --
+	* plus, in scripts that do not space their words and so offer no such character, wherever the
+	* word segmenter finds a word. It is not consulted elsewhere, isolating a comma as a word of its
+	* own, nor until such a script turns up, costing more than the rest of this put together.
+	*/
 	determineLineBreaks(spacing, maxWidth, glyphMap, imagePositions, layoutTextSize) {
 		const potentialLineBreaks = [];
 		const targetWidth = this.determineAverageLineWidth(spacing, maxWidth, glyphMap, imagePositions, layoutTextSize);
 		const hasZeroWidthSpaces = this.hasZeroWidthSpaces();
+		const graphemes = this.graphemes();
+		let wordStarts = null;
 		let currentX = 0;
-		let i = 0;
-		const chars = this.text[Symbol.iterator]();
-		let char = chars.next();
-		const nextChars = this.text[Symbol.iterator]();
-		nextChars.next();
-		let nextChar = nextChars.next();
-		const nextNextChars = this.text[Symbol.iterator]();
-		nextNextChars.next();
-		nextNextChars.next();
-		let nextNextChar = nextNextChars.next();
-		while (!char.done) {
-			const section = this.getSection(i);
-			const codePoint = char.value.codePointAt(0);
-			if (!charIsWhitespace(codePoint)) currentX += getGlyphAdvance(codePoint, section, glyphMap, imagePositions, spacing, layoutTextSize);
-			if (!nextChar.done) {
-				const ideographicBreak = codePointAllowsIdeographicBreaking(codePoint);
-				const nextCodePoint = nextChar.value.codePointAt(0);
-				if (breakable[codePoint] || ideographicBreak || "imageName" in section || !nextNextChar.done && breakableBefore[nextCodePoint]) potentialLineBreaks.push(evaluateBreak(i + 1, currentX, targetWidth, potentialLineBreaks, calculatePenalty(codePoint, nextCodePoint, ideographicBreak && hasZeroWidthSpaces), false));
+		let codeUnit = 0;
+		for (let i = 0; i < graphemes.length; i++) {
+			const grapheme = graphemes[i];
+			if (i > 0) {
+				const previousCodePoint = graphemes[i - 1].codePointAt(0);
+				const codePoint = grapheme.codePointAt(0);
+				const ideographicBreak = codePointAllowsIdeographicBreaking(previousCodePoint);
+				const withinAWordlessScript = codePointIsWrittenWithoutSpaces(previousCodePoint) && codePointIsWrittenWithoutSpaces(codePoint);
+				if (breakable[previousCodePoint] || ideographicBreak || "imageName" in this.getSection(i - 1) || graphemes[i + 1] !== void 0 && breakableBefore[codePoint] || withinAWordlessScript && (wordStarts ??= wordBoundaries(this.text)).has(codeUnit)) potentialLineBreaks.push(evaluateBreak(i, currentX, targetWidth, potentialLineBreaks, calculatePenalty(previousCodePoint, codePoint, ideographicBreak && hasZeroWidthSpaces), false));
 			}
-			i++;
-			char = chars.next();
-			nextChar = nextChars.next();
-			nextNextChar = nextNextChars.next();
+			if (!charIsWhitespace(grapheme.codePointAt(0))) currentX += getGlyphAdvance(grapheme, this.getSection(i), glyphMap, imagePositions, spacing, layoutTextSize);
+			codeUnit += grapheme.length;
 		}
 		return leastBadBreaks(evaluateBreak(this.length(), currentX, targetWidth, potentialLineBreaks, 0, true));
 	}
 	determineAverageLineWidth(spacing, maxWidth, glyphMap, imagePositions, layoutTextSize) {
 		let totalWidth = 0;
 		let index = 0;
-		for (const char of this.text) {
+		for (const grapheme of this.graphemes()) {
 			const section = this.getSection(index);
-			totalWidth += getGlyphAdvance(char.codePointAt(0), section, glyphMap, imagePositions, spacing, layoutTextSize);
+			totalWidth += getGlyphAdvance(grapheme, section, glyphMap, imagePositions, spacing, layoutTextSize);
 			index++;
 		}
 		const lineCount = Math.max(1, Math.ceil(totalWidth / maxWidth));
 		return totalWidth / lineCount;
 	}
 };
+//#endregion
+//#region node_modules/bidi-js/dist/bidi.mjs
+function bidiFactory() {
+	return (function(exports) {
+		var DATA = {
+			"R": "13k,1a,2,3,3,2+1j,ch+16,a+1,5+2,2+n,5,a,4,6+16,4+3,h+1b,4mo,179q,2+9,2+11,2i9+7y,2+68,4,3+4,5+13,4+3,2+4k,3+29,8+cf,1t+7z,w+17,3+3m,1t+3z,16o1+5r,8+30,8+mc,29+1r,29+4v,75+73",
+			"EN": "1c+9,3d+1,6,187+9,513,4+5,7+9,sf+j,175h+9,qw+q,161f+1d,4xt+a,25i+9",
+			"ES": "17,2,6dp+1,f+1,av,16vr,mx+1,4o,2",
+			"ET": "z+2,3h+3,b+1,ym,3e+1,2o,p4+1,8,6u,7c,g6,1wc,1n9+4,30+1b,2n,6d,qhx+1,h0m,a+1,49+2,63+1,4+1,6bb+3,12jj",
+			"AN": "16o+5,2j+9,2+1,35,ed,1ff2+9,87+u",
+			"CS": "18,2+1,b,2u,12k,55v,l,17v0,2,3,53,2+1,b",
+			"B": "a,3,f+2,2v,690",
+			"S": "9,2,k",
+			"WS": "c,k,4f4,1vk+a,u,1j,335",
+			"ON": "x+1,4+4,h+5,r+5,r+3,z,5+3,2+1,2+1,5,2+2,3+4,o,w,ci+1,8+d,3+d,6+8,2+g,39+1,9,6+1,2,33,b8,3+1,3c+1,7+1,5r,b,7h+3,sa+5,2,3i+6,jg+3,ur+9,2v,ij+1,9g+9,7+a,8m,4+1,49+x,14u,2+2,c+2,e+2,e+2,e+1,i+n,e+e,2+p,u+2,e+2,36+1,2+3,2+1,b,2+2,6+5,2,2,2,h+1,5+4,6+3,3+f,16+2,5+3l,3+81,1y+p,2+40,q+a,m+13,2r+ch,2+9e,75+hf,3+v,2+2w,6e+5,f+6,75+2a,1a+p,2+2g,d+5x,r+b,6+3,4+o,g,6+1,6+2,2k+1,4,2j,5h+z,1m+1,1e+f,t+2,1f+e,d+3,4o+3,2s+1,w,535+1r,h3l+1i,93+2,2s,b+1,3l+x,2v,4g+3,21+3,kz+1,g5v+1,5a,j+9,n+v,2,3,2+8,2+1,3+2,2,3,46+1,4+4,h+5,r+5,r+a,3h+2,4+6,b+4,78,1r+24,4+c,4,1hb,ey+6,103+j,16j+c,1ux+7,5+g,fsh,jdq+1t,4,57+2e,p1,1m,1m,1m,1m,4kt+1,7j+17,5+2r,d+e,3+e,2+e,2+10,m+4,w,1n+5,1q,4z+5,4b+rb,9+c,4+c,4+37,d+2g,8+b,l+b,5+1j,9+9,7+13,9+t,3+1,27+3c,2+29,2+3q,d+d,3+4,4+2,6+6,a+o,8+6,a+2,e+6,16+42,2+1i",
+			"BN": "0+8,6+d,2s+5,2+p,e,4m9,1kt+2,2b+5,5+5,17q9+v,7k,6p+8,6+1,119d+3,440+7,96s+1,1ekf+1,1ekf+1,1ekf+1,1ekf+1,1ekf+1,1ekf+1,1ekf+1,1ekf+1,1ekf+1,1ekf+1,1ekf+1,1ekf+75,6p+2rz,1ben+1,1ekf+1,1ekf+1",
+			"NSM": "lc+33,7o+6,7c+18,2,2+1,2+1,2,21+a,1d+k,h,2u+6,3+5,3+1,2+3,10,v+q,2k+a,1n+8,a,p+3,2+8,2+2,2+4,18+2,3c+e,2+v,1k,2,5+7,5,4+6,b+1,u,1n,5+3,9,l+1,r,3+1,1m,5+1,5+1,3+2,4,v+1,4,c+1,1m,5+4,2+1,5,l+1,n+5,2,1n,3,2+3,9,8+1,c+1,v,1q,d,1f,4,1m+2,6+2,2+3,8+1,c+1,u,1n,g+1,l+1,t+1,1m+1,5+3,9,l+1,u,21,8+2,2,2j,3+6,d+7,2r,3+8,c+5,23+1,s,2,2,1k+d,2+4,2+1,6+a,2+z,a,2v+3,2+5,2+1,3+1,q+1,5+2,h+3,e,3+1,7,g,jk+2,qb+2,u+2,u+1,v+1,1t+1,2+6,9,3+a,a,1a+2,3c+1,z,3b+2,5+1,a,7+2,64+1,3,1n,2+6,2,2,3+7,7+9,3,1d+g,1s+3,1d,2+4,2,6,15+8,d+1,x+3,3+1,2+2,1l,2+1,4,2+2,1n+7,3+1,49+2,2+c,2+6,5,7,4+1,5j+1l,2+4,k1+w,2db+2,3y,2p+v,ff+3,30+1,n9x+3,2+9,x+1,29+1,7l,4,5,q+1,6,48+1,r+h,e,13+7,q+a,1b+2,1d,3+3,3+1,14,1w+5,3+1,3+1,d,9,1c,1g,2+2,3+1,6+1,2,17+1,9,6n,3,5,fn5,ki+f,h+f,r2,6b,46+4,1af+2,2+1,6+3,15+2,5,4m+1,fy+3,as+1,4a+a,4x,1j+e,1l+2,1e+3,3+1,1y+2,11+4,2+7,1r,d+1,1h+8,b+3,3,2o+2,3,2+1,7,4h,4+7,m+1,1m+1,4,12+6,4+4,5g+7,3+2,2,o,2d+5,2,5+1,2+1,6n+3,7+1,2+1,s+1,2e+7,3,2+1,2z,2,3+5,2,2u+2,3+3,2+4,78+8,2+1,75+1,2,5,41+3,3+1,5,x+5,3+1,15+5,3+3,9,a+5,3+2,1b+c,2+1,bb+6,2+5,2d+l,3+6,2+1,2+1,3f+5,4,2+1,2+6,2,21+1,4,2,9o+1,f0c+4,1o+6,t5,1s+3,2a,f5l+1,43t+2,i+7,3+6,v+3,45+2,1j0+1i,5+1d,9,f,n+4,2+e,11t+6,2+g,3+6,2+1,2+4,7a+6,c6+3,15t+6,32+6,gzhy+6n",
+			"AL": "16w,3,2,e+1b,z+2,2+2s,g+1,8+1,b+m,2+t,s+2i,c+e,4h+f,1d+1e,1bwe+dp,3+3z,x+c,2+1,35+3y,2rm+z,5+7,b+5,dt+l,c+u,17nl+27,1t+27,4x+6n,3+d",
+			"LRO": "6ct",
+			"RLO": "6cu",
+			"LRE": "6cq",
+			"RLE": "6cr",
+			"PDF": "6cs",
+			"LRI": "6ee",
+			"RLI": "6ef",
+			"FSI": "6eg",
+			"PDI": "6eh"
+		};
+		var TYPES = {};
+		var TYPES_TO_NAMES = {};
+		TYPES.L = 1;
+		TYPES_TO_NAMES[1] = "L";
+		Object.keys(DATA).forEach(function(type, i) {
+			TYPES[type] = 1 << i + 1;
+			TYPES_TO_NAMES[TYPES[type]] = type;
+		});
+		Object.freeze(TYPES);
+		var ISOLATE_INIT_TYPES = TYPES.LRI | TYPES.RLI | TYPES.FSI;
+		var STRONG_TYPES = TYPES.L | TYPES.R | TYPES.AL;
+		var NEUTRAL_ISOLATE_TYPES = TYPES.B | TYPES.S | TYPES.WS | TYPES.ON | TYPES.FSI | TYPES.LRI | TYPES.RLI | TYPES.PDI;
+		var BN_LIKE_TYPES = TYPES.BN | TYPES.RLE | TYPES.LRE | TYPES.RLO | TYPES.LRO | TYPES.PDF;
+		var TRAILING_TYPES = TYPES.S | TYPES.WS | TYPES.B | ISOLATE_INIT_TYPES | TYPES.PDI | BN_LIKE_TYPES;
+		var map = null;
+		function parseData() {
+			if (!map) {
+				map = /* @__PURE__ */ new Map();
+				var start = 0;
+				for (var type in DATA) if (DATA.hasOwnProperty(type)) {
+					var segments = DATA[type];
+					var temp = "";
+					var end = void 0;
+					var state = false;
+					var lastCode = 0;
+					for (var i = 0; i <= segments.length + 1; i += 1) {
+						var char = segments[i];
+						if (char !== "," && i !== segments.length) {
+							if (char === "+") {
+								state = true;
+								lastCode = start = lastCode + parseInt(temp, 36);
+								temp = "";
+							} else temp += char;
+						} else {
+							if (!state) {
+								lastCode = start = lastCode + parseInt(temp, 36);
+								end = start;
+							} else end = start + parseInt(temp, 36);
+							state = false;
+							temp = "";
+							lastCode = end;
+							for (var j = start; j < end + 1; j += 1) map.set(j, TYPES[type]);
+						}
+					}
+				}
+			}
+		}
+		/**
+		* @param {string} char
+		* @return {number}
+		*/
+		function getBidiCharType(char) {
+			parseData();
+			return map.get(char.codePointAt(0)) || TYPES.L;
+		}
+		/**
+		* Get Bidi Character Type Name
+		* @param {string} char
+		* @returns { "L" | "R" | "EN" | "ES" | "ET" | "AN" | "CS" | "B" | "S" | "WS" | "ON" | "BN" | "NSM" | "AL" | "LRO" | "RLO" | "LRE" | "RLE" | "PDF" | "LRI" | "RLI" | "FSI" | "PDI" }
+		*/
+		function getBidiCharTypeName(char) {
+			return TYPES_TO_NAMES[getBidiCharType(char)];
+		}
+		var data$1 = {
+			"pairs": "14>1,1e>2,u>2,2wt>1,1>1,1ge>1,1wp>1,1j>1,f>1,hm>1,1>1,u>1,u6>1,1>1,+5,28>1,w>1,1>1,+3,b8>1,1>1,+3,1>3,-1>-1,3>1,1>1,+2,1s>1,1>1,x>1,th>1,1>1,+2,db>1,1>1,+3,3>1,1>1,+2,14qm>1,1>1,+1,4q>1,1e>2,u>2,2>1,+1",
+			"canonical": "6f1>-6dx,6dy>-6dx,6ec>-6ed,6ee>-6ed,6ww>2jj,-2ji>2jj,14r4>-1e7l,1e7m>-1e7l,1e7m>-1e5c,1e5d>-1e5b,1e5c>-14qx,14qy>-14qx,14vn>-1ecg,1ech>-1ecg,1edu>-1ecg,1eci>-1ecg,1eda>-1ecg,1eci>-1ecg,1eci>-168q,168r>-168q,168s>-14ye,14yf>-14ye"
+		};
+		/**
+		* Parses an string that holds encoded codepoint mappings, e.g. for bracket pairs or
+		* mirroring characters, as encoded by scripts/generateBidiData.js. Returns an object
+		* holding the `map`, and optionally a `reverseMap` if `includeReverse:true`.
+		* @param {string} encodedString
+		* @param {boolean} includeReverse - true if you want reverseMap in the output
+		* @return {{map: Map<number, number>, reverseMap?: Map<number, number>}}
+		*/
+		function parseCharacterMap(encodedString, includeReverse) {
+			var radix = 36;
+			var lastCode = 0;
+			var map = /* @__PURE__ */ new Map();
+			var reverseMap = includeReverse && /* @__PURE__ */ new Map();
+			var prevPair;
+			encodedString.split(",").forEach(function visit(entry) {
+				if (entry.indexOf("+") !== -1) for (var i = +entry; i--;) visit(prevPair);
+				else {
+					prevPair = entry;
+					var ref = entry.split(">");
+					var a = ref[0];
+					var b = ref[1];
+					a = String.fromCodePoint(lastCode += parseInt(a, radix));
+					b = String.fromCodePoint(lastCode += parseInt(b, radix));
+					map.set(a, b);
+					includeReverse && reverseMap.set(b, a);
+				}
+			});
+			return {
+				map,
+				reverseMap
+			};
+		}
+		var openToClose, closeToOpen, canonical;
+		function parse$1() {
+			if (!openToClose) {
+				var ref = parseCharacterMap(data$1.pairs, true);
+				var map = ref.map;
+				var reverseMap = ref.reverseMap;
+				openToClose = map;
+				closeToOpen = reverseMap;
+				canonical = parseCharacterMap(data$1.canonical, false).map;
+			}
+		}
+		/**
+		* Get the opening bracket character corresponding to a given closing bracket character.
+		* @param {string} char
+		* @returns {string | null}
+		*/
+		function openingToClosingBracket(char) {
+			parse$1();
+			return openToClose.get(char) || null;
+		}
+		/**
+		* Get the closing bracket character corresponding to a given opening bracket character.
+		* @param {string} char
+		* @returns {string | null}
+		*/
+		function closingToOpeningBracket(char) {
+			parse$1();
+			return closeToOpen.get(char) || null;
+		}
+		/**
+		* Retrieves the canonical form of a bracket character.
+		* @param {string} char
+		* @returns {string | null}
+		*/
+		function getCanonicalBracket(char) {
+			parse$1();
+			return canonical.get(char) || null;
+		}
+		var TYPE_L = TYPES.L;
+		var TYPE_R = TYPES.R;
+		var TYPE_EN = TYPES.EN;
+		var TYPE_ES = TYPES.ES;
+		var TYPE_ET = TYPES.ET;
+		var TYPE_AN = TYPES.AN;
+		var TYPE_CS = TYPES.CS;
+		var TYPE_B = TYPES.B;
+		var TYPE_S = TYPES.S;
+		var TYPE_ON = TYPES.ON;
+		var TYPE_BN = TYPES.BN;
+		var TYPE_NSM = TYPES.NSM;
+		var TYPE_AL = TYPES.AL;
+		var TYPE_LRO = TYPES.LRO;
+		var TYPE_RLO = TYPES.RLO;
+		var TYPE_LRE = TYPES.LRE;
+		var TYPE_RLE = TYPES.RLE;
+		var TYPE_PDF = TYPES.PDF;
+		var TYPE_LRI = TYPES.LRI;
+		var TYPE_RLI = TYPES.RLI;
+		var TYPE_FSI = TYPES.FSI;
+		var TYPE_PDI = TYPES.PDI;
+		/**
+		* @typedef {object} GetEmbeddingLevelsResult
+		* @property {{start: number, end: number, level: number}[]} paragraphs
+		* @property {Uint8Array} levels
+		*/
+		/**
+		* This function applies the Bidirectional Algorithm to a string, returning the resolved embedding levels
+		* in a single Uint8Array plus a list of objects holding each paragraph's start and end indices and resolved
+		* base embedding level.
+		*
+		* @param {string} string - The input string
+		* @param {"ltr"|"rtl"|"auto"} [baseDirection] - Use "ltr" or "rtl" to force a base paragraph direction,
+		*        otherwise a direction will be chosen automatically from each paragraph's contents.
+		* @return {GetEmbeddingLevelsResult}
+		*/
+		function getEmbeddingLevels(string, baseDirection) {
+			var MAX_DEPTH = 125;
+			var charTypes = new Uint32Array(string.length);
+			for (var i = 0; i < string.length; i++) charTypes[i] = getBidiCharType(string[i]);
+			var charTypeCounts = /* @__PURE__ */ new Map();
+			function changeCharType(i, type) {
+				var oldType = charTypes[i];
+				charTypes[i] = type;
+				charTypeCounts.set(oldType, charTypeCounts.get(oldType) - 1);
+				if (oldType & NEUTRAL_ISOLATE_TYPES) charTypeCounts.set(NEUTRAL_ISOLATE_TYPES, charTypeCounts.get(NEUTRAL_ISOLATE_TYPES) - 1);
+				charTypeCounts.set(type, (charTypeCounts.get(type) || 0) + 1);
+				if (type & NEUTRAL_ISOLATE_TYPES) charTypeCounts.set(NEUTRAL_ISOLATE_TYPES, (charTypeCounts.get(NEUTRAL_ISOLATE_TYPES) || 0) + 1);
+			}
+			var embedLevels = new Uint8Array(string.length);
+			var isolationPairs = /* @__PURE__ */ new Map();
+			var paragraphs = [];
+			var paragraph = null;
+			for (var i$1 = 0; i$1 < string.length; i$1++) {
+				if (!paragraph) paragraphs.push(paragraph = {
+					start: i$1,
+					end: string.length - 1,
+					level: baseDirection === "rtl" ? 1 : baseDirection === "ltr" ? 0 : determineAutoEmbedLevel(i$1, false)
+				});
+				if (charTypes[i$1] & TYPE_B) {
+					paragraph.end = i$1;
+					paragraph = null;
+				}
+			}
+			var FORMATTING_TYPES = TYPE_RLE | TYPE_LRE | TYPE_RLO | TYPE_LRO | ISOLATE_INIT_TYPES | TYPE_PDI | TYPE_PDF | TYPE_B;
+			var nextEven = function(n) {
+				return n + (n & 1 ? 1 : 2);
+			};
+			var nextOdd = function(n) {
+				return n + (n & 1 ? 2 : 1);
+			};
+			for (var paraIdx = 0; paraIdx < paragraphs.length; paraIdx++) {
+				paragraph = paragraphs[paraIdx];
+				var statusStack = [{
+					_level: paragraph.level,
+					_override: 0,
+					_isolate: 0
+				}];
+				var stackTop = void 0;
+				var overflowIsolateCount = 0;
+				var overflowEmbeddingCount = 0;
+				var validIsolateCount = 0;
+				charTypeCounts.clear();
+				for (var i$2 = paragraph.start; i$2 <= paragraph.end; i$2++) {
+					var charType = charTypes[i$2];
+					stackTop = statusStack[statusStack.length - 1];
+					charTypeCounts.set(charType, (charTypeCounts.get(charType) || 0) + 1);
+					if (charType & NEUTRAL_ISOLATE_TYPES) charTypeCounts.set(NEUTRAL_ISOLATE_TYPES, (charTypeCounts.get(NEUTRAL_ISOLATE_TYPES) || 0) + 1);
+					if (charType & FORMATTING_TYPES) {
+						if (charType & (TYPE_RLE | TYPE_LRE)) {
+							embedLevels[i$2] = stackTop._level;
+							var level = (charType === TYPE_RLE ? nextOdd : nextEven)(stackTop._level);
+							if (level <= MAX_DEPTH && !overflowIsolateCount && !overflowEmbeddingCount) statusStack.push({
+								_level: level,
+								_override: 0,
+								_isolate: 0
+							});
+							else if (!overflowIsolateCount) overflowEmbeddingCount++;
+						} else if (charType & (TYPE_RLO | TYPE_LRO)) {
+							embedLevels[i$2] = stackTop._level;
+							var level$1 = (charType === TYPE_RLO ? nextOdd : nextEven)(stackTop._level);
+							if (level$1 <= MAX_DEPTH && !overflowIsolateCount && !overflowEmbeddingCount) statusStack.push({
+								_level: level$1,
+								_override: charType & TYPE_RLO ? TYPE_R : TYPE_L,
+								_isolate: 0
+							});
+							else if (!overflowIsolateCount) overflowEmbeddingCount++;
+						} else if (charType & ISOLATE_INIT_TYPES) {
+							if (charType & TYPE_FSI) charType = determineAutoEmbedLevel(i$2 + 1, true) === 1 ? TYPE_RLI : TYPE_LRI;
+							embedLevels[i$2] = stackTop._level;
+							if (stackTop._override) changeCharType(i$2, stackTop._override);
+							var level$2 = (charType === TYPE_RLI ? nextOdd : nextEven)(stackTop._level);
+							if (level$2 <= MAX_DEPTH && overflowIsolateCount === 0 && overflowEmbeddingCount === 0) {
+								validIsolateCount++;
+								statusStack.push({
+									_level: level$2,
+									_override: 0,
+									_isolate: 1,
+									_isolInitIndex: i$2
+								});
+							} else overflowIsolateCount++;
+						} else if (charType & TYPE_PDI) {
+							if (overflowIsolateCount > 0) overflowIsolateCount--;
+							else if (validIsolateCount > 0) {
+								overflowEmbeddingCount = 0;
+								while (!statusStack[statusStack.length - 1]._isolate) statusStack.pop();
+								var isolInitIndex = statusStack[statusStack.length - 1]._isolInitIndex;
+								if (isolInitIndex != null) {
+									isolationPairs.set(isolInitIndex, i$2);
+									isolationPairs.set(i$2, isolInitIndex);
+								}
+								statusStack.pop();
+								validIsolateCount--;
+							}
+							stackTop = statusStack[statusStack.length - 1];
+							embedLevels[i$2] = stackTop._level;
+							if (stackTop._override) changeCharType(i$2, stackTop._override);
+						} else if (charType & TYPE_PDF) {
+							if (overflowIsolateCount === 0) {
+								if (overflowEmbeddingCount > 0) overflowEmbeddingCount--;
+								else if (!stackTop._isolate && statusStack.length > 1) {
+									statusStack.pop();
+									stackTop = statusStack[statusStack.length - 1];
+								}
+							}
+							embedLevels[i$2] = stackTop._level;
+						} else if (charType & TYPE_B) embedLevels[i$2] = paragraph.level;
+					} else {
+						embedLevels[i$2] = stackTop._level;
+						if (stackTop._override && charType !== TYPE_BN) changeCharType(i$2, stackTop._override);
+					}
+				}
+				var levelRuns = [];
+				var currentRun = null;
+				for (var i$3 = paragraph.start; i$3 <= paragraph.end; i$3++) {
+					var charType$1 = charTypes[i$3];
+					if (!(charType$1 & BN_LIKE_TYPES)) {
+						var lvl = embedLevels[i$3];
+						var isIsolInit = charType$1 & ISOLATE_INIT_TYPES;
+						var isPDI = charType$1 === TYPE_PDI;
+						if (currentRun && lvl === currentRun._level) {
+							currentRun._end = i$3;
+							currentRun._endsWithIsolInit = isIsolInit;
+						} else levelRuns.push(currentRun = {
+							_start: i$3,
+							_end: i$3,
+							_level: lvl,
+							_startsWithPDI: isPDI,
+							_endsWithIsolInit: isIsolInit
+						});
+					}
+				}
+				var isolatingRunSeqs = [];
+				for (var runIdx = 0; runIdx < levelRuns.length; runIdx++) {
+					var run = levelRuns[runIdx];
+					if (!run._startsWithPDI || run._startsWithPDI && !isolationPairs.has(run._start)) {
+						var seqRuns = [currentRun = run];
+						for (var pdiIndex = void 0; currentRun && currentRun._endsWithIsolInit && (pdiIndex = isolationPairs.get(currentRun._end)) != null;) for (var i$4 = runIdx + 1; i$4 < levelRuns.length; i$4++) if (levelRuns[i$4]._start === pdiIndex) {
+							seqRuns.push(currentRun = levelRuns[i$4]);
+							break;
+						}
+						var seqIndices = [];
+						for (var i$5 = 0; i$5 < seqRuns.length; i$5++) {
+							var run$1 = seqRuns[i$5];
+							for (var j = run$1._start; j <= run$1._end; j++) seqIndices.push(j);
+						}
+						var firstLevel = embedLevels[seqIndices[0]];
+						var prevLevel = paragraph.level;
+						for (var i$6 = seqIndices[0] - 1; i$6 >= 0; i$6--) if (!(charTypes[i$6] & BN_LIKE_TYPES)) {
+							prevLevel = embedLevels[i$6];
+							break;
+						}
+						var lastIndex = seqIndices[seqIndices.length - 1];
+						var lastLevel = embedLevels[lastIndex];
+						var nextLevel = paragraph.level;
+						if (!(charTypes[lastIndex] & ISOLATE_INIT_TYPES)) {
+							for (var i$7 = lastIndex + 1; i$7 <= paragraph.end; i$7++) if (!(charTypes[i$7] & BN_LIKE_TYPES)) {
+								nextLevel = embedLevels[i$7];
+								break;
+							}
+						}
+						isolatingRunSeqs.push({
+							_seqIndices: seqIndices,
+							_sosType: Math.max(prevLevel, firstLevel) % 2 ? TYPE_R : TYPE_L,
+							_eosType: Math.max(nextLevel, lastLevel) % 2 ? TYPE_R : TYPE_L
+						});
+					}
+				}
+				for (var seqIdx = 0; seqIdx < isolatingRunSeqs.length; seqIdx++) {
+					var ref = isolatingRunSeqs[seqIdx];
+					var seqIndices$1 = ref._seqIndices;
+					var sosType = ref._sosType;
+					var eosType = ref._eosType;
+					/**
+					* All the level runs in an isolating run sequence have the same embedding level.
+					* 
+					* DO NOT change any `embedLevels[i]` within the current scope.
+					*/
+					var embedDirection = embedLevels[seqIndices$1[0]] & 1 ? TYPE_R : TYPE_L;
+					if (charTypeCounts.get(TYPE_NSM)) for (var si = 0; si < seqIndices$1.length; si++) {
+						var i$8 = seqIndices$1[si];
+						if (charTypes[i$8] & TYPE_NSM) {
+							var prevType = sosType;
+							for (var sj = si - 1; sj >= 0; sj--) if (!(charTypes[seqIndices$1[sj]] & BN_LIKE_TYPES)) {
+								prevType = charTypes[seqIndices$1[sj]];
+								break;
+							}
+							changeCharType(i$8, prevType & (ISOLATE_INIT_TYPES | TYPE_PDI) ? TYPE_ON : prevType);
+						}
+					}
+					if (charTypeCounts.get(TYPE_EN)) for (var si$1 = 0; si$1 < seqIndices$1.length; si$1++) {
+						var i$9 = seqIndices$1[si$1];
+						if (charTypes[i$9] & TYPE_EN) for (var sj$1 = si$1 - 1; sj$1 >= -1; sj$1--) {
+							var prevCharType = sj$1 === -1 ? sosType : charTypes[seqIndices$1[sj$1]];
+							if (prevCharType & STRONG_TYPES) {
+								if (prevCharType === TYPE_AL) changeCharType(i$9, TYPE_AN);
+								break;
+							}
+						}
+					}
+					if (charTypeCounts.get(TYPE_AL)) for (var si$2 = 0; si$2 < seqIndices$1.length; si$2++) {
+						var i$10 = seqIndices$1[si$2];
+						if (charTypes[i$10] & TYPE_AL) changeCharType(i$10, TYPE_R);
+					}
+					if (charTypeCounts.get(TYPE_ES) || charTypeCounts.get(TYPE_CS)) for (var si$3 = 1; si$3 < seqIndices$1.length - 1; si$3++) {
+						var i$11 = seqIndices$1[si$3];
+						if (charTypes[i$11] & (TYPE_ES | TYPE_CS)) {
+							var prevType$1 = 0, nextType = 0;
+							for (var sj$2 = si$3 - 1; sj$2 >= 0; sj$2--) {
+								prevType$1 = charTypes[seqIndices$1[sj$2]];
+								if (!(prevType$1 & BN_LIKE_TYPES)) break;
+							}
+							for (var sj$3 = si$3 + 1; sj$3 < seqIndices$1.length; sj$3++) {
+								nextType = charTypes[seqIndices$1[sj$3]];
+								if (!(nextType & BN_LIKE_TYPES)) break;
+							}
+							if (prevType$1 === nextType && (charTypes[i$11] === TYPE_ES ? prevType$1 === TYPE_EN : prevType$1 & (TYPE_EN | TYPE_AN))) changeCharType(i$11, prevType$1);
+						}
+					}
+					if (charTypeCounts.get(TYPE_EN)) {
+						for (var si$4 = 0; si$4 < seqIndices$1.length; si$4++) if (charTypes[seqIndices$1[si$4]] & TYPE_EN) {
+							for (var sj$4 = si$4 - 1; sj$4 >= 0 && charTypes[seqIndices$1[sj$4]] & (TYPE_ET | BN_LIKE_TYPES); sj$4--) changeCharType(seqIndices$1[sj$4], TYPE_EN);
+							for (si$4++; si$4 < seqIndices$1.length && charTypes[seqIndices$1[si$4]] & (TYPE_ET | BN_LIKE_TYPES | TYPE_EN); si$4++) if (charTypes[seqIndices$1[si$4]] !== TYPE_EN) changeCharType(seqIndices$1[si$4], TYPE_EN);
+						}
+					}
+					if (charTypeCounts.get(TYPE_ET) || charTypeCounts.get(TYPE_ES) || charTypeCounts.get(TYPE_CS)) for (var si$5 = 0; si$5 < seqIndices$1.length; si$5++) {
+						var i$13 = seqIndices$1[si$5];
+						if (charTypes[i$13] & (TYPE_ET | TYPE_ES | TYPE_CS)) {
+							changeCharType(i$13, TYPE_ON);
+							for (var sj$5 = si$5 - 1; sj$5 >= 0 && charTypes[seqIndices$1[sj$5]] & BN_LIKE_TYPES; sj$5--) changeCharType(seqIndices$1[sj$5], TYPE_ON);
+							for (var sj$6 = si$5 + 1; sj$6 < seqIndices$1.length && charTypes[seqIndices$1[sj$6]] & BN_LIKE_TYPES; sj$6++) changeCharType(seqIndices$1[sj$6], TYPE_ON);
+						}
+					}
+					if (charTypeCounts.get(TYPE_EN)) for (var si$6 = 0, prevStrongType = sosType; si$6 < seqIndices$1.length; si$6++) {
+						var i$14 = seqIndices$1[si$6];
+						var type = charTypes[i$14];
+						if (type & TYPE_EN) {
+							if (prevStrongType === TYPE_L) changeCharType(i$14, TYPE_L);
+						} else if (type & STRONG_TYPES) prevStrongType = type;
+					}
+					if (charTypeCounts.get(NEUTRAL_ISOLATE_TYPES)) {
+						var R_TYPES_FOR_N_STEPS = TYPE_R | TYPE_EN | TYPE_AN;
+						var STRONG_TYPES_FOR_N_STEPS = R_TYPES_FOR_N_STEPS | TYPE_L;
+						var bracketPairs = [];
+						var openerStack = [];
+						for (var si$7 = 0; si$7 < seqIndices$1.length; si$7++) if (charTypes[seqIndices$1[si$7]] & NEUTRAL_ISOLATE_TYPES) {
+							var char = string[seqIndices$1[si$7]];
+							var oppositeBracket = void 0;
+							if (openingToClosingBracket(char) !== null) {
+								if (openerStack.length < 63) openerStack.push({
+									char,
+									seqIndex: si$7
+								});
+								else break;
+							} else if ((oppositeBracket = closingToOpeningBracket(char)) !== null) for (var stackIdx = openerStack.length - 1; stackIdx >= 0; stackIdx--) {
+								var stackChar = openerStack[stackIdx].char;
+								if (stackChar === oppositeBracket || stackChar === closingToOpeningBracket(getCanonicalBracket(char)) || openingToClosingBracket(getCanonicalBracket(stackChar)) === char) {
+									bracketPairs.push([openerStack[stackIdx].seqIndex, si$7]);
+									openerStack.length = stackIdx;
+									break;
+								}
+							}
+						}
+						bracketPairs.sort(function(a, b) {
+							return a[0] - b[0];
+						});
+						for (var pairIdx = 0; pairIdx < bracketPairs.length; pairIdx++) {
+							var ref$1 = bracketPairs[pairIdx];
+							var openSeqIdx = ref$1[0];
+							var closeSeqIdx = ref$1[1];
+							var foundStrongType = false;
+							var useStrongType = 0;
+							for (var si$8 = openSeqIdx + 1; si$8 < closeSeqIdx; si$8++) {
+								var i$15 = seqIndices$1[si$8];
+								if (charTypes[i$15] & STRONG_TYPES_FOR_N_STEPS) {
+									foundStrongType = true;
+									var lr = charTypes[i$15] & R_TYPES_FOR_N_STEPS ? TYPE_R : TYPE_L;
+									if (lr === embedDirection) {
+										useStrongType = lr;
+										break;
+									}
+								}
+							}
+							if (foundStrongType && !useStrongType) {
+								useStrongType = sosType;
+								for (var si$9 = openSeqIdx - 1; si$9 >= 0; si$9--) {
+									var i$16 = seqIndices$1[si$9];
+									if (charTypes[i$16] & STRONG_TYPES_FOR_N_STEPS) {
+										var lr$1 = charTypes[i$16] & R_TYPES_FOR_N_STEPS ? TYPE_R : TYPE_L;
+										if (lr$1 !== embedDirection) useStrongType = lr$1;
+										else useStrongType = embedDirection;
+										break;
+									}
+								}
+							}
+							if (useStrongType) {
+								charTypes[seqIndices$1[openSeqIdx]] = charTypes[seqIndices$1[closeSeqIdx]] = useStrongType;
+								if (useStrongType !== embedDirection) {
+									for (var si$10 = openSeqIdx + 1; si$10 < seqIndices$1.length; si$10++) if (!(charTypes[seqIndices$1[si$10]] & BN_LIKE_TYPES)) {
+										if (getBidiCharType(string[seqIndices$1[si$10]]) & TYPE_NSM) charTypes[seqIndices$1[si$10]] = useStrongType;
+										break;
+									}
+								}
+								if (useStrongType !== embedDirection) {
+									for (var si$11 = closeSeqIdx + 1; si$11 < seqIndices$1.length; si$11++) if (!(charTypes[seqIndices$1[si$11]] & BN_LIKE_TYPES)) {
+										if (getBidiCharType(string[seqIndices$1[si$11]]) & TYPE_NSM) charTypes[seqIndices$1[si$11]] = useStrongType;
+										break;
+									}
+								}
+							}
+						}
+						for (var si$12 = 0; si$12 < seqIndices$1.length; si$12++) if (charTypes[seqIndices$1[si$12]] & NEUTRAL_ISOLATE_TYPES) {
+							var niRunStart = si$12, niRunEnd = si$12;
+							var prevType$2 = sosType;
+							for (var si2 = si$12 - 1; si2 >= 0; si2--) if (charTypes[seqIndices$1[si2]] & BN_LIKE_TYPES) niRunStart = si2;
+							else {
+								prevType$2 = charTypes[seqIndices$1[si2]] & R_TYPES_FOR_N_STEPS ? TYPE_R : TYPE_L;
+								break;
+							}
+							var nextType$1 = eosType;
+							for (var si2$1 = si$12 + 1; si2$1 < seqIndices$1.length; si2$1++) if (charTypes[seqIndices$1[si2$1]] & (NEUTRAL_ISOLATE_TYPES | BN_LIKE_TYPES)) niRunEnd = si2$1;
+							else {
+								nextType$1 = charTypes[seqIndices$1[si2$1]] & R_TYPES_FOR_N_STEPS ? TYPE_R : TYPE_L;
+								break;
+							}
+							for (var sj$7 = niRunStart; sj$7 <= niRunEnd; sj$7++) charTypes[seqIndices$1[sj$7]] = prevType$2 === nextType$1 ? prevType$2 : embedDirection;
+							si$12 = niRunEnd;
+						}
+					}
+				}
+				for (var i$17 = paragraph.start; i$17 <= paragraph.end; i$17++) {
+					var level$3 = embedLevels[i$17];
+					var type$1 = charTypes[i$17];
+					if (level$3 & 1) {
+						if (type$1 & (TYPE_L | TYPE_EN | TYPE_AN)) embedLevels[i$17]++;
+					} else if (type$1 & TYPE_R) embedLevels[i$17]++;
+					else if (type$1 & (TYPE_AN | TYPE_EN)) embedLevels[i$17] += 2;
+					if (type$1 & BN_LIKE_TYPES) embedLevels[i$17] = i$17 === 0 ? paragraph.level : embedLevels[i$17 - 1];
+					if (i$17 === paragraph.end || getBidiCharType(string[i$17]) & (TYPE_S | TYPE_B)) for (var j$1 = i$17; j$1 >= 0 && getBidiCharType(string[j$1]) & TRAILING_TYPES; j$1--) embedLevels[j$1] = paragraph.level;
+				}
+			}
+			return {
+				levels: embedLevels,
+				paragraphs
+			};
+			function determineAutoEmbedLevel(start, isFSI) {
+				for (var i = start; i < string.length; i++) {
+					var charType = charTypes[i];
+					if (charType & (TYPE_R | TYPE_AL)) return 1;
+					if (charType & (TYPE_B | TYPE_L) || isFSI && charType === TYPE_PDI) return 0;
+					if (charType & ISOLATE_INIT_TYPES) {
+						var pdi = indexOfMatchingPDI(i);
+						i = pdi === -1 ? string.length : pdi;
+					}
+				}
+				return 0;
+			}
+			function indexOfMatchingPDI(isolateStart) {
+				var isolationLevel = 1;
+				for (var i = isolateStart + 1; i < string.length; i++) {
+					var charType = charTypes[i];
+					if (charType & TYPE_B) break;
+					if (charType & TYPE_PDI) {
+						if (--isolationLevel === 0) return i;
+					} else if (charType & ISOLATE_INIT_TYPES) isolationLevel++;
+				}
+				return -1;
+			}
+		}
+		var data = "14>1,j>2,t>2,u>2,1a>g,2v3>1,1>1,1ge>1,1wd>1,b>1,1j>1,f>1,ai>3,-2>3,+1,8>1k0,-1jq>1y7,-1y6>1hf,-1he>1h6,-1h5>1ha,-1h8>1qi,-1pu>1,6>3u,-3s>7,6>1,1>1,f>1,1>1,+2,3>1,1>1,+13,4>1,1>1,6>1eo,-1ee>1,3>1mg,-1me>1mk,-1mj>1mi,-1mg>1mi,-1md>1,1>1,+2,1>10k,-103>1,1>1,4>1,5>1,1>1,+10,3>1,1>8,-7>8,+1,-6>7,+1,a>1,1>1,u>1,u6>1,1>1,+5,26>1,1>1,2>1,2>2,8>1,7>1,4>1,1>1,+5,b8>1,1>1,+3,1>3,-2>1,2>1,1>1,+2,c>1,3>1,1>1,+2,h>1,3>1,a>1,1>1,2>1,3>1,1>1,d>1,f>1,3>1,1a>1,1>1,6>1,7>1,13>1,k>1,1>1,+19,4>1,1>1,+2,2>1,1>1,+18,m>1,a>1,1>1,lk>1,1>1,4>1,2>1,f>1,3>1,1>1,+3,db>1,1>1,+3,3>1,1>1,+2,14qm>1,1>1,+1,6>1,4j>1,j>2,t>2,u>2,2>1,+1";
+		var mirrorMap;
+		function parse() {
+			if (!mirrorMap) {
+				var ref = parseCharacterMap(data, true);
+				var map = ref.map;
+				ref.reverseMap.forEach(function(value, key) {
+					map.set(key, value);
+				});
+				mirrorMap = map;
+			}
+		}
+		/**
+		* Get the mirrored character for a given character, if one exists.
+		* @param {string} char
+		* @return {string|null}
+		*/
+		function getMirroredCharacter(char) {
+			parse();
+			return mirrorMap.get(char) || null;
+		}
+		/**
+		* Given a string and its resolved embedding levels, build a map of indices to replacement chars
+		* for any characters in right-to-left segments that have defined mirrored characters.
+		* @param {string} string
+		* @param {Uint8Array} embeddingLevels
+		* @param {number?} [start]
+		* @param {number?} [end]
+		* @return {Map<number, string>}
+		*/
+		function getMirroredCharactersMap(string, embeddingLevels, start, end) {
+			var strLen = string.length;
+			start = Math.max(0, start == null ? 0 : +start);
+			end = Math.min(strLen - 1, end == null ? strLen - 1 : +end);
+			var map = /* @__PURE__ */ new Map();
+			for (var i = start; i <= end; i++) if (embeddingLevels[i] & 1) {
+				var mirror = getMirroredCharacter(string[i]);
+				if (mirror !== null) map.set(i, mirror);
+			}
+			return map;
+		}
+		/**
+		* Given a start and end denoting a single line within a string, and a set of precalculated
+		* bidi embedding levels, produce a list of segments whose ordering should be flipped, in sequence.
+		* @param {string} string - the full input string
+		* @param {GetEmbeddingLevelsResult} embeddingLevelsResult - the result object from getEmbeddingLevels
+		* @param {number} [start] - first character in a subset of the full string
+		* @param {number} [end] - last character in a subset of the full string
+		* @return {number[][]} - the list of start/end segments that should be flipped, in order.
+		*/
+		function getReorderSegments(string, embeddingLevelsResult, start, end) {
+			var strLen = string.length;
+			start = Math.max(0, start == null ? 0 : +start);
+			end = Math.min(strLen - 1, end == null ? strLen - 1 : +end);
+			var segments = [];
+			embeddingLevelsResult.paragraphs.forEach(function(paragraph) {
+				var lineStart = Math.max(start, paragraph.start);
+				var lineEnd = Math.min(end, paragraph.end);
+				if (lineStart < lineEnd) {
+					var lineLevels = embeddingLevelsResult.levels.slice(lineStart, lineEnd + 1);
+					for (var i = lineEnd; i >= lineStart && getBidiCharType(string[i]) & TRAILING_TYPES; i--) lineLevels[i] = paragraph.level;
+					var maxLevel = paragraph.level;
+					var minOddLevel = Infinity;
+					for (var i$1 = 0; i$1 < lineLevels.length; i$1++) {
+						var level = lineLevels[i$1];
+						if (level > maxLevel) maxLevel = level;
+						if (level < minOddLevel) minOddLevel = level | 1;
+					}
+					for (var lvl = maxLevel; lvl >= minOddLevel; lvl--) for (var i$2 = 0; i$2 < lineLevels.length; i$2++) if (lineLevels[i$2] >= lvl) {
+						var segStart = i$2;
+						while (i$2 + 1 < lineLevels.length && lineLevels[i$2 + 1] >= lvl) i$2++;
+						if (i$2 > segStart) segments.push([segStart + lineStart, i$2 + lineStart]);
+					}
+				}
+			});
+			return segments;
+		}
+		/**
+		* @param {string} string
+		* @param {GetEmbeddingLevelsResult} embedLevelsResult
+		* @param {number} [start]
+		* @param {number} [end]
+		* @return {string} the new string with bidi segments reordered
+		*/
+		function getReorderedString(string, embedLevelsResult, start, end) {
+			var indices = getReorderedIndices(string, embedLevelsResult, start, end);
+			var chars = [].concat(string);
+			indices.forEach(function(charIndex, i) {
+				chars[i] = (embedLevelsResult.levels[charIndex] & 1 ? getMirroredCharacter(string[charIndex]) : null) || string[charIndex];
+			});
+			return chars.join("");
+		}
+		/**
+		* @param {string} string
+		* @param {GetEmbeddingLevelsResult} embedLevelsResult
+		* @param {number} [start]
+		* @param {number} [end]
+		* @return {number[]} an array with character indices in their new bidi order
+		*/
+		function getReorderedIndices(string, embedLevelsResult, start, end) {
+			var segments = getReorderSegments(string, embedLevelsResult, start, end);
+			var indices = [];
+			for (var i = 0; i < string.length; i++) indices[i] = i;
+			segments.forEach(function(ref) {
+				var start = ref[0];
+				var end = ref[1];
+				var slice = indices.slice(start, end + 1);
+				for (var i = slice.length; i--;) indices[end - i] = slice[i];
+			});
+			return indices;
+		}
+		exports.closingToOpeningBracket = closingToOpeningBracket;
+		exports.getBidiCharType = getBidiCharType;
+		exports.getBidiCharTypeName = getBidiCharTypeName;
+		exports.getCanonicalBracket = getCanonicalBracket;
+		exports.getEmbeddingLevels = getEmbeddingLevels;
+		exports.getMirroredCharacter = getMirroredCharacter;
+		exports.getMirroredCharactersMap = getMirroredCharactersMap;
+		exports.getReorderSegments = getReorderSegments;
+		exports.getReorderedIndices = getReorderedIndices;
+		exports.getReorderedString = getReorderedString;
+		exports.openingToClosingBracket = openingToClosingBracket;
+		Object.defineProperty(exports, "__esModule", { value: true });
+		return exports;
+	})({});
+}
+//#endregion
+//#region src/symbol/bidi.ts
+const bidi = bidiFactory();
+/**
+* The characters that steer the bidirectional algorithm without being written.
+*
+* They have done their work by the time the text has been reordered, and no font draws them, so
+* they are dropped rather than passed on to be looked up in a glyph atlas.
+*/
+const BIDI_CONTROLS = /[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/;
+/**
+* The character types rule L1 resets to the paragraph's own direction.
+*
+* Trailing spaces belong to the paragraph rather than to the run they follow, so a line of Hebrew
+* ending in a space does not put that space on the wrong end of the line.
+*/
+const NEUTRAL_AT_END_OF_LINE = /* @__PURE__ */ new Set([
+	"WS",
+	"FSI",
+	"LRI",
+	"RLI",
+	"PDI"
+]);
+/** The character types rule L1 resets wherever they appear, along with the whitespace before them. */
+const ALWAYS_RESET = /* @__PURE__ */ new Set(["S", "B"]);
+/**
+* Splits a line into grapheme clusters, tagging each with the embedding level of its first character.
+*
+* Reordering whole clusters is what rule L3 asks for by another route: a letter and the marks
+* written on it move as one, so reversing a right-to-left run cannot leave the marks stranded before
+* their letter, and layout gets back the same units of writing it asked for glyphs for.
+*/
+function toClusters(text, levels, start, end) {
+	const clusters = [];
+	let index = start;
+	for (const cluster of toGraphemes(text.slice(start, end))) {
+		clusters.push({
+			index,
+			text: cluster,
+			level: levels[index]
+		});
+		index += cluster.length;
+	}
+	return clusters;
+}
+/**
+* Applies rule L1, which hands whitespace at the end of a line back to the paragraph's direction.
+*
+* Without it a line of right-to-left text that ends in a space would be drawn with that space on
+* its left, where the reader does not expect it.
+*/
+function resetTrailingNeutrals(clusters, paragraphLevel) {
+	let trailing = true;
+	for (let i = clusters.length - 1; i >= 0; i--) {
+		const type = bidi.getBidiCharTypeName(clusters[i].text[0]);
+		if (ALWAYS_RESET.has(type)) {
+			clusters[i].level = paragraphLevel;
+			trailing = true;
+		} else if (trailing && NEUTRAL_AT_END_OF_LINE.has(type)) clusters[i].level = paragraphLevel;
+		else trailing = false;
+	}
+}
+/**
+* Applies rule L2, which turns embedding levels into the order the text is read on screen.
+*
+* Each level from the deepest down to the shallowest odd one reverses every run of characters at
+* that level or deeper, so nesting a quotation in one direction inside a sentence in the other comes
+* out right however far the nesting goes.
+*/
+function reorder(clusters, paragraphLevel) {
+	let highest = paragraphLevel;
+	let lowestOdd = Infinity;
+	for (const { level } of clusters) {
+		if (level > highest) highest = level;
+		if ((level | 1) < lowestOdd) lowestOdd = level | 1;
+	}
+	const ordered = clusters.slice();
+	for (let level = highest; level >= lowestOdd; level--) for (let start = 0; start < ordered.length; start++) {
+		if (ordered[start].level < level) continue;
+		let end = start;
+		while (end + 1 < ordered.length && ordered[end + 1].level >= level) end++;
+		for (let i = start, j = end; i < j; i++, j--) [ordered[i], ordered[j]] = [ordered[j], ordered[i]];
+		start = end;
+	}
+	return ordered;
+}
+/**
+* Swaps a bracket for its mirror image where it is read right to left.
+*
+* An opening parenthesis in Hebrew text is drawn as the shape that opens in that direction, which is
+* the one Unicode calls a closing parenthesis.
+*/
+function mirror(cluster) {
+	if (cluster.level % 2 === 0) return cluster.text;
+	return bidi.getMirroredCharacter(cluster.text) ?? cluster.text;
+}
+/** The paragraph a line falls in, which is what its direction is taken from. */
+function paragraphLevelAt(paragraphs, start) {
+	return paragraphs.find((paragraph) => start >= paragraph.start && start <= paragraph.end)?.level ?? 0;
+}
+/**
+* Puts one line into visual order.
+*
+* Reordering happens a grapheme cluster at a time, so a letter and the marks written on it stay
+* together however the line is rearranged.
+*/
+function reorderLine(text, levels, paragraphLevel, start, end) {
+	const clusters = toClusters(text, levels, start, end);
+	resetTrailingNeutrals(clusters, paragraphLevel);
+	let reorderedText = "";
+	const sourceIndices = [];
+	for (const cluster of reorder(clusters, paragraphLevel)) {
+		if (BIDI_CONTROLS.test(cluster.text)) continue;
+		const mirrored = mirror(cluster);
+		reorderedText += mirrored;
+		sourceIndices.push(...Array(mirrored.length).fill(cluster.index));
+	}
+	return {
+		text: reorderedText,
+		sourceIndices
+	};
+}
+/**
+* The `[start, end)` code unit range of each line, given every offset the label is to be broken at.
+*
+* The offsets are put in order and duplicates dropped, because a line asked to break where a
+* paragraph already ends should be one line rather than an empty one and a full one.
+*/
+function lineRanges(text, breakPoints) {
+	const inside = breakPoints.filter((point) => point > 0 && point < text.length);
+	const bounds = [.../* @__PURE__ */ new Set([
+		0,
+		...inside,
+		text.length
+	])].sort((a, b) => a - b);
+	const ranges = [];
+	for (let i = 0; i + 1 < bounds.length; i++) ranges.push([bounds[i], bounds[i + 1]]);
+	return ranges;
+}
+/**
+* Reorders every line of a label, keeping where each code unit came from.
+*
+* A label is broken where it was asked to be broken and wherever a paragraph ends. The separators
+* that end a paragraph are the ones the bidirectional algorithm reads its direction afresh after,
+* so a line may not run across one however wide it is.
+*/
+function processLines(text, lineBreakPoints) {
+	const { levels, paragraphs } = bidi.getEmbeddingLevels(text);
+	return lineRanges(text, lineBreakPoints.concat(paragraphs.map((paragraph) => paragraph.start))).map(([start, end]) => reorderLine(text, levels, paragraphLevelAt(paragraphs, start), start, end));
+}
+/**
+* Puts text into the order it is read on screen, and breaks it into lines.
+*
+* @param text - a whole label in logical order
+* @param lineBreakPoints - the code unit offsets the label is to be broken at
+* @returns one string per line, each in visual order
+*/
+function processBidirectionalText(text, lineBreakPoints) {
+	return processLines(text, lineBreakPoints).map((line) => line.text);
+}
+/**
+* The same as {@link processBidirectionalText}, carrying each code unit's formatting section with it
+* so that a label built out of several `format` sections keeps its styling once reordered.
+*
+* @param text - a whole label in logical order
+* @param styleIndices - the section each code unit of `text` belongs to
+* @param lineBreakPoints - the code unit offsets the label is to be broken at
+* @returns one `[line, styleIndices]` pair per line, each in visual order
+*/
+function processStyledBidirectionalText(text, styleIndices, lineBreakPoints) {
+	return processLines(text, lineBreakPoints).map((line) => [line.text, line.sourceIndices.map((index) => styleIndices[index] ?? 0)]);
+}
 //#endregion
 //#region node_modules/pbf/index.js
 const SHIFT_LEFT_32 = 4294967296;
@@ -23582,25 +25761,27 @@ function readUtf8$1(buf, pos, end) {
 function writeUtf8(buf, str, pos) {
 	for (let i = 0, c, lead; i < str.length; i++) {
 		c = str.charCodeAt(i);
-		if (c > 55295 && c < 57344) if (lead) if (c < 56320) {
-			buf[pos++] = 239;
-			buf[pos++] = 191;
-			buf[pos++] = 189;
-			lead = c;
-			continue;
-		} else {
-			c = lead - 55296 << 10 | c - 56320 | 65536;
-			lead = null;
-		}
-		else {
-			if (c > 56319 || i + 1 === str.length) {
-				buf[pos++] = 239;
-				buf[pos++] = 191;
-				buf[pos++] = 189;
-			} else lead = c;
-			continue;
-		}
-		else if (lead) {
+		if (c > 55295 && c < 57344) {
+			if (lead) {
+				if (c < 56320) {
+					buf[pos++] = 239;
+					buf[pos++] = 191;
+					buf[pos++] = 189;
+					lead = c;
+					continue;
+				} else {
+					c = lead - 55296 << 10 | c - 56320 | 65536;
+					lead = null;
+				}
+			} else {
+				if (c > 56319 || i + 1 === str.length) {
+					buf[pos++] = 239;
+					buf[pos++] = 191;
+					buf[pos++] = 189;
+				} else lead = c;
+				continue;
+			}
+		} else if (lead) {
 			buf[pos++] = 239;
 			buf[pos++] = 191;
 			buf[pos++] = 189;
@@ -23656,15 +25837,15 @@ function readGlyph(tag, glyph, pbf) {
 function parseGlyphPbf(data) {
 	return new PbfReader(data).readFields(readFontstacks, []);
 }
+function isStyleImageWebGLData(data) {
+	return typeof data?.renderWithWebGL === "function";
+}
 function renderStyleImage(image) {
 	const { userImage } = image;
-	if (userImage?.render) {
-		if (userImage.render()) {
-			image.data.replace(new Uint8Array(userImage.data.buffer));
-			return true;
-		}
-	}
-	return false;
+	if (!userImage?.render) return false;
+	if (!userImage.render()) return false;
+	if (!isStyleImageWebGLData(userImage.data)) image.data.replace(new Uint8Array(userImage.data.buffer));
+	return true;
 }
 //#endregion
 //#region node_modules/potpack/index.js
@@ -23741,13 +25922,14 @@ function potpack(boxes) {
 	};
 }
 var ImagePosition = class {
-	constructor(paddedRect, { pixelRatio, version, stretchX, stretchY, content, textFitWidth, textFitHeight }) {
+	constructor(paddedRect, { pixelRatio, version, isWebGLImage = false, stretchX, stretchY, content, textFitWidth, textFitHeight }) {
 		this.paddedRect = paddedRect;
 		this.pixelRatio = pixelRatio;
 		this.stretchX = stretchX;
 		this.stretchY = stretchY;
 		this.content = content;
 		this.version = version;
+		this.needsFirstWebGLRender = isWebGLImage;
 		this.textFitWidth = textFitWidth;
 		this.textFitHeight = textFitHeight;
 	}
@@ -23765,12 +25947,17 @@ var ImagePosition = class {
 	}
 };
 /**
-* A class holding all the images
+* A single tile's packed copy of the icons and patterns its features reference, built in the
+* worker so that the symbol layout can bake the positions within it straight into the vertex
+* buffers. Each tile owns one, along with the texture it is uploaded to - as opposed to
+* {@link ImageManager}, which owns the images of the whole style.
+* @internal
 */
 var ImageAtlas = class {
 	constructor(icons, patterns) {
 		const iconPositions = {}, patternPositions = {};
 		this.haveRenderCallbacks = [];
+		this.patchedUpdateVersion = -1;
 		const bins = [];
 		this.addImages(icons, iconPositions, bins);
 		this.addImages(patterns, patternPositions, bins);
@@ -23781,6 +25968,7 @@ var ImageAtlas = class {
 		});
 		for (const id in icons) {
 			const src = icons[id];
+			if (src.isWebGLImage) continue;
 			const bin = iconPositions[id].paddedRect;
 			RGBAImage.copy(src.data, image, {
 				x: 0,
@@ -23860,22 +26048,52 @@ var ImageAtlas = class {
 			if (src.hasRenderCallback) this.haveRenderCallbacks.push(id);
 		}
 	}
+	/**
+	* Brings this atlas' texture back in sync with the images it was built from, re-uploading the
+	* ones that were replaced in the meantime.
+	*
+	* This runs for every in-view tile on every frame, so the common case of nothing having
+	* changed has to cost nothing: a single comparison against {@link ImageManager.updateVersion}
+	* ends the call. When something did change, only the images this atlas actually holds are
+	* looked at - a handful per tile - and {@link ImageAtlas.patchUpdatedImage} then skips the
+	* ones whose version still matches, leaving just the genuinely stale ones to upload.
+	*
+	* The render callbacks are dispatched first because they may update images themselves, and
+	* those updates have to be part of the version this call catches up with - otherwise an
+	* animated image would always be uploaded a frame late.
+	*/
 	patchUpdatedImages(imageManager, texture) {
 		imageManager.dispatchRenderCallbacks(this.haveRenderCallbacks);
-		for (const name in imageManager.updatedImages) {
-			this.patchUpdatedImage(this.iconPositions[name], imageManager.getImage(name), texture);
-			this.patchUpdatedImage(this.patternPositions[name], imageManager.getImage(name), texture);
-		}
+		if (this.patchedUpdateVersion === imageManager.updateVersion) return;
+		this.patchedUpdateVersion = imageManager.updateVersion;
+		for (const name in this.iconPositions) this.patchUpdatedImage(this.iconPositions[name], imageManager.getImage(name), texture);
+		for (const name in this.patternPositions) this.patchUpdatedImage(this.patternPositions[name], imageManager.getImage(name), texture);
 	}
 	patchUpdatedImage(position, image, texture) {
 		if (!position || !image) return;
-		if (position.version === image.version) return;
+		if (!position.needsFirstWebGLRender && position.version === image.version) return;
+		position.needsFirstWebGLRender = false;
 		position.version = image.version;
 		const [x, y] = position.tl;
-		texture.update(image.data, void 0, {
+		const data = image.userImage?.data;
+		if (!isStyleImageWebGLData(data)) {
+			texture.update(image.data, void 0, {
+				x,
+				y
+			});
+			return;
+		}
+		const { width, height } = image.data;
+		texture.context.setCustomLayerDefaults();
+		data.renderWithWebGL({
+			gl: texture.context.gl,
+			texture: texture.texture,
 			x,
-			y
+			y,
+			width,
+			height
 		});
+		texture.context.setDirty();
 	}
 };
 register("ImagePosition", ImagePosition);
@@ -23903,40 +26121,125 @@ function breakLines(input, lineBreakPoints) {
 	if (start < input.length()) lines.push(input.substring(start, input.length()));
 	return lines;
 }
+/** A character that is written on another one rather than beside it. */
+const COMBINING_MARK = /^\p{gc=M}$/u;
+/**
+* Puts the marks written on a letter back after the letter, and returns the new order as indices
+* into `chars`.
+*
+* This is rule L3 of the Unicode Bidirectional Algorithm. Reversing a right-to-left run leaves each
+* mark before its letter, and next to the letter before that -- so undoing it is what lets a letter
+* and its marks be one grapheme cluster again.
+*
+* Only marks followed by a right-to-left letter move; in a left-to-right run they already follow
+* their base. They come back in writing order, `m2 m1 base` to `base m1 m2`, since any other order
+* is a different cluster from the one the tile asked for a glyph for.
+*/
+function combiningMarksAfterTheirBase(chars) {
+	const order = [];
+	let i = 0;
+	while (i < chars.length) {
+		if (!COMBINING_MARK.test(chars[i])) {
+			order.push(i);
+			i++;
+			continue;
+		}
+		let end = i;
+		while (end < chars.length && COMBINING_MARK.test(chars[end])) end++;
+		const base = chars[end];
+		if (base !== void 0 && charInRTLScript(base.codePointAt(0))) {
+			order.push(end);
+			for (let mark = end - 1; mark >= i; mark--) order.push(mark);
+			i = end + 1;
+		} else {
+			for (let mark = i; mark < end; mark++) order.push(mark);
+			i = end;
+		}
+	}
+	return order;
+}
+/**
+* Spreads each cluster's style section across the code units it takes, which is what a text plugin
+* counts in.
+*/
+function sectionForEachCodeUnit(input) {
+	const sectionIndex = [];
+	let i = 0;
+	for (const grapheme of input.graphemes()) {
+		sectionIndex.push(...Array(grapheme.length).fill(input.sectionIndex[i]));
+		i++;
+	}
+	return sectionIndex;
+}
+/**
+* Puts a label that reads in both directions into the order it is drawn, and breaks it into lines.
+*
+* The bidirectional algorithm works in code units rather than in the graphemes the rest of layout
+* counts in, so the line breaks are converted on the way in and the sections on the way out. A
+* plugin registered through the deprecated {@link setRTLTextPlugin} is used in place of the built-in
+* implementation, so that a map relying on one keeps the behaviour it had.
+*/
+function bidiLines(logicalInput, lineBreaks) {
+	const codeUnitBreaks = lineBreaks.map((index) => logicalInput.toCodeUnitIndex(index));
+	const plugin = rtlWorkerPlugin.isParsed() ? rtlWorkerPlugin : null;
+	if (logicalInput.sections.length === 1) {
+		if (plugin) return plugin.processBidirectionalText(logicalInput.toString(), codeUnitBreaks).map((line) => taggedLineFromPlugin(line, logicalInput.sections, [...line].map(() => 0)));
+		return processBidirectionalText(logicalInput.toString(), codeUnitBreaks).map((line) => taggedLine([...line], logicalInput.sections, [...line].map(() => 0)));
+	}
+	const sectionForCodeUnit = sectionForEachCodeUnit(logicalInput);
+	if (plugin) return plugin.processStyledBidirectionalText(logicalInput.text, sectionForCodeUnit, codeUnitBreaks).map(([line, sections]) => taggedLineFromPlugin(line, logicalInput.sections, sections));
+	return processStyledBidirectionalText(logicalInput.text, sectionForCodeUnit, codeUnitBreaks).map(([line, sections]) => {
+		const chars = [...line];
+		return taggedLine(chars, logicalInput.sections, codeUnitOfEachCharacter(chars).map((at) => sections[at] ?? 0));
+	});
+}
+/**
+* Builds a line out of what a text plugin returned: the text in reading order, and the section of
+* each code unit. A cluster belongs to the section its first character does.
+*/
+/**
+* Builds a line of a label from text that is already in the order it is drawn.
+*
+* The sections arrive one per code unit, as the bidirectional algorithm counts, and are handed on
+* one per grapheme cluster, as the rest of layout counts.
+*/
+function taggedLine(chars, sections, sectionOfChar) {
+	const tagged = new TaggedString(chars.join(""), sections, []);
+	let at = 0;
+	for (const grapheme of tagged.graphemes()) {
+		tagged.sectionIndex.push(sectionOfChar[at] ?? 0);
+		at += [...grapheme].length;
+	}
+	return tagged;
+}
+/** The code unit each character of a line starts at. */
+function codeUnitOfEachCharacter(chars) {
+	const offsets = [];
+	let codeUnit = 0;
+	for (const char of chars) {
+		offsets.push(codeUnit);
+		codeUnit += char.length;
+	}
+	return offsets;
+}
+/**
+* Builds a line from what a plugin registered through the deprecated `setRTLTextPlugin` returned.
+*
+* A plugin reorders one code point at a time, as ICU does, which leaves the marks of a right-to-left
+* run before the letter they are written on, so rule L3 has to be applied here. The built-in
+* implementation reorders whole grapheme clusters and needs none of this.
+*/
+function taggedLineFromPlugin(line, sections, sectionForCodeUnit) {
+	const chars = [...line];
+	const codeUnitOf = codeUnitOfEachCharacter(chars);
+	const order = combiningMarksAfterTheirBase(chars);
+	return taggedLine(order.map((index) => chars[index]), sections, order.map((index) => sectionForCodeUnit[codeUnitOf[index]] ?? 0));
+}
 function shapeText(text, glyphMap, glyphPositions, imagePositions, defaultFontStack, maxWidth, lineHeight, textAnchor, textJustify, spacing, translate, writingMode, allowVerticalPlacement, layoutTextSize, layoutTextSizeThisZoom) {
 	const logicalInput = TaggedString.fromFeature(text, defaultFontStack);
 	if (writingMode === 2) logicalInput.verticalizePunctuation();
-	let lines;
-	let lineBreaks = logicalInput.determineLineBreaks(spacing, maxWidth, glyphMap, imagePositions, layoutTextSize);
-	const { processBidirectionalText, processStyledBidirectionalText } = rtlWorkerPlugin;
-	if (processBidirectionalText && logicalInput.sections.length === 1) {
-		lines = [];
-		lineBreaks = lineBreaks.map((index) => logicalInput.toCodeUnitIndex(index));
-		const untaggedLines = processBidirectionalText(logicalInput.toString(), lineBreaks);
-		for (const line of untaggedLines) {
-			const sectionIndex = [...line].map(() => 0);
-			lines.push(new TaggedString(line, logicalInput.sections, sectionIndex));
-		}
-	} else if (processStyledBidirectionalText) {
-		lines = [];
-		lineBreaks = lineBreaks.map((index) => logicalInput.toCodeUnitIndex(index));
-		let i = 0;
-		const sectionIndex = [];
-		for (const char of logicalInput.text) {
-			sectionIndex.push(...Array(char.length).fill(logicalInput.sectionIndex[i]));
-			i++;
-		}
-		const processedLines = processStyledBidirectionalText(logicalInput.text, sectionIndex, lineBreaks);
-		for (const line of processedLines) {
-			const sectionIndex = [];
-			let elapsedChars = "";
-			for (const char of line[0]) {
-				sectionIndex.push(line[1][elapsedChars.length]);
-				elapsedChars += char;
-			}
-			lines.push(new TaggedString(line[0], logicalInput.sections, sectionIndex));
-		}
-	} else lines = breakLines(logicalInput, lineBreaks);
+	const lineBreaks = logicalInput.determineLineBreaks(spacing, maxWidth, glyphMap, imagePositions, layoutTextSize);
+	const lines = stringContainsRTLText(logicalInput.text) ? bidiLines(logicalInput, lineBreaks) : breakLines(logicalInput, lineBreaks);
 	const positionedLines = [];
 	const shaping = {
 		positionedLines,
@@ -23996,9 +26299,9 @@ function getVerticalAlignFactor(verticalAlign) {
 		default: return 1;
 	}
 }
-function getRectAndMetrics(glyphPosition, glyphMap, section, codePoint) {
+function getRectAndMetrics(glyphPosition, glyphMap, section, key) {
 	if (glyphPosition?.rect) return glyphPosition;
-	const glyph = glyphMap[section.fontStack]?.[codePoint];
+	const glyph = glyphMap[section.fontStack]?.[key];
 	if (!glyph) return null;
 	return {
 		rect: null,
@@ -24008,6 +26311,99 @@ function getRectAndMetrics(glyphPosition, glyphMap, section, codePoint) {
 function isLineVertical(writingMode, allowVerticalPlacement, codePoint) {
 	return !(writingMode === 1 || !allowVerticalPlacement && !codePointHasUprightVerticalOrientation(codePoint) || allowVerticalPlacement && (charIsWhitespace(codePoint) || charInComplexShapingScript(codePoint)));
 }
+/** Returns whether the codepoint is a decimal digit of any script (`\p{Nd}`). */
+function charIsDecimalDigit(codePoint) {
+	return /\p{Nd}/u.test(String.fromCodePoint(codePoint));
+}
+/** Returns whether the codepoint is an uppercase letter of any script (`\p{Lu}`). */
+function charIsUppercaseLetter(codePoint) {
+	return /\p{Lu}/u.test(String.fromCodePoint(codePoint));
+}
+/** Returns whether the codepoint is a punctuation or symbol character (`\p{P}` or `\p{S}`). */
+function charIsSymbolOrPunctuation(codePoint) {
+	return /[\p{P}\p{S}]/u.test(String.fromCodePoint(codePoint));
+}
+/**
+* Uppercase runs longer than this are words (e.g. “ISHIKAWA” in a dual name),
+* which read better lying along the line; shorter runs are codes (“JR”, “A1”).
+*/
+const MAX_UPRIGHT_LETTER_RUN = 3;
+/**
+* Returns whether a run qualifies for upright treatment: numbers of any length,
+* optionally combined with symbols (“21”, “1-2”), and codes of up to
+* {@link MAX_UPRIGHT_LETTER_RUN} uppercase letters and digits (“JR”, “A1”).
+*/
+function runIsUpright(run) {
+	const isNumber = run.some(charIsDecimalDigit) && run.every((codePoint) => charIsDecimalDigit(codePoint) || charIsSymbolOrPunctuation(codePoint));
+	const isShortUppercaseCode = run.length <= MAX_UPRIGHT_LETTER_RUN && run.every((codePoint) => charIsUppercaseLetter(codePoint) || charIsDecimalDigit(codePoint));
+	return isNumber || isShortUppercaseCode;
+}
+/**
+* Returns whether a letter or digit in a qualifying run is drawn upright.
+* Punctuation and symbols are handled separately by
+* {@link verticalizeSurroundedPunctuation}; complex-shaping scripts keep
+* following the line.
+*/
+function charIsUprightInRun(codePoint) {
+	return (charIsDecimalDigit(codePoint) || charIsUppercaseLetter(codePoint)) && !charInComplexShapingScript(codePoint);
+}
+/**
+* Replaces punctuation surrounded by upright characters with its vertical
+* presentation form (“-” in “1-2” becomes “︲”) and marks it upright.
+* `verticalizePunctuation` cannot do this earlier: it doesn't know which
+* characters {@link determineLineVerticals} draws upright.
+*
+* Returns whether anything in `chars` was replaced.
+*/
+function verticalizeSurroundedPunctuation(chars, verticals) {
+	let replaced = false;
+	for (let i = 0; i < chars.length; i++) {
+		if (verticals[i]) continue;
+		const verticalizedChar = verticalizedCharacterMap[chars[i]];
+		if (!verticalizedChar) continue;
+		if ((i === 0 || verticals[i - 1]) && (i === chars.length - 1 || verticals[i + 1])) {
+			chars[i] = verticalizedChar;
+			verticals[i] = true;
+			replaced = true;
+		}
+	}
+	return replaced;
+}
+/**
+* Returns, for each grapheme cluster of a vertically laid out line label, whether
+* its glyph is drawn upright rather than lying along the line, and updates
+* `line` with vertical presentation forms of punctuation.
+*
+* A run passed to {@link runIsUpright} is a maximal sequence of non-upright
+* characters that are neither whitespace nor inline images.
+*
+* Counted in clusters, to line up with `getSection` and the layout loop. A cluster's orientation is
+* that of the character it starts with.
+*/
+function determineLineVerticals(line) {
+	const chars = line.graphemes().slice();
+	const codePoints = chars.map((char) => char.codePointAt(0));
+	const verticals = codePoints.map(codePointHasUprightVerticalOrientation);
+	const isRunCharacter = (i) => !verticals[i] && !charIsWhitespace(codePoints[i]) && !("imageName" in line.getSection(i));
+	for (let start = 0; start < codePoints.length; start++) {
+		if (!isRunCharacter(start)) continue;
+		let end = start;
+		while (end + 1 < codePoints.length && isRunCharacter(end + 1)) end++;
+		if (runIsUpright(codePoints.slice(start, end + 1))) for (let i = start; i <= end; i++) verticals[i] = charIsUprightInRun(codePoints[i]);
+		start = end;
+	}
+	if (verticalizeSurroundedPunctuation(chars, verticals)) {
+		line.text = chars.join("");
+		line._graphemes = null;
+	}
+	return verticals;
+}
+/**
+* Places every glyph of every line, filling in `shaping`.
+*
+* A cluster is drawn as one shape where a font file covers it, and a codepoint at a time where none
+* does -- which is what a style declaring no `font-faces` keeps doing.
+*/
 function shapeLines(shaping, glyphMap, glyphPositions, imagePositions, lines, lineHeight, textAnchor, textJustify, writingMode, spacing, allowVerticalPlacement, layoutTextSizeThisZoom) {
 	let x = 0;
 	let y = 0;
@@ -24032,49 +26428,54 @@ function shapeLines(shaping, glyphMap, glyphPositions, imagePositions, lines, li
 			continue;
 		}
 		const lineShapingSize = calculateLineContentSize(imagePositions, line, layoutTextSizeFactor);
-		let i = 0;
-		for (const char of line.text) {
+		const lineVerticals = writingMode === 2 && !allowVerticalPlacement ? determineLineVerticals(line) : null;
+		const graphemes = line.graphemes();
+		for (let i = 0; i < graphemes.length; i++) {
 			const section = line.getSection(i);
-			const codePoint = char.codePointAt(0);
-			const vertical = isLineVertical(writingMode, allowVerticalPlacement, codePoint);
-			const positionedGlyph = {
-				glyph: codePoint,
-				imageName: null,
-				x,
-				y: y + -17,
-				vertical,
-				scale: 1,
-				fontStack: "",
-				sectionIndex: line.getSectionIndex(i),
-				metrics: null,
-				rect: null
-			};
-			let sectionAttributes;
-			if ("fontStack" in section) {
-				sectionAttributes = shapeTextSection(section, codePoint, vertical, lineShapingSize, glyphMap, glyphPositions);
-				if (!sectionAttributes) continue;
-				positionedGlyph.fontStack = section.fontStack;
-			} else {
-				shaping.iconsInText = true;
-				section.scale *= layoutTextSizeFactor;
-				sectionAttributes = shapeImageSection(section, vertical, lineMaxScale, lineShapingSize, imagePositions);
-				if (!sectionAttributes) continue;
-				imageOffset = Math.max(imageOffset, sectionAttributes.imageOffset);
-				positionedGlyph.imageName = section.imageName;
+			const grapheme = graphemes[i];
+			const codePoint = grapheme.codePointAt(0);
+			const vertical = lineVerticals ? lineVerticals[i] : isLineVertical(writingMode, allowVerticalPlacement, codePoint);
+			const keys = "fontStack" in section && isCluster(grapheme) && !glyphMap[section.fontStack]?.[grapheme] ? [...grapheme] : [grapheme];
+			for (const key of keys) {
+				const positionedGlyph = {
+					glyph: key.codePointAt(0),
+					grapheme: key,
+					imageName: null,
+					x,
+					y: y + -17,
+					vertical,
+					scale: 1,
+					fontStack: "",
+					sectionIndex: line.getSectionIndex(i),
+					metrics: null,
+					rect: null
+				};
+				let sectionAttributes;
+				if ("fontStack" in section) {
+					sectionAttributes = shapeTextSection(section, key, vertical, lineShapingSize, glyphMap, glyphPositions);
+					if (!sectionAttributes) continue;
+					positionedGlyph.fontStack = section.fontStack;
+				} else {
+					shaping.iconsInText = true;
+					section.scale *= layoutTextSizeFactor;
+					sectionAttributes = shapeImageSection(section, vertical, lineMaxScale, lineShapingSize, imagePositions);
+					if (!sectionAttributes) continue;
+					imageOffset = Math.max(imageOffset, sectionAttributes.imageOffset);
+					positionedGlyph.imageName = section.imageName;
+				}
+				const { rect, metrics, baselineOffset } = sectionAttributes;
+				positionedGlyph.y += baselineOffset;
+				positionedGlyph.scale = section.scale;
+				positionedGlyph.metrics = metrics;
+				positionedGlyph.rect = rect;
+				positionedGlyphs.push(positionedGlyph);
+				if (!vertical) x += metrics.advance * section.scale + spacing;
+				else {
+					shaping.verticalizable = true;
+					const verticalAdvance = "imageName" in section ? metrics.advance : 24;
+					x += verticalAdvance * section.scale + spacing;
+				}
 			}
-			const { rect, metrics, baselineOffset } = sectionAttributes;
-			positionedGlyph.y += baselineOffset;
-			positionedGlyph.scale = section.scale;
-			positionedGlyph.metrics = metrics;
-			positionedGlyph.rect = rect;
-			positionedGlyphs.push(positionedGlyph);
-			if (!vertical) x += metrics.advance * section.scale + spacing;
-			else {
-				shaping.verticalizable = true;
-				const verticalAdvance = "imageName" in section ? metrics.advance : 24;
-				x += verticalAdvance * section.scale + spacing;
-			}
-			i++;
 		}
 		if (positionedGlyphs.length !== 0) {
 			const lineLength = x - spacing;
@@ -24096,9 +26497,9 @@ function shapeLines(shaping, glyphMap, glyphPositions, imagePositions, lines, li
 	shaping.left += -horizontalAlign * maxLineLength;
 	shaping.right = shaping.left + maxLineLength;
 }
-function shapeTextSection(section, codePoint, vertical, lineShapingSize, glyphMap, glyphPositions) {
-	const glyphPosition = glyphPositions[section.fontStack]?.[codePoint];
-	const rectAndMetrics = getRectAndMetrics(glyphPosition, glyphMap, section, codePoint);
+function shapeTextSection(section, key, vertical, lineShapingSize, glyphMap, glyphPositions) {
+	const glyphPosition = glyphPositions[section.fontStack]?.[key];
+	const rectAndMetrics = getRectAndMetrics(glyphPosition, glyphMap, section, key);
 	if (rectAndMetrics === null) return null;
 	let baselineOffset;
 	if (vertical) baselineOffset = lineShapingSize.verticalLineContentWidth - section.scale * 24;
@@ -24251,6 +26652,17 @@ function fitIconToText(shapedIcon, shapedText, textFit, padding, iconOffset, fon
 	};
 }
 const MAX_PACKED_SIZE = 32640;
+/**
+* The maximum number of glyphs per symbol bucket. UInt16 `glyphOffsetArrayStart`
+* is the first index that can overflow at 65,535; see
+* https://github.com/mapbox/mapbox-gl-js/issues/2907 for the motivation.
+* Line and text-box starts could in theory overflow too, but there are far
+* fewer boxes and lines than glyphs.
+*/
+const MAX_GLYPHS = 65535;
+/**
+* Gets the bucket-level size data the painter needs to set symbol size uniforms.
+*/
 function getSizeData(tileZoom, value) {
 	const { expression } = value;
 	if (expression.kind === "constant") return {
@@ -24258,51 +26670,1194 @@ function getSizeData(tileZoom, value) {
 		layoutSize: expression.evaluate(new EvaluationParameters(tileZoom + 1))
 	};
 	else if (expression.kind === "source") return { kind: "source" };
-	else {
-		const { zoomStops, interpolationType } = expression;
-		let lower = 0;
-		while (lower < zoomStops.length && zoomStops[lower] <= tileZoom) lower++;
-		lower = Math.max(0, lower - 1);
-		let upper = lower;
-		while (upper < zoomStops.length && zoomStops[upper] < tileZoom + 1) upper++;
-		upper = Math.min(zoomStops.length - 1, upper);
-		const minZoom = zoomStops[lower];
-		const maxZoom = zoomStops[upper];
-		if (expression.kind === "composite") return {
+	else if (expression.kind === "composite") {
+		const { minZoom, maxZoom } = getCoveringZoomStops(expression.zoomStops, tileZoom);
+		return {
 			kind: "composite",
 			minZoom,
 			maxZoom,
-			interpolationType
+			interpolationType: expression.interpolationType
 		};
+	} else {
+		const sizes = evaluateSizesAtZoomStops(expression);
+		const layoutSize = expression.evaluate(new EvaluationParameters(tileZoom + 1));
 		return {
 			kind: "camera",
-			minZoom,
-			maxZoom,
-			minSize: expression.evaluate(new EvaluationParameters(minZoom)),
-			maxSize: expression.evaluate(new EvaluationParameters(maxZoom)),
-			interpolationType
+			zoomStops: expression.zoomStops,
+			sizes,
+			layoutSize,
+			interpolationType: expression.interpolationType
 		};
 	}
+}
+/**
+* Finds the pair of zoom stops covering `[tileZoom, tileZoom + 1]`. A composite size
+* bakes each feature's size at these two zooms into the vertex data.
+*/
+function getCoveringZoomStops(zoomStops, tileZoom) {
+	let lower = 0;
+	while (lower < zoomStops.length && zoomStops[lower] <= tileZoom) lower++;
+	lower = Math.max(0, lower - 1);
+	let upper = lower;
+	while (upper < zoomStops.length && zoomStops[upper] < tileZoom + 1) upper++;
+	upper = Math.min(zoomStops.length - 1, upper);
+	return {
+		minZoom: zoomStops[lower],
+		maxZoom: zoomStops[upper]
+	};
+}
+/**
+* Evaluates a camera size expression at each of its zoom stops. A step's first stop is
+* `-Infinity`, so its base value is sampled just below the second stop instead.
+*/
+function evaluateSizesAtZoomStops(expression) {
+	return expression.zoomStops.map((zoomStop) => expression.evaluate(new EvaluationParameters(zoomStop === -Infinity ? expression.zoomStops[1] - 1 : zoomStop)));
 }
 function evaluateSizeForFeature(sizeData, { uSize, uSizeT }, { lowerSize, upperSize }) {
 	if (sizeData.kind === "source") return lowerSize / 128;
 	else if (sizeData.kind === "composite") return interpolateFactory.number(lowerSize / 128, upperSize / 128, uSizeT);
 	return uSize;
 }
+/**
+* Computes a bucket's size uniforms at the zoom being drawn, which on a retained tile
+* differs from the zoom the bucket was built for.
+*/
 function evaluateSizeForZoom(sizeData, zoom) {
 	let uSizeT = 0;
 	let uSize = 0;
 	if (sizeData.kind === "constant") uSize = sizeData.layoutSize;
-	else if (sizeData.kind !== "source") {
-		const { interpolationType, minZoom, maxZoom } = sizeData;
-		const t = !interpolationType ? 0 : clamp$2(Interpolate.interpolationFactor(interpolationType, zoom, minZoom, maxZoom), 0, 1);
-		if (sizeData.kind === "camera") uSize = interpolateFactory.number(sizeData.minSize, sizeData.maxSize, t);
-		else uSizeT = t;
-	}
+	else if (sizeData.kind === "camera") uSize = evaluateCameraSize(sizeData, zoom);
+	else if (sizeData.kind === "composite") uSizeT = evaluateCompositeInterpolationFactor(sizeData, zoom);
 	return {
 		uSizeT,
 		uSize
 	};
+}
+/**
+* Evaluates a camera size at the drawn zoom, interpolating between the stops around it.
+* Capped at `layoutSize`, the size the tile's collision boxes were built for: drawing
+* larger than that would let labels overlap.
+*/
+function evaluateCameraSize({ zoomStops, sizes, layoutSize, interpolationType }, zoom) {
+	let lower = zoomStops.length - 1;
+	while (lower > 0 && zoomStops[lower] > zoom) lower--;
+	const upper = Math.min(lower + 1, zoomStops.length - 1);
+	const t = !interpolationType ? 0 : clamp$2(Interpolate.interpolationFactor(interpolationType, zoom, zoomStops[lower], zoomStops[upper]), 0, 1);
+	return Math.min(interpolateFactory.number(sizes[lower], sizes[upper], t), layoutSize);
+}
+/**
+* Computes how far the drawn zoom sits between a composite size's two stops, clamped
+* into `[0, 1]`: each feature only stores its size at those two stops, so all the
+* renderer can do is blend between them.
+*/
+function evaluateCompositeInterpolationFactor({ interpolationType, minZoom, maxZoom }, zoom) {
+	return !interpolationType ? 0 : clamp$2(Interpolate.interpolationFactor(interpolationType, zoom, minZoom, maxZoom), 0, 1);
+}
+//#endregion
+//#region src/symbol/anchor.ts
+var Anchor = class Anchor extends Point {
+	constructor(x, y, angle, segment) {
+		super(x, y);
+		this.angle = angle;
+		if (segment !== void 0) this.segment = segment;
+	}
+	clone() {
+		return new Anchor(this.x, this.y, this.angle, this.segment);
+	}
+};
+register("Anchor", Anchor);
+//#endregion
+//#region src/symbol/check_max_angle.ts
+/**
+* Labels placed around really sharp angles aren't readable. Check if any
+* part of the potential label has a combined angle that is too big.
+*
+* @param line - The line to check
+* @param anchor - The point on the line around which the label is anchored.
+* @param labelLength - The length of the label in geometry units.
+* @param windowSize - The check fails if the combined angles within a part of the line that is `windowSize` long is too big.
+* @param maxAngle - The maximum combined angle that any window along the label is allowed to have.
+*
+* @returns whether the label should be placed
+*/
+function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
+	if (anchor.segment === void 0 || labelLength === 0) return true;
+	let p = anchor;
+	let index = anchor.segment + 1;
+	let anchorDistance = 0;
+	while (anchorDistance > -labelLength / 2) {
+		index--;
+		if (index < 0) return false;
+		anchorDistance -= line[index].dist(p);
+		p = line[index];
+	}
+	anchorDistance += line[index].dist(line[index + 1]);
+	index++;
+	const recentCorners = [];
+	let recentAngleDelta = 0;
+	while (anchorDistance < labelLength / 2) {
+		const prev = line[index - 1];
+		const current = line[index];
+		const next = line[index + 1];
+		if (!next) return false;
+		let angleDelta = prev.angleTo(current) - current.angleTo(next);
+		angleDelta = Math.abs((angleDelta + 3 * Math.PI) % (Math.PI * 2) - Math.PI);
+		recentCorners.push({
+			distance: anchorDistance,
+			angleDelta
+		});
+		recentAngleDelta += angleDelta;
+		while (anchorDistance - recentCorners[0].distance > windowSize) recentAngleDelta -= recentCorners.shift().angleDelta;
+		if (recentAngleDelta > maxAngle) return false;
+		index++;
+		anchorDistance += current.dist(next);
+	}
+	return true;
+}
+//#endregion
+//#region src/symbol/get_anchors.ts
+function getLineLength(line) {
+	let lineLength = 0;
+	for (let k = 0; k < line.length - 1; k++) lineLength += line[k].dist(line[k + 1]);
+	return lineLength;
+}
+function getAngleWindowSize(shapedText, glyphSize, boxScale) {
+	return shapedText ? 3 / 5 * glyphSize * boxScale : 0;
+}
+function getShapedLabelLength(shapedText, shapedIcon) {
+	return Math.max(shapedText ? shapedText.right - shapedText.left : 0, shapedIcon ? shapedIcon.right - shapedIcon.left : 0);
+}
+function getCenterAnchor(line, maxAngle, shapedText, shapedIcon, glyphSize, boxScale) {
+	const angleWindowSize = getAngleWindowSize(shapedText, glyphSize, boxScale);
+	const labelLength = getShapedLabelLength(shapedText, shapedIcon) * boxScale;
+	let prevDistance = 0;
+	const centerDistance = getLineLength(line) / 2;
+	for (let i = 0; i < line.length - 1; i++) {
+		const a = line[i], b = line[i + 1];
+		const segmentDistance = a.dist(b);
+		if (prevDistance + segmentDistance > centerDistance) {
+			const t = (centerDistance - prevDistance) / segmentDistance;
+			const anchor = new Anchor(interpolateFactory.number(a.x, b.x, t), interpolateFactory.number(a.y, b.y, t), b.angleTo(a), i);
+			anchor._round();
+			if (!angleWindowSize || checkMaxAngle(line, anchor, labelLength, angleWindowSize, maxAngle)) return anchor;
+			else return;
+		}
+		prevDistance += segmentDistance;
+	}
+}
+function getAnchors(line, spacing, maxAngle, shapedText, shapedIcon, glyphSize, boxScale, overscaling, tileExtent) {
+	const angleWindowSize = getAngleWindowSize(shapedText, glyphSize, boxScale);
+	const shapedLabelLength = getShapedLabelLength(shapedText, shapedIcon);
+	const labelLength = shapedLabelLength * boxScale;
+	const isLineContinued = line[0].x === 0 || line[0].x === tileExtent || line[0].y === 0 || line[0].y === tileExtent;
+	if (spacing - labelLength < spacing / 4) spacing = labelLength + spacing / 4;
+	const fixedExtraOffset = glyphSize * 2;
+	return resample(line, !isLineContinued ? (shapedLabelLength / 2 + fixedExtraOffset) * boxScale * overscaling % spacing : spacing / 2 * overscaling % spacing, spacing, angleWindowSize, maxAngle, labelLength, isLineContinued, false, tileExtent);
+}
+function resample(line, offset, spacing, angleWindowSize, maxAngle, labelLength, isLineContinued, placeAtMiddle, tileExtent) {
+	const halfLabelLength = labelLength / 2;
+	const lineLength = getLineLength(line);
+	let distance = 0;
+	let markedDistance = offset - spacing;
+	let anchors = [];
+	for (let i = 0; i < line.length - 1; i++) {
+		const a = line[i], b = line[i + 1];
+		const segmentDist = a.dist(b), angle = b.angleTo(a);
+		while (markedDistance + spacing < distance + segmentDist) {
+			markedDistance += spacing;
+			const t = (markedDistance - distance) / segmentDist, x = interpolateFactory.number(a.x, b.x, t), y = interpolateFactory.number(a.y, b.y, t);
+			if (x >= 0 && x < tileExtent && y >= 0 && y < tileExtent && markedDistance - halfLabelLength >= 0 && markedDistance + halfLabelLength <= lineLength) {
+				const anchor = new Anchor(x, y, angle, i);
+				anchor._round();
+				if (!angleWindowSize || checkMaxAngle(line, anchor, labelLength, angleWindowSize, maxAngle)) anchors.push(anchor);
+			}
+		}
+		distance += segmentDist;
+	}
+	if (!placeAtMiddle && !anchors.length && !isLineContinued) anchors = resample(line, distance / 2, spacing, angleWindowSize, maxAngle, labelLength, isLineContinued, true, tileExtent);
+	return anchors;
+}
+//#endregion
+//#region src/symbol/clip_line.ts
+/**
+* Returns the part of a multiline that intersects with the provided rectangular box.
+*
+* @param lines - the lines to check
+* @param x1 - the left edge of the box
+* @param y1 - the top edge of the box
+* @param x2 - the right edge of the box
+* @param y2 - the bottom edge of the box
+* @returns lines
+*/
+function clipLine(lines, x1, y1, x2, y2) {
+	const clippedLines = [];
+	for (const line of lines) {
+		let clippedLine;
+		for (let i = 0; i < line.length - 1; i++) {
+			let p0 = line[i];
+			let p1 = line[i + 1];
+			if (p0.x < x1 && p1.x < x1) continue;
+			else if (p0.x < x1) p0 = new Point(x1, p0.y + (p1.y - p0.y) * ((x1 - p0.x) / (p1.x - p0.x)))._round();
+			else if (p1.x < x1) p1 = new Point(x1, p0.y + (p1.y - p0.y) * ((x1 - p0.x) / (p1.x - p0.x)))._round();
+			if (p0.y < y1 && p1.y < y1) continue;
+			else if (p0.y < y1) p0 = new Point(p0.x + (p1.x - p0.x) * ((y1 - p0.y) / (p1.y - p0.y)), y1)._round();
+			else if (p1.y < y1) p1 = new Point(p0.x + (p1.x - p0.x) * ((y1 - p0.y) / (p1.y - p0.y)), y1)._round();
+			if (p0.x >= x2 && p1.x >= x2) continue;
+			else if (p0.x >= x2) p0 = new Point(x2, p0.y + (p1.y - p0.y) * ((x2 - p0.x) / (p1.x - p0.x)))._round();
+			else if (p1.x >= x2) p1 = new Point(x2, p0.y + (p1.y - p0.y) * ((x2 - p0.x) / (p1.x - p0.x)))._round();
+			if (p0.y >= y2 && p1.y >= y2) continue;
+			else if (p0.y >= y2) p0 = new Point(p0.x + (p1.x - p0.x) * ((y2 - p0.y) / (p1.y - p0.y)), y2)._round();
+			else if (p1.y >= y2) p1 = new Point(p0.x + (p1.x - p0.x) * ((y2 - p0.y) / (p1.y - p0.y)), y2)._round();
+			if (!clippedLine || !p0.equals(clippedLine[clippedLine.length - 1])) {
+				clippedLine = [p0];
+				clippedLines.push(clippedLine);
+			}
+			clippedLine.push(p1);
+		}
+	}
+	return clippedLines;
+}
+/**
+* Clips the geometry to the given bounds.
+* @param geometry - the geometry to clip
+* @param type - the geometry type (1=POINT, 2=LINESTRING, 3=POLYGON)
+* @param x1 - the left edge of the clipping box
+* @param y1 - the top edge of the clipping box
+* @param x2 - the right edge of the clipping box
+* @param y2 - the bottom edge of the clipping box
+* @returns the clipped geometry
+*/
+function clipGeometry(geometry, type, x1, y1, x2, y2) {
+	let clippedGeometry = clipGeometryOnAxis(geometry, type, x1, x2, 0);
+	clippedGeometry = clipGeometryOnAxis(clippedGeometry, type, y1, y2, 1);
+	return clippedGeometry;
+}
+/**
+* Clip features between two vertical or horizontal axis-parallel lines:
+* ```
+*     |        |
+*  ___|___     |     /
+* /   |   \____|____/
+*     |        |
+*```
+* @param geometry - the geometry to clip
+* @param type - the geometry type (1=POINT, 2=LINESTRING, 3=POLYGON)
+* @param start - the start line coordinate (x or y) to clip against
+* @param end - the end line coordinate (x or y) to clip against
+* @param axis - the axis to clip on (X or Y)
+* @returns the clipped geometry
+*/
+function clipGeometryOnAxis(geometry, type, start, end, axis) {
+	switch (type) {
+		case 1: return clipPoints(geometry, start, end, axis);
+		case 2: return clipLines(geometry, start, end, axis, false);
+		case 3: return clipLines(geometry, start, end, axis, true);
+	}
+	return [];
+}
+function clipPoints(geometry, start, end, axis) {
+	const newGeometry = [];
+	for (const ring of geometry) for (const point of ring) {
+		const a = axis === 0 ? point.x : point.y;
+		if (a >= start && a <= end) newGeometry.push([point]);
+	}
+	return newGeometry;
+}
+/**
+* Clips a line to the given start and end coordinates.
+* @param line - the line to clip
+* @param start - the start line coordinate (x or y) to clip against
+* @param end - the end line coordinate (x or y) to clip against
+* @param axis - the axis to clip on (X or Y)
+* @param isPolygon - whether the line is part of a polygon
+* @returns the clipped line(s)
+*/
+function clipLineInternal(line, start, end, axis, isPolygon) {
+	const intersectionPoint = axis === 0 ? intersectionPointX : intersectionPointY;
+	let slice = [];
+	const newLine = [];
+	for (let i = 0; i < line.length - 1; i++) {
+		const p1 = line[i];
+		const p2 = line[i + 1];
+		const pos1 = axis === 0 ? p1.x : p1.y;
+		const pos2 = axis === 0 ? p2.x : p2.y;
+		let exited = false;
+		if (pos1 < start) {
+			if (pos2 > start) slice.push(intersectionPoint(p1, p2, start));
+		} else if (pos1 > end) {
+			if (pos2 < end) slice.push(intersectionPoint(p1, p2, end));
+		} else slice.push(p1);
+		if (pos2 < start && pos1 >= start) {
+			slice.push(intersectionPoint(p1, p2, start));
+			exited = true;
+		}
+		if (pos2 > end && pos1 <= end) {
+			slice.push(intersectionPoint(p1, p2, end));
+			exited = true;
+		}
+		if (!isPolygon && exited) {
+			newLine.push(slice);
+			slice = [];
+		}
+	}
+	const last = line.length - 1;
+	const lastPos = axis === 0 ? line[last].x : line[last].y;
+	if (lastPos >= start && lastPos <= end) slice.push(line[last]);
+	if (isPolygon && slice.length > 0 && !slice[0].equals(slice[slice.length - 1])) slice.push(new Point(slice[0].x, slice[0].y));
+	if (slice.length > 0) newLine.push(slice);
+	return newLine;
+}
+function clipLines(geometry, start, end, axis, isPolygon) {
+	const newGeometry = [];
+	for (const line of geometry) {
+		const clippedLines = clipLineInternal(line, start, end, axis, isPolygon);
+		if (clippedLines.length > 0) newGeometry.push(...clippedLines);
+	}
+	return newGeometry;
+}
+function intersectionPointX(p1, p2, x) {
+	const t = (x - p1.x) / (p2.x - p1.x);
+	return new Point(x, p1.y + (p2.y - p1.y) * t);
+}
+function intersectionPointY(p1, p2, y) {
+	const t = (y - p1.y) / (p2.y - p1.y);
+	return new Point(p1.x + (p2.x - p1.x) * t, y);
+}
+//#endregion
+//#region src/symbol/quads.ts
+const border = 1;
+/**
+* Create the quads used for rendering an icon.
+*/
+function getIconQuads(shapedIcon, iconRotate, isSDFIcon, hasIconTextFit) {
+	const quads = [];
+	const image = shapedIcon.image;
+	const pixelRatio = image.pixelRatio;
+	const imageWidth = image.paddedRect.w - 2;
+	const imageHeight = image.paddedRect.h - 2;
+	let icon = {
+		x1: shapedIcon.left,
+		y1: shapedIcon.top,
+		x2: shapedIcon.right,
+		y2: shapedIcon.bottom
+	};
+	const stretchX = image.stretchX || [[0, imageWidth]];
+	const stretchY = image.stretchY || [[0, imageHeight]];
+	const reduceRanges = (sum, range) => sum + range[1] - range[0];
+	const stretchWidth = stretchX.reduce(reduceRanges, 0);
+	const stretchHeight = stretchY.reduce(reduceRanges, 0);
+	const fixedWidth = imageWidth - stretchWidth;
+	const fixedHeight = imageHeight - stretchHeight;
+	let stretchOffsetX = 0;
+	let stretchContentWidth = stretchWidth;
+	let stretchOffsetY = 0;
+	let stretchContentHeight = stretchHeight;
+	let fixedOffsetX = 0;
+	let fixedContentWidth = fixedWidth;
+	let fixedOffsetY = 0;
+	let fixedContentHeight = fixedHeight;
+	if (image.content && hasIconTextFit) {
+		const content = image.content;
+		const contentWidth = content[2] - content[0];
+		const contentHeight = content[3] - content[1];
+		if (image.textFitWidth || image.textFitHeight) icon = applyTextFit(shapedIcon);
+		stretchOffsetX = sumWithinRange(stretchX, 0, content[0]);
+		stretchOffsetY = sumWithinRange(stretchY, 0, content[1]);
+		stretchContentWidth = sumWithinRange(stretchX, content[0], content[2]);
+		stretchContentHeight = sumWithinRange(stretchY, content[1], content[3]);
+		fixedOffsetX = content[0] - stretchOffsetX;
+		fixedOffsetY = content[1] - stretchOffsetY;
+		fixedContentWidth = contentWidth - stretchContentWidth;
+		fixedContentHeight = contentHeight - stretchContentHeight;
+	}
+	const iconLeft = icon.x1;
+	const iconTop = icon.y1;
+	const iconWidth = icon.x2 - iconLeft;
+	const iconHeight = icon.y2 - iconTop;
+	const makeBox = (left, top, right, bottom) => {
+		const leftEm = getEmOffset(left.stretch - stretchOffsetX, stretchContentWidth, iconWidth, iconLeft);
+		const leftPx = getPxOffset(left.fixed - fixedOffsetX, fixedContentWidth, left.stretch, stretchWidth);
+		const topEm = getEmOffset(top.stretch - stretchOffsetY, stretchContentHeight, iconHeight, iconTop);
+		const topPx = getPxOffset(top.fixed - fixedOffsetY, fixedContentHeight, top.stretch, stretchHeight);
+		const rightEm = getEmOffset(right.stretch - stretchOffsetX, stretchContentWidth, iconWidth, iconLeft);
+		const rightPx = getPxOffset(right.fixed - fixedOffsetX, fixedContentWidth, right.stretch, stretchWidth);
+		const bottomEm = getEmOffset(bottom.stretch - stretchOffsetY, stretchContentHeight, iconHeight, iconTop);
+		const bottomPx = getPxOffset(bottom.fixed - fixedOffsetY, fixedContentHeight, bottom.stretch, stretchHeight);
+		const tl = new Point(leftEm, topEm);
+		const tr = new Point(rightEm, topEm);
+		const br = new Point(rightEm, bottomEm);
+		const bl = new Point(leftEm, bottomEm);
+		const pixelOffsetTL = new Point(leftPx / pixelRatio, topPx / pixelRatio);
+		const pixelOffsetBR = new Point(rightPx / pixelRatio, bottomPx / pixelRatio);
+		const angle = iconRotate * Math.PI / 180;
+		if (angle) {
+			const sin = Math.sin(angle), cos = Math.cos(angle), matrix = [
+				cos,
+				-sin,
+				sin,
+				cos
+			];
+			tl._matMult(matrix);
+			tr._matMult(matrix);
+			bl._matMult(matrix);
+			br._matMult(matrix);
+		}
+		const x1 = left.stretch + left.fixed;
+		const x2 = right.stretch + right.fixed;
+		const y1 = top.stretch + top.fixed;
+		const y2 = bottom.stretch + bottom.fixed;
+		return {
+			tl,
+			tr,
+			bl,
+			br,
+			tex: {
+				x: image.paddedRect.x + border + x1,
+				y: image.paddedRect.y + border + y1,
+				w: x2 - x1,
+				h: y2 - y1
+			},
+			writingMode: void 0,
+			glyphOffset: [0, 0],
+			sectionIndex: 0,
+			pixelOffsetTL,
+			pixelOffsetBR,
+			minFontScaleX: fixedContentWidth / pixelRatio / iconWidth,
+			minFontScaleY: fixedContentHeight / pixelRatio / iconHeight,
+			isSDF: isSDFIcon
+		};
+	};
+	if (!hasIconTextFit || !image.stretchX && !image.stretchY) quads.push(makeBox({
+		fixed: 0,
+		stretch: -1
+	}, {
+		fixed: 0,
+		stretch: -1
+	}, {
+		fixed: 0,
+		stretch: imageWidth + 1
+	}, {
+		fixed: 0,
+		stretch: imageHeight + 1
+	}));
+	else {
+		const xCuts = stretchZonesToCuts(stretchX, fixedWidth, stretchWidth);
+		const yCuts = stretchZonesToCuts(stretchY, fixedHeight, stretchHeight);
+		for (let xi = 0; xi < xCuts.length - 1; xi++) {
+			const x1 = xCuts[xi];
+			const x2 = xCuts[xi + 1];
+			for (let yi = 0; yi < yCuts.length - 1; yi++) {
+				const y1 = yCuts[yi];
+				const y2 = yCuts[yi + 1];
+				quads.push(makeBox(x1, y1, x2, y2));
+			}
+		}
+	}
+	return quads;
+}
+function sumWithinRange(ranges, min, max) {
+	let sum = 0;
+	for (const range of ranges) sum += Math.max(min, Math.min(max, range[1])) - Math.max(min, Math.min(max, range[0]));
+	return sum;
+}
+function stretchZonesToCuts(stretchZones, fixedSize, stretchSize) {
+	const cuts = [{
+		fixed: -1,
+		stretch: 0
+	}];
+	for (const [c1, c2] of stretchZones) {
+		const last = cuts[cuts.length - 1];
+		cuts.push({
+			fixed: c1 - last.stretch,
+			stretch: last.stretch
+		});
+		cuts.push({
+			fixed: c1 - last.stretch,
+			stretch: last.stretch + (c2 - c1)
+		});
+	}
+	cuts.push({
+		fixed: fixedSize + border,
+		stretch: stretchSize
+	});
+	return cuts;
+}
+function getEmOffset(stretchOffset, stretchSize, iconSize, iconOffset) {
+	return stretchOffset / stretchSize * iconSize + iconOffset;
+}
+function getPxOffset(fixedOffset, fixedSize, stretchOffset, stretchSize) {
+	return fixedOffset - fixedSize * stretchOffset / stretchSize;
+}
+/**
+* Create the quads used for rendering a text label.
+*/
+function getGlyphQuads(anchor, shaping, textOffset, layer, alongLine, feature, imageMap, allowVerticalPlacement) {
+	const textRotate = layer.layout.get("text-rotate").evaluate(feature, {}) * Math.PI / 180;
+	const quads = [];
+	for (const line of shaping.positionedLines) for (const positionedGlyph of line.positionedGlyphs) {
+		if (!positionedGlyph.rect) continue;
+		const textureRect = positionedGlyph.rect || {};
+		let rectBuffer = 4;
+		let isSDF = true;
+		let pixelRatio = 1;
+		let lineOffset = 0;
+		const rotateVerticalGlyph = (alongLine || allowVerticalPlacement) && positionedGlyph.vertical;
+		const halfAdvance = positionedGlyph.metrics.advance * positionedGlyph.scale / 2;
+		if (allowVerticalPlacement && shaping.verticalizable) {
+			const scaledGlyphOffset = (positionedGlyph.scale - 1) * 24;
+			const imageOffset = (24 - positionedGlyph.metrics.width * positionedGlyph.scale) / 2;
+			lineOffset = line.lineOffset / 2 - (positionedGlyph.imageName ? -imageOffset : scaledGlyphOffset);
+		}
+		if (positionedGlyph.imageName) {
+			const image = imageMap[positionedGlyph.imageName];
+			isSDF = image.sdf;
+			pixelRatio = image.pixelRatio;
+			rectBuffer = 1 / pixelRatio;
+		}
+		const glyphOffset = alongLine ? [positionedGlyph.x + halfAdvance, positionedGlyph.y] : [0, 0];
+		let builtInOffset = alongLine ? [0, 0] : [positionedGlyph.x + halfAdvance + textOffset[0], positionedGlyph.y + textOffset[1] - lineOffset];
+		let verticalizedLabelOffset = [0, 0];
+		if (rotateVerticalGlyph) {
+			verticalizedLabelOffset = builtInOffset;
+			builtInOffset = [0, 0];
+		}
+		const textureScale = positionedGlyph.metrics.isDoubleResolution ? 2 : 1;
+		const x1 = (positionedGlyph.metrics.left - rectBuffer) * positionedGlyph.scale - halfAdvance + builtInOffset[0];
+		const y1 = (-positionedGlyph.metrics.top - rectBuffer) * positionedGlyph.scale + builtInOffset[1];
+		const x2 = x1 + textureRect.w / textureScale * positionedGlyph.scale / pixelRatio;
+		const y2 = y1 + textureRect.h / textureScale * positionedGlyph.scale / pixelRatio;
+		const tl = new Point(x1, y1);
+		const tr = new Point(x2, y1);
+		const bl = new Point(x1, y2);
+		const br = new Point(x2, y2);
+		if (rotateVerticalGlyph) {
+			const center = new Point(-halfAdvance, halfAdvance - -17);
+			const verticalRotation = -Math.PI / 2;
+			const xHalfWidthOffsetCorrection = 12 - halfAdvance;
+			const yImageOffsetCorrection = positionedGlyph.imageName ? xHalfWidthOffsetCorrection : 0;
+			const halfWidthOffsetCorrection = new Point(22 - xHalfWidthOffsetCorrection, -yImageOffsetCorrection);
+			const verticalOffsetCorrection = new Point(...verticalizedLabelOffset);
+			tl._rotateAround(verticalRotation, center)._add(halfWidthOffsetCorrection)._add(verticalOffsetCorrection);
+			tr._rotateAround(verticalRotation, center)._add(halfWidthOffsetCorrection)._add(verticalOffsetCorrection);
+			bl._rotateAround(verticalRotation, center)._add(halfWidthOffsetCorrection)._add(verticalOffsetCorrection);
+			br._rotateAround(verticalRotation, center)._add(halfWidthOffsetCorrection)._add(verticalOffsetCorrection);
+		}
+		if (textRotate) {
+			const sin = Math.sin(textRotate), cos = Math.cos(textRotate), matrix = [
+				cos,
+				-sin,
+				sin,
+				cos
+			];
+			tl._matMult(matrix);
+			tr._matMult(matrix);
+			bl._matMult(matrix);
+			br._matMult(matrix);
+		}
+		const pixelOffsetTL = new Point(0, 0);
+		const pixelOffsetBR = new Point(0, 0);
+		quads.push({
+			tl,
+			tr,
+			bl,
+			br,
+			tex: textureRect,
+			writingMode: shaping.writingMode,
+			glyphOffset,
+			sectionIndex: positionedGlyph.sectionIndex,
+			isSDF,
+			pixelOffsetTL,
+			pixelOffsetBR,
+			minFontScaleX: 0,
+			minFontScaleY: 0
+		});
+	}
+	return quads;
+}
+//#endregion
+//#region src/symbol/collision_feature.ts
+/**
+* A CollisionFeature represents the area of the tile covered by a single label.
+* It is used with CollisionIndex to check if the label overlaps with any
+* previous labels. A CollisionFeature is mostly just a set of CollisionBox
+* objects.
+*/
+var CollisionFeature = class {
+	/**
+	* Create a CollisionFeature, adding its collision box data to the given collisionBoxArray in the process.
+	* For line aligned labels a collision circle diameter is computed instead.
+	*
+	* @param anchor - The point along the line around which the label is anchored.
+	* @param shaped - The text or icon shaping results.
+	* @param boxScale - A magic number used to convert from glyph metrics units to geometry units.
+	* @param padding - The amount of padding to add around the label edges.
+	* @param alignLine - Whether the label is aligned with the line or the viewport.
+	*/
+	constructor(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, shaped, boxScale, padding, alignLine, rotate) {
+		this.boxStartIndex = collisionBoxArray.length;
+		if (alignLine) {
+			let top = shaped.top;
+			let bottom = shaped.bottom;
+			const collisionPadding = shaped.collisionPadding;
+			if (collisionPadding) {
+				top -= collisionPadding[1];
+				bottom += collisionPadding[3];
+			}
+			let height = bottom - top;
+			if (height > 0) {
+				height = Math.max(10, height);
+				this.circleDiameter = height;
+			}
+		} else {
+			const icon = shaped.image?.content && (shaped.image.textFitWidth || shaped.image.textFitHeight) ? applyTextFit(shaped) : {
+				x1: shaped.left,
+				y1: shaped.top,
+				x2: shaped.right,
+				y2: shaped.bottom
+			};
+			icon.y1 = icon.y1 * boxScale - padding[0];
+			icon.y2 = icon.y2 * boxScale + padding[2];
+			icon.x1 = icon.x1 * boxScale - padding[3];
+			icon.x2 = icon.x2 * boxScale + padding[1];
+			const collisionPadding = shaped.collisionPadding;
+			if (collisionPadding) {
+				icon.x1 -= collisionPadding[0] * boxScale;
+				icon.y1 -= collisionPadding[1] * boxScale;
+				icon.x2 += collisionPadding[2] * boxScale;
+				icon.y2 += collisionPadding[3] * boxScale;
+			}
+			if (rotate) {
+				const tl = new Point(icon.x1, icon.y1);
+				const tr = new Point(icon.x2, icon.y1);
+				const bl = new Point(icon.x1, icon.y2);
+				const br = new Point(icon.x2, icon.y2);
+				const rotateRadians = rotate * Math.PI / 180;
+				tl._rotate(rotateRadians);
+				tr._rotate(rotateRadians);
+				bl._rotate(rotateRadians);
+				br._rotate(rotateRadians);
+				icon.x1 = Math.min(tl.x, tr.x, bl.x, br.x);
+				icon.x2 = Math.max(tl.x, tr.x, bl.x, br.x);
+				icon.y1 = Math.min(tl.y, tr.y, bl.y, br.y);
+				icon.y2 = Math.max(tl.y, tr.y, bl.y, br.y);
+			}
+			collisionBoxArray.emplaceBack(anchor.x, anchor.y, icon.x1, icon.y1, icon.x2, icon.y2, featureIndex, sourceLayerIndex, bucketIndex);
+		}
+		this.boxEndIndex = collisionBoxArray.length;
+	}
+};
+//#endregion
+//#region node_modules/tinyqueue/index.js
+var TinyQueue = class {
+	constructor(data = [], compare = (a, b) => a < b ? -1 : a > b ? 1 : 0) {
+		this.data = data;
+		this.length = this.data.length;
+		this.compare = compare;
+		if (this.length > 0) for (let i = (this.length >> 1) - 1; i >= 0; i--) this._down(i);
+	}
+	push(item) {
+		this.data.push(item);
+		this._up(this.length++);
+	}
+	pop() {
+		if (this.length === 0) return void 0;
+		const top = this.data[0];
+		const bottom = this.data.pop();
+		if (--this.length > 0) {
+			this.data[0] = bottom;
+			this._down(0);
+		}
+		return top;
+	}
+	peek() {
+		return this.data[0];
+	}
+	_up(pos) {
+		const { data, compare } = this;
+		const item = data[pos];
+		while (pos > 0) {
+			const parent = pos - 1 >> 1;
+			const current = data[parent];
+			if (compare(item, current) >= 0) break;
+			data[pos] = current;
+			pos = parent;
+		}
+		data[pos] = item;
+	}
+	_down(pos) {
+		const { data, compare } = this;
+		const halfLength = this.length >> 1;
+		const item = data[pos];
+		while (pos < halfLength) {
+			let bestChild = (pos << 1) + 1;
+			const right = bestChild + 1;
+			if (right < this.length && compare(data[right], data[bestChild]) < 0) bestChild = right;
+			if (compare(data[bestChild], item) >= 0) break;
+			data[pos] = data[bestChild];
+			pos = bestChild;
+		}
+		data[pos] = item;
+	}
+};
+//#endregion
+//#region src/util/find_pole_of_inaccessibility.ts
+/**
+* Finds an approximation of a polygon's Pole Of Inaccessibility https://en.wikipedia.org/wiki/Pole_of_inaccessibility
+* This is a copy of https://github.com/mapbox/polylabel adapted to use Points
+*
+* @param polygonRings - first item in array is the outer ring followed optionally by the list of holes, should be an element of the result of util/classify_rings
+* @param precision - Specified in input coordinate units. If 0 returns after first run, if `> 0` repeatedly narrows the search space until the radius of the area searched for the best pole is less than precision
+* @returns Pole of Inaccessibility.
+*/
+function findPoleOfInaccessibility(polygonRings, precision = 1) {
+	const bounds = Bounds.fromPoints(polygonRings[0]);
+	const cellSize = Math.min(bounds.width(), bounds.height());
+	let h = cellSize / 2;
+	const cellQueue = new TinyQueue([], compareMax);
+	const { minX, minY, maxX, maxY } = bounds;
+	if (cellSize === 0) return new Point(minX, minY);
+	for (let x = minX; x < maxX; x += cellSize) for (let y = minY; y < maxY; y += cellSize) cellQueue.push(new Cell(x + h, y + h, h, polygonRings));
+	const centroidCell = getCentroidCell(polygonRings);
+	let bestCell = centroidCell;
+	while (cellQueue.length) {
+		const cell = cellQueue.pop();
+		if (cell.d > bestCell.d || !bestCell.d) bestCell = cell;
+		if (cell.max - bestCell.d <= precision) continue;
+		h = cell.h / 2;
+		cellQueue.push(new Cell(cell.p.x - h, cell.p.y - h, h, polygonRings));
+		cellQueue.push(new Cell(cell.p.x + h, cell.p.y - h, h, polygonRings));
+		cellQueue.push(new Cell(cell.p.x - h, cell.p.y + h, h, polygonRings));
+		cellQueue.push(new Cell(cell.p.x + h, cell.p.y + h, h, polygonRings));
+	}
+	if (centroidCell.d > 0 && bestCell.d - centroidCell.d <= precision) return centroidCell.p;
+	return bestCell.p;
+}
+function compareMax(a, b) {
+	return b.max - a.max;
+}
+var Cell = class {
+	constructor(x, y, h, polygon) {
+		this.p = new Point(x, y);
+		this.h = h;
+		this.d = pointToPolygonDist(this.p, polygon);
+		this.max = this.d + this.h * Math.SQRT2;
+	}
+};
+function pointToPolygonDist(p, polygon) {
+	let inside = false;
+	let minDistSq = Infinity;
+	for (const ring of polygon) for (let i = 0, len = ring.length, j = len - 1; i < len; j = i++) {
+		const a = ring[i];
+		const b = ring[j];
+		if (a.y > p.y !== b.y > p.y && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x) inside = !inside;
+		minDistSq = Math.min(minDistSq, distToSegmentSquared(p, a, b));
+	}
+	return (inside ? 1 : -1) * Math.sqrt(minDistSq);
+}
+function getCentroidCell(polygon) {
+	let area = 0;
+	let x = 0;
+	let y = 0;
+	const points = polygon[0];
+	for (let i = 0, len = points.length, j = len - 1; i < len; j = i++) {
+		const a = points[i];
+		const b = points[j];
+		const f = a.x * b.y - b.x * a.y;
+		x += (a.x + b.x) * f;
+		y += (a.y + b.y) * f;
+		area += f * 3;
+	}
+	return new Cell(x / area, y / area, 0, polygon);
+}
+//#endregion
+//#region src/style/style_layer/variable_text_anchor.ts
+let TextAnchorEnum = /* @__PURE__ */ function(TextAnchorEnum) {
+	TextAnchorEnum[TextAnchorEnum["center"] = 1] = "center";
+	TextAnchorEnum[TextAnchorEnum["left"] = 2] = "left";
+	TextAnchorEnum[TextAnchorEnum["right"] = 3] = "right";
+	TextAnchorEnum[TextAnchorEnum["top"] = 4] = "top";
+	TextAnchorEnum[TextAnchorEnum["bottom"] = 5] = "bottom";
+	TextAnchorEnum[TextAnchorEnum["top-left"] = 6] = "top-left";
+	TextAnchorEnum[TextAnchorEnum["top-right"] = 7] = "top-right";
+	TextAnchorEnum[TextAnchorEnum["bottom-left"] = 8] = "bottom-left";
+	TextAnchorEnum[TextAnchorEnum["bottom-right"] = 9] = "bottom-right";
+	return TextAnchorEnum;
+}({});
+const baselineOffset = 7;
+const INVALID_TEXT_OFFSET = Number.POSITIVE_INFINITY;
+function evaluateVariableOffset(anchor, offset) {
+	function fromRadialOffset(anchor, radialOffset) {
+		let x = 0, y = 0;
+		if (radialOffset < 0) radialOffset = 0;
+		const hypotenuse = radialOffset / Math.SQRT2;
+		switch (anchor) {
+			case "top-right":
+			case "top-left":
+				y = hypotenuse - baselineOffset;
+				break;
+			case "bottom-right":
+			case "bottom-left":
+				y = -hypotenuse + baselineOffset;
+				break;
+			case "bottom":
+				y = -radialOffset + baselineOffset;
+				break;
+			case "top": y = radialOffset - baselineOffset;
+		}
+		switch (anchor) {
+			case "top-right":
+			case "bottom-right":
+				x = -hypotenuse;
+				break;
+			case "top-left":
+			case "bottom-left":
+				x = hypotenuse;
+				break;
+			case "left":
+				x = radialOffset;
+				break;
+			case "right": x = -radialOffset;
+		}
+		return [x, y];
+	}
+	function fromTextOffset(anchor, offsetX, offsetY) {
+		let x = 0, y = 0;
+		offsetX = Math.abs(offsetX);
+		offsetY = Math.abs(offsetY);
+		switch (anchor) {
+			case "top-right":
+			case "top-left":
+			case "top":
+				y = offsetY - baselineOffset;
+				break;
+			case "bottom-right":
+			case "bottom-left":
+			case "bottom": y = -offsetY + baselineOffset;
+		}
+		switch (anchor) {
+			case "top-right":
+			case "bottom-right":
+			case "right":
+				x = -offsetX;
+				break;
+			case "top-left":
+			case "bottom-left":
+			case "left": x = offsetX;
+		}
+		return [x, y];
+	}
+	return offset[1] !== INVALID_TEXT_OFFSET ? fromTextOffset(anchor, offset[0], offset[1]) : fromRadialOffset(anchor, offset[0]);
+}
+function getTextVariableAnchorOffset(layer, feature, canonical) {
+	const layout = layer.layout;
+	const variableAnchorOffset = layout.get("text-variable-anchor-offset")?.evaluate(feature, {}, canonical);
+	if (variableAnchorOffset) {
+		const sourceValues = variableAnchorOffset.values;
+		const destValues = [];
+		for (let i = 0; i < sourceValues.length; i += 2) {
+			const anchor = destValues[i] = sourceValues[i];
+			const offset = sourceValues[i + 1].map((t) => t * 24);
+			if (anchor.startsWith("top")) offset[1] -= baselineOffset;
+			else if (anchor.startsWith("bottom")) offset[1] += baselineOffset;
+			destValues[i + 1] = offset;
+		}
+		return new VariableAnchorOffsetCollection(destValues);
+	}
+	const variableAnchor = layout.get("text-variable-anchor");
+	if (variableAnchor) {
+		let textOffset;
+		if (layer._unevaluatedLayout.getValue("text-radial-offset") !== void 0) textOffset = [layout.get("text-radial-offset").evaluate(feature, {}, canonical) * 24, INVALID_TEXT_OFFSET];
+		else textOffset = layout.get("text-offset").evaluate(feature, {}, canonical).map((t) => t * 24);
+		const anchorOffsets = [];
+		for (const anchor of variableAnchor) anchorOffsets.push(anchor, evaluateVariableOffset(anchor, textOffset));
+		return new VariableAnchorOffsetCollection(anchorOffsets);
+	}
+	return null;
+}
+//#endregion
+//#region src/symbol/symbol_layout.ts
+function performSymbolLayout(args) {
+	args.bucket.createArrays();
+	const tileSize = 512 * args.bucket.overscaling;
+	args.bucket.tilePixelRatio = EXTENT$1 / tileSize;
+	args.bucket.compareText = {};
+	args.bucket.iconsNeedLinear = false;
+	const layer = args.bucket.layers[0];
+	const layout = layer.layout;
+	const unevaluatedLayoutValues = layer._unevaluatedLayout._values;
+	const sizes = {
+		layoutIconSize: unevaluatedLayoutValues["icon-size"].possiblyEvaluate(new EvaluationParameters(args.bucket.zoom + 1), args.canonical),
+		layoutTextSize: unevaluatedLayoutValues["text-size"].possiblyEvaluate(new EvaluationParameters(args.bucket.zoom + 1), args.canonical),
+		textMaxSize: unevaluatedLayoutValues["text-size"].possiblyEvaluate(new EvaluationParameters(18))
+	};
+	if (args.bucket.textSizeData.kind === "composite") {
+		const { minZoom, maxZoom } = args.bucket.textSizeData;
+		sizes.compositeTextSizes = [unevaluatedLayoutValues["text-size"].possiblyEvaluate(new EvaluationParameters(minZoom), args.canonical), unevaluatedLayoutValues["text-size"].possiblyEvaluate(new EvaluationParameters(maxZoom), args.canonical)];
+	}
+	if (args.bucket.iconSizeData.kind === "composite") {
+		const { minZoom, maxZoom } = args.bucket.iconSizeData;
+		sizes.compositeIconSizes = [unevaluatedLayoutValues["icon-size"].possiblyEvaluate(new EvaluationParameters(minZoom), args.canonical), unevaluatedLayoutValues["icon-size"].possiblyEvaluate(new EvaluationParameters(maxZoom), args.canonical)];
+	}
+	const lineHeight = layout.get("text-line-height") * 24;
+	const textAlongLine = layout.get("text-rotation-alignment") !== "viewport" && layout.get("symbol-placement") !== "point";
+	const keepUpright = layout.get("text-keep-upright");
+	const textSize = layout.get("text-size");
+	for (const feature of args.bucket.features) {
+		const fontstack = layout.get("text-font").evaluate(feature, {}, args.canonical).join(",");
+		const layoutTextSizeThisZoom = textSize.evaluate(feature, {}, args.canonical);
+		const layoutTextSize = sizes.layoutTextSize.evaluate(feature, {}, args.canonical);
+		const layoutIconSize = sizes.layoutIconSize.evaluate(feature, {}, args.canonical);
+		const shapedTextOrientations = {
+			horizontal: {},
+			vertical: void 0
+		};
+		const text = feature.text;
+		let textOffset = [0, 0];
+		if (text) {
+			const unformattedText = text.toString();
+			const spacing = layout.get("text-letter-spacing").evaluate(feature, {}, args.canonical) * 24;
+			const spacingIfAllowed = allowsLetterSpacing(unformattedText) ? spacing : 0;
+			const textAnchor = layout.get("text-anchor").evaluate(feature, {}, args.canonical);
+			const variableAnchorOffset = getTextVariableAnchorOffset(layer, feature, args.canonical);
+			if (!variableAnchorOffset) {
+				const radialOffset = layout.get("text-radial-offset").evaluate(feature, {}, args.canonical);
+				if (radialOffset) textOffset = evaluateVariableOffset(textAnchor, [radialOffset * 24, INVALID_TEXT_OFFSET]);
+				else textOffset = layout.get("text-offset").evaluate(feature, {}, args.canonical).map((t) => t * 24);
+			}
+			let textJustify = textAlongLine ? "center" : layout.get("text-justify").evaluate(feature, {}, args.canonical);
+			const maxWidth = layout.get("symbol-placement") === "point" ? layout.get("text-max-width").evaluate(feature, {}, args.canonical) * 24 : Infinity;
+			const addVerticalShapingForPointLabelIfNeeded = () => {
+				if (args.bucket.allowVerticalPlacement && allowsVerticalWritingMode(unformattedText)) shapedTextOrientations.vertical = shapeText(text, args.glyphMap, args.glyphPositions, args.imagePositions, fontstack, maxWidth, lineHeight, textAnchor, "left", spacingIfAllowed, textOffset, 2, true, layoutTextSize, layoutTextSizeThisZoom);
+			};
+			if (!textAlongLine && variableAnchorOffset) {
+				const justifications = /* @__PURE__ */ new Set();
+				if (textJustify === "auto") for (let i = 0; i < variableAnchorOffset.values.length; i += 2) justifications.add(getAnchorJustification(variableAnchorOffset.values[i]));
+				else justifications.add(textJustify);
+				let singleLine = false;
+				for (const justification of justifications) {
+					if (shapedTextOrientations.horizontal[justification]) continue;
+					if (singleLine) shapedTextOrientations.horizontal[justification] = shapedTextOrientations.horizontal[0];
+					else {
+						const shaping = shapeText(text, args.glyphMap, args.glyphPositions, args.imagePositions, fontstack, maxWidth, lineHeight, "center", justification, spacingIfAllowed, textOffset, 1, false, layoutTextSize, layoutTextSizeThisZoom);
+						if (shaping) {
+							shapedTextOrientations.horizontal[justification] = shaping;
+							singleLine = shaping.positionedLines.length === 1;
+						}
+					}
+				}
+				addVerticalShapingForPointLabelIfNeeded();
+			} else {
+				if (textJustify === "auto") textJustify = getAnchorJustification(textAnchor);
+				const shaping = shapeText(text, args.glyphMap, args.glyphPositions, args.imagePositions, fontstack, maxWidth, lineHeight, textAnchor, textJustify, spacingIfAllowed, textOffset, 1, false, layoutTextSize, layoutTextSizeThisZoom);
+				if (shaping) shapedTextOrientations.horizontal[textJustify] = shaping;
+				addVerticalShapingForPointLabelIfNeeded();
+				if (allowsVerticalWritingMode(unformattedText) && textAlongLine && keepUpright) shapedTextOrientations.vertical = shapeText(text, args.glyphMap, args.glyphPositions, args.imagePositions, fontstack, maxWidth, lineHeight, textAnchor, textJustify, spacingIfAllowed, textOffset, 2, false, layoutTextSize, layoutTextSizeThisZoom);
+			}
+		}
+		let shapedIcon;
+		let isSDFIcon = false;
+		if (feature.icon?.name) {
+			const image = args.imageMap[feature.icon.name];
+			if (image) {
+				shapedIcon = shapeIcon(args.imagePositions[feature.icon.name], layout.get("icon-offset").evaluate(feature, {}, args.canonical), layout.get("icon-anchor").evaluate(feature, {}, args.canonical));
+				isSDFIcon = !!image.sdf;
+				if (args.bucket.sdfIcons === void 0) args.bucket.sdfIcons = isSDFIcon;
+				else if (args.bucket.sdfIcons !== isSDFIcon) warnOnce("Style sheet warning: Cannot mix SDF and non-SDF icons in one buffer");
+				if (image.pixelRatio !== args.bucket.pixelRatio) args.bucket.iconsNeedLinear = true;
+				else if (layout.get("icon-rotate").constantOr(1) !== 0) args.bucket.iconsNeedLinear = true;
+			}
+		}
+		const shapedText = getDefaultHorizontalShaping(shapedTextOrientations.horizontal) || shapedTextOrientations.vertical;
+		args.bucket.iconsInText ||= shapedText ? shapedText.iconsInText : false;
+		if (shapedText || shapedIcon) addFeature(args.bucket, feature, shapedTextOrientations, shapedIcon, args.imageMap, sizes, layoutTextSize, layoutIconSize, textOffset, isSDFIcon, args.canonical, args.subdivisionGranularity);
+	}
+	if (args.showCollisionBoxes) args.bucket.generateCollisionDebugBuffers();
+}
+function getAnchorJustification(anchor) {
+	switch (anchor) {
+		case "right":
+		case "top-right":
+		case "bottom-right": return "right";
+		case "left":
+		case "top-left":
+		case "bottom-left": return "left";
+	}
+	return "center";
+}
+/**
+* Given a feature and its shaped text and icon data, add a 'symbol
+* instance' for each _possible_ placement of the symbol feature.
+* (At render it selects which of these instances to
+* show or hide based on collisions with symbols in other layers.)
+*/
+function addFeature(bucket, feature, shapedTextOrientations, shapedIcon, imageMap, sizes, layoutTextSize, layoutIconSize, textOffset, isSDFIcon, canonical, subdivisionGranularity) {
+	let textMaxSize = sizes.textMaxSize.evaluate(feature, {});
+	if (textMaxSize === void 0) textMaxSize = layoutTextSize;
+	const layout = bucket.layers[0].layout;
+	const iconOffset = layout.get("icon-offset").evaluate(feature, {}, canonical);
+	const defaultHorizontalShaping = getDefaultHorizontalShaping(shapedTextOrientations.horizontal);
+	const glyphSize = 24, fontScale = layoutTextSize / glyphSize, textBoxScale = bucket.tilePixelRatio * fontScale, textMaxBoxScale = bucket.tilePixelRatio * textMaxSize / glyphSize, iconBoxScale = bucket.tilePixelRatio * layoutIconSize, symbolMinDistance = bucket.tilePixelRatio * layout.get("symbol-spacing"), textPadding = layout.get("text-padding") * bucket.tilePixelRatio, iconPadding = getIconPadding(layout, feature, canonical, bucket.tilePixelRatio), textMaxAngle = layout.get("text-max-angle") / 180 * Math.PI, textAlongLine = layout.get("text-rotation-alignment") !== "viewport" && layout.get("symbol-placement") !== "point", iconAlongLine = layout.get("icon-rotation-alignment").constantOr("viewport") === "map" && layout.get("symbol-placement") !== "point", symbolPlacement = layout.get("symbol-placement"), textRepeatDistance = symbolMinDistance / 2;
+	const iconTextFit = layout.get("icon-text-fit");
+	let verticallyShapedIcon;
+	if (shapedIcon && iconTextFit !== "none") {
+		if (bucket.allowVerticalPlacement && shapedTextOrientations.vertical) verticallyShapedIcon = fitIconToText(shapedIcon, shapedTextOrientations.vertical, iconTextFit, layout.get("icon-text-fit-padding"), iconOffset, fontScale);
+		if (defaultHorizontalShaping) shapedIcon = fitIconToText(shapedIcon, defaultHorizontalShaping, iconTextFit, layout.get("icon-text-fit-padding"), iconOffset, fontScale);
+	}
+	const granularity = canonical ? subdivisionGranularity.line.getGranularityForZoomLevel(canonical.z) : 1;
+	const addSymbolAtAnchor = (line, anchor) => {
+		if (anchor.x < 0 || anchor.x >= 8192 || anchor.y < 0 || anchor.y >= 8192) return;
+		addSymbol(bucket, anchor, line, shapedTextOrientations, shapedIcon, imageMap, verticallyShapedIcon, bucket.layers[0], bucket.collisionBoxArray, feature.index, feature.sourceLayerIndex, bucket.index, textBoxScale, [
+			textPadding,
+			textPadding,
+			textPadding,
+			textPadding
+		], textAlongLine, textOffset, iconBoxScale, iconPadding, iconAlongLine, iconOffset, feature, sizes, isSDFIcon, canonical, layoutTextSize);
+	};
+	if (symbolPlacement === "line") for (const line of clipLine(feature.geometry, 0, 0, EXTENT$1, EXTENT$1)) {
+		const subdividedLine = subdivideVertexLine(line, granularity);
+		const anchors = getAnchors(subdividedLine, symbolMinDistance, textMaxAngle, shapedTextOrientations.vertical || defaultHorizontalShaping, shapedIcon, glyphSize, textMaxBoxScale, bucket.overscaling, EXTENT$1);
+		for (const anchor of anchors) {
+			const shapedText = defaultHorizontalShaping;
+			if (!shapedText || !anchorIsTooClose(bucket, shapedText.text, textRepeatDistance, anchor)) addSymbolAtAnchor(subdividedLine, anchor);
+		}
+	}
+	else if (symbolPlacement === "line-center") {
+		for (const line of feature.geometry) if (line.length > 1) {
+			const subdividedLine = subdivideVertexLine(line, granularity);
+			const anchor = getCenterAnchor(subdividedLine, textMaxAngle, shapedTextOrientations.vertical || defaultHorizontalShaping, shapedIcon, glyphSize, textMaxBoxScale);
+			if (anchor) addSymbolAtAnchor(subdividedLine, anchor);
+		}
+	} else if (feature.type === "Polygon") for (const polygon of classifyRings$1(feature.geometry, 0)) {
+		const poi = findPoleOfInaccessibility(polygon, 16);
+		addSymbolAtAnchor(subdivideVertexLine(polygon[0], granularity, true), new Anchor(poi.x, poi.y, 0));
+	}
+	else if (feature.type === "LineString") for (const line of feature.geometry) {
+		const subdividedLine = subdivideVertexLine(line, granularity);
+		addSymbolAtAnchor(subdividedLine, new Anchor(subdividedLine[0].x, subdividedLine[0].y, 0));
+	}
+	else if (feature.type === "Point") for (const points of feature.geometry) for (const point of points) addSymbolAtAnchor([point], new Anchor(point.x, point.y, 0));
+}
+function addTextVariableAnchorOffsets(textAnchorOffsets, variableAnchorOffset) {
+	const startIndex = textAnchorOffsets.length;
+	const values = variableAnchorOffset?.values;
+	if (values?.length > 0) for (let i = 0; i < values.length; i += 2) {
+		const anchor = TextAnchorEnum[values[i]];
+		const offset = values[i + 1];
+		textAnchorOffsets.emplaceBack(anchor, offset[0], offset[1]);
+	}
+	return [startIndex, textAnchorOffsets.length];
+}
+function addTextVertices(bucket, anchor, shapedText, imageMap, layer, textAlongLine, feature, textOffset, elevation, lineArray, writingMode, placementTypes, placedTextSymbolIndices, placedIconIndex, sizes, canonical) {
+	const glyphQuads = getGlyphQuads(anchor, shapedText, textOffset, layer, textAlongLine, feature, imageMap, bucket.allowVerticalPlacement);
+	const sizeData = bucket.textSizeData;
+	let textSizeData = null;
+	if (sizeData.kind === "source") {
+		textSizeData = [128 * layer.layout.get("text-size").evaluate(feature, {})];
+		if (textSizeData[0] > 32640) warnOnce(`${bucket.layerIds[0]}: Value for "text-size" is >= 255. Reduce your "text-size".`);
+	} else if (sizeData.kind === "composite") {
+		textSizeData = [128 * sizes.compositeTextSizes[0].evaluate(feature, {}, canonical), 128 * sizes.compositeTextSizes[1].evaluate(feature, {}, canonical)];
+		if (textSizeData[0] > 32640 || textSizeData[1] > 32640) warnOnce(`${bucket.layerIds[0]}: Value for "text-size" is >= 255. Reduce your "text-size".`);
+	}
+	bucket.addSymbols(bucket.text, glyphQuads, textSizeData, textOffset, textAlongLine, feature, writingMode, anchor, lineArray.lineStartIndex, lineArray.lineLength, placedIconIndex, canonical, elevation);
+	for (const placementType of placementTypes) placedTextSymbolIndices[placementType] = bucket.text.placedSymbolArray.length - 1;
+	return glyphQuads.length * 4;
+}
+function getDefaultHorizontalShaping(horizontalShaping) {
+	for (const justification in horizontalShaping) return horizontalShaping[justification];
+	return null;
+}
+/**
+* Add a single label & icon placement.
+*/
+function addSymbol(bucket, anchor, line, shapedTextOrientations, shapedIcon, imageMap, verticallyShapedIcon, layer, collisionBoxArray, featureIndex, sourceLayerIndex, bucketIndex, textBoxScale, textPadding, textAlongLine, textOffset, iconBoxScale, iconPadding, iconAlongLine, iconOffset, feature, sizes, isSDFIcon, canonical, layoutTextSize) {
+	const lineArray = bucket.addToLineVertexArray(anchor, line);
+	const elevation = layer.layout.get("symbol-height-offset").evaluate(feature, {}, canonical);
+	if (elevation > bucket.maxHeightOffset) bucket.maxHeightOffset = elevation;
+	let textCollisionFeature, iconCollisionFeature, verticalTextCollisionFeature, verticalIconCollisionFeature;
+	let numIconVertices = 0;
+	let numVerticalIconVertices = 0;
+	let numHorizontalGlyphVertices = 0;
+	let numVerticalGlyphVertices = 0;
+	let placedIconSymbolIndex = -1;
+	let verticalPlacedIconSymbolIndex = -1;
+	const placedTextSymbolIndices = {};
+	let key = (0, import_murmurhash_js.default)("");
+	if (bucket.allowVerticalPlacement && shapedTextOrientations.vertical) {
+		const verticalTextRotation = layer.layout.get("text-rotate").evaluate(feature, {}, canonical) + 90;
+		const verticalShaping = shapedTextOrientations.vertical;
+		verticalTextCollisionFeature = new CollisionFeature(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, verticalShaping, textBoxScale, textPadding, textAlongLine, verticalTextRotation);
+		if (verticallyShapedIcon) verticalIconCollisionFeature = new CollisionFeature(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, verticallyShapedIcon, iconBoxScale, iconPadding, textAlongLine, verticalTextRotation);
+	}
+	if (shapedIcon) {
+		const iconRotate = layer.layout.get("icon-rotate").evaluate(feature, {});
+		const hasIconTextFit = layer.layout.get("icon-text-fit") !== "none";
+		const iconQuads = getIconQuads(shapedIcon, iconRotate, isSDFIcon, hasIconTextFit);
+		const verticalIconQuads = verticallyShapedIcon ? getIconQuads(verticallyShapedIcon, iconRotate, isSDFIcon, hasIconTextFit) : void 0;
+		iconCollisionFeature = new CollisionFeature(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, shapedIcon, iconBoxScale, iconPadding, false, iconRotate);
+		numIconVertices = iconQuads.length * 4;
+		const sizeData = bucket.iconSizeData;
+		let iconSizeData = null;
+		if (sizeData.kind === "source") {
+			iconSizeData = [128 * layer.layout.get("icon-size").evaluate(feature, {})];
+			if (iconSizeData[0] > 32640) warnOnce(`${bucket.layerIds[0]}: Value for "icon-size" is >= 255. Reduce your "icon-size".`);
+		} else if (sizeData.kind === "composite") {
+			iconSizeData = [128 * sizes.compositeIconSizes[0].evaluate(feature, {}, canonical), 128 * sizes.compositeIconSizes[1].evaluate(feature, {}, canonical)];
+			if (iconSizeData[0] > 32640 || iconSizeData[1] > 32640) warnOnce(`${bucket.layerIds[0]}: Value for "icon-size" is >= 255. Reduce your "icon-size".`);
+		}
+		bucket.addSymbols(bucket.icon, iconQuads, iconSizeData, iconOffset, iconAlongLine, feature, 0, anchor, lineArray.lineStartIndex, lineArray.lineLength, -1, canonical, elevation);
+		placedIconSymbolIndex = bucket.icon.placedSymbolArray.length - 1;
+		if (verticalIconQuads) {
+			numVerticalIconVertices = verticalIconQuads.length * 4;
+			bucket.addSymbols(bucket.icon, verticalIconQuads, iconSizeData, iconOffset, iconAlongLine, feature, 2, anchor, lineArray.lineStartIndex, lineArray.lineLength, -1, canonical, elevation);
+			verticalPlacedIconSymbolIndex = bucket.icon.placedSymbolArray.length - 1;
+		}
+	}
+	const justifications = Object.keys(shapedTextOrientations.horizontal);
+	for (const justification of justifications) {
+		const shaping = shapedTextOrientations.horizontal[justification];
+		if (!textCollisionFeature) {
+			key = (0, import_murmurhash_js.default)(shaping.text);
+			textCollisionFeature = new CollisionFeature(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, shaping, textBoxScale, textPadding, textAlongLine, layer.layout.get("text-rotate").evaluate(feature, {}, canonical));
+		}
+		const singleLine = shaping.positionedLines.length === 1;
+		numHorizontalGlyphVertices += addTextVertices(bucket, anchor, shaping, imageMap, layer, textAlongLine, feature, textOffset, elevation, lineArray, shapedTextOrientations.vertical ? 1 : 3, singleLine ? justifications : [justification], placedTextSymbolIndices, placedIconSymbolIndex, sizes, canonical);
+		if (singleLine) break;
+	}
+	if (shapedTextOrientations.vertical) numVerticalGlyphVertices += addTextVertices(bucket, anchor, shapedTextOrientations.vertical, imageMap, layer, textAlongLine, feature, textOffset, elevation, lineArray, 2, ["vertical"], placedTextSymbolIndices, verticalPlacedIconSymbolIndex, sizes, canonical);
+	const textBoxStartIndex = textCollisionFeature ? textCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
+	const textBoxEndIndex = textCollisionFeature ? textCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
+	const verticalTextBoxStartIndex = verticalTextCollisionFeature ? verticalTextCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
+	const verticalTextBoxEndIndex = verticalTextCollisionFeature ? verticalTextCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
+	const iconBoxStartIndex = iconCollisionFeature ? iconCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
+	const iconBoxEndIndex = iconCollisionFeature ? iconCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
+	const verticalIconBoxStartIndex = verticalIconCollisionFeature ? verticalIconCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
+	const verticalIconBoxEndIndex = verticalIconCollisionFeature ? verticalIconCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
+	let collisionCircleDiameter = -1;
+	const getCollisionCircleHeight = (feature, prevHeight) => {
+		if (feature?.circleDiameter) return Math.max(feature.circleDiameter, prevHeight);
+		return prevHeight;
+	};
+	collisionCircleDiameter = getCollisionCircleHeight(textCollisionFeature, collisionCircleDiameter);
+	collisionCircleDiameter = getCollisionCircleHeight(verticalTextCollisionFeature, collisionCircleDiameter);
+	collisionCircleDiameter = getCollisionCircleHeight(iconCollisionFeature, collisionCircleDiameter);
+	collisionCircleDiameter = getCollisionCircleHeight(verticalIconCollisionFeature, collisionCircleDiameter);
+	const useRuntimeCollisionCircles = collisionCircleDiameter > -1 ? 1 : 0;
+	if (useRuntimeCollisionCircles) collisionCircleDiameter *= layoutTextSize / 24;
+	if (bucket.glyphOffsetArray.length >= bucket.maxGlyphs) warnOnce("Too many glyphs being rendered in a tile. See https://github.com/mapbox/mapbox-gl-js/issues/2907");
+	if (feature.sortKey !== void 0) bucket.addToSortKeyRanges(bucket.symbolInstances.length, feature.sortKey);
+	const variableAnchorOffset = getTextVariableAnchorOffset(layer, feature, canonical);
+	const [textAnchorOffsetStartIndex, textAnchorOffsetEndIndex] = addTextVariableAnchorOffsets(bucket.textAnchorOffsets, variableAnchorOffset);
+	bucket.symbolInstances.emplaceBack(anchor.x, anchor.y, placedTextSymbolIndices.right >= 0 ? placedTextSymbolIndices.right : -1, placedTextSymbolIndices.center >= 0 ? placedTextSymbolIndices.center : -1, placedTextSymbolIndices.left >= 0 ? placedTextSymbolIndices.left : -1, placedTextSymbolIndices.vertical || -1, placedIconSymbolIndex, verticalPlacedIconSymbolIndex, key, textBoxStartIndex, textBoxEndIndex, verticalTextBoxStartIndex, verticalTextBoxEndIndex, iconBoxStartIndex, iconBoxEndIndex, verticalIconBoxStartIndex, verticalIconBoxEndIndex, featureIndex, numHorizontalGlyphVertices, numVerticalGlyphVertices, numIconVertices, numVerticalIconVertices, useRuntimeCollisionCircles, 0, textBoxScale, collisionCircleDiameter, textAnchorOffsetStartIndex, textAnchorOffsetEndIndex, elevation);
+}
+function anchorIsTooClose(bucket, text, repeatDistance, anchor) {
+	const compareText = bucket.compareText;
+	if (!(text in compareText)) compareText[text] = [];
+	else {
+		const otherAnchors = compareText[text];
+		for (let k = otherAnchors.length - 1; k >= 0; k--) if (anchor.dist(otherAnchors[k]) < repeatDistance) return true;
+	}
+	compareText[text].push(anchor);
+	return false;
 }
 //#endregion
 //#region src/style/style_layer/overlap_mode.ts
@@ -24321,10 +27876,10 @@ const shaderOpacityAttributes = [{
 	type: "Uint8",
 	offset: 0
 }];
-function addVertex(array, anchorX, anchorY, ox, oy, tx, ty, sizeVertex, isSDF, pixelOffsetX, pixelOffsetY, minFontScaleX, minFontScaleY) {
+function addVertex(array, anchorX, anchorY, ox, oy, tx, ty, sizeVertex, isSDF, pixelOffsetX, pixelOffsetY, minFontScaleX, minFontScaleY, elevation) {
 	const aSizeX = sizeVertex ? Math.min(MAX_PACKED_SIZE, Math.round(sizeVertex[0])) : 0;
 	const aSizeY = sizeVertex ? Math.min(MAX_PACKED_SIZE, Math.round(sizeVertex[1])) : 0;
-	array.emplaceBack(anchorX, anchorY, Math.round(ox * 32), Math.round(oy * 32), tx, ty, (aSizeX << 1) + (isSDF ? 1 : 0), aSizeY, pixelOffsetX * 16, pixelOffsetY * 16, minFontScaleX * 256, minFontScaleY * 256);
+	array.emplaceBack(anchorX, anchorY, Math.round(ox * 32), Math.round(oy * 32), tx, ty, (aSizeX << 1) + (isSDF ? 1 : 0), aSizeY, pixelOffsetX * 16, pixelOffsetY * 16, minFontScaleX * 256, minFontScaleY * 256, elevation);
 }
 function addDynamicAttributes(dynamicLayoutVertexArray, p, angle) {
 	dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
@@ -24407,11 +27962,10 @@ register("CollisionBuffers", CollisionBuffers);
 *    stores the feature data for use in subsequent step (this.features).
 *
 * 2. WorkerTile asynchronously requests from the main thread all of the glyphs
-*    and icons needed (by this bucket and any others). When glyphs and icons
-*    have been received, the WorkerTile creates a CollisionIndex and invokes:
+*    and icons needed (by this bucket and any others).
 *
-* 3. performSymbolLayout(bucket, stacks, icons) perform texts shaping and
-*    layout on a Symbol Bucket. This step populates:
+* 3. WorkerTile calls SymbolBucket.addFeatures(), which delegates text shaping
+*    and layout to performSymbolLayout(). This step populates:
 *      `this.symbolInstances`: metadata on generated symbols
 *      `this.collisionBoxArray`: collision data for use by foreground
 *      `this.text`: SymbolBuffers for text symbols
@@ -24435,10 +27989,12 @@ var SymbolBucket = class {
 		this.index = options.index;
 		this.pixelRatio = options.pixelRatio;
 		this.sourceLayerIndex = options.sourceLayerIndex;
-		this.hasDependencies = false;
+		this.hasDependencies = true;
 		this.hasRTLText = false;
+		this.maxHeightOffset = 0;
 		this.sortKeyRanges = [];
 		this.collisionCircleArray = [];
+		this.maxGlyphs = MAX_GLYPHS;
 		const unevaluatedLayoutValues = this.layers[0]._unevaluatedLayout._values;
 		this.textSizeData = getSizeData(this.zoom, unevaluatedLayoutValues["text-size"]);
 		this.iconSizeData = getSizeData(this.zoom, unevaluatedLayoutValues["icon-size"]);
@@ -24461,12 +28017,33 @@ var SymbolBucket = class {
 		this.symbolInstances = new SymbolInstanceArray();
 		this.textAnchorOffsets = new TextAnchorOffsetArray();
 	}
-	calculateGlyphDependencies(text, stack, textAlongLine, allowVerticalPlacement, doesAllowVerticalWritingMode) {
-		for (const char of text) {
-			stack[char.codePointAt(0)] = true;
-			if ((textAlongLine || allowVerticalPlacement) && doesAllowVerticalWritingMode) {
+	/**
+	* Collects the glyphs a label needs into `stacks`, so that the tile can ask for them.
+	*
+	* A cluster of several codepoints is asked for as a whole, so that it can be drawn as the one
+	* shape it is written as. Its codepoints are asked for as well, to give layout something to draw
+	* a codepoint at a time where the cluster itself yields no glyph. See `shapeLines`.
+	*
+	* A cluster can span two sections, a letter in one and the accent written on it in the next, so
+	* the label is taken as a whole and each cluster attributed to the section its first character
+	* came from -- the same way layout attributes it. Collecting each section's text on its own
+	* would ask for glyphs no cluster is ever looked up by.
+	*/
+	calculateGlyphDependencies(text, stacks, fontStack, textAlongLine, doesAllowVerticalWritingMode) {
+		const needsVerticalForms = (textAlongLine || this.allowVerticalPlacement) && doesAllowVerticalWritingMode;
+		const tagged = TaggedString.fromFeature(text, fontStack);
+		const graphemes = tagged.graphemes();
+		for (let i = 0; i < graphemes.length; i++) {
+			const section = tagged.getSection(i);
+			if ("imageName" in section) continue;
+			const stack = stacks[section.fontStack] ||= {};
+			const grapheme = graphemes[i];
+			if (isCluster(grapheme)) stack[grapheme] = true;
+			for (const char of grapheme) {
+				stack[char] = true;
+				if (!needsVerticalForms) continue;
 				const verticalChar = verticalizedCharacterMap[char];
-				if (verticalChar) stack[verticalChar.codePointAt(0)] = true;
+				if (verticalChar) stack[verticalChar] = true;
 			}
 		}
 	}
@@ -24495,7 +28072,7 @@ var SymbolBucket = class {
 				const resolvedTokens = layer.getValueAndResolveTokens("text-field", evaluationFeature, canonical, availableImages);
 				const formattedText = Formatted.factory(resolvedTokens);
 				this.hasRTLText ||= containsRTLText(formattedText);
-				if (!this.hasRTLText || rtlWorkerPlugin.getRTLTextPluginStatus() === "unavailable" || this.hasRTLText && rtlWorkerPlugin.isParsed()) text = transformText(formattedText, layer, evaluationFeature);
+				text = transformText(formattedText, layer, evaluationFeature);
 			}
 			let icon;
 			if (hasIcon) {
@@ -24522,12 +28099,9 @@ var SymbolBucket = class {
 				const fontStack = textFont.evaluate(evaluationFeature, {}, canonical).join(",");
 				const textAlongLine = layout.get("text-rotation-alignment") !== "viewport" && layout.get("symbol-placement") !== "point";
 				this.allowVerticalPlacement = this.writingModes?.includes(2);
-				for (const section of text.sections) if (!section.image) {
-					const doesAllowVerticalWritingMode = allowsVerticalWritingMode(text.toString());
-					const sectionFont = section.fontStack || fontStack;
-					stacks[sectionFont] ||= {};
-					this.calculateGlyphDependencies(section.text, stacks[sectionFont], textAlongLine, this.allowVerticalPlacement, doesAllowVerticalWritingMode);
-				} else icons[section.image.name] = true;
+				const doesAllowVerticalWritingMode = allowsVerticalWritingMode(text.toString());
+				this.calculateGlyphDependencies(text, stacks, fontStack, textAlongLine, doesAllowVerticalWritingMode);
+				for (const section of text.sections) if (section.image) icons[section.image.name] = true;
 			}
 		}
 		if (layout.get("symbol-placement") === "line") this.features = mergeLines(this.features);
@@ -24540,8 +28114,20 @@ var SymbolBucket = class {
 		this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, { imagePositions });
 		this.icon.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, { imagePositions });
 	}
+	addFeatures({ options, canonical, glyphMap, glyphPositions, iconMap, iconPositions, showCollisionBoxes }) {
+		performSymbolLayout({
+			bucket: this,
+			glyphMap,
+			glyphPositions,
+			imageMap: iconMap,
+			imagePositions: iconPositions,
+			showCollisionBoxes,
+			canonical,
+			subdivisionGranularity: options.subdivisionGranularity
+		});
+	}
 	isEmpty() {
-		return this.symbolInstances.length === 0 && !this.hasRTLText;
+		return this.symbolInstances.length === 0;
 	}
 	uploadPending() {
 		return !this.uploaded || this.text.programConfigurations.needsUpload || this.icon.programConfigurations.needsUpload;
@@ -24596,7 +28182,7 @@ var SymbolBucket = class {
 			lineLength: this.lineVertexArray.length - lineStartIndex
 		};
 	}
-	addSymbols(arrays, quads, sizeVertex, lineOffset, alongLine, feature, writingMode, labelAnchor, lineStartIndex, lineLength, associatedIconIndex, canonical) {
+	addSymbols(arrays, quads, sizeVertex, lineOffset, alongLine, feature, writingMode, labelAnchor, lineStartIndex, lineLength, associatedIconIndex, canonical, elevation) {
 		const indexArray = arrays.indexArray;
 		const layoutVertexArray = arrays.layoutVertexArray;
 		const segment = arrays.segments.prepareSegment(4 * quads.length, layoutVertexArray, indexArray, this.canOverlap ? feature.sortKey : void 0);
@@ -24608,10 +28194,10 @@ var SymbolBucket = class {
 			const { tl, tr, bl, br, tex, pixelOffsetTL, pixelOffsetBR, minFontScaleX, minFontScaleY, glyphOffset, isSDF, sectionIndex } = quads[i];
 			const index = segment.vertexLength;
 			const y = glyphOffset[1];
-			addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, tl.x, y + tl.y, tex.x, tex.y, sizeVertex, isSDF, pixelOffsetTL.x, pixelOffsetTL.y, minFontScaleX, minFontScaleY);
-			addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, tr.x, y + tr.y, tex.x + tex.w, tex.y, sizeVertex, isSDF, pixelOffsetBR.x, pixelOffsetTL.y, minFontScaleX, minFontScaleY);
-			addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, bl.x, y + bl.y, tex.x, tex.y + tex.h, sizeVertex, isSDF, pixelOffsetTL.x, pixelOffsetBR.y, minFontScaleX, minFontScaleY);
-			addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, br.x, y + br.y, tex.x + tex.w, tex.y + tex.h, sizeVertex, isSDF, pixelOffsetBR.x, pixelOffsetBR.y, minFontScaleX, minFontScaleY);
+			addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, tl.x, y + tl.y, tex.x, tex.y, sizeVertex, isSDF, pixelOffsetTL.x, pixelOffsetTL.y, minFontScaleX, minFontScaleY, elevation);
+			addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, tr.x, y + tr.y, tex.x + tex.w, tex.y, sizeVertex, isSDF, pixelOffsetBR.x, pixelOffsetTL.y, minFontScaleX, minFontScaleY, elevation);
+			addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, bl.x, y + bl.y, tex.x, tex.y + tex.h, sizeVertex, isSDF, pixelOffsetTL.x, pixelOffsetBR.y, minFontScaleX, minFontScaleY, elevation);
+			addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, br.x, y + br.y, tex.x + tex.w, tex.y + tex.h, sizeVertex, isSDF, pixelOffsetBR.x, pixelOffsetBR.y, minFontScaleX, minFontScaleY, elevation);
 			addDynamicAttributes(arrays.dynamicLayoutVertexArray, labelAnchor, angle);
 			indexArray.emplaceBack(index, index + 2, index + 1);
 			indexArray.emplaceBack(index + 1, index + 2, index + 3);
@@ -24624,7 +28210,7 @@ var SymbolBucket = class {
 				formattedSection: sections?.[sectionIndex]
 			});
 		}
-		arrays.placedSymbolArray.emplaceBack(labelAnchor.x, labelAnchor.y, glyphOffsetArrayStart, this.glyphOffsetArray.length - glyphOffsetArrayStart, vertexStartIndex, lineStartIndex, lineLength, labelAnchor.segment, sizeVertex ? sizeVertex[0] : 0, sizeVertex ? sizeVertex[1] : 0, lineOffset[0], lineOffset[1], writingMode, 0, false, 0, associatedIconIndex);
+		arrays.placedSymbolArray.emplaceBack(labelAnchor.x, labelAnchor.y, glyphOffsetArrayStart, this.glyphOffsetArray.length - glyphOffsetArrayStart, vertexStartIndex, lineStartIndex, lineLength, labelAnchor.segment, sizeVertex ? sizeVertex[0] : 0, sizeVertex ? sizeVertex[1] : 0, lineOffset[0], lineOffset[1], writingMode, 0, false, 0, associatedIconIndex, elevation);
 	}
 	_addCollisionDebugVertex(layoutVertexArray, collisionVertexArray, point, anchorX, anchorY, extrude) {
 		collisionVertexArray.emplaceBack(0, 0);
@@ -24819,8 +28405,6 @@ register("SymbolBucket", SymbolBucket, { omit: [
 	"features",
 	"compareText"
 ] });
-SymbolBucket.MAX_GLYPHS = 65535;
-SymbolBucket.addDynamicAttributes = addDynamicAttributes;
 //#endregion
 //#region src/util/resolve_tokens.ts
 /**
@@ -24848,7 +28432,7 @@ const getLayout = () => layout = layout || new Properties({
 	"icon-overlap": new DataConstantProperty(latest["layout_symbol"]["icon-overlap"], "icon-overlap"),
 	"icon-ignore-placement": new DataConstantProperty(latest["layout_symbol"]["icon-ignore-placement"], "icon-ignore-placement"),
 	"icon-optional": new DataConstantProperty(latest["layout_symbol"]["icon-optional"], "icon-optional"),
-	"icon-rotation-alignment": new DataConstantProperty(latest["layout_symbol"]["icon-rotation-alignment"], "icon-rotation-alignment"),
+	"icon-rotation-alignment": new DataDrivenProperty(latest["layout_symbol"]["icon-rotation-alignment"], "icon-rotation-alignment"),
 	"icon-size": new DataDrivenProperty(latest["layout_symbol"]["icon-size"], "icon-size"),
 	"icon-text-fit": new DataConstantProperty(latest["layout_symbol"]["icon-text-fit"], "icon-text-fit"),
 	"icon-text-fit-padding": new DataConstantProperty(latest["layout_symbol"]["icon-text-fit-padding"], "icon-text-fit-padding"),
@@ -24882,7 +28466,9 @@ const getLayout = () => layout = layout || new Properties({
 	"text-allow-overlap": new DataConstantProperty(latest["layout_symbol"]["text-allow-overlap"], "text-allow-overlap"),
 	"text-overlap": new DataConstantProperty(latest["layout_symbol"]["text-overlap"], "text-overlap"),
 	"text-ignore-placement": new DataConstantProperty(latest["layout_symbol"]["text-ignore-placement"], "text-ignore-placement"),
-	"text-optional": new DataConstantProperty(latest["layout_symbol"]["text-optional"], "text-optional")
+	"text-optional": new DataConstantProperty(latest["layout_symbol"]["text-optional"], "text-optional"),
+	"symbol-height-offset": new DataDrivenProperty(latest["layout_symbol"]["symbol-height-offset"], "symbol-height-offset"),
+	"symbol-height-anchor": new DataConstantProperty(latest["layout_symbol"]["symbol-height-anchor"], "symbol-height-anchor")
 });
 let paint$1;
 const getPaint$1 = () => paint$1 = paint$1 || new Properties({
@@ -24952,12 +28538,17 @@ var SymbolStyleLayer = class SymbolStyleLayer extends StyleLayer {
 	}
 	recalculate(parameters, availableImages) {
 		super.recalculate(parameters, availableImages);
-		if (this.layout.get("icon-rotation-alignment") === "auto") if (this.layout.get("symbol-placement") !== "point") this.layout._values["icon-rotation-alignment"] = "map";
-		else this.layout._values["icon-rotation-alignment"] = "viewport";
-		if (this.layout.get("text-rotation-alignment") === "auto") if (this.layout.get("symbol-placement") !== "point") this.layout._values["text-rotation-alignment"] = "map";
-		else this.layout._values["text-rotation-alignment"] = "viewport";
+		const iconRotationAlignment = this.layout.get("icon-rotation-alignment");
+		if (iconRotationAlignment.value.kind !== "constant" || iconRotationAlignment.value.value === "auto") this.layout._values["icon-rotation-alignment"] = new PossiblyEvaluatedPropertyValue(iconRotationAlignment.property, {
+			kind: "constant",
+			value: this.layout.get("symbol-placement") !== "point" ? "map" : "viewport"
+		}, iconRotationAlignment.parameters);
+		if (this.layout.get("text-rotation-alignment") === "auto") {
+			if (this.layout.get("symbol-placement") !== "point") this.layout._values["text-rotation-alignment"] = "map";
+			else this.layout._values["text-rotation-alignment"] = "viewport";
+		}
 		if (this.layout.get("text-pitch-alignment") === "auto") this.layout._values["text-pitch-alignment"] = this.layout.get("text-rotation-alignment") === "map" ? "map" : "viewport";
-		if (this.layout.get("icon-pitch-alignment") === "auto") this.layout._values["icon-pitch-alignment"] = this.layout.get("icon-rotation-alignment");
+		if (this.layout.get("icon-pitch-alignment") === "auto") this.layout._values["icon-pitch-alignment"] = this.layout.get("icon-rotation-alignment").constantOr("viewport");
 		if (this.layout.get("symbol-placement") === "point") {
 			const writingModes = this.layout.get("text-writing-mode");
 			if (writingModes) {
@@ -25537,102 +29128,6 @@ function compareTileId(a, b) {
 register("CanonicalTileID", CanonicalTileID);
 register("OverscaledTileID", OverscaledTileID, { omit: ["terrainRttPosMatrix32f"] });
 //#endregion
-//#region src/geo/bounds.ts
-/** A 2-d bounding box covering an X and Y range. */
-var Bounds = class Bounds {
-	constructor() {
-		this.minX = Infinity;
-		this.maxX = -Infinity;
-		this.minY = Infinity;
-		this.maxY = -Infinity;
-	}
-	/**
-	* Expands this bounding box to include point.
-	*
-	* @param point - The point to include in this bounding box
-	* @returns This mutated bounding box
-	*/
-	extend(point) {
-		this.minX = Math.min(this.minX, point.x);
-		this.minY = Math.min(this.minY, point.y);
-		this.maxX = Math.max(this.maxX, point.x);
-		this.maxY = Math.max(this.maxY, point.y);
-		return this;
-	}
-	/**
-	* Expands this bounding box by a fixed amount in each direction.
-	*
-	* @param amount - The amount to expand the box by, or contract if negative
-	* @returns This mutated bounding box
-	*/
-	expandBy(amount) {
-		this.minX -= amount;
-		this.minY -= amount;
-		this.maxX += amount;
-		this.maxY += amount;
-		if (this.minX > this.maxX || this.minY > this.maxY) {
-			this.minX = Infinity;
-			this.maxX = -Infinity;
-			this.minY = Infinity;
-			this.maxY = -Infinity;
-		}
-		return this;
-	}
-	/**
-	* Shrinks this bounding box by a fixed amount in each direction.
-	*
-	* @param amount - The amount to shrink the box by
-	* @returns This mutated bounding box
-	*/
-	shrinkBy(amount) {
-		return this.expandBy(-amount);
-	}
-	/**
-	* Returns a new bounding box that contains all of the corners of this bounding
-	* box with a transform applied. Does not modify this bounding box.
-	*
-	* @param fn - The function to apply to each corner
-	* @returns A new bounding box containing all of the mapped points.
-	*/
-	map(fn) {
-		const result = new Bounds();
-		result.extend(fn(new Point(this.minX, this.minY)));
-		result.extend(fn(new Point(this.maxX, this.minY)));
-		result.extend(fn(new Point(this.minX, this.maxY)));
-		result.extend(fn(new Point(this.maxX, this.maxY)));
-		return result;
-	}
-	/**
-	* Creates a new bounding box that includes all points provided.
-	*
-	* @param points - The points to include inside the bounding box
-	* @returns The new bounding box
-	*/
-	static fromPoints(points) {
-		const result = new Bounds();
-		for (const p of points) result.extend(p);
-		return result;
-	}
-	contains(point) {
-		return point.x >= this.minX && point.x <= this.maxX && point.y >= this.minY && point.y <= this.maxY;
-	}
-	empty() {
-		return this.minX > this.maxX;
-	}
-	width() {
-		return this.maxX - this.minX;
-	}
-	height() {
-		return this.maxY - this.minY;
-	}
-	covers(other) {
-		return !this.empty() && !other.empty() && other.minX >= this.minX && other.maxX <= this.maxX && other.minY >= this.minY && other.maxY <= this.maxY;
-	}
-	intersects(other) {
-		return !this.empty() && !other.empty() && other.minX <= this.maxX && other.maxX >= this.minX && other.minY <= this.maxY && other.maxY >= this.minY;
-	}
-};
-//#endregion
 //#region node_modules/@maplibre/vt-pbf/dist/index.es.js
 var FeatureWrapper = class {
 	constructor(feature, extent) {
@@ -25930,8 +29425,8 @@ var SequenceVector = class extends Vector {
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/vector/sequence/int32SequenceVector.js
 var Int32SequenceVector = class extends SequenceVector {
-	constructor(name, baseValue, delta, size) {
-		super(name, Int32Array.of(baseValue), delta, size);
+	constructor(name, baseValue, delta, size, isSigned) {
+		super(name, isSigned ? Int32Array.of(baseValue) : Uint32Array.of(baseValue), delta, size);
 	}
 	getValueFromBuffer(index) {
 		return this.dataBuffer[0] + index * this.delta;
@@ -25968,10 +29463,10 @@ var FeatureTable = class {
 		return this._geometryVector;
 	}
 	get propertyVectors() {
-		return this._propertyVectors;
+		return this._propertyVectors ?? [];
 	}
 	getPropertyVector(name) {
-		if (!this.propertyVectorsMap) this.propertyVectorsMap = new Map(this._propertyVectors.map((vector) => [vector.name, vector]));
+		if (!this.propertyVectorsMap) this.propertyVectorsMap = new Map(this.propertyVectors.map((vector) => [vector.name, vector]));
 		return this.propertyVectorsMap.get(name);
 	}
 	get numFeatures() {
@@ -25990,7 +29485,7 @@ var FeatureTable = class {
 			let id;
 			if (this.idVector) {
 				const idValue = this.idVector.getValue(i);
-				id = this.containsMaxSafeIntegerValues(this.idVector) && idValue !== null ? Number(idValue) : idValue;
+				if (idValue !== null) id = this.containsMaxSafeIntegerValues(this.idVector) ? Number(idValue) : idValue;
 			}
 			const geometry = {
 				coordinates: geometries[i],
@@ -26035,7 +29530,8 @@ const ScalarType = {
 };
 const ComplexType = {
 	GEOMETRY: 0,
-	STRUCT: 1
+	STRUCT: 1,
+	MAP: 2
 };
 const LogicalScalarType = { ID: 0 };
 //#endregion
@@ -26066,7 +29562,6 @@ var LogicalLevelTechnique;
 	LogicalLevelTechnique["COMPONENTWISE_DELTA"] = "COMPONENTWISE_DELTA";
 	LogicalLevelTechnique["RLE"] = "RLE";
 	LogicalLevelTechnique["MORTON"] = "MORTON";
-	LogicalLevelTechnique["PDE"] = "PDE";
 })(LogicalLevelTechnique || (LogicalLevelTechnique = {}));
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/metadata/tile/physicalLevelTechnique.js
@@ -28014,8 +31509,7 @@ const LOGICAL_LEVEL_TECHNIQUE_BY_ID = [
 	LogicalLevelTechnique.DELTA,
 	LogicalLevelTechnique.COMPONENTWISE_DELTA,
 	LogicalLevelTechnique.RLE,
-	LogicalLevelTechnique.MORTON,
-	LogicalLevelTechnique.PDE
+	LogicalLevelTechnique.MORTON
 ];
 const PHYSICAL_LEVEL_TECHNIQUE_BY_ID = [
 	PhysicalLevelTechnique.NONE,
@@ -28198,6 +31692,130 @@ function unpackNullableBoolean(dataStream, dataStreamSize, presentBits) {
 	return result.getBuffer();
 }
 //#endregion
+//#region node_modules/@maplibre/mlt/dist/decoding/decodingUtils.js
+function skipColumn(numStreams, tile, offset) {
+	for (let i = 0; i < numStreams; i++) {
+		const streamMetadata = decodeStreamMetadata(tile, offset);
+		offset.add(streamMetadata.byteLength);
+	}
+}
+function decodeBooleanRle(buffer, numBooleans, byteLength, pos, nullabilityBuffer) {
+	const values = decodeByteRle(buffer, Math.ceil(numBooleans / 8), byteLength, pos);
+	if (nullabilityBuffer) return unpackNullableBoolean(values, numBooleans, nullabilityBuffer);
+	return values;
+}
+function decodeByteRle(buffer, numBytes, byteLength, pos) {
+	const values = new Uint8Array(numBytes);
+	let valueOffset = 0;
+	const streamEndPos = pos.get() + byteLength;
+	while (valueOffset < numBytes) {
+		if (pos.get() >= streamEndPos) break;
+		const header = buffer[pos.increment()];
+		if (header <= 127) {
+			const numRuns = header + 3;
+			const value = buffer[pos.increment()];
+			const endValueOffset = Math.min(valueOffset + numRuns, numBytes);
+			values.fill(value, valueOffset, endValueOffset);
+			valueOffset = endValueOffset;
+		} else {
+			const numLiterals = 256 - header;
+			for (let i = 0; i < numLiterals && valueOffset < numBytes; i++) values[valueOffset++] = buffer[pos.increment()];
+		}
+	}
+	pos.set(streamEndPos);
+	return values;
+}
+function decodeFloatsLE(encodedValues, pos, numValues, nullabilityBuffer) {
+	const currentPos = pos.get();
+	const newOffset = currentPos + numValues * Float32Array.BYTES_PER_ELEMENT;
+	const newBuf = new Uint8Array(encodedValues.subarray(currentPos, newOffset)).buffer;
+	const fb = new Float32Array(newBuf);
+	pos.set(newOffset);
+	if (nullabilityBuffer) return unpackNullable(fb, nullabilityBuffer, 0);
+	return fb;
+}
+function decodeDoublesLE(encodedValues, pos, numValues, nullabilityBuffer) {
+	const currentPos = pos.get();
+	const newOffset = currentPos + numValues * Float64Array.BYTES_PER_ELEMENT;
+	const newBuf = new Uint8Array(encodedValues.subarray(currentPos, newOffset)).buffer;
+	const fb = new Float64Array(newBuf);
+	pos.set(newOffset);
+	if (nullabilityBuffer) return unpackNullable(fb, nullabilityBuffer, 0);
+	return fb;
+}
+function decodeUint32sLE(encodedValues, pos, numValues) {
+	const currentPos = pos.get();
+	const byteLength = numValues * Uint32Array.BYTES_PER_ELEMENT;
+	const view = new DataView(encodedValues.buffer, encodedValues.byteOffset, encodedValues.byteLength);
+	const values = new Uint32Array(numValues);
+	for (let i = 0; i < numValues; i++) values[i] = view.getUint32(currentPos + i * Uint32Array.BYTES_PER_ELEMENT, true);
+	pos.add(byteLength);
+	return values;
+}
+function decodeUint64sLE(encodedValues, pos, numValues) {
+	const currentPos = pos.get();
+	const byteLength = numValues * BigUint64Array.BYTES_PER_ELEMENT;
+	const view = new DataView(encodedValues.buffer, encodedValues.byteOffset, encodedValues.byteLength);
+	const values = new BigUint64Array(numValues);
+	for (let i = 0; i < numValues; i++) values[i] = view.getBigUint64(currentPos + i * BigUint64Array.BYTES_PER_ELEMENT, true);
+	pos.add(byteLength);
+	return values;
+}
+const TEXT_DECODER_MIN_LENGTH = 12;
+const utf8TextDecoder = new TextDecoder();
+function decodeString$2(buf, pos, end) {
+	if (end - pos >= TEXT_DECODER_MIN_LENGTH) return utf8TextDecoder.decode(buf.subarray(pos, end));
+	return readUtf8(buf, pos, end);
+}
+function readUtf8(buf, pos, end) {
+	let str = "";
+	let i = pos;
+	while (i < end) {
+		const b0 = buf[i];
+		let c = null;
+		let bytesPerSequence = b0 > 239 ? 4 : b0 > 223 ? 3 : b0 > 191 ? 2 : 1;
+		if (i + bytesPerSequence > end) break;
+		let b1;
+		let b2;
+		let b3;
+		if (bytesPerSequence === 1) {
+			if (b0 < 128) c = b0;
+		} else if (bytesPerSequence === 2) {
+			b1 = buf[i + 1];
+			if ((b1 & 192) === 128) {
+				c = (b0 & 31) << 6 | b1 & 63;
+				if (c <= 127) c = null;
+			}
+		} else if (bytesPerSequence === 3) {
+			b1 = buf[i + 1];
+			b2 = buf[i + 2];
+			if ((b1 & 192) === 128 && (b2 & 192) === 128) {
+				c = (b0 & 15) << 12 | (b1 & 63) << 6 | b2 & 63;
+				if (c <= 2047 || c >= 55296 && c <= 57343) c = null;
+			}
+		} else if (bytesPerSequence === 4) {
+			b1 = buf[i + 1];
+			b2 = buf[i + 2];
+			b3 = buf[i + 3];
+			if ((b1 & 192) === 128 && (b2 & 192) === 128 && (b3 & 192) === 128) {
+				c = (b0 & 15) << 18 | (b1 & 63) << 12 | (b2 & 63) << 6 | b3 & 63;
+				if (c <= 65535 || c >= 1114112) c = null;
+			}
+		}
+		if (c === null) {
+			c = 65533;
+			bytesPerSequence = 1;
+		} else if (c > 65535) {
+			c -= 65536;
+			str += String.fromCharCode(c >>> 10 & 1023 | 55296);
+			c = 56320 | c & 1023;
+		}
+		str += String.fromCharCode(c);
+		i += bytesPerSequence;
+	}
+	return str;
+}
+//#endregion
 //#region node_modules/@maplibre/mlt/dist/decoding/integerStreamDecoder.js
 function decodeSignedInt32Stream(data, offset, streamMetadata, scalingData, nullabilityBuffer) {
 	return decodeSignedInt32(decodePhysicalLevelTechnique(data, offset, streamMetadata), streamMetadata, scalingData, nullabilityBuffer);
@@ -28213,13 +31831,15 @@ function decodePhysicalLevelTechnique(data, offset, streamMetadata) {
 	switch (physicalLevelTechnique) {
 		case PhysicalLevelTechnique.FAST_PFOR: return decodeFastPfor(data, streamMetadata.numValues, streamMetadata.byteLength, offset);
 		case PhysicalLevelTechnique.VARINT: return decodeVarintInt32(data, offset, streamMetadata.numValues);
-		case PhysicalLevelTechnique.NONE: {
-			const dataOffset = offset.get();
-			const byteLength = streamMetadata.byteLength;
-			offset.add(byteLength);
-			const slice = data.subarray(dataOffset, offset.get());
-			return new Uint32Array(slice);
-		}
+		case PhysicalLevelTechnique.NONE: return decodeUint32sLE(data, offset, streamMetadata.numValues);
+		default: throw new Error(`Specified physicalLevelTechnique ${physicalLevelTechnique} is not supported (yet).`);
+	}
+}
+function decodePhysicalLevelTechniqueInt64(data, offset, streamMetadata) {
+	const physicalLevelTechnique = streamMetadata.physicalLevelTechnique;
+	switch (physicalLevelTechnique) {
+		case PhysicalLevelTechnique.VARINT: return decodeVarintInt64(data, offset, streamMetadata.numValues);
+		case PhysicalLevelTechnique.NONE: return decodeUint64sLE(data, offset, streamMetadata.numValues);
 		default: throw new Error(`Specified physicalLevelTechnique ${physicalLevelTechnique} is not supported (yet).`);
 	}
 }
@@ -28243,21 +31863,28 @@ function decodeSequenceInt64Stream(data, offset, streamMetadata) {
 	return decodeZigZagSequenceRleInt64(decodeVarintInt64(data, offset, streamMetadata.numValues));
 }
 function decodeSignedInt64Stream(data, offset, streamMetadata, nullabilityBuffer) {
-	return decodeSignedInt64(decodeVarintInt64(data, offset, streamMetadata.numValues), streamMetadata, nullabilityBuffer);
+	return decodeSignedInt64(decodePhysicalLevelTechniqueInt64(data, offset, streamMetadata), streamMetadata, nullabilityBuffer);
 }
 function decodeUnsignedInt64Stream(data, offset, streamMetadata, nullabilityBuffer) {
-	return decodeUnsignedInt64(decodeVarintInt64(data, offset, streamMetadata.numValues), streamMetadata, nullabilityBuffer);
+	return decodeUnsignedInt64(decodePhysicalLevelTechniqueInt64(data, offset, streamMetadata), streamMetadata, nullabilityBuffer);
 }
-function decodeUnsignedInt64AsFloat64Stream(data, offset, streamMetadata) {
-	return decodeFloat64Values(decodeVarintFloat64(data, offset, streamMetadata.numValues), streamMetadata, false);
+function decodeUnsignedInt64AsFloat64Stream(data, offset, streamMetadata, nullabilityBuffer) {
+	const values = decodeInt64AsFloat64(data, offset, streamMetadata, false);
+	return nullabilityBuffer ? unpackNullable(values, nullabilityBuffer, 0) : values;
+}
+function decodeInt64AsFloat64(data, offset, streamMetadata, isSigned) {
+	if (streamMetadata.physicalLevelTechnique === PhysicalLevelTechnique.VARINT) return decodeFloat64Values(decodeVarintFloat64(data, offset, streamMetadata.numValues), streamMetadata, isSigned);
+	const values = decodePhysicalLevelTechniqueInt64(data, offset, streamMetadata);
+	const decodedValues = isSigned ? decodeSignedInt64(values, streamMetadata) : decodeUnsignedInt64(values, streamMetadata);
+	return Float64Array.from(decodedValues, Number);
 }
 function decodeSignedConstInt64Stream(data, offset, streamMetadata) {
-	const values = decodeVarintInt64(data, offset, streamMetadata.numValues);
+	const values = decodePhysicalLevelTechniqueInt64(data, offset, streamMetadata);
 	if (values.length === 1) return decodeZigZagInt64Value(values[0]);
 	return decodeZigZagConstRleInt64(values);
 }
 function decodeUnsignedConstInt64Stream(data, offset, streamMetadata) {
-	const values = decodeVarintInt64(data, offset, streamMetadata.numValues);
+	const values = decodePhysicalLevelTechniqueInt64(data, offset, streamMetadata);
 	if (values.length === 1) {
 		if (streamMetadata.logicalLevelTechnique1 === LogicalLevelTechnique.DELTA) return decodeZigZagInt64Value(values[0]);
 		return values[0];
@@ -28455,8 +32082,8 @@ var Int64FlatVector = class extends FixedSizeVector {
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/vector/sequence/int64SequenceVector.js
 var Int64SequenceVector = class extends SequenceVector {
-	constructor(name, baseValue, delta, size) {
-		super(name, BigInt64Array.of(baseValue), delta, size);
+	constructor(name, baseValue, delta, size, isSigned) {
+		super(name, isSigned ? BigInt64Array.of(baseValue) : BigUint64Array.of(baseValue), delta, size);
 	}
 	getValueFromBuffer(index) {
 		return this.dataBuffer[0] + BigInt(index) * this.delta;
@@ -28549,17 +32176,17 @@ function convertGeometryVector(geometryVector) {
 				{
 					const numPoints = geometryOffsets[geometryOffsetsCounter] - geometryOffsets[geometryOffsetsCounter - 1];
 					geometryOffsetsCounter++;
-					const points = new Array(numPoints);
-					if (nonOffset) for (let j = 0; j < numPoints; j++) {
-						const x = vertexBuffer[vertexBufferOffset++];
-						const y = vertexBuffer[vertexBufferOffset++];
-						points[j] = new Point(x, y);
-					}
-					else for (let j = 0; j < numPoints; j++) {
-						const offset = vertexOffsets[vertexOffsetsOffset++] * 2;
-						const x = vertexBuffer[offset];
-						const y = vertexBuffer[offset + 1];
-						points[j] = new Point(x, y);
+					let points;
+					if (nonOffset) {
+						points = new Array(numPoints);
+						for (let j = 0; j < numPoints; j++) {
+							const x = vertexBuffer[vertexBufferOffset++];
+							const y = vertexBuffer[vertexBufferOffset++];
+							points[j] = new Point(x, y);
+						}
+					} else {
+						points = decodeDictionaryEncodedVertices(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numPoints, false, mortonSettings);
+						vertexOffsetsOffset += numPoints;
 					}
 					geometries[geometryCounter++] = points.map((point) => [point]);
 					partOffsetCounter += numPoints;
@@ -28579,7 +32206,7 @@ function convertGeometryVector(geometryVector) {
 						vertices = getLineStringOrRing(vertexBuffer, vertexBufferOffset, numVertices, false);
 						vertexBufferOffset += numVertices * 2;
 					} else {
-						vertices = decodeDictionaryEncodedLineStringOrRing(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, false, mortonSettings);
+						vertices = decodeDictionaryEncodedVertices(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, false, mortonSettings);
 						vertexOffsetsOffset += numVertices;
 					}
 					geometries[geometryCounter++] = [vertices];
@@ -28604,12 +32231,12 @@ function convertGeometryVector(geometryVector) {
 							vertexBufferOffset += numVertices * 2;
 						}
 					} else {
-						shell = decodeDictionaryEncodedLineStringOrRing(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, true, mortonSettings);
+						shell = decodeDictionaryEncodedVertices(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, true, mortonSettings);
 						vertexOffsetsOffset += numVertices;
 						for (let j = 0; j < rings.length; j++) {
 							numVertices = ringOffsets[ringOffsetsCounter] - ringOffsets[ringOffsetsCounter - 1];
 							ringOffsetsCounter++;
-							rings[j] = decodeDictionaryEncodedLineStringOrRing(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, true, mortonSettings);
+							rings[j] = decodeDictionaryEncodedVertices(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, true, mortonSettings);
 							vertexOffsetsOffset += numVertices;
 						}
 					}
@@ -28633,7 +32260,7 @@ function convertGeometryVector(geometryVector) {
 							lineStrings[j] = getLineStringOrRing(vertexBuffer, vertexBufferOffset, numVertices, false);
 							vertexBufferOffset += numVertices * 2;
 						} else {
-							const vertices = decodeDictionaryEncodedLineStringOrRing(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, false, mortonSettings);
+							const vertices = decodeDictionaryEncodedVertices(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, false, mortonSettings);
 							lineStrings[j] = vertices;
 							vertexOffsetsOffset += numVertices;
 						}
@@ -28657,7 +32284,7 @@ function convertGeometryVector(geometryVector) {
 							shell = getLineStringOrRing(vertexBuffer, vertexBufferOffset, numVertices, true);
 							vertexBufferOffset += numVertices * 2;
 						} else {
-							shell = decodeDictionaryEncodedLineStringOrRing(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, true, mortonSettings);
+							shell = decodeDictionaryEncodedVertices(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numVertices, true, mortonSettings);
 							vertexOffsetsOffset += numVertices;
 						}
 						for (let k = 0; k < rings.length; k++) {
@@ -28667,7 +32294,7 @@ function convertGeometryVector(geometryVector) {
 								rings[k] = getLineStringOrRing(vertexBuffer, vertexBufferOffset, numRingVertices, true);
 								vertexBufferOffset += numRingVertices * 2;
 							} else {
-								rings[k] = decodeDictionaryEncodedLineStringOrRing(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numRingVertices, true, mortonSettings);
+								rings[k] = decodeDictionaryEncodedVertices(geometryVector.vertexBufferType, vertexBuffer, vertexOffsets, vertexOffsetsOffset, numRingVertices, true, mortonSettings);
 								vertexOffsetsOffset += numRingVertices;
 							}
 						}
@@ -28681,39 +32308,39 @@ function convertGeometryVector(geometryVector) {
 	}
 	return geometries;
 }
-function decodeDictionaryEncodedLineStringOrRing(vertexBufferType, vertexBuffer, vertexOffsets, vertexOffset, numVertices, closeLineString, mortonSettings) {
-	if (vertexBufferType === VertexBufferType.MORTON) return decodeMortonDictionaryEncodedLineString(vertexBuffer, vertexOffsets, vertexOffset, numVertices, closeLineString, mortonSettings);
-	else return decodeDictionaryEncodedLineString(vertexBuffer, vertexOffsets, vertexOffset, numVertices, closeLineString);
+function decodeDictionaryEncodedVertices(vertexBufferType, vertexBuffer, vertexOffsets, vertexOffset, numVertices, isRing, mortonSettings) {
+	if (vertexBufferType === VertexBufferType.MORTON) return decodeMortonDictionaryEncodedVertices(vertexBuffer, vertexOffsets, vertexOffset, numVertices, isRing, mortonSettings);
+	else return decodeVec2DictionaryEncodedVertices(vertexBuffer, vertexOffsets, vertexOffset, numVertices, isRing);
 }
-function getLineStringOrRing(vertexBuffer, startIndex, numVertices, closeLineString) {
-	const vertices = new Array(closeLineString ? numVertices + 1 : numVertices);
+function getLineStringOrRing(vertexBuffer, startIndex, numVertices, isRing) {
+	const vertices = new Array(isRing ? numVertices + 1 : numVertices);
 	for (let i = 0; i < numVertices * 2; i += 2) {
 		const x = vertexBuffer[startIndex + i];
 		const y = vertexBuffer[startIndex + i + 1];
 		vertices[i / 2] = new Point(x, y);
 	}
-	if (closeLineString) vertices[vertices.length - 1] = vertices[0];
+	if (isRing) vertices[vertices.length - 1] = vertices[0];
 	return vertices;
 }
-function decodeDictionaryEncodedLineString(vertexBuffer, vertexOffsets, vertexOffset, numVertices, closeLineString) {
-	const vertices = new Array(closeLineString ? numVertices + 1 : numVertices);
+function decodeVec2DictionaryEncodedVertices(vertexBuffer, vertexOffsets, vertexOffset, numVertices, isRing) {
+	const vertices = new Array(isRing ? numVertices + 1 : numVertices);
 	for (let i = 0; i < numVertices * 2; i += 2) {
 		const offset = vertexOffsets[vertexOffset + i / 2] * 2;
 		const x = vertexBuffer[offset];
 		const y = vertexBuffer[offset + 1];
 		vertices[i / 2] = new Point(x, y);
 	}
-	if (closeLineString) vertices[vertices.length - 1] = vertices[0];
+	if (isRing) vertices[vertices.length - 1] = vertices[0];
 	return vertices;
 }
-function decodeMortonDictionaryEncodedLineString(vertexBuffer, vertexOffsets, vertexOffset, numVertices, closeLineString, mortonSettings) {
-	const vertices = new Array(closeLineString ? numVertices + 1 : numVertices);
+function decodeMortonDictionaryEncodedVertices(vertexBuffer, vertexOffsets, vertexOffset, numVertices, isRing, mortonSettings) {
+	const vertices = new Array(isRing ? numVertices + 1 : numVertices);
 	for (let i = 0; i < numVertices; i++) {
 		const mortonEncodedVertex = vertexBuffer[vertexOffsets[vertexOffset + i]];
 		const vertex = decodeZOrderCurve(mortonEncodedVertex, mortonSettings.numBits, mortonSettings.coordinateShift);
 		vertices[i] = new Point(vertex.x, vertex.y);
 	}
-	if (closeLineString) vertices[vertices.length - 1] = vertices[0];
+	if (isRing) vertices[vertices.length - 1] = vertices[0];
 	return vertices;
 }
 //#endregion
@@ -28834,67 +32461,11 @@ var GpuVector = class {
 	get topologyVector() {
 		return this._topologyVector;
 	}
-	/**
-	* Returns geometries as coordinate arrays by extracting polygon outlines from topology.
-	* The vertexBuffer contains the outline vertices, separate from the tessellated triangles.
-	*/
 	getGeometries() {
 		if (!this._topologyVector) throw new Error("Cannot convert GpuVector to coordinates without topology information");
-		const geometries = new Array(this.numGeometries);
-		const topology = this._topologyVector;
-		const partOffsets = topology.partOffsets;
-		const ringOffsets = topology.ringOffsets;
-		const geometryOffsets = topology.geometryOffsets;
-		let vertexBufferOffset = 0;
-		let partOffsetCounter = 1;
-		let ringOffsetsCounter = 1;
-		let geometryOffsetsCounter = 1;
-		for (let i = 0; i < this.numGeometries; i++) switch (this.geometryType(i)) {
-			case GEOMETRY_TYPE.POLYGON:
-				{
-					const numRings = partOffsets[partOffsetCounter] - partOffsets[partOffsetCounter - 1];
-					partOffsetCounter++;
-					const rings = [];
-					for (let j = 0; j < numRings; j++) {
-						const numVertices = ringOffsets[ringOffsetsCounter] - ringOffsets[ringOffsetsCounter - 1];
-						ringOffsetsCounter++;
-						const ring = [];
-						for (let k = 0; k < numVertices; k++) {
-							const x = this._vertexBuffer[vertexBufferOffset++];
-							const y = this._vertexBuffer[vertexBufferOffset++];
-							ring.push(new Point(x, y));
-						}
-						if (ring.length > 0) ring.push(ring[0]);
-						rings.push(ring);
-					}
-					geometries[i] = rings;
-					if (geometryOffsets) geometryOffsetsCounter++;
-				}
-				break;
-			case GEOMETRY_TYPE.MULTIPOLYGON: {
-				const numPolygons = geometryOffsets[geometryOffsetsCounter] - geometryOffsets[geometryOffsetsCounter - 1];
-				geometryOffsetsCounter++;
-				const allRings = [];
-				for (let p = 0; p < numPolygons; p++) {
-					const numRings = partOffsets[partOffsetCounter] - partOffsets[partOffsetCounter - 1];
-					partOffsetCounter++;
-					for (let j = 0; j < numRings; j++) {
-						const numVertices = ringOffsets[ringOffsetsCounter] - ringOffsets[ringOffsetsCounter - 1];
-						ringOffsetsCounter++;
-						const ring = [];
-						for (let k = 0; k < numVertices; k++) {
-							const x = this._vertexBuffer[vertexBufferOffset++];
-							const y = this._vertexBuffer[vertexBufferOffset++];
-							ring.push(new Point(x, y));
-						}
-						if (ring.length > 0) ring.push(ring[0]);
-						allRings.push(ring);
-					}
-				}
-				geometries[i] = allRings;
-			}
-		}
-		return geometries;
+		const types = new Uint32Array(this.numGeometries);
+		for (let i = 0; i < this.numGeometries; i++) types[i] = this.geometryType(i);
+		return createFlatGeometryVector(types, this._topologyVector, void 0, this._vertexBuffer).getGeometries();
 	}
 	[Symbol.iterator]() {
 		return null;
@@ -29167,112 +32738,6 @@ var Int64ConstVector = class extends Vector {
 	}
 };
 //#endregion
-//#region node_modules/@maplibre/mlt/dist/decoding/decodingUtils.js
-function skipColumn(numStreams, tile, offset) {
-	for (let i = 0; i < numStreams; i++) {
-		const streamMetadata = decodeStreamMetadata(tile, offset);
-		offset.add(streamMetadata.byteLength);
-	}
-}
-function decodeBooleanRle(buffer, numBooleans, byteLength, pos, nullabilityBuffer) {
-	const values = decodeByteRle(buffer, Math.ceil(numBooleans / 8), byteLength, pos);
-	if (nullabilityBuffer) return unpackNullableBoolean(values, numBooleans, nullabilityBuffer);
-	return values;
-}
-function decodeByteRle(buffer, numBytes, byteLength, pos) {
-	const values = new Uint8Array(numBytes);
-	let valueOffset = 0;
-	const streamEndPos = pos.get() + byteLength;
-	while (valueOffset < numBytes) {
-		if (pos.get() >= streamEndPos) break;
-		const header = buffer[pos.increment()];
-		if (header <= 127) {
-			const numRuns = header + 3;
-			const value = buffer[pos.increment()];
-			const endValueOffset = Math.min(valueOffset + numRuns, numBytes);
-			values.fill(value, valueOffset, endValueOffset);
-			valueOffset = endValueOffset;
-		} else {
-			const numLiterals = 256 - header;
-			for (let i = 0; i < numLiterals && valueOffset < numBytes; i++) values[valueOffset++] = buffer[pos.increment()];
-		}
-	}
-	pos.set(streamEndPos);
-	return values;
-}
-function decodeFloatsLE(encodedValues, pos, numValues, nullabilityBuffer) {
-	const currentPos = pos.get();
-	const newOffset = currentPos + numValues * Float32Array.BYTES_PER_ELEMENT;
-	const newBuf = new Uint8Array(encodedValues.subarray(currentPos, newOffset)).buffer;
-	const fb = new Float32Array(newBuf);
-	pos.set(newOffset);
-	if (nullabilityBuffer) return unpackNullable(fb, nullabilityBuffer, 0);
-	return fb;
-}
-function decodeDoublesLE(encodedValues, pos, numValues, nullabilityBuffer) {
-	const currentPos = pos.get();
-	const newOffset = currentPos + numValues * Float64Array.BYTES_PER_ELEMENT;
-	const newBuf = new Uint8Array(encodedValues.subarray(currentPos, newOffset)).buffer;
-	const fb = new Float64Array(newBuf);
-	pos.set(newOffset);
-	if (nullabilityBuffer) return unpackNullable(fb, nullabilityBuffer, 0);
-	return fb;
-}
-const TEXT_DECODER_MIN_LENGTH = 12;
-const utf8TextDecoder = new TextDecoder();
-function decodeString$2(buf, pos, end) {
-	if (end - pos >= TEXT_DECODER_MIN_LENGTH) return utf8TextDecoder.decode(buf.subarray(pos, end));
-	return readUtf8(buf, pos, end);
-}
-function readUtf8(buf, pos, end) {
-	let str = "";
-	let i = pos;
-	while (i < end) {
-		const b0 = buf[i];
-		let c = null;
-		let bytesPerSequence = b0 > 239 ? 4 : b0 > 223 ? 3 : b0 > 191 ? 2 : 1;
-		if (i + bytesPerSequence > end) break;
-		let b1;
-		let b2;
-		let b3;
-		if (bytesPerSequence === 1) {
-			if (b0 < 128) c = b0;
-		} else if (bytesPerSequence === 2) {
-			b1 = buf[i + 1];
-			if ((b1 & 192) === 128) {
-				c = (b0 & 31) << 6 | b1 & 63;
-				if (c <= 127) c = null;
-			}
-		} else if (bytesPerSequence === 3) {
-			b1 = buf[i + 1];
-			b2 = buf[i + 2];
-			if ((b1 & 192) === 128 && (b2 & 192) === 128) {
-				c = (b0 & 15) << 12 | (b1 & 63) << 6 | b2 & 63;
-				if (c <= 2047 || c >= 55296 && c <= 57343) c = null;
-			}
-		} else if (bytesPerSequence === 4) {
-			b1 = buf[i + 1];
-			b2 = buf[i + 2];
-			b3 = buf[i + 3];
-			if ((b1 & 192) === 128 && (b2 & 192) === 128 && (b3 & 192) === 128) {
-				c = (b0 & 15) << 18 | (b1 & 63) << 12 | (b2 & 63) << 6 | b3 & 63;
-				if (c <= 65535 || c >= 1114112) c = null;
-			}
-		}
-		if (c === null) {
-			c = 65533;
-			bytesPerSequence = 1;
-		} else if (c > 65535) {
-			c -= 65536;
-			str += String.fromCharCode(c >>> 10 & 1023 | 55296);
-			c = 56320 | c & 1023;
-		}
-		str += String.fromCharCode(c);
-		i += bytesPerSequence;
-	}
-	return str;
-}
-//#endregion
 //#region node_modules/@maplibre/mlt/dist/vector/variableSizeVector.js
 var VariableSizeVector = class extends Vector {
 	constructor(name, offsetBuffer, dataBuffer, sizeOrNullabilityBuffer) {
@@ -29310,6 +32775,24 @@ var StringDictionaryVector = class extends VariableSizeVector {
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/decoding/fsstDecoder.js
 /**
+* Calculates the exact output size before decoding. This allows one final
+* `Uint8Array` allocation and avoids growing a JavaScript number array and
+* copying it into a typed array afterward. Traversing the compressed data
+* twice is always worthwhile here because it avoids those larger temporary
+* allocations.
+*/
+function getDecodedLength(symbolLengths, compressedData) {
+	let decodedLength = 0;
+	for (let i = 0; i < compressedData.length; i++) {
+		const symbolIndex = compressedData[i];
+		if (symbolIndex === 255) {
+			decodedLength++;
+			i++;
+		} else decodedLength += symbolLengths[symbolIndex];
+	}
+	return decodedLength;
+}
+/**
 * Decode FSST compressed data
 *
 * @param symbols           Array of symbols, where each symbol can be between 1 and 8 bytes
@@ -29318,35 +32801,49 @@ var StringDictionaryVector = class extends VariableSizeVector {
 * @returns                 Decoded data as Uint8Array
 */
 function decodeFsst(symbols, symbolLengths, compressedData) {
-	const decodedData = [];
-	const symbolOffsets = new Array(symbolLengths.length).fill(0);
+	const symbolOffsets = new Uint32Array(symbolLengths.length);
 	for (let i = 1; i < symbolLengths.length; i++) symbolOffsets[i] = symbolOffsets[i - 1] + symbolLengths[i - 1];
-	for (let i = 0; i < compressedData.length; i++) if (compressedData[i] === 255) decodedData.push(compressedData[++i]);
-	else {
-		const symbolLength = symbolLengths[compressedData[i]];
-		const symbolOffset = symbolOffsets[compressedData[i]];
-		for (let j = 0; j < symbolLength; j++) decodedData.push(symbols[symbolOffset + j]);
+	const decodedData = new Uint8Array(getDecodedLength(symbolLengths, compressedData));
+	let decodedOffset = 0;
+	for (let i = 0; i < compressedData.length; i++) {
+		const symbolIndex = compressedData[i];
+		if (symbolIndex === 255) {
+			i++;
+			decodedData[decodedOffset++] = compressedData[i];
+		} else {
+			let symbolLength = symbolLengths[symbolIndex];
+			let symbolOffset = symbolOffsets[symbolIndex];
+			while (symbolLength-- > 0) decodedData[decodedOffset++] = symbols[symbolOffset++];
+		}
 	}
-	return new Uint8Array(decodedData);
+	return decodedData;
 }
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/vector/fsst-dictionary/stringFsstDictionaryVector.js
 var StringFsstDictionaryVector = class extends VariableSizeVector {
-	constructor(name, indexBuffer, offsetBuffer, dictionaryBuffer, symbolOffsetBuffer, symbolTableBuffer, nullabilityBuffer) {
+	constructor(name, indexBuffer, offsetBuffer, dictionaryBuffer, symbolOffsetBuffer, symbolTableBuffer, nullabilityBuffer, sharedDictionaryCache) {
 		super(name, offsetBuffer, dictionaryBuffer, nullabilityBuffer ?? indexBuffer.length);
 		this.indexBuffer = indexBuffer;
 		this.symbolOffsetBuffer = symbolOffsetBuffer;
 		this.symbolTableBuffer = symbolTableBuffer;
+		this.sharedDictionaryCache = sharedDictionaryCache;
 	}
 	getValueFromBuffer(index) {
 		if (this.decodedDictionary == null) {
-			if (this.symbolLengthBuffer == null) this.symbolLengthBuffer = this.offsetToLengthBuffer(this.symbolOffsetBuffer);
-			this.decodedDictionary = decodeFsst(this.symbolTableBuffer, this.symbolLengthBuffer, this.dataBuffer);
+			this.decodedDictionary = this.sharedDictionaryCache?.decodedDictionary;
+			if (this.decodedDictionary == null) {
+				this.decodedDictionary = this.decodeDictionary();
+				if (this.sharedDictionaryCache) this.sharedDictionaryCache.decodedDictionary = this.decodedDictionary;
+			}
 		}
 		const offset = this.indexBuffer[index];
 		const start = this.offsetBuffer[offset];
 		const end = this.offsetBuffer[offset + 1];
 		return decodeString$2(this.decodedDictionary, start, end);
+	}
+	decodeDictionary() {
+		if (this.symbolLengthBuffer == null) this.symbolLengthBuffer = this.offsetToLengthBuffer(this.symbolOffsetBuffer);
+		return decodeFsst(this.symbolTableBuffer, this.symbolLengthBuffer, this.dataBuffer);
 	}
 	offsetToLengthBuffer(offsetBuffer) {
 		const lengthBuffer = new Uint32Array(offsetBuffer.length - 1);
@@ -29362,14 +32859,14 @@ var StringFsstDictionaryVector = class extends VariableSizeVector {
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/decoding/stringDecoder.js
 function decodeString$1(name, data, offset, numStreams, bitVector) {
-	let dictionaryLengthStream = null;
-	let offsetStream = null;
-	let dictionaryStream = null;
-	let symbolLengthStream = null;
-	let symbolTableStream = null;
-	let nullabilityBuffer = bitVector ?? null;
-	let plainLengthStream = null;
-	let plainDataStream = null;
+	let dictionaryLengthStream;
+	let offsetStream;
+	let dictionaryStream;
+	let symbolLengthStream;
+	let symbolTableStream;
+	let nullabilityBuffer = bitVector;
+	let plainLengthStream;
+	let plainDataStream;
 	for (let i = 0; i < numStreams; i++) {
 		const streamMetadata = decodeStreamMetadata(data, offset);
 		switch (streamMetadata.physicalStreamType) {
@@ -29402,15 +32899,17 @@ function decodeString$1(name, data, offset, numStreams, bitVector) {
 	return decodeFsstDictionaryVector(name, symbolTableStream, offsetStream, dictionaryLengthStream, dictionaryStream, symbolLengthStream, nullabilityBuffer) ?? decodeDictionaryVector(name, dictionaryStream, offsetStream, dictionaryLengthStream, nullabilityBuffer) ?? decodePlainStringVector(name, plainLengthStream, plainDataStream, offsetStream, nullabilityBuffer);
 }
 function decodeFsstDictionaryVector(name, symbolTableStream, offsetStream, dictionaryLengthStream, dictionaryStream, symbolLengthStream, nullabilityBuffer) {
-	if (!symbolTableStream) return null;
+	if (!symbolTableStream) return;
+	if (!offsetStream || !dictionaryLengthStream || !dictionaryStream || !symbolLengthStream) throw new Error(`Incomplete FSST dictionary string column "${name}"`);
 	return new StringFsstDictionaryVector(name, offsetStream, dictionaryLengthStream, dictionaryStream, symbolLengthStream, symbolTableStream, nullabilityBuffer);
 }
 function decodeDictionaryVector(name, dictionaryStream, offsetStream, dictionaryLengthStream, nullabilityBuffer) {
-	if (!dictionaryStream) return null;
+	if (!dictionaryStream) return;
+	if (!offsetStream || !dictionaryLengthStream) throw new Error(`Incomplete dictionary string column "${name}"`);
 	return nullabilityBuffer ? new StringDictionaryVector(name, offsetStream, dictionaryLengthStream, dictionaryStream, nullabilityBuffer) : new StringDictionaryVector(name, offsetStream, dictionaryLengthStream, dictionaryStream);
 }
 function decodePlainStringVector(name, plainLengthStream, plainDataStream, offsetStream, nullabilityBuffer) {
-	if (!plainLengthStream || !plainDataStream) return null;
+	if (!plainLengthStream || !plainDataStream) return;
 	if (offsetStream) return nullabilityBuffer ? new StringDictionaryVector(name, offsetStream, plainLengthStream, plainDataStream, nullabilityBuffer) : new StringDictionaryVector(name, offsetStream, plainLengthStream, plainDataStream);
 	if (nullabilityBuffer && nullabilityBuffer.size() !== plainLengthStream.length - 1) {
 		const sparseOffsetStream = new Uint32Array(nullabilityBuffer.size());
@@ -29422,10 +32921,10 @@ function decodePlainStringVector(name, plainLengthStream, plainDataStream, offse
 	return nullabilityBuffer ? new StringFlatVector(name, plainLengthStream, plainDataStream, nullabilityBuffer) : new StringFlatVector(name, plainLengthStream, plainDataStream);
 }
 function decodeSharedDictionary(data, offset, column, propertyColumnNames) {
-	let dictionaryOffsetBuffer = null;
-	let dictionaryBuffer = null;
-	let symbolOffsetBuffer = null;
-	let symbolTableBuffer = null;
+	let dictionaryOffsetBuffer;
+	let dictionaryBuffer;
+	let symbolOffsetBuffer;
+	let symbolTableBuffer;
 	let dictionaryStreamDecoded = false;
 	while (!dictionaryStreamDecoded) {
 		const streamMetadata = decodeStreamMetadata(data, offset);
@@ -29442,8 +32941,12 @@ function decodeSharedDictionary(data, offset, column, propertyColumnNames) {
 				offset.add(streamMetadata.byteLength);
 		}
 	}
+	if (column.type !== "complexType") throw new Error(`Shared dictionary column ${column.name} must be a complex (struct) column.`);
+	if (!dictionaryOffsetBuffer || !dictionaryBuffer) throw new Error(`Incomplete shared dictionary for column "${column.name}"`);
 	const childFields = column.complexType.children;
 	const stringDictionaryVectors = [];
+	/** Shared by every FSST child-column vector in this SharedDict and populated on first access. */
+	const sharedDictionaryCache = symbolTableBuffer ? {} : void 0;
 	let i = 0;
 	for (const childField of childFields) {
 		const numStreams = decodeVarintInt32(data, offset, 1)[0];
@@ -29463,9 +32966,318 @@ function decodeSharedDictionary(data, offset, column, propertyColumnNames) {
 			presentStreamBitVector = new BitVector(decodeBooleanRle(data, presentStreamMetadata.numValues, presentStreamMetadata.byteLength, offset), presentStreamMetadata.numValues);
 		}
 		const offsetStream = decodeUnsignedInt32Stream(data, offset, decodeStreamMetadata(data, offset), void 0, presentStreamBitVector);
-		stringDictionaryVectors[i++] = symbolTableBuffer ? new StringFsstDictionaryVector(columnName, offsetStream, dictionaryOffsetBuffer, dictionaryBuffer, symbolOffsetBuffer, symbolTableBuffer, presentStreamBitVector) : new StringDictionaryVector(columnName, offsetStream, dictionaryOffsetBuffer, dictionaryBuffer, presentStreamBitVector);
+		if (symbolTableBuffer) {
+			if (!symbolOffsetBuffer) throw new Error(`Incomplete shared FSST dictionary for column "${columnName}"`);
+			stringDictionaryVectors[i++] = new StringFsstDictionaryVector(columnName, offsetStream, dictionaryOffsetBuffer, dictionaryBuffer, symbolOffsetBuffer, symbolTableBuffer, presentStreamBitVector, sharedDictionaryCache);
+		} else stringDictionaryVectors[i++] = new StringDictionaryVector(columnName, offsetStream, dictionaryOffsetBuffer, dictionaryBuffer, presentStreamBitVector);
 	}
 	return stringDictionaryVectors;
+}
+//#endregion
+//#region node_modules/@maplibre/mlt/dist/vector/flat/objectFlatVector.js
+/**
+* Holds already-decoded values of arbitrary shape, one per feature.
+*
+* Unlike the other vectors there is no packed buffer to index into: nested property (MAP) columns
+* decode to plain JavaScript maps, arrays and scalars, so the values are kept as-is. Features
+* without a value are marked absent in the nullability buffer, so `has` reports them as missing and
+* `getValue` returns `null`.
+*/
+var ObjectFlatVector = class extends Vector {
+	constructor(name, values, nullabilityBuffer) {
+		super(name, /* @__PURE__ */ new Uint8Array(0), nullabilityBuffer ?? values.length);
+		this.values = values;
+	}
+	getValueFromBuffer(index) {
+		return this.values[index];
+	}
+};
+//#endregion
+//#region node_modules/@maplibre/mlt/dist/metadata/tile/mapMask.js
+/**
+* Bitmask written ahead of a nested property (MAP) column, marking which optional streams follow
+* the mandatory length stream. Only one of INT32/INT64 and one of UINT32/UINT64 is ever set: the
+* encoder picks the narrower width that fits every value.
+*/
+var MapMask;
+(function(MapMask) {
+	MapMask[MapMask["STRING"] = 1] = "STRING";
+	MapMask[MapMask["INT32"] = 2] = "INT32";
+	MapMask[MapMask["UINT32"] = 4] = "UINT32";
+	MapMask[MapMask["INT64"] = 8] = "INT64";
+	MapMask[MapMask["UINT64"] = 16] = "UINT64";
+	MapMask[MapMask["FLOAT"] = 32] = "FLOAT";
+	MapMask[MapMask["DOUBLE"] = 64] = "DOUBLE";
+	MapMask[MapMask["PRESENCE"] = 128] = "PRESENCE";
+})(MapMask || (MapMask = {}));
+//#endregion
+//#region node_modules/@maplibre/mlt/dist/metadata/tile/mapControlValue.js
+/**
+* Tokens in the data stream of a nested property (MAP) column. Values below `COUNT` describe the
+* structure; anything else is an index into the combined dictionary, offset by `COUNT`. Booleans are
+* encoded directly as tokens rather than being added to a dictionary.
+*/
+var MapControlValue;
+(function(MapControlValue) {
+	MapControlValue[MapControlValue["FALSE"] = 0] = "FALSE";
+	MapControlValue[MapControlValue["TRUE"] = 1] = "TRUE";
+	/** A nested map follows: this token, the payload length including these two tokens, the payload. */
+	MapControlValue[MapControlValue["START_MAP"] = 2] = "START_MAP";
+	/** A list follows, laid out the same way as START_MAP. */
+	MapControlValue[MapControlValue["START_LIST"] = 3] = "START_LIST";
+	/** Number of reserved tokens, i.e. the first dictionary index. */
+	MapControlValue[MapControlValue["COUNT"] = 4] = "COUNT";
+})(MapControlValue || (MapControlValue = {}));
+//#endregion
+//#region node_modules/@maplibre/mlt/dist/decoding/mapPropertyDecoder.js
+/**
+* Decodes a nested property (MAP) column into one vector per child column.
+*
+* The column is stored as a length stream (values per feature), a dictionary stream per value type
+* present, an optional presence stream, and a data stream of dictionary indices interleaved with
+* the control tokens that describe the map/list structure.
+*
+* Ported from the Java reference implementation (`MapPropertyDecoder`).
+*/
+function decodeMapPropertyColumn(data, offset, columnMetadata, numStreams) {
+	const columnNames = getMapColumnNames(columnMetadata);
+	if (numStreams === 0) return columnNames.map((name) => new ObjectFlatVector(name, []));
+	const streams = decodeMapStreams(data, offset, numStreams);
+	const featureCount = (streams.presentStream ? streams.presentCount : streams.lengthStream.length) / columnNames.length;
+	const vectors = [];
+	let countsCursor = 0;
+	let valuesCursor = 0;
+	for (let childIndex = 0; childIndex < columnNames.length; childIndex++) {
+		const child = decodeChildColumn(streams, childIndex, featureCount, countsCursor, valuesCursor);
+		vectors.push(new ObjectFlatVector(columnNames[childIndex], child.value, child.nullabilityBuffer));
+		countsCursor = child.countsEnd;
+		valuesCursor = child.valuesEnd;
+	}
+	return vectors;
+}
+/**
+* A single map column carries its own name. A shared column carries one child per sibling, whose
+* full name is the parent name followed by the child name.
+*/
+function getMapColumnNames(columnMetadata) {
+	const children = columnMetadata.type === "complexType" ? columnMetadata.complexType.children : void 0;
+	if (!children || children.length === 0) return [columnMetadata.name];
+	return children.map((child) => columnMetadata.name + (child.name ?? ""));
+}
+/** Reads the stream mask and every stream it announces, in the order the encoder wrote them. */
+function decodeMapStreams(data, offset, numStreams) {
+	const dictionaryMask = data[offset.get()];
+	offset.add(1);
+	const lengthStream = decodeUnsignedInt32Stream(data, offset, decodeStreamMetadata(data, offset));
+	let remainingStreams = numStreams - 1;
+	const dictionary = [];
+	if (dictionaryMask & MapMask.STRING) remainingStreams -= decodeStringDictionary(data, offset, dictionary);
+	remainingStreams -= decodeIntegerDictionaries(data, offset, dictionaryMask, dictionary);
+	remainingStreams -= decodeFloatingPointDictionaries(data, offset, dictionaryMask, dictionary);
+	let presentStream;
+	let presentCount = 0;
+	if (dictionaryMask & MapMask.PRESENCE) {
+		const presence = decodePresenceStream(data, offset);
+		presentStream = presence.value;
+		presentCount = presence.count;
+		remainingStreams--;
+	}
+	let flattenedValues = /* @__PURE__ */ new Uint32Array(0);
+	if (remainingStreams > 0) {
+		flattenedValues = decodeUnsignedInt32Stream(data, offset, decodeStreamMetadata(data, offset));
+		remainingStreams--;
+	}
+	if (remainingStreams !== 0) throw new Error(`Unexpected number of remaining streams while decoding map column: ${remainingStreams}`);
+	return {
+		lengthStream,
+		dictionary,
+		presentStream,
+		presentCount,
+		flattenedValues
+	};
+}
+/** @returns the number of streams consumed, which the string encoding decides for itself. */
+function decodeStringDictionary(data, offset, dictionary) {
+	const stringStreamCount = data[offset.get()];
+	offset.add(1);
+	const strings = decodeString$1("", data, offset, stringStreamCount);
+	if (strings) for (let i = 0; i < strings.size; i++) dictionary.push(strings.getValue(i));
+	return stringStreamCount;
+}
+/**
+* Signed and unsigned integers each get at most one stream, whose width the encoder chose to fit
+* the widest value.
+*
+* @returns the number of streams consumed.
+*/
+function decodeIntegerDictionaries(data, offset, dictionaryMask, dictionary) {
+	let consumed = 0;
+	if (dictionaryMask & MapMask.INT32) {
+		pushAll(dictionary, decodeSignedInt32Stream(data, offset, decodeStreamMetadata(data, offset)));
+		consumed++;
+	} else if (dictionaryMask & MapMask.INT64) {
+		pushAll(dictionary, decodeSignedInt64Stream(data, offset, decodeStreamMetadata(data, offset)));
+		consumed++;
+	}
+	if (dictionaryMask & MapMask.UINT32) {
+		pushAll(dictionary, decodeUnsignedInt32Stream(data, offset, decodeStreamMetadata(data, offset)));
+		consumed++;
+	} else if (dictionaryMask & MapMask.UINT64) {
+		pushAll(dictionary, decodeUnsignedInt64Stream(data, offset, decodeStreamMetadata(data, offset)));
+		consumed++;
+	}
+	return consumed;
+}
+/** @returns the number of streams consumed. */
+function decodeFloatingPointDictionaries(data, offset, dictionaryMask, dictionary) {
+	let consumed = 0;
+	if (dictionaryMask & MapMask.FLOAT) {
+		pushAll(dictionary, decodeFloatsLE(data, offset, decodeStreamMetadata(data, offset).numValues));
+		consumed++;
+	}
+	if (dictionaryMask & MapMask.DOUBLE) {
+		pushAll(dictionary, decodeDoublesLE(data, offset, decodeStreamMetadata(data, offset).numValues));
+		consumed++;
+	}
+	return consumed;
+}
+function decodePresenceStream(data, offset) {
+	const streamMetadata = decodeStreamMetadata(data, offset);
+	if (streamMetadata.physicalStreamType !== PhysicalStreamType.PRESENT) throw new Error(`Expected PRESENT stream for map column but found: ${streamMetadata.physicalStreamType}`);
+	const count = streamMetadata.numValues;
+	const streamDataStart = offset.get();
+	const value = new BitVector(decodeBooleanRle(data, count, streamMetadata.byteLength, offset), count);
+	offset.set(streamDataStart + streamMetadata.byteLength);
+	return {
+		value,
+		count
+	};
+}
+/**
+* Decodes one child column's per-feature values.
+*
+* Lengths, presence bits and tokens are all laid out child-major, so each child picks up where the
+* previous one left off.
+*/
+function decodeChildColumn(streams, childIndex, featureCount, countsCursor, valuesCursor) {
+	const { lengthStream, flattenedValues, presentStream, dictionary } = streams;
+	const presentOffset = childIndex * featureCount;
+	let presentInChild = featureCount;
+	let nullabilityBuffer;
+	if (presentStream) {
+		nullabilityBuffer = new BitVector(new Uint8Array(Math.ceil(featureCount / 8)), featureCount);
+		presentInChild = 0;
+		for (let i = 0; i < featureCount; i++) if (presentStream.get(presentOffset + i)) {
+			nullabilityBuffer.set(i, true);
+			presentInChild++;
+		}
+	}
+	const countsEnd = countsCursor + presentInChild;
+	if (countsEnd > lengthStream.length) throw new Error("Merged map counts underflow while decoding child streams");
+	const value = new Array(featureCount);
+	let countCursor = countsCursor;
+	let flattenedIndex = valuesCursor;
+	for (let featureIndex = 0; featureIndex < featureCount; featureIndex++) {
+		if (presentStream && !presentStream.get(presentOffset + featureIndex)) {
+			value[featureIndex] = null;
+			continue;
+		}
+		const endIndex = flattenedIndex + lengthStream[countCursor++];
+		if (endIndex > flattenedValues.length) throw new Error("Map value stream underflow while decoding feature payload");
+		const decoded = decodeFeatureValue(flattenedValues, flattenedIndex, endIndex, dictionary);
+		value[featureIndex] = decoded.value;
+		flattenedIndex = decoded.nextIndex;
+	}
+	let childValueCount = 0;
+	for (let i = countsCursor; i < countsEnd; i++) childValueCount += lengthStream[i];
+	const valuesEnd = valuesCursor + childValueCount;
+	if (flattenedIndex !== valuesEnd) throw new Error("Unused flattened map values remain after decode");
+	return {
+		value,
+		nullabilityBuffer,
+		countsEnd,
+		valuesEnd
+	};
+}
+/**
+* A feature's payload is a bare sequence of map entries, unless it is a single token - a root-level
+* scalar - or opens with a list token. Those two shapes are what distinguish it from map entries.
+*/
+function decodeFeatureValue(flattenedValues, startIndex, endIndex, dictionary) {
+	if (endIndex - startIndex === 1 || flattenedValues[startIndex] === MapControlValue.START_LIST) return decodeValue(flattenedValues, startIndex, endIndex, dictionary);
+	return decodeMapEntries(flattenedValues, startIndex, endIndex, dictionary);
+}
+function decodeMapEntries(flattenedValues, startIndex, endIndex, dictionary) {
+	const value = Object.create(null);
+	let index = startIndex;
+	while (index < endIndex) {
+		const key = decodeScalarByIndex(flattenedValues[index++], dictionary);
+		if (typeof key !== "string") throw new Error(`Map key dictionary index does not resolve to a string: ${key}`);
+		const decoded = decodeValue(flattenedValues, index, endIndex, dictionary);
+		value[key] = decoded.value;
+		index = decoded.nextIndex;
+	}
+	return {
+		value,
+		nextIndex: index
+	};
+}
+function decodeValue(flattenedValues, startIndex, endIndex, dictionary) {
+	if (startIndex >= endIndex) throw new Error("Unexpected end of map value stream");
+	const token = flattenedValues[startIndex];
+	if (token === MapControlValue.FALSE) return {
+		value: false,
+		nextIndex: startIndex + 1
+	};
+	if (token === MapControlValue.TRUE) return {
+		value: true,
+		nextIndex: startIndex + 1
+	};
+	if (token === MapControlValue.START_MAP) {
+		const valueEndIndex = decodeNestedPayloadEnd(flattenedValues, startIndex, endIndex);
+		return {
+			value: decodeMapEntries(flattenedValues, startIndex + 2, valueEndIndex, dictionary).value,
+			nextIndex: valueEndIndex
+		};
+	}
+	if (token === MapControlValue.START_LIST) {
+		const valueEndIndex = decodeNestedPayloadEnd(flattenedValues, startIndex, endIndex);
+		const value = [];
+		let index = startIndex + 2;
+		while (index < valueEndIndex) {
+			const nested = decodeValue(flattenedValues, index, valueEndIndex, dictionary);
+			value.push(nested.value);
+			index = nested.nextIndex;
+		}
+		return {
+			value,
+			nextIndex: valueEndIndex
+		};
+	}
+	return {
+		value: decodeScalarByIndex(token, dictionary),
+		nextIndex: startIndex + 1
+	};
+}
+/**
+* Reads the length prefix of a nested payload and returns where it ends, the counterpart of
+* `encodeNestedPayloadLength`. The length covers the two header tokens as well.
+*/
+function decodeNestedPayloadEnd(flattenedValues, startIndex, endIndex) {
+	if (startIndex + 1 >= endIndex) throw new Error("Missing length for nested map/list payload");
+	const encodedLength = flattenedValues[startIndex + 1];
+	if (encodedLength < 2) throw new Error(`Invalid nested payload length: ${encodedLength}`);
+	const valueEndIndex = startIndex + encodedLength;
+	if (valueEndIndex > endIndex) throw new Error("Nested payload exceeds containing payload bounds");
+	return valueEndIndex;
+}
+function decodeScalarByIndex(token, dictionary) {
+	const dictionaryIndex = token - MapControlValue.COUNT;
+	if (dictionaryIndex < 0 || dictionaryIndex >= dictionary.length) throw new Error(`Scalar dictionary index out of range: ${token}`);
+	return dictionary[dictionaryIndex];
+}
+function pushAll(dictionary, values) {
+	for (const value of values) dictionary.push(value);
 }
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/decoding/propertyDecoder.js
@@ -29477,11 +33289,12 @@ function decodePropertyColumn(data, offset, columnMetadata, numStreams, numFeatu
 		}
 		return decodeScalarPropertyColumn(numStreams, data, offset, numFeatures, columnMetadata.scalarType, columnMetadata);
 	}
+	if (columnMetadata.complexType?.physicalType === ComplexType.MAP) return decodeMapPropertyColumn(data, offset, columnMetadata, numStreams);
 	if (numStreams === 0) return null;
 	return decodeSharedDictionary(data, offset, columnMetadata, propertyColumnNames);
 }
 function decodeScalarPropertyColumn(numStreams, data, offset, numFeatures, column, columnMetadata) {
-	let nullabilityBuffer = null;
+	let nullabilityBuffer;
 	if (numStreams === 0) return null;
 	if (columnMetadata.nullable) {
 		const presentStreamMetadata = decodeStreamMetadata(data, offset);
@@ -29497,7 +33310,7 @@ function decodeScalarPropertyColumn(numStreams, data, offset, numFeatures, colum
 		case ScalarType.INT_32: return decodeInt32Column(data, offset, columnMetadata, column, sizeOrNullabilityBuffer);
 		case ScalarType.STRING: {
 			const stringDataStreams = columnMetadata.nullable ? numStreams - 1 : numStreams;
-			return decodeString$1(columnMetadata.name, data, offset, stringDataStreams, nullabilityBuffer);
+			return decodeString$1(columnMetadata.name, data, offset, stringDataStreams, nullabilityBuffer) ?? null;
 		}
 		case ScalarType.BOOLEAN: return decodeBooleanColumn(data, offset, columnMetadata, numFeatures, sizeOrNullabilityBuffer);
 		case ScalarType.UINT_64:
@@ -29540,7 +33353,7 @@ function decodeInt64Column(data, offset, column, sizeOrNullabilityBuffer, scalar
 	}
 	if (vectorType === VectorType.SEQUENCE) {
 		const id = decodeSequenceInt64Stream(data, offset, dataStreamMetadata);
-		return new Int64SequenceVector(column.name, id[0], id[1], dataStreamMetadata.numRleValues);
+		return new Int64SequenceVector(column.name, id[0], id[1], dataStreamMetadata.numRleValues, isSigned);
 	}
 	const constValue = isSigned ? decodeSignedConstInt64Stream(data, offset, dataStreamMetadata) : decodeUnsignedConstInt64Stream(data, offset, dataStreamMetadata);
 	return new Int64ConstVector(column.name, constValue, sizeOrNullabilityBuffer, isSigned);
@@ -29556,7 +33369,7 @@ function decodeInt32Column(data, offset, column, scalarColumn, sizeOrNullability
 	}
 	if (vectorType === VectorType.SEQUENCE) {
 		const id = decodeSequenceInt32Stream(data, offset, dataStreamMetadata);
-		return new Int32SequenceVector(column.name, id[0], id[1], dataStreamMetadata.numRleValues);
+		return new Int32SequenceVector(column.name, id[0], id[1], dataStreamMetadata.numRleValues, isSigned);
 	}
 	const constValue = isSigned ? decodeSignedConstInt32Stream(data, offset, dataStreamMetadata) : decodeUnsignedConstInt32Stream(data, offset, dataStreamMetadata);
 	return new Int32ConstVector(column.name, constValue, sizeOrNullabilityBuffer, isSigned);
@@ -29567,10 +33380,28 @@ function isNullabilityBuffer(sizeOrNullabilityBuffer) {
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/metadata/tileset/typeMap.js
 /**
+* The single varint32 that introduces every column in the tile metadata, identifying what kind of
+* column follows. Ids occupy a small range of flagged codes, geometry has one code of its own, and
+* scalar properties are laid out from `SCALAR_BASE` upwards, two codes per type.
+*/
+const ColumnTypeCode = {
+	/** Id columns occupy 0..3. */
+	ID: 0,
+	/** Set on an id column whose values can be null. */
+	ID_NULLABLE: 1,
+	/** Set on an id column holding 64-bit rather than 32-bit ids. */
+	ID_LONG: 2,
+	GEOMETRY: 4,
+	/** Scalar properties are `SCALAR_BASE + scalarType * 2 + (nullable ? 1 : 0)`. */
+	SCALAR_BASE: 10,
+	STRUCT: 30,
+	MAP: 31
+};
+/**
 * The type code is a single varint32 that encodes:
 * - Physical or logical type
 * - Nullable flag
-* - Whether the column has a name (typeCode >= 10)
+* - Whether the column has a name (typeCode >= ColumnTypeCode.SCALAR_BASE)
 * - Whether the column has children (typeCode == 30 for STRUCT)
 * - For ID types: whether it uses long (64-bit) IDs
 */
@@ -29586,60 +33417,66 @@ function isNullabilityBuffer(sizeOrNullabilityBuffer) {
 */
 function decodeColumnType(typeCode) {
 	switch (typeCode) {
-		case 0:
-		case 1:
-		case 2:
-		case 3: {
-			const column = {};
-			column.nullable = (typeCode & 1) !== 0;
-			column.columnScope = ColumnScope.FEATURE;
-			const scalarCol = {};
-			scalarCol.type = "logicalType";
-			scalarCol.logicalType = LogicalScalarType.ID;
-			scalarCol.longID = (typeCode & 2) !== 0;
-			column.scalarType = scalarCol;
-			column.type = "scalarType";
-			return column;
-		}
-		case 4: {
-			const column = {};
-			column.nullable = false;
-			column.columnScope = ColumnScope.FEATURE;
-			const complexCol = {};
-			complexCol.type = "physicalType";
-			complexCol.physicalType = ComplexType.GEOMETRY;
-			column.type = "complexType";
-			column.complexType = complexCol;
-			return column;
-		}
-		case 30: {
-			const column = {};
-			column.nullable = false;
-			column.columnScope = ColumnScope.FEATURE;
-			const complexCol = {};
-			complexCol.type = "physicalType";
-			complexCol.physicalType = ComplexType.STRUCT;
-			column.type = "complexType";
-			column.complexType = complexCol;
-			return column;
-		}
+		case ColumnTypeCode.ID:
+		case ColumnTypeCode.ID | ColumnTypeCode.ID_NULLABLE:
+		case ColumnTypeCode.ID | ColumnTypeCode.ID_LONG:
+		case ColumnTypeCode.ID | ColumnTypeCode.ID_LONG | ColumnTypeCode.ID_NULLABLE: return {
+			nullable: (typeCode & ColumnTypeCode.ID_NULLABLE) !== 0,
+			columnScope: ColumnScope.FEATURE,
+			type: "scalarType",
+			scalarType: {
+				longID: (typeCode & ColumnTypeCode.ID_LONG) !== 0,
+				type: "logicalType",
+				logicalType: LogicalScalarType.ID
+			}
+		};
+		case ColumnTypeCode.GEOMETRY: return {
+			nullable: false,
+			columnScope: ColumnScope.FEATURE,
+			type: "complexType",
+			complexType: {
+				type: "physicalType",
+				physicalType: ComplexType.GEOMETRY,
+				children: []
+			}
+		};
+		case ColumnTypeCode.STRUCT: return {
+			nullable: false,
+			columnScope: ColumnScope.FEATURE,
+			type: "complexType",
+			complexType: {
+				type: "physicalType",
+				physicalType: ComplexType.STRUCT,
+				children: []
+			}
+		};
+		case ColumnTypeCode.MAP: return {
+			nullable: true,
+			columnScope: ColumnScope.FEATURE,
+			type: "complexType",
+			complexType: {
+				type: "physicalType",
+				physicalType: ComplexType.MAP,
+				children: []
+			}
+		};
 		default: return mapScalarType(typeCode);
 	}
 }
 /**
 * Returns true if this type code requires a name to be stored.
 * ID (0-3) and GEOMETRY (4) columns have implicit names.
-* All other types (>= 10) require explicit names.
+* All other types (>= ColumnTypeCode.SCALAR_BASE) require explicit names.
 */
 function columnTypeHasName(typeCode) {
-	return typeCode >= 10;
+	return typeCode >= ColumnTypeCode.SCALAR_BASE;
 }
 /**
 * Returns true if this type code has child fields.
-* Only STRUCT (typeCode 30) has children.
+* STRUCT (typeCode 30) and MAP (typeCode 31) have children.
 */
 function columnTypeHasChildren(typeCode) {
-	return typeCode === 30;
+	return typeCode === ColumnTypeCode.STRUCT || typeCode === ColumnTypeCode.MAP;
 }
 /**
 * Determines if a stream count needs to be read for this column.
@@ -29666,7 +33503,8 @@ function hasStreamCount(column) {
 		const complexCol = column.complexType;
 		if (complexCol.type === "physicalType") switch (complexCol.physicalType) {
 			case ComplexType.GEOMETRY:
-			case ComplexType.STRUCT: return true;
+			case ComplexType.STRUCT:
+			case ComplexType.MAP: return true;
 			default: return false;
 		}
 	}
@@ -29685,65 +33523,66 @@ function isGeometryColumn(column) {
 * Even codes are non-nullable, odd codes are nullable.
 */
 function mapScalarType(typeCode) {
-	let scalarType;
+	let physicalType;
 	switch (typeCode) {
 		case 10:
 		case 11:
-			scalarType = ScalarType.BOOLEAN;
+			physicalType = ScalarType.BOOLEAN;
 			break;
 		case 12:
 		case 13:
-			scalarType = ScalarType.INT_8;
+			physicalType = ScalarType.INT_8;
 			break;
 		case 14:
 		case 15:
-			scalarType = ScalarType.UINT_8;
+			physicalType = ScalarType.UINT_8;
 			break;
 		case 16:
 		case 17:
-			scalarType = ScalarType.INT_32;
+			physicalType = ScalarType.INT_32;
 			break;
 		case 18:
 		case 19:
-			scalarType = ScalarType.UINT_32;
+			physicalType = ScalarType.UINT_32;
 			break;
 		case 20:
 		case 21:
-			scalarType = ScalarType.INT_64;
+			physicalType = ScalarType.INT_64;
 			break;
 		case 22:
 		case 23:
-			scalarType = ScalarType.UINT_64;
+			physicalType = ScalarType.UINT_64;
 			break;
 		case 24:
 		case 25:
-			scalarType = ScalarType.FLOAT;
+			physicalType = ScalarType.FLOAT;
 			break;
 		case 26:
 		case 27:
-			scalarType = ScalarType.DOUBLE;
+			physicalType = ScalarType.DOUBLE;
 			break;
 		case 28:
 		case 29:
-			scalarType = ScalarType.STRING;
+			physicalType = ScalarType.STRING;
 			break;
 		default: return null;
 	}
-	const column = {};
-	column.nullable = (typeCode & 1) !== 0;
-	column.columnScope = ColumnScope.FEATURE;
-	const scalarCol = {};
-	scalarCol.type = "physicalType";
-	scalarCol.physicalType = scalarType;
-	column.type = "scalarType";
-	column.scalarType = scalarCol;
-	return column;
+	return {
+		nullable: (typeCode & 1) !== 0,
+		columnScope: ColumnScope.FEATURE,
+		type: "scalarType",
+		scalarType: {
+			longID: false,
+			type: "physicalType",
+			physicalType
+		}
+	};
 }
 //#endregion
 //#region node_modules/@maplibre/mlt/dist/metadata/tileset/embeddedTilesetMetadataDecoder.js
 const textDecoder = new TextDecoder();
-const SUPPORTED_COLUMN_TYPES = "0-3(ID), 4(GEOMETRY), 10-29(scalars), 30(STRUCT)";
-const SUPPORTED_FIELD_TYPES = "10-29(scalars), 30(STRUCT)";
+const SUPPORTED_COLUMN_TYPES = "0-3(ID), 4(GEOMETRY), 10-29(scalars), 30(STRUCT), 31(MAP)";
+const SUPPORTED_FIELD_TYPES = "10-29(scalars), 30(STRUCT), 31(MAP)";
 /**
 * Decodes a length-prefixed UTF-8 string.
 * Layout: [len: varint32][bytes: len]
@@ -29762,12 +33601,18 @@ function decodeString(src, offset) {
 * Used when decoding Field metadata which has the same format as Column.
 */
 function columnToField(column) {
-	return {
-		name: column.name,
-		nullable: column.nullable,
+	const name = column.name;
+	const nullable = column.nullable;
+	return column.type === "scalarType" ? {
+		type: "scalarField",
 		scalarField: column.scalarType,
+		name,
+		nullable
+	} : {
+		type: "complexField",
 		complexField: column.complexType,
-		type: column.type === "scalarType" ? "scalarField" : "complexField"
+		name,
+		nullable
 	};
 }
 /**
@@ -29775,13 +33620,17 @@ function columnToField(column) {
 */
 function decodeField(src, offset) {
 	const typeCode = decodeVarintInt32(src, offset, 1)[0] >>> 0;
-	if (typeCode < 10 || typeCode > 30) throw new Error(`Unsupported field type code ${typeCode}. Supported: ${SUPPORTED_FIELD_TYPES}`);
-	const column = decodeColumnType(typeCode);
-	if (columnTypeHasName(typeCode)) column.name = decodeString(src, offset);
-	if (columnTypeHasChildren(typeCode)) {
+	const base = typeCode >= ColumnTypeCode.SCALAR_BASE ? decodeColumnType(typeCode) : null;
+	if (!base) throw new Error(`Unsupported field type code ${typeCode}. Supported: ${SUPPORTED_FIELD_TYPES}`);
+	const column = {
+		...base,
+		name: decodeString(src, offset)
+	};
+	if (column.type === "complexType" && columnTypeHasChildren(typeCode)) {
+		const complexCol = column.complexType;
 		const childCount = decodeVarintInt32(src, offset, 1)[0] >>> 0;
-		column.complexType.children = new Array(childCount);
-		for (let i = 0; i < childCount; i++) column.complexType.children[i] = decodeField(src, offset);
+		complexCol.children = new Array(childCount);
+		for (let i = 0; i < childCount; i++) complexCol.children[i] = decodeField(src, offset);
 	}
 	return columnToField(column);
 }
@@ -29790,12 +33639,18 @@ function decodeField(src, offset) {
 */
 function decodeColumn(src, offset) {
 	const typeCode = decodeVarintInt32(src, offset, 1)[0] >>> 0;
-	const column = decodeColumnType(typeCode);
-	if (!column) throw new Error(`Unsupported column type code ${typeCode}. Supported: ${SUPPORTED_COLUMN_TYPES}`);
-	if (columnTypeHasName(typeCode)) column.name = decodeString(src, offset);
-	else if (typeCode >= 0 && typeCode <= 3) column.name = "id";
-	else if (typeCode === 4) column.name = "geometry";
-	if (columnTypeHasChildren(typeCode)) {
+	const base = decodeColumnType(typeCode);
+	if (!base) throw new Error(`Unsupported column type code ${typeCode}. Supported: ${SUPPORTED_COLUMN_TYPES}`);
+	let name;
+	if (columnTypeHasName(typeCode)) name = decodeString(src, offset);
+	else if (typeCode < ColumnTypeCode.GEOMETRY) name = "id";
+	else if (typeCode === ColumnTypeCode.GEOMETRY) name = "geometry";
+	else throw new Error(`Unsupported column type code ${typeCode}. Supported: ${SUPPORTED_COLUMN_TYPES}`);
+	const column = {
+		...base,
+		name
+	};
+	if (column.type === "complexType" && columnTypeHasChildren(typeCode)) {
 		const childCount = decodeVarintInt32(src, offset, 1)[0] >>> 0;
 		const complexCol = column.complexType;
 		complexCol.children = new Array(childCount);
@@ -29840,7 +33695,8 @@ function decodeTile(tile, geometryScaling, idWithinMaxSafeInteger = true) {
 		const blockLength = decodeVarintInt32(tile, offset, 1)[0] >>> 0;
 		const blockEnd = offset.get() + blockLength;
 		if (blockEnd > tile.length) throw new Error(`Block overruns tile: ${blockEnd} > ${tile.length}`);
-		if (decodeVarintInt32(tile, offset, 1)[0] >>> 0 !== 1) {
+		const tag = decodeVarintInt32(tile, offset, 1)[0] >>> 0;
+		if (tag !== 1 && tag !== 2) {
 			offset.set(blockEnd);
 			continue;
 		}
@@ -29877,8 +33733,10 @@ function decodeTile(tile, geometryScaling, idWithinMaxSafeInteger = true) {
 				const numStreams = hasStreamCount(columnMetadata) ? decodeVarintInt32(tile, offset, 1)[0] : 1;
 				if (numStreams === 0) continue;
 				const propertyVector = decodePropertyColumn(tile, offset, columnMetadata, numStreams, numFeatures, void 0);
-				if (propertyVector) if (Array.isArray(propertyVector)) for (const property of propertyVector) propertyVectors.push(property);
-				else propertyVectors.push(propertyVector);
+				if (propertyVector) {
+					if (Array.isArray(propertyVector)) for (const property of propertyVector) propertyVectors.push(property);
+					else propertyVectors.push(propertyVector);
+				}
 			}
 		}
 		const featureTable = new FeatureTable(featureTableMetadata.name, geometryVector, idVector, propertyVectors, extent);
@@ -29888,26 +33746,24 @@ function decodeTile(tile, geometryScaling, idWithinMaxSafeInteger = true) {
 	return featureTables;
 }
 function decodeIdColumn(tile, columnMetadata, offset, columnName, idDataStreamMetadata, sizeOrNullabilityBuffer, idWithinMaxSafeInteger = false) {
-	const scalarTypeMetadata = columnMetadata.scalarType;
-	if (scalarTypeMetadata?.type !== "logicalType" || scalarTypeMetadata.logicalType !== LogicalScalarType.ID) throw new Error(`ID column must be a logical ID scalar type: ${columnName}`);
-	const idDataType = scalarTypeMetadata.longID ? ScalarType.UINT_64 : ScalarType.UINT_32;
+	const idDataType = columnMetadata.scalarType?.longID ? ScalarType.UINT_64 : ScalarType.UINT_32;
 	const nullabilityBuffer = typeof sizeOrNullabilityBuffer === "number" ? void 0 : sizeOrNullabilityBuffer;
 	const vectorType = getVectorType(idDataStreamMetadata, sizeOrNullabilityBuffer, tile, offset, idDataType === ScalarType.UINT_64 ? "int64" : "int32");
 	if (idDataType === ScalarType.UINT_32) switch (vectorType) {
 		case VectorType.FLAT: return new Int32FlatVector(columnName, decodeUnsignedInt32Stream(tile, offset, idDataStreamMetadata, void 0, nullabilityBuffer), sizeOrNullabilityBuffer);
 		case VectorType.SEQUENCE: {
 			const id = decodeSequenceInt32Stream(tile, offset, idDataStreamMetadata);
-			return new Int32SequenceVector(columnName, id[0], id[1], idDataStreamMetadata.numRleValues);
+			return new Int32SequenceVector(columnName, id[0], id[1], idDataStreamMetadata.numRleValues, false);
 		}
 		case VectorType.CONST: return new Int32ConstVector(columnName, decodeUnsignedConstInt32Stream(tile, offset, idDataStreamMetadata), sizeOrNullabilityBuffer, false);
 	}
 	switch (vectorType) {
 		case VectorType.FLAT:
-			if (idWithinMaxSafeInteger) return new DoubleFlatVector(columnName, decodeUnsignedInt64AsFloat64Stream(tile, offset, idDataStreamMetadata), sizeOrNullabilityBuffer);
+			if (idWithinMaxSafeInteger) return new DoubleFlatVector(columnName, decodeUnsignedInt64AsFloat64Stream(tile, offset, idDataStreamMetadata, nullabilityBuffer), sizeOrNullabilityBuffer);
 			return new Int64FlatVector(columnName, decodeUnsignedInt64Stream(tile, offset, idDataStreamMetadata, nullabilityBuffer), sizeOrNullabilityBuffer);
 		case VectorType.SEQUENCE: {
 			const id = decodeSequenceInt64Stream(tile, offset, idDataStreamMetadata);
-			return new Int64SequenceVector(columnName, id[0], id[1], idDataStreamMetadata.numRleValues);
+			return new Int64SequenceVector(columnName, id[0], id[1], idDataStreamMetadata.numRleValues, false);
 		}
 		case VectorType.CONST: return new Int64ConstVector(columnName, decodeUnsignedConstInt64Stream(tile, offset, idDataStreamMetadata), sizeOrNullabilityBuffer, false);
 	}
@@ -30114,10 +33970,28 @@ var FeatureIndex = class {
 	}
 };
 register("FeatureIndex", FeatureIndex, { omit: ["rawTileData", "sourceLayerCoder"] });
+/**
+* Whether a possibly-evaluated property still has to be evaluated against a feature, as a
+* data-driven one does.
+*
+* A data-constant property is already the value it will be drawn with, and that value is often a
+* primitive -- `'map'` for an alignment, a number for an opacity -- which the `in` operator throws
+* on, so it is not reached for until the value is known to be an object.
+*/
+function needsEvaluating(value) {
+	return typeof value === "object" && value !== null && "evaluate" in value;
+}
+/**
+* Evaluates a serialized layer's paint or layout properties against one feature, so that a queried
+* feature reports the values it was actually drawn with.
+*
+* A property the layer does not carry as a possibly-evaluated value, or one that is already a plain
+* value, is passed through as it is.
+*/
 function evaluateProperties(serializedProperties, styleLayerProperties, feature, featureState, availableImages) {
-	return mapObject(serializedProperties, (property, key) => {
-		const prop = styleLayerProperties instanceof PossiblyEvaluated ? styleLayerProperties.get(key) : null;
-		return prop?.evaluate ? prop.evaluate(feature, featureState, availableImages) : prop;
+	return mapObject(serializedProperties, (_property, key) => {
+		const value = styleLayerProperties instanceof PossiblyEvaluated ? styleLayerProperties.get(key) : null;
+		return needsEvaluating(value) ? value.evaluate(feature, featureState, void 0, availableImages) : value;
 	});
 }
 function topDownFeatureComparator(a, b) {
@@ -30299,1110 +34173,6 @@ var BoundedLRUCache = class {
 	}
 };
 //#endregion
-//#region src/symbol/clip_line.ts
-/**
-* Returns the part of a multiline that intersects with the provided rectangular box.
-*
-* @param lines - the lines to check
-* @param x1 - the left edge of the box
-* @param y1 - the top edge of the box
-* @param x2 - the right edge of the box
-* @param y2 - the bottom edge of the box
-* @returns lines
-*/
-function clipLine(lines, x1, y1, x2, y2) {
-	const clippedLines = [];
-	for (const line of lines) {
-		let clippedLine;
-		for (let i = 0; i < line.length - 1; i++) {
-			let p0 = line[i];
-			let p1 = line[i + 1];
-			if (p0.x < x1 && p1.x < x1) continue;
-			else if (p0.x < x1) p0 = new Point(x1, p0.y + (p1.y - p0.y) * ((x1 - p0.x) / (p1.x - p0.x)))._round();
-			else if (p1.x < x1) p1 = new Point(x1, p0.y + (p1.y - p0.y) * ((x1 - p0.x) / (p1.x - p0.x)))._round();
-			if (p0.y < y1 && p1.y < y1) continue;
-			else if (p0.y < y1) p0 = new Point(p0.x + (p1.x - p0.x) * ((y1 - p0.y) / (p1.y - p0.y)), y1)._round();
-			else if (p1.y < y1) p1 = new Point(p0.x + (p1.x - p0.x) * ((y1 - p0.y) / (p1.y - p0.y)), y1)._round();
-			if (p0.x >= x2 && p1.x >= x2) continue;
-			else if (p0.x >= x2) p0 = new Point(x2, p0.y + (p1.y - p0.y) * ((x2 - p0.x) / (p1.x - p0.x)))._round();
-			else if (p1.x >= x2) p1 = new Point(x2, p0.y + (p1.y - p0.y) * ((x2 - p0.x) / (p1.x - p0.x)))._round();
-			if (p0.y >= y2 && p1.y >= y2) continue;
-			else if (p0.y >= y2) p0 = new Point(p0.x + (p1.x - p0.x) * ((y2 - p0.y) / (p1.y - p0.y)), y2)._round();
-			else if (p1.y >= y2) p1 = new Point(p0.x + (p1.x - p0.x) * ((y2 - p0.y) / (p1.y - p0.y)), y2)._round();
-			if (!clippedLine || !p0.equals(clippedLine[clippedLine.length - 1])) {
-				clippedLine = [p0];
-				clippedLines.push(clippedLine);
-			}
-			clippedLine.push(p1);
-		}
-	}
-	return clippedLines;
-}
-/**
-* Clips the geometry to the given bounds.
-* @param geometry - the geometry to clip
-* @param type - the geometry type (1=POINT, 2=LINESTRING, 3=POLYGON)
-* @param x1 - the left edge of the clipping box
-* @param y1 - the top edge of the clipping box
-* @param x2 - the right edge of the clipping box
-* @param y2 - the bottom edge of the clipping box
-* @returns the clipped geometry
-*/
-function clipGeometry(geometry, type, x1, y1, x2, y2) {
-	let clippedGeometry = clipGeometryOnAxis(geometry, type, x1, x2, 0);
-	clippedGeometry = clipGeometryOnAxis(clippedGeometry, type, y1, y2, 1);
-	return clippedGeometry;
-}
-/**
-* Clip features between two vertical or horizontal axis-parallel lines:
-* ```
-*     |        |
-*  ___|___     |     /
-* /   |   \____|____/
-*     |        |
-*```
-* @param geometry - the geometry to clip
-* @param type - the geometry type (1=POINT, 2=LINESTRING, 3=POLYGON)
-* @param start - the start line coordinate (x or y) to clip against
-* @param end - the end line coordinate (x or y) to clip against
-* @param axis - the axis to clip on (X or Y)
-* @returns the clipped geometry
-*/
-function clipGeometryOnAxis(geometry, type, start, end, axis) {
-	switch (type) {
-		case 1: return clipPoints(geometry, start, end, axis);
-		case 2: return clipLines(geometry, start, end, axis, false);
-		case 3: return clipLines(geometry, start, end, axis, true);
-	}
-	return [];
-}
-function clipPoints(geometry, start, end, axis) {
-	const newGeometry = [];
-	for (const ring of geometry) for (const point of ring) {
-		const a = axis === 0 ? point.x : point.y;
-		if (a >= start && a <= end) newGeometry.push([point]);
-	}
-	return newGeometry;
-}
-/**
-* Clips a line to the given start and end coordinates.
-* @param line - the line to clip
-* @param start - the start line coordinate (x or y) to clip against
-* @param end - the end line coordinate (x or y) to clip against
-* @param axis - the axis to clip on (X or Y)
-* @param isPolygon - whether the line is part of a polygon
-* @returns the clipped line(s)
-*/
-function clipLineInternal(line, start, end, axis, isPolygon) {
-	const intersectionPoint = axis === 0 ? intersectionPointX : intersectionPointY;
-	let slice = [];
-	const newLine = [];
-	for (let i = 0; i < line.length - 1; i++) {
-		const p1 = line[i];
-		const p2 = line[i + 1];
-		const pos1 = axis === 0 ? p1.x : p1.y;
-		const pos2 = axis === 0 ? p2.x : p2.y;
-		let exited = false;
-		if (pos1 < start) {
-			if (pos2 > start) slice.push(intersectionPoint(p1, p2, start));
-		} else if (pos1 > end) {
-			if (pos2 < end) slice.push(intersectionPoint(p1, p2, end));
-		} else slice.push(p1);
-		if (pos2 < start && pos1 >= start) {
-			slice.push(intersectionPoint(p1, p2, start));
-			exited = true;
-		}
-		if (pos2 > end && pos1 <= end) {
-			slice.push(intersectionPoint(p1, p2, end));
-			exited = true;
-		}
-		if (!isPolygon && exited) {
-			newLine.push(slice);
-			slice = [];
-		}
-	}
-	const last = line.length - 1;
-	const lastPos = axis === 0 ? line[last].x : line[last].y;
-	if (lastPos >= start && lastPos <= end) slice.push(line[last]);
-	if (isPolygon && slice.length > 0 && !slice[0].equals(slice[slice.length - 1])) slice.push(new Point(slice[0].x, slice[0].y));
-	if (slice.length > 0) newLine.push(slice);
-	return newLine;
-}
-function clipLines(geometry, start, end, axis, isPolygon) {
-	const newGeometry = [];
-	for (const line of geometry) {
-		const clippedLines = clipLineInternal(line, start, end, axis, isPolygon);
-		if (clippedLines.length > 0) newGeometry.push(...clippedLines);
-	}
-	return newGeometry;
-}
-function intersectionPointX(p1, p2, x) {
-	const t = (x - p1.x) / (p2.x - p1.x);
-	return new Point(x, p1.y + (p2.y - p1.y) * t);
-}
-function intersectionPointY(p1, p2, y) {
-	const t = (y - p1.y) / (p2.y - p1.y);
-	return new Point(p1.x + (p2.x - p1.x) * t, y);
-}
-//#endregion
-//#region src/symbol/anchor.ts
-var Anchor = class Anchor extends Point {
-	constructor(x, y, angle, segment) {
-		super(x, y);
-		this.angle = angle;
-		if (segment !== void 0) this.segment = segment;
-	}
-	clone() {
-		return new Anchor(this.x, this.y, this.angle, this.segment);
-	}
-};
-register("Anchor", Anchor);
-//#endregion
-//#region src/symbol/check_max_angle.ts
-/**
-* Labels placed around really sharp angles aren't readable. Check if any
-* part of the potential label has a combined angle that is too big.
-*
-* @param line - The line to check
-* @param anchor - The point on the line around which the label is anchored.
-* @param labelLength - The length of the label in geometry units.
-* @param windowSize - The check fails if the combined angles within a part of the line that is `windowSize` long is too big.
-* @param maxAngle - The maximum combined angle that any window along the label is allowed to have.
-*
-* @returns whether the label should be placed
-*/
-function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
-	if (anchor.segment === void 0 || labelLength === 0) return true;
-	let p = anchor;
-	let index = anchor.segment + 1;
-	let anchorDistance = 0;
-	while (anchorDistance > -labelLength / 2) {
-		index--;
-		if (index < 0) return false;
-		anchorDistance -= line[index].dist(p);
-		p = line[index];
-	}
-	anchorDistance += line[index].dist(line[index + 1]);
-	index++;
-	const recentCorners = [];
-	let recentAngleDelta = 0;
-	while (anchorDistance < labelLength / 2) {
-		const prev = line[index - 1];
-		const current = line[index];
-		const next = line[index + 1];
-		if (!next) return false;
-		let angleDelta = prev.angleTo(current) - current.angleTo(next);
-		angleDelta = Math.abs((angleDelta + 3 * Math.PI) % (Math.PI * 2) - Math.PI);
-		recentCorners.push({
-			distance: anchorDistance,
-			angleDelta
-		});
-		recentAngleDelta += angleDelta;
-		while (anchorDistance - recentCorners[0].distance > windowSize) recentAngleDelta -= recentCorners.shift().angleDelta;
-		if (recentAngleDelta > maxAngle) return false;
-		index++;
-		anchorDistance += current.dist(next);
-	}
-	return true;
-}
-//#endregion
-//#region src/symbol/get_anchors.ts
-function getLineLength(line) {
-	let lineLength = 0;
-	for (let k = 0; k < line.length - 1; k++) lineLength += line[k].dist(line[k + 1]);
-	return lineLength;
-}
-function getAngleWindowSize(shapedText, glyphSize, boxScale) {
-	return shapedText ? 3 / 5 * glyphSize * boxScale : 0;
-}
-function getShapedLabelLength(shapedText, shapedIcon) {
-	return Math.max(shapedText ? shapedText.right - shapedText.left : 0, shapedIcon ? shapedIcon.right - shapedIcon.left : 0);
-}
-function getCenterAnchor(line, maxAngle, shapedText, shapedIcon, glyphSize, boxScale) {
-	const angleWindowSize = getAngleWindowSize(shapedText, glyphSize, boxScale);
-	const labelLength = getShapedLabelLength(shapedText, shapedIcon) * boxScale;
-	let prevDistance = 0;
-	const centerDistance = getLineLength(line) / 2;
-	for (let i = 0; i < line.length - 1; i++) {
-		const a = line[i], b = line[i + 1];
-		const segmentDistance = a.dist(b);
-		if (prevDistance + segmentDistance > centerDistance) {
-			const t = (centerDistance - prevDistance) / segmentDistance;
-			const anchor = new Anchor(interpolateFactory.number(a.x, b.x, t), interpolateFactory.number(a.y, b.y, t), b.angleTo(a), i);
-			anchor._round();
-			if (!angleWindowSize || checkMaxAngle(line, anchor, labelLength, angleWindowSize, maxAngle)) return anchor;
-			else return;
-		}
-		prevDistance += segmentDistance;
-	}
-}
-function getAnchors(line, spacing, maxAngle, shapedText, shapedIcon, glyphSize, boxScale, overscaling, tileExtent) {
-	const angleWindowSize = getAngleWindowSize(shapedText, glyphSize, boxScale);
-	const shapedLabelLength = getShapedLabelLength(shapedText, shapedIcon);
-	const labelLength = shapedLabelLength * boxScale;
-	const isLineContinued = line[0].x === 0 || line[0].x === tileExtent || line[0].y === 0 || line[0].y === tileExtent;
-	if (spacing - labelLength < spacing / 4) spacing = labelLength + spacing / 4;
-	const fixedExtraOffset = glyphSize * 2;
-	return resample(line, !isLineContinued ? (shapedLabelLength / 2 + fixedExtraOffset) * boxScale * overscaling % spacing : spacing / 2 * overscaling % spacing, spacing, angleWindowSize, maxAngle, labelLength, isLineContinued, false, tileExtent);
-}
-function resample(line, offset, spacing, angleWindowSize, maxAngle, labelLength, isLineContinued, placeAtMiddle, tileExtent) {
-	const halfLabelLength = labelLength / 2;
-	const lineLength = getLineLength(line);
-	let distance = 0;
-	let markedDistance = offset - spacing;
-	let anchors = [];
-	for (let i = 0; i < line.length - 1; i++) {
-		const a = line[i], b = line[i + 1];
-		const segmentDist = a.dist(b), angle = b.angleTo(a);
-		while (markedDistance + spacing < distance + segmentDist) {
-			markedDistance += spacing;
-			const t = (markedDistance - distance) / segmentDist, x = interpolateFactory.number(a.x, b.x, t), y = interpolateFactory.number(a.y, b.y, t);
-			if (x >= 0 && x < tileExtent && y >= 0 && y < tileExtent && markedDistance - halfLabelLength >= 0 && markedDistance + halfLabelLength <= lineLength) {
-				const anchor = new Anchor(x, y, angle, i);
-				anchor._round();
-				if (!angleWindowSize || checkMaxAngle(line, anchor, labelLength, angleWindowSize, maxAngle)) anchors.push(anchor);
-			}
-		}
-		distance += segmentDist;
-	}
-	if (!placeAtMiddle && !anchors.length && !isLineContinued) anchors = resample(line, distance / 2, spacing, angleWindowSize, maxAngle, labelLength, isLineContinued, true, tileExtent);
-	return anchors;
-}
-//#endregion
-//#region src/symbol/quads.ts
-const border = 1;
-/**
-* Create the quads used for rendering an icon.
-*/
-function getIconQuads(shapedIcon, iconRotate, isSDFIcon, hasIconTextFit) {
-	const quads = [];
-	const image = shapedIcon.image;
-	const pixelRatio = image.pixelRatio;
-	const imageWidth = image.paddedRect.w - 2;
-	const imageHeight = image.paddedRect.h - 2;
-	let icon = {
-		x1: shapedIcon.left,
-		y1: shapedIcon.top,
-		x2: shapedIcon.right,
-		y2: shapedIcon.bottom
-	};
-	const stretchX = image.stretchX || [[0, imageWidth]];
-	const stretchY = image.stretchY || [[0, imageHeight]];
-	const reduceRanges = (sum, range) => sum + range[1] - range[0];
-	const stretchWidth = stretchX.reduce(reduceRanges, 0);
-	const stretchHeight = stretchY.reduce(reduceRanges, 0);
-	const fixedWidth = imageWidth - stretchWidth;
-	const fixedHeight = imageHeight - stretchHeight;
-	let stretchOffsetX = 0;
-	let stretchContentWidth = stretchWidth;
-	let stretchOffsetY = 0;
-	let stretchContentHeight = stretchHeight;
-	let fixedOffsetX = 0;
-	let fixedContentWidth = fixedWidth;
-	let fixedOffsetY = 0;
-	let fixedContentHeight = fixedHeight;
-	if (image.content && hasIconTextFit) {
-		const content = image.content;
-		const contentWidth = content[2] - content[0];
-		const contentHeight = content[3] - content[1];
-		if (image.textFitWidth || image.textFitHeight) icon = applyTextFit(shapedIcon);
-		stretchOffsetX = sumWithinRange(stretchX, 0, content[0]);
-		stretchOffsetY = sumWithinRange(stretchY, 0, content[1]);
-		stretchContentWidth = sumWithinRange(stretchX, content[0], content[2]);
-		stretchContentHeight = sumWithinRange(stretchY, content[1], content[3]);
-		fixedOffsetX = content[0] - stretchOffsetX;
-		fixedOffsetY = content[1] - stretchOffsetY;
-		fixedContentWidth = contentWidth - stretchContentWidth;
-		fixedContentHeight = contentHeight - stretchContentHeight;
-	}
-	const iconLeft = icon.x1;
-	const iconTop = icon.y1;
-	const iconWidth = icon.x2 - iconLeft;
-	const iconHeight = icon.y2 - iconTop;
-	const makeBox = (left, top, right, bottom) => {
-		const leftEm = getEmOffset(left.stretch - stretchOffsetX, stretchContentWidth, iconWidth, iconLeft);
-		const leftPx = getPxOffset(left.fixed - fixedOffsetX, fixedContentWidth, left.stretch, stretchWidth);
-		const topEm = getEmOffset(top.stretch - stretchOffsetY, stretchContentHeight, iconHeight, iconTop);
-		const topPx = getPxOffset(top.fixed - fixedOffsetY, fixedContentHeight, top.stretch, stretchHeight);
-		const rightEm = getEmOffset(right.stretch - stretchOffsetX, stretchContentWidth, iconWidth, iconLeft);
-		const rightPx = getPxOffset(right.fixed - fixedOffsetX, fixedContentWidth, right.stretch, stretchWidth);
-		const bottomEm = getEmOffset(bottom.stretch - stretchOffsetY, stretchContentHeight, iconHeight, iconTop);
-		const bottomPx = getPxOffset(bottom.fixed - fixedOffsetY, fixedContentHeight, bottom.stretch, stretchHeight);
-		const tl = new Point(leftEm, topEm);
-		const tr = new Point(rightEm, topEm);
-		const br = new Point(rightEm, bottomEm);
-		const bl = new Point(leftEm, bottomEm);
-		const pixelOffsetTL = new Point(leftPx / pixelRatio, topPx / pixelRatio);
-		const pixelOffsetBR = new Point(rightPx / pixelRatio, bottomPx / pixelRatio);
-		const angle = iconRotate * Math.PI / 180;
-		if (angle) {
-			const sin = Math.sin(angle), cos = Math.cos(angle), matrix = [
-				cos,
-				-sin,
-				sin,
-				cos
-			];
-			tl._matMult(matrix);
-			tr._matMult(matrix);
-			bl._matMult(matrix);
-			br._matMult(matrix);
-		}
-		const x1 = left.stretch + left.fixed;
-		const x2 = right.stretch + right.fixed;
-		const y1 = top.stretch + top.fixed;
-		const y2 = bottom.stretch + bottom.fixed;
-		return {
-			tl,
-			tr,
-			bl,
-			br,
-			tex: {
-				x: image.paddedRect.x + border + x1,
-				y: image.paddedRect.y + border + y1,
-				w: x2 - x1,
-				h: y2 - y1
-			},
-			writingMode: void 0,
-			glyphOffset: [0, 0],
-			sectionIndex: 0,
-			pixelOffsetTL,
-			pixelOffsetBR,
-			minFontScaleX: fixedContentWidth / pixelRatio / iconWidth,
-			minFontScaleY: fixedContentHeight / pixelRatio / iconHeight,
-			isSDF: isSDFIcon
-		};
-	};
-	if (!hasIconTextFit || !image.stretchX && !image.stretchY) quads.push(makeBox({
-		fixed: 0,
-		stretch: -1
-	}, {
-		fixed: 0,
-		stretch: -1
-	}, {
-		fixed: 0,
-		stretch: imageWidth + 1
-	}, {
-		fixed: 0,
-		stretch: imageHeight + 1
-	}));
-	else {
-		const xCuts = stretchZonesToCuts(stretchX, fixedWidth, stretchWidth);
-		const yCuts = stretchZonesToCuts(stretchY, fixedHeight, stretchHeight);
-		for (let xi = 0; xi < xCuts.length - 1; xi++) {
-			const x1 = xCuts[xi];
-			const x2 = xCuts[xi + 1];
-			for (let yi = 0; yi < yCuts.length - 1; yi++) {
-				const y1 = yCuts[yi];
-				const y2 = yCuts[yi + 1];
-				quads.push(makeBox(x1, y1, x2, y2));
-			}
-		}
-	}
-	return quads;
-}
-function sumWithinRange(ranges, min, max) {
-	let sum = 0;
-	for (const range of ranges) sum += Math.max(min, Math.min(max, range[1])) - Math.max(min, Math.min(max, range[0]));
-	return sum;
-}
-function stretchZonesToCuts(stretchZones, fixedSize, stretchSize) {
-	const cuts = [{
-		fixed: -1,
-		stretch: 0
-	}];
-	for (const [c1, c2] of stretchZones) {
-		const last = cuts[cuts.length - 1];
-		cuts.push({
-			fixed: c1 - last.stretch,
-			stretch: last.stretch
-		});
-		cuts.push({
-			fixed: c1 - last.stretch,
-			stretch: last.stretch + (c2 - c1)
-		});
-	}
-	cuts.push({
-		fixed: fixedSize + border,
-		stretch: stretchSize
-	});
-	return cuts;
-}
-function getEmOffset(stretchOffset, stretchSize, iconSize, iconOffset) {
-	return stretchOffset / stretchSize * iconSize + iconOffset;
-}
-function getPxOffset(fixedOffset, fixedSize, stretchOffset, stretchSize) {
-	return fixedOffset - fixedSize * stretchOffset / stretchSize;
-}
-/**
-* Create the quads used for rendering a text label.
-*/
-function getGlyphQuads(anchor, shaping, textOffset, layer, alongLine, feature, imageMap, allowVerticalPlacement) {
-	const textRotate = layer.layout.get("text-rotate").evaluate(feature, {}) * Math.PI / 180;
-	const quads = [];
-	for (const line of shaping.positionedLines) for (const positionedGlyph of line.positionedGlyphs) {
-		if (!positionedGlyph.rect) continue;
-		const textureRect = positionedGlyph.rect || {};
-		let rectBuffer = 4;
-		let isSDF = true;
-		let pixelRatio = 1;
-		let lineOffset = 0;
-		const rotateVerticalGlyph = (alongLine || allowVerticalPlacement) && positionedGlyph.vertical;
-		const halfAdvance = positionedGlyph.metrics.advance * positionedGlyph.scale / 2;
-		if (allowVerticalPlacement && shaping.verticalizable) {
-			const scaledGlyphOffset = (positionedGlyph.scale - 1) * 24;
-			const imageOffset = (24 - positionedGlyph.metrics.width * positionedGlyph.scale) / 2;
-			lineOffset = line.lineOffset / 2 - (positionedGlyph.imageName ? -imageOffset : scaledGlyphOffset);
-		}
-		if (positionedGlyph.imageName) {
-			const image = imageMap[positionedGlyph.imageName];
-			isSDF = image.sdf;
-			pixelRatio = image.pixelRatio;
-			rectBuffer = 1 / pixelRatio;
-		}
-		const glyphOffset = alongLine ? [positionedGlyph.x + halfAdvance, positionedGlyph.y] : [0, 0];
-		let builtInOffset = alongLine ? [0, 0] : [positionedGlyph.x + halfAdvance + textOffset[0], positionedGlyph.y + textOffset[1] - lineOffset];
-		let verticalizedLabelOffset = [0, 0];
-		if (rotateVerticalGlyph) {
-			verticalizedLabelOffset = builtInOffset;
-			builtInOffset = [0, 0];
-		}
-		const textureScale = positionedGlyph.metrics.isDoubleResolution ? 2 : 1;
-		const x1 = (positionedGlyph.metrics.left - rectBuffer) * positionedGlyph.scale - halfAdvance + builtInOffset[0];
-		const y1 = (-positionedGlyph.metrics.top - rectBuffer) * positionedGlyph.scale + builtInOffset[1];
-		const x2 = x1 + textureRect.w / textureScale * positionedGlyph.scale / pixelRatio;
-		const y2 = y1 + textureRect.h / textureScale * positionedGlyph.scale / pixelRatio;
-		const tl = new Point(x1, y1);
-		const tr = new Point(x2, y1);
-		const bl = new Point(x1, y2);
-		const br = new Point(x2, y2);
-		if (rotateVerticalGlyph) {
-			const center = new Point(-halfAdvance, halfAdvance - -17);
-			const verticalRotation = -Math.PI / 2;
-			const xHalfWidthOffsetCorrection = 24 / 2 - halfAdvance;
-			const yImageOffsetCorrection = positionedGlyph.imageName ? xHalfWidthOffsetCorrection : 0;
-			const halfWidthOffsetCorrection = new Point(22 - xHalfWidthOffsetCorrection, -yImageOffsetCorrection);
-			const verticalOffsetCorrection = new Point(...verticalizedLabelOffset);
-			tl._rotateAround(verticalRotation, center)._add(halfWidthOffsetCorrection)._add(verticalOffsetCorrection);
-			tr._rotateAround(verticalRotation, center)._add(halfWidthOffsetCorrection)._add(verticalOffsetCorrection);
-			bl._rotateAround(verticalRotation, center)._add(halfWidthOffsetCorrection)._add(verticalOffsetCorrection);
-			br._rotateAround(verticalRotation, center)._add(halfWidthOffsetCorrection)._add(verticalOffsetCorrection);
-		}
-		if (textRotate) {
-			const sin = Math.sin(textRotate), cos = Math.cos(textRotate), matrix = [
-				cos,
-				-sin,
-				sin,
-				cos
-			];
-			tl._matMult(matrix);
-			tr._matMult(matrix);
-			bl._matMult(matrix);
-			br._matMult(matrix);
-		}
-		const pixelOffsetTL = new Point(0, 0);
-		const pixelOffsetBR = new Point(0, 0);
-		quads.push({
-			tl,
-			tr,
-			bl,
-			br,
-			tex: textureRect,
-			writingMode: shaping.writingMode,
-			glyphOffset,
-			sectionIndex: positionedGlyph.sectionIndex,
-			isSDF,
-			pixelOffsetTL,
-			pixelOffsetBR,
-			minFontScaleX: 0,
-			minFontScaleY: 0
-		});
-	}
-	return quads;
-}
-//#endregion
-//#region src/symbol/collision_feature.ts
-/**
-* A CollisionFeature represents the area of the tile covered by a single label.
-* It is used with CollisionIndex to check if the label overlaps with any
-* previous labels. A CollisionFeature is mostly just a set of CollisionBox
-* objects.
-*/
-var CollisionFeature = class {
-	/**
-	* Create a CollisionFeature, adding its collision box data to the given collisionBoxArray in the process.
-	* For line aligned labels a collision circle diameter is computed instead.
-	*
-	* @param anchor - The point along the line around which the label is anchored.
-	* @param shaped - The text or icon shaping results.
-	* @param boxScale - A magic number used to convert from glyph metrics units to geometry units.
-	* @param padding - The amount of padding to add around the label edges.
-	* @param alignLine - Whether the label is aligned with the line or the viewport.
-	*/
-	constructor(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, shaped, boxScale, padding, alignLine, rotate) {
-		this.boxStartIndex = collisionBoxArray.length;
-		if (alignLine) {
-			let top = shaped.top;
-			let bottom = shaped.bottom;
-			const collisionPadding = shaped.collisionPadding;
-			if (collisionPadding) {
-				top -= collisionPadding[1];
-				bottom += collisionPadding[3];
-			}
-			let height = bottom - top;
-			if (height > 0) {
-				height = Math.max(10, height);
-				this.circleDiameter = height;
-			}
-		} else {
-			const icon = shaped.image?.content && (shaped.image.textFitWidth || shaped.image.textFitHeight) ? applyTextFit(shaped) : {
-				x1: shaped.left,
-				y1: shaped.top,
-				x2: shaped.right,
-				y2: shaped.bottom
-			};
-			icon.y1 = icon.y1 * boxScale - padding[0];
-			icon.y2 = icon.y2 * boxScale + padding[2];
-			icon.x1 = icon.x1 * boxScale - padding[3];
-			icon.x2 = icon.x2 * boxScale + padding[1];
-			const collisionPadding = shaped.collisionPadding;
-			if (collisionPadding) {
-				icon.x1 -= collisionPadding[0] * boxScale;
-				icon.y1 -= collisionPadding[1] * boxScale;
-				icon.x2 += collisionPadding[2] * boxScale;
-				icon.y2 += collisionPadding[3] * boxScale;
-			}
-			if (rotate) {
-				const tl = new Point(icon.x1, icon.y1);
-				const tr = new Point(icon.x2, icon.y1);
-				const bl = new Point(icon.x1, icon.y2);
-				const br = new Point(icon.x2, icon.y2);
-				const rotateRadians = rotate * Math.PI / 180;
-				tl._rotate(rotateRadians);
-				tr._rotate(rotateRadians);
-				bl._rotate(rotateRadians);
-				br._rotate(rotateRadians);
-				icon.x1 = Math.min(tl.x, tr.x, bl.x, br.x);
-				icon.x2 = Math.max(tl.x, tr.x, bl.x, br.x);
-				icon.y1 = Math.min(tl.y, tr.y, bl.y, br.y);
-				icon.y2 = Math.max(tl.y, tr.y, bl.y, br.y);
-			}
-			collisionBoxArray.emplaceBack(anchor.x, anchor.y, icon.x1, icon.y1, icon.x2, icon.y2, featureIndex, sourceLayerIndex, bucketIndex);
-		}
-		this.boxEndIndex = collisionBoxArray.length;
-	}
-};
-//#endregion
-//#region node_modules/tinyqueue/index.js
-var TinyQueue = class {
-	constructor(data = [], compare = (a, b) => a < b ? -1 : a > b ? 1 : 0) {
-		this.data = data;
-		this.length = this.data.length;
-		this.compare = compare;
-		if (this.length > 0) for (let i = (this.length >> 1) - 1; i >= 0; i--) this._down(i);
-	}
-	push(item) {
-		this.data.push(item);
-		this._up(this.length++);
-	}
-	pop() {
-		if (this.length === 0) return void 0;
-		const top = this.data[0];
-		const bottom = this.data.pop();
-		if (--this.length > 0) {
-			this.data[0] = bottom;
-			this._down(0);
-		}
-		return top;
-	}
-	peek() {
-		return this.data[0];
-	}
-	_up(pos) {
-		const { data, compare } = this;
-		const item = data[pos];
-		while (pos > 0) {
-			const parent = pos - 1 >> 1;
-			const current = data[parent];
-			if (compare(item, current) >= 0) break;
-			data[pos] = current;
-			pos = parent;
-		}
-		data[pos] = item;
-	}
-	_down(pos) {
-		const { data, compare } = this;
-		const halfLength = this.length >> 1;
-		const item = data[pos];
-		while (pos < halfLength) {
-			let bestChild = (pos << 1) + 1;
-			const right = bestChild + 1;
-			if (right < this.length && compare(data[right], data[bestChild]) < 0) bestChild = right;
-			if (compare(data[bestChild], item) >= 0) break;
-			data[pos] = data[bestChild];
-			pos = bestChild;
-		}
-		data[pos] = item;
-	}
-};
-//#endregion
-//#region src/util/find_pole_of_inaccessibility.ts
-/**
-* Finds an approximation of a polygon's Pole Of Inaccessibility https://en.wikipedia.org/wiki/Pole_of_inaccessibility
-* This is a copy of https://github.com/mapbox/polylabel adapted to use Points
-*
-* @param polygonRings - first item in array is the outer ring followed optionally by the list of holes, should be an element of the result of util/classify_rings
-* @param precision - Specified in input coordinate units. If 0 returns after first run, if `> 0` repeatedly narrows the search space until the radius of the area searched for the best pole is less than precision
-* @returns Pole of Inaccessibility.
-*/
-function findPoleOfInaccessibility(polygonRings, precision = 1) {
-	const bounds = Bounds.fromPoints(polygonRings[0]);
-	const cellSize = Math.min(bounds.width(), bounds.height());
-	let h = cellSize / 2;
-	const cellQueue = new TinyQueue([], compareMax);
-	const { minX, minY, maxX, maxY } = bounds;
-	if (cellSize === 0) return new Point(minX, minY);
-	for (let x = minX; x < maxX; x += cellSize) for (let y = minY; y < maxY; y += cellSize) cellQueue.push(new Cell(x + h, y + h, h, polygonRings));
-	const centroidCell = getCentroidCell(polygonRings);
-	let bestCell = centroidCell;
-	while (cellQueue.length) {
-		const cell = cellQueue.pop();
-		if (cell.d > bestCell.d || !bestCell.d) bestCell = cell;
-		if (cell.max - bestCell.d <= precision) continue;
-		h = cell.h / 2;
-		cellQueue.push(new Cell(cell.p.x - h, cell.p.y - h, h, polygonRings));
-		cellQueue.push(new Cell(cell.p.x + h, cell.p.y - h, h, polygonRings));
-		cellQueue.push(new Cell(cell.p.x - h, cell.p.y + h, h, polygonRings));
-		cellQueue.push(new Cell(cell.p.x + h, cell.p.y + h, h, polygonRings));
-	}
-	if (centroidCell.d > 0 && bestCell.d - centroidCell.d <= precision) return centroidCell.p;
-	return bestCell.p;
-}
-function compareMax(a, b) {
-	return b.max - a.max;
-}
-var Cell = class {
-	constructor(x, y, h, polygon) {
-		this.p = new Point(x, y);
-		this.h = h;
-		this.d = pointToPolygonDist(this.p, polygon);
-		this.max = this.d + this.h * Math.SQRT2;
-	}
-};
-function pointToPolygonDist(p, polygon) {
-	let inside = false;
-	let minDistSq = Infinity;
-	for (const ring of polygon) for (let i = 0, len = ring.length, j = len - 1; i < len; j = i++) {
-		const a = ring[i];
-		const b = ring[j];
-		if (a.y > p.y !== b.y > p.y && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x) inside = !inside;
-		minDistSq = Math.min(minDistSq, distToSegmentSquared(p, a, b));
-	}
-	return (inside ? 1 : -1) * Math.sqrt(minDistSq);
-}
-function getCentroidCell(polygon) {
-	let area = 0;
-	let x = 0;
-	let y = 0;
-	const points = polygon[0];
-	for (let i = 0, len = points.length, j = len - 1; i < len; j = i++) {
-		const a = points[i];
-		const b = points[j];
-		const f = a.x * b.y - b.x * a.y;
-		x += (a.x + b.x) * f;
-		y += (a.y + b.y) * f;
-		area += f * 3;
-	}
-	return new Cell(x / area, y / area, 0, polygon);
-}
-//#endregion
-//#region src/style/style_layer/variable_text_anchor.ts
-let TextAnchorEnum = /* @__PURE__ */ function(TextAnchorEnum) {
-	TextAnchorEnum[TextAnchorEnum["center"] = 1] = "center";
-	TextAnchorEnum[TextAnchorEnum["left"] = 2] = "left";
-	TextAnchorEnum[TextAnchorEnum["right"] = 3] = "right";
-	TextAnchorEnum[TextAnchorEnum["top"] = 4] = "top";
-	TextAnchorEnum[TextAnchorEnum["bottom"] = 5] = "bottom";
-	TextAnchorEnum[TextAnchorEnum["top-left"] = 6] = "top-left";
-	TextAnchorEnum[TextAnchorEnum["top-right"] = 7] = "top-right";
-	TextAnchorEnum[TextAnchorEnum["bottom-left"] = 8] = "bottom-left";
-	TextAnchorEnum[TextAnchorEnum["bottom-right"] = 9] = "bottom-right";
-	return TextAnchorEnum;
-}({});
-const baselineOffset = 7;
-const INVALID_TEXT_OFFSET = Number.POSITIVE_INFINITY;
-function evaluateVariableOffset(anchor, offset) {
-	function fromRadialOffset(anchor, radialOffset) {
-		let x = 0, y = 0;
-		if (radialOffset < 0) radialOffset = 0;
-		const hypotenuse = radialOffset / Math.SQRT2;
-		switch (anchor) {
-			case "top-right":
-			case "top-left":
-				y = hypotenuse - baselineOffset;
-				break;
-			case "bottom-right":
-			case "bottom-left":
-				y = -hypotenuse + baselineOffset;
-				break;
-			case "bottom":
-				y = -radialOffset + baselineOffset;
-				break;
-			case "top": y = radialOffset - baselineOffset;
-		}
-		switch (anchor) {
-			case "top-right":
-			case "bottom-right":
-				x = -hypotenuse;
-				break;
-			case "top-left":
-			case "bottom-left":
-				x = hypotenuse;
-				break;
-			case "left":
-				x = radialOffset;
-				break;
-			case "right": x = -radialOffset;
-		}
-		return [x, y];
-	}
-	function fromTextOffset(anchor, offsetX, offsetY) {
-		let x = 0, y = 0;
-		offsetX = Math.abs(offsetX);
-		offsetY = Math.abs(offsetY);
-		switch (anchor) {
-			case "top-right":
-			case "top-left":
-			case "top":
-				y = offsetY - baselineOffset;
-				break;
-			case "bottom-right":
-			case "bottom-left":
-			case "bottom": y = -offsetY + baselineOffset;
-		}
-		switch (anchor) {
-			case "top-right":
-			case "bottom-right":
-			case "right":
-				x = -offsetX;
-				break;
-			case "top-left":
-			case "bottom-left":
-			case "left": x = offsetX;
-		}
-		return [x, y];
-	}
-	return offset[1] !== INVALID_TEXT_OFFSET ? fromTextOffset(anchor, offset[0], offset[1]) : fromRadialOffset(anchor, offset[0]);
-}
-function getTextVariableAnchorOffset(layer, feature, canonical) {
-	const layout = layer.layout;
-	const variableAnchorOffset = layout.get("text-variable-anchor-offset")?.evaluate(feature, {}, canonical);
-	if (variableAnchorOffset) {
-		const sourceValues = variableAnchorOffset.values;
-		const destValues = [];
-		for (let i = 0; i < sourceValues.length; i += 2) {
-			const anchor = destValues[i] = sourceValues[i];
-			const offset = sourceValues[i + 1].map((t) => t * 24);
-			if (anchor.startsWith("top")) offset[1] -= baselineOffset;
-			else if (anchor.startsWith("bottom")) offset[1] += baselineOffset;
-			destValues[i + 1] = offset;
-		}
-		return new VariableAnchorOffsetCollection(destValues);
-	}
-	const variableAnchor = layout.get("text-variable-anchor");
-	if (variableAnchor) {
-		let textOffset;
-		if (layer._unevaluatedLayout.getValue("text-radial-offset") !== void 0) textOffset = [layout.get("text-radial-offset").evaluate(feature, {}, canonical) * 24, INVALID_TEXT_OFFSET];
-		else textOffset = layout.get("text-offset").evaluate(feature, {}, canonical).map((t) => t * 24);
-		const anchorOffsets = [];
-		for (const anchor of variableAnchor) anchorOffsets.push(anchor, evaluateVariableOffset(anchor, textOffset));
-		return new VariableAnchorOffsetCollection(anchorOffsets);
-	}
-	return null;
-}
-//#endregion
-//#region src/symbol/symbol_layout.ts
-function performSymbolLayout(args) {
-	args.bucket.createArrays();
-	const tileSize = 512 * args.bucket.overscaling;
-	args.bucket.tilePixelRatio = EXTENT$1 / tileSize;
-	args.bucket.compareText = {};
-	args.bucket.iconsNeedLinear = false;
-	const layer = args.bucket.layers[0];
-	const layout = layer.layout;
-	const unevaluatedLayoutValues = layer._unevaluatedLayout._values;
-	const sizes = {
-		layoutIconSize: unevaluatedLayoutValues["icon-size"].possiblyEvaluate(new EvaluationParameters(args.bucket.zoom + 1), args.canonical),
-		layoutTextSize: unevaluatedLayoutValues["text-size"].possiblyEvaluate(new EvaluationParameters(args.bucket.zoom + 1), args.canonical),
-		textMaxSize: unevaluatedLayoutValues["text-size"].possiblyEvaluate(new EvaluationParameters(18))
-	};
-	if (args.bucket.textSizeData.kind === "composite") {
-		const { minZoom, maxZoom } = args.bucket.textSizeData;
-		sizes.compositeTextSizes = [unevaluatedLayoutValues["text-size"].possiblyEvaluate(new EvaluationParameters(minZoom), args.canonical), unevaluatedLayoutValues["text-size"].possiblyEvaluate(new EvaluationParameters(maxZoom), args.canonical)];
-	}
-	if (args.bucket.iconSizeData.kind === "composite") {
-		const { minZoom, maxZoom } = args.bucket.iconSizeData;
-		sizes.compositeIconSizes = [unevaluatedLayoutValues["icon-size"].possiblyEvaluate(new EvaluationParameters(minZoom), args.canonical), unevaluatedLayoutValues["icon-size"].possiblyEvaluate(new EvaluationParameters(maxZoom), args.canonical)];
-	}
-	const lineHeight = layout.get("text-line-height") * 24;
-	const textAlongLine = layout.get("text-rotation-alignment") !== "viewport" && layout.get("symbol-placement") !== "point";
-	const keepUpright = layout.get("text-keep-upright");
-	const textSize = layout.get("text-size");
-	for (const feature of args.bucket.features) {
-		const fontstack = layout.get("text-font").evaluate(feature, {}, args.canonical).join(",");
-		const layoutTextSizeThisZoom = textSize.evaluate(feature, {}, args.canonical);
-		const layoutTextSize = sizes.layoutTextSize.evaluate(feature, {}, args.canonical);
-		const layoutIconSize = sizes.layoutIconSize.evaluate(feature, {}, args.canonical);
-		const shapedTextOrientations = {
-			horizontal: {},
-			vertical: void 0
-		};
-		const text = feature.text;
-		let textOffset = [0, 0];
-		if (text) {
-			const unformattedText = text.toString();
-			const spacing = layout.get("text-letter-spacing").evaluate(feature, {}, args.canonical) * 24;
-			const spacingIfAllowed = allowsLetterSpacing(unformattedText) ? spacing : 0;
-			const textAnchor = layout.get("text-anchor").evaluate(feature, {}, args.canonical);
-			const variableAnchorOffset = getTextVariableAnchorOffset(layer, feature, args.canonical);
-			if (!variableAnchorOffset) {
-				const radialOffset = layout.get("text-radial-offset").evaluate(feature, {}, args.canonical);
-				if (radialOffset) textOffset = evaluateVariableOffset(textAnchor, [radialOffset * 24, INVALID_TEXT_OFFSET]);
-				else textOffset = layout.get("text-offset").evaluate(feature, {}, args.canonical).map((t) => t * 24);
-			}
-			let textJustify = textAlongLine ? "center" : layout.get("text-justify").evaluate(feature, {}, args.canonical);
-			const maxWidth = layout.get("symbol-placement") === "point" ? layout.get("text-max-width").evaluate(feature, {}, args.canonical) * 24 : Infinity;
-			const addVerticalShapingForPointLabelIfNeeded = () => {
-				if (args.bucket.allowVerticalPlacement && allowsVerticalWritingMode(unformattedText)) shapedTextOrientations.vertical = shapeText(text, args.glyphMap, args.glyphPositions, args.imagePositions, fontstack, maxWidth, lineHeight, textAnchor, "left", spacingIfAllowed, textOffset, 2, true, layoutTextSize, layoutTextSizeThisZoom);
-			};
-			if (!textAlongLine && variableAnchorOffset) {
-				const justifications = /* @__PURE__ */ new Set();
-				if (textJustify === "auto") for (let i = 0; i < variableAnchorOffset.values.length; i += 2) justifications.add(getAnchorJustification(variableAnchorOffset.values[i]));
-				else justifications.add(textJustify);
-				let singleLine = false;
-				for (const justification of justifications) {
-					if (shapedTextOrientations.horizontal[justification]) continue;
-					if (singleLine) shapedTextOrientations.horizontal[justification] = shapedTextOrientations.horizontal[0];
-					else {
-						const shaping = shapeText(text, args.glyphMap, args.glyphPositions, args.imagePositions, fontstack, maxWidth, lineHeight, "center", justification, spacingIfAllowed, textOffset, 1, false, layoutTextSize, layoutTextSizeThisZoom);
-						if (shaping) {
-							shapedTextOrientations.horizontal[justification] = shaping;
-							singleLine = shaping.positionedLines.length === 1;
-						}
-					}
-				}
-				addVerticalShapingForPointLabelIfNeeded();
-			} else {
-				if (textJustify === "auto") textJustify = getAnchorJustification(textAnchor);
-				const shaping = shapeText(text, args.glyphMap, args.glyphPositions, args.imagePositions, fontstack, maxWidth, lineHeight, textAnchor, textJustify, spacingIfAllowed, textOffset, 1, false, layoutTextSize, layoutTextSizeThisZoom);
-				if (shaping) shapedTextOrientations.horizontal[textJustify] = shaping;
-				addVerticalShapingForPointLabelIfNeeded();
-				if (allowsVerticalWritingMode(unformattedText) && textAlongLine && keepUpright) shapedTextOrientations.vertical = shapeText(text, args.glyphMap, args.glyphPositions, args.imagePositions, fontstack, maxWidth, lineHeight, textAnchor, textJustify, spacingIfAllowed, textOffset, 2, false, layoutTextSize, layoutTextSizeThisZoom);
-			}
-		}
-		let shapedIcon;
-		let isSDFIcon = false;
-		if (feature.icon?.name) {
-			const image = args.imageMap[feature.icon.name];
-			if (image) {
-				shapedIcon = shapeIcon(args.imagePositions[feature.icon.name], layout.get("icon-offset").evaluate(feature, {}, args.canonical), layout.get("icon-anchor").evaluate(feature, {}, args.canonical));
-				isSDFIcon = !!image.sdf;
-				if (args.bucket.sdfIcons === void 0) args.bucket.sdfIcons = isSDFIcon;
-				else if (args.bucket.sdfIcons !== isSDFIcon) warnOnce("Style sheet warning: Cannot mix SDF and non-SDF icons in one buffer");
-				if (image.pixelRatio !== args.bucket.pixelRatio) args.bucket.iconsNeedLinear = true;
-				else if (layout.get("icon-rotate").constantOr(1) !== 0) args.bucket.iconsNeedLinear = true;
-			}
-		}
-		const shapedText = getDefaultHorizontalShaping(shapedTextOrientations.horizontal) || shapedTextOrientations.vertical;
-		args.bucket.iconsInText ||= shapedText ? shapedText.iconsInText : false;
-		if (shapedText || shapedIcon) addFeature(args.bucket, feature, shapedTextOrientations, shapedIcon, args.imageMap, sizes, layoutTextSize, layoutIconSize, textOffset, isSDFIcon, args.canonical, args.subdivisionGranularity);
-	}
-	if (args.showCollisionBoxes) args.bucket.generateCollisionDebugBuffers();
-}
-function getAnchorJustification(anchor) {
-	switch (anchor) {
-		case "right":
-		case "top-right":
-		case "bottom-right": return "right";
-		case "left":
-		case "top-left":
-		case "bottom-left": return "left";
-	}
-	return "center";
-}
-/**
-* Given a feature and its shaped text and icon data, add a 'symbol
-* instance' for each _possible_ placement of the symbol feature.
-* (At render it selects which of these instances to
-* show or hide based on collisions with symbols in other layers.)
-*/
-function addFeature(bucket, feature, shapedTextOrientations, shapedIcon, imageMap, sizes, layoutTextSize, layoutIconSize, textOffset, isSDFIcon, canonical, subdivisionGranularity) {
-	let textMaxSize = sizes.textMaxSize.evaluate(feature, {});
-	if (textMaxSize === void 0) textMaxSize = layoutTextSize;
-	const layout = bucket.layers[0].layout;
-	const iconOffset = layout.get("icon-offset").evaluate(feature, {}, canonical);
-	const defaultHorizontalShaping = getDefaultHorizontalShaping(shapedTextOrientations.horizontal);
-	const glyphSize = 24, fontScale = layoutTextSize / glyphSize, textBoxScale = bucket.tilePixelRatio * fontScale, textMaxBoxScale = bucket.tilePixelRatio * textMaxSize / glyphSize, iconBoxScale = bucket.tilePixelRatio * layoutIconSize, symbolMinDistance = bucket.tilePixelRatio * layout.get("symbol-spacing"), textPadding = layout.get("text-padding") * bucket.tilePixelRatio, iconPadding = getIconPadding(layout, feature, canonical, bucket.tilePixelRatio), textMaxAngle = layout.get("text-max-angle") / 180 * Math.PI, textAlongLine = layout.get("text-rotation-alignment") !== "viewport" && layout.get("symbol-placement") !== "point", iconAlongLine = layout.get("icon-rotation-alignment") === "map" && layout.get("symbol-placement") !== "point", symbolPlacement = layout.get("symbol-placement"), textRepeatDistance = symbolMinDistance / 2;
-	const iconTextFit = layout.get("icon-text-fit");
-	let verticallyShapedIcon;
-	if (shapedIcon && iconTextFit !== "none") {
-		if (bucket.allowVerticalPlacement && shapedTextOrientations.vertical) verticallyShapedIcon = fitIconToText(shapedIcon, shapedTextOrientations.vertical, iconTextFit, layout.get("icon-text-fit-padding"), iconOffset, fontScale);
-		if (defaultHorizontalShaping) shapedIcon = fitIconToText(shapedIcon, defaultHorizontalShaping, iconTextFit, layout.get("icon-text-fit-padding"), iconOffset, fontScale);
-	}
-	const granularity = canonical ? subdivisionGranularity.line.getGranularityForZoomLevel(canonical.z) : 1;
-	const addSymbolAtAnchor = (line, anchor) => {
-		if (anchor.x < 0 || anchor.x >= 8192 || anchor.y < 0 || anchor.y >= 8192) return;
-		addSymbol(bucket, anchor, line, shapedTextOrientations, shapedIcon, imageMap, verticallyShapedIcon, bucket.layers[0], bucket.collisionBoxArray, feature.index, feature.sourceLayerIndex, bucket.index, textBoxScale, [
-			textPadding,
-			textPadding,
-			textPadding,
-			textPadding
-		], textAlongLine, textOffset, iconBoxScale, iconPadding, iconAlongLine, iconOffset, feature, sizes, isSDFIcon, canonical, layoutTextSize);
-	};
-	if (symbolPlacement === "line") for (const line of clipLine(feature.geometry, 0, 0, EXTENT$1, EXTENT$1)) {
-		const subdividedLine = subdivideVertexLine(line, granularity);
-		const anchors = getAnchors(subdividedLine, symbolMinDistance, textMaxAngle, shapedTextOrientations.vertical || defaultHorizontalShaping, shapedIcon, glyphSize, textMaxBoxScale, bucket.overscaling, EXTENT$1);
-		for (const anchor of anchors) {
-			const shapedText = defaultHorizontalShaping;
-			if (!shapedText || !anchorIsTooClose(bucket, shapedText.text, textRepeatDistance, anchor)) addSymbolAtAnchor(subdividedLine, anchor);
-		}
-	}
-	else if (symbolPlacement === "line-center") {
-		for (const line of feature.geometry) if (line.length > 1) {
-			const subdividedLine = subdivideVertexLine(line, granularity);
-			const anchor = getCenterAnchor(subdividedLine, textMaxAngle, shapedTextOrientations.vertical || defaultHorizontalShaping, shapedIcon, glyphSize, textMaxBoxScale);
-			if (anchor) addSymbolAtAnchor(subdividedLine, anchor);
-		}
-	} else if (feature.type === "Polygon") for (const polygon of classifyRings$1(feature.geometry, 0)) {
-		const poi = findPoleOfInaccessibility(polygon, 16);
-		addSymbolAtAnchor(subdivideVertexLine(polygon[0], granularity, true), new Anchor(poi.x, poi.y, 0));
-	}
-	else if (feature.type === "LineString") for (const line of feature.geometry) {
-		const subdividedLine = subdivideVertexLine(line, granularity);
-		addSymbolAtAnchor(subdividedLine, new Anchor(subdividedLine[0].x, subdividedLine[0].y, 0));
-	}
-	else if (feature.type === "Point") for (const points of feature.geometry) for (const point of points) addSymbolAtAnchor([point], new Anchor(point.x, point.y, 0));
-}
-function addTextVariableAnchorOffsets(textAnchorOffsets, variableAnchorOffset) {
-	const startIndex = textAnchorOffsets.length;
-	const values = variableAnchorOffset?.values;
-	if (values?.length > 0) for (let i = 0; i < values.length; i += 2) {
-		const anchor = TextAnchorEnum[values[i]];
-		const offset = values[i + 1];
-		textAnchorOffsets.emplaceBack(anchor, offset[0], offset[1]);
-	}
-	return [startIndex, textAnchorOffsets.length];
-}
-function addTextVertices(bucket, anchor, shapedText, imageMap, layer, textAlongLine, feature, textOffset, lineArray, writingMode, placementTypes, placedTextSymbolIndices, placedIconIndex, sizes, canonical) {
-	const glyphQuads = getGlyphQuads(anchor, shapedText, textOffset, layer, textAlongLine, feature, imageMap, bucket.allowVerticalPlacement);
-	const sizeData = bucket.textSizeData;
-	let textSizeData = null;
-	if (sizeData.kind === "source") {
-		textSizeData = [128 * layer.layout.get("text-size").evaluate(feature, {})];
-		if (textSizeData[0] > 32640) warnOnce(`${bucket.layerIds[0]}: Value for "text-size" is >= 255. Reduce your "text-size".`);
-	} else if (sizeData.kind === "composite") {
-		textSizeData = [128 * sizes.compositeTextSizes[0].evaluate(feature, {}, canonical), 128 * sizes.compositeTextSizes[1].evaluate(feature, {}, canonical)];
-		if (textSizeData[0] > 32640 || textSizeData[1] > 32640) warnOnce(`${bucket.layerIds[0]}: Value for "text-size" is >= 255. Reduce your "text-size".`);
-	}
-	bucket.addSymbols(bucket.text, glyphQuads, textSizeData, textOffset, textAlongLine, feature, writingMode, anchor, lineArray.lineStartIndex, lineArray.lineLength, placedIconIndex, canonical);
-	for (const placementType of placementTypes) placedTextSymbolIndices[placementType] = bucket.text.placedSymbolArray.length - 1;
-	return glyphQuads.length * 4;
-}
-function getDefaultHorizontalShaping(horizontalShaping) {
-	for (const justification in horizontalShaping) return horizontalShaping[justification];
-	return null;
-}
-/**
-* Add a single label & icon placement.
-*/
-function addSymbol(bucket, anchor, line, shapedTextOrientations, shapedIcon, imageMap, verticallyShapedIcon, layer, collisionBoxArray, featureIndex, sourceLayerIndex, bucketIndex, textBoxScale, textPadding, textAlongLine, textOffset, iconBoxScale, iconPadding, iconAlongLine, iconOffset, feature, sizes, isSDFIcon, canonical, layoutTextSize) {
-	const lineArray = bucket.addToLineVertexArray(anchor, line);
-	let textCollisionFeature, iconCollisionFeature, verticalTextCollisionFeature, verticalIconCollisionFeature;
-	let numIconVertices = 0;
-	let numVerticalIconVertices = 0;
-	let numHorizontalGlyphVertices = 0;
-	let numVerticalGlyphVertices = 0;
-	let placedIconSymbolIndex = -1;
-	let verticalPlacedIconSymbolIndex = -1;
-	const placedTextSymbolIndices = {};
-	let key = (0, import_murmurhash_js.default)("");
-	if (bucket.allowVerticalPlacement && shapedTextOrientations.vertical) {
-		const verticalTextRotation = layer.layout.get("text-rotate").evaluate(feature, {}, canonical) + 90;
-		const verticalShaping = shapedTextOrientations.vertical;
-		verticalTextCollisionFeature = new CollisionFeature(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, verticalShaping, textBoxScale, textPadding, textAlongLine, verticalTextRotation);
-		if (verticallyShapedIcon) verticalIconCollisionFeature = new CollisionFeature(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, verticallyShapedIcon, iconBoxScale, iconPadding, textAlongLine, verticalTextRotation);
-	}
-	if (shapedIcon) {
-		const iconRotate = layer.layout.get("icon-rotate").evaluate(feature, {});
-		const hasIconTextFit = layer.layout.get("icon-text-fit") !== "none";
-		const iconQuads = getIconQuads(shapedIcon, iconRotate, isSDFIcon, hasIconTextFit);
-		const verticalIconQuads = verticallyShapedIcon ? getIconQuads(verticallyShapedIcon, iconRotate, isSDFIcon, hasIconTextFit) : void 0;
-		iconCollisionFeature = new CollisionFeature(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, shapedIcon, iconBoxScale, iconPadding, false, iconRotate);
-		numIconVertices = iconQuads.length * 4;
-		const sizeData = bucket.iconSizeData;
-		let iconSizeData = null;
-		if (sizeData.kind === "source") {
-			iconSizeData = [128 * layer.layout.get("icon-size").evaluate(feature, {})];
-			if (iconSizeData[0] > 32640) warnOnce(`${bucket.layerIds[0]}: Value for "icon-size" is >= 255. Reduce your "icon-size".`);
-		} else if (sizeData.kind === "composite") {
-			iconSizeData = [128 * sizes.compositeIconSizes[0].evaluate(feature, {}, canonical), 128 * sizes.compositeIconSizes[1].evaluate(feature, {}, canonical)];
-			if (iconSizeData[0] > 32640 || iconSizeData[1] > 32640) warnOnce(`${bucket.layerIds[0]}: Value for "icon-size" is >= 255. Reduce your "icon-size".`);
-		}
-		bucket.addSymbols(bucket.icon, iconQuads, iconSizeData, iconOffset, iconAlongLine, feature, 0, anchor, lineArray.lineStartIndex, lineArray.lineLength, -1, canonical);
-		placedIconSymbolIndex = bucket.icon.placedSymbolArray.length - 1;
-		if (verticalIconQuads) {
-			numVerticalIconVertices = verticalIconQuads.length * 4;
-			bucket.addSymbols(bucket.icon, verticalIconQuads, iconSizeData, iconOffset, iconAlongLine, feature, 2, anchor, lineArray.lineStartIndex, lineArray.lineLength, -1, canonical);
-			verticalPlacedIconSymbolIndex = bucket.icon.placedSymbolArray.length - 1;
-		}
-	}
-	const justifications = Object.keys(shapedTextOrientations.horizontal);
-	for (const justification of justifications) {
-		const shaping = shapedTextOrientations.horizontal[justification];
-		if (!textCollisionFeature) {
-			key = (0, import_murmurhash_js.default)(shaping.text);
-			textCollisionFeature = new CollisionFeature(collisionBoxArray, anchor, featureIndex, sourceLayerIndex, bucketIndex, shaping, textBoxScale, textPadding, textAlongLine, layer.layout.get("text-rotate").evaluate(feature, {}, canonical));
-		}
-		const singleLine = shaping.positionedLines.length === 1;
-		numHorizontalGlyphVertices += addTextVertices(bucket, anchor, shaping, imageMap, layer, textAlongLine, feature, textOffset, lineArray, shapedTextOrientations.vertical ? 1 : 3, singleLine ? justifications : [justification], placedTextSymbolIndices, placedIconSymbolIndex, sizes, canonical);
-		if (singleLine) break;
-	}
-	if (shapedTextOrientations.vertical) numVerticalGlyphVertices += addTextVertices(bucket, anchor, shapedTextOrientations.vertical, imageMap, layer, textAlongLine, feature, textOffset, lineArray, 2, ["vertical"], placedTextSymbolIndices, verticalPlacedIconSymbolIndex, sizes, canonical);
-	const textBoxStartIndex = textCollisionFeature ? textCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
-	const textBoxEndIndex = textCollisionFeature ? textCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
-	const verticalTextBoxStartIndex = verticalTextCollisionFeature ? verticalTextCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
-	const verticalTextBoxEndIndex = verticalTextCollisionFeature ? verticalTextCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
-	const iconBoxStartIndex = iconCollisionFeature ? iconCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
-	const iconBoxEndIndex = iconCollisionFeature ? iconCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
-	const verticalIconBoxStartIndex = verticalIconCollisionFeature ? verticalIconCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
-	const verticalIconBoxEndIndex = verticalIconCollisionFeature ? verticalIconCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
-	let collisionCircleDiameter = -1;
-	const getCollisionCircleHeight = (feature, prevHeight) => {
-		if (feature?.circleDiameter) return Math.max(feature.circleDiameter, prevHeight);
-		return prevHeight;
-	};
-	collisionCircleDiameter = getCollisionCircleHeight(textCollisionFeature, collisionCircleDiameter);
-	collisionCircleDiameter = getCollisionCircleHeight(verticalTextCollisionFeature, collisionCircleDiameter);
-	collisionCircleDiameter = getCollisionCircleHeight(iconCollisionFeature, collisionCircleDiameter);
-	collisionCircleDiameter = getCollisionCircleHeight(verticalIconCollisionFeature, collisionCircleDiameter);
-	const useRuntimeCollisionCircles = collisionCircleDiameter > -1 ? 1 : 0;
-	if (useRuntimeCollisionCircles) collisionCircleDiameter *= layoutTextSize / 24;
-	if (bucket.glyphOffsetArray.length >= SymbolBucket.MAX_GLYPHS) warnOnce("Too many glyphs being rendered in a tile. See https://github.com/mapbox/mapbox-gl-js/issues/2907");
-	if (feature.sortKey !== void 0) bucket.addToSortKeyRanges(bucket.symbolInstances.length, feature.sortKey);
-	const variableAnchorOffset = getTextVariableAnchorOffset(layer, feature, canonical);
-	const [textAnchorOffsetStartIndex, textAnchorOffsetEndIndex] = addTextVariableAnchorOffsets(bucket.textAnchorOffsets, variableAnchorOffset);
-	bucket.symbolInstances.emplaceBack(anchor.x, anchor.y, placedTextSymbolIndices.right >= 0 ? placedTextSymbolIndices.right : -1, placedTextSymbolIndices.center >= 0 ? placedTextSymbolIndices.center : -1, placedTextSymbolIndices.left >= 0 ? placedTextSymbolIndices.left : -1, placedTextSymbolIndices.vertical || -1, placedIconSymbolIndex, verticalPlacedIconSymbolIndex, key, textBoxStartIndex, textBoxEndIndex, verticalTextBoxStartIndex, verticalTextBoxEndIndex, iconBoxStartIndex, iconBoxEndIndex, verticalIconBoxStartIndex, verticalIconBoxEndIndex, featureIndex, numHorizontalGlyphVertices, numVerticalGlyphVertices, numIconVertices, numVerticalIconVertices, useRuntimeCollisionCircles, 0, textBoxScale, collisionCircleDiameter, textAnchorOffsetStartIndex, textAnchorOffsetEndIndex);
-}
-function anchorIsTooClose(bucket, text, repeatDistance, anchor) {
-	const compareText = bucket.compareText;
-	if (!(text in compareText)) compareText[text] = [];
-	else {
-		const otherAnchors = compareText[text];
-		for (let k = otherAnchors.length - 1; k >= 0; k--) if (anchor.dist(otherAnchors[k]) < repeatDistance) return true;
-	}
-	compareText[text].push(anchor);
-	return false;
-}
-//#endregion
-export { tileCoordinatesToMercatorCoordinates as $, degreesToRadians as $n, clone$5 as $r, EvaluationParameters as $t, getOverlapMode as A, scale$5 as Ai, sameOrigin as An, rollPitchBearingToQuat as Ar, Uniform1i as At, PbfReader as B, angleToRotateBetweenVectors2D as Bn, pixelsToTileUnits as Br, CollisionCircleLayoutArray as Bt, createStyleLayer as C, invert$2 as Ci, AJAXError as Cn, pick as Cr, renderColorRamp as Ct, isSymbolStyleLayer as D, rotateX$3 as Di, getReferrer as Dn, readImageUsingVideoFrame as Dr, polygonIntersectsPolygon as Dt, isBackgroundStyleLayer as E, perspective as Ei, getJSON as En, rayPlaneIntersection as Er, isCircleStyleLayer as Et, ImageAtlas as F, invert$5 as Fi, AbortError as Fn, translatePosition as Fr, UniformColorArray as Ft, isFillExtrusionStyleLayer as G, clone as Gn, sqrLen as Gr, RasterBoundsArray as Gt, isLineStyleLayer as H, arrayBufferToImageBitmap as Hn, create as Hr, Pos3dArray as Ht, ImagePosition as I, rotate$4 as Ii, isAbortError as In, uniqueId as Ir, UniformFloatArray as It, cameraDirectionFromPitchBearing as J, createMat4f64 as Jn, slerp as Jr, isRasterStyleLayer as Jt, FillExtrusionBucket as K, createIdentityMat4f32 as Kn, zero as Kr, TriangleIndexArray as Kt, potpack as L, isOffscreenCanvasDistorted as Li, throwIfAborted as Ln, warnOnce as Lr, UniformMatrix4f as Lt, evaluateSizeForZoom as M, create$6 as Mi, getProtocol as Mn, sphericalToCartesian as Mr, Uniform3f as Mt, WritingMode as N, fromRotation$2 as Ni, removeProtocol as Nn, subscribe as Nr, Uniform4f as Nt, SymbolBucket as O, rotateY$3 as Oi, getVideo as On, remapSaturate as Or, toEvaluationFeature as Ot, getAnchorAlignment as P, create$8 as Pi, config as Pn, threePlaneIntersection as Pr, UniformColor as Pt, projectToWorldCoordinates as Q, defaultEasing as Qn, add$4 as Qr, Transitionable as Qt, renderStyleImage as R, offscreenCanvasSupported as Ri, JSON_PREFIX as Rn, wrap$1 as Rr, SegmentVector as Rt, Actor as S, identity$2 as Si, Evented as Sn, parseCacheControl as Sr, isHeatmapStyleLayer as St, validateCustomStyleLayer as T, ortho as Ti, getArrayBuffer as Tn, radiansToDegrees as Tr, RGBAImage as Tt, LineBucket as U, bezier as Un, length as Ur, PosArray as Ut, collisionCircleLayout as V, arrayBufferToImage as Vn, EXTENT$1 as Vr, LineStripIndexArray as Vt, GeoJSONVT as W, clamp$2 as Wn, scale as Wr, QuadTriangleArray as Wt, getMercatorHorizon as X, createVec4f64 as Xn, scale$3 as Xr, Properties as Xt, cameraMercatorCoordinateFromCenterAndRotation as Y, createVec3f64 as Yn, mul$3 as Yr, DataConstantProperty as Yt, maxMercatorHorizonAngle as Z, deepEqual$1 as Zn, transformMat4$1 as Zr, TRANSITION_SUFFIX as Zt, OverscaledTileID as _, copy$5 as _i, groupByLayout as _n, isWorker as _r, isColorReliefStyleLayer as _t, clipLine as a, normalize$4 as ai, emitValidationErrors as an, filterObject as ar, mercatorXfromLng as at, compareTileId as b, exactEquals$5 as bi, ErrorEvent as bn, mod as br, isHillshadeStyleLayer as bt, FeatureIndex as c, rotateZ$2 as ci, validateStyleAndEmit as cn, getAngleDelta as cr, LngLat as ct, DictionaryCoder as d, sub$2 as di, ValidationError as dn, getRollPitchBearing as dr, isFillStyleLayer as dt, cross$2 as ei, rtlWorkerPlugin as en, differenceOfAnglesDegrees as er, unprojectFromWorldCoordinates as et, GEOJSON_TILE_LAYER_NAME as f, transformMat3$1 as fi, createExpression as fn, isImageBitmap as fr, FillBucket as ft, CanonicalTileID as g, clone$6 as gi, featureFilter as gn, isTouchableOrPointableType as gr, SubdivisionGranularitySetting as gt, Bounds as h, zero$2 as hi, emptyStyle as hn, isTouchableEvent as hr, SubdivisionGranularityExpression as ht, clipGeometry as i, negate$2 as ii, SPEC_SOURCE_TYPES as in, extend as ir, lngFromMercatorX as it, evaluateSizeForFeature as j, translate$2 as ji, addProtocol as jn, scaleZoom as jr, Uniform2f as jt, addDynamicAttributes as k, rotateZ$3 as ki, makeRequest as kn, rollPitchBearingEqual as kr, Uniform1f as kt, MLTVectorTile as l, scale$4 as li, Color as ln, getEdgeTiles as lr, earthRadius as lt, fromVectorTileJs as m, transformQuat$1 as mi, diff as mn, isSafari as mr, SOUTH_POLE_Y as mt, performSymbolLayout as n, len$4 as ni, ZoomHistory as nn, ensureError as nr, altitudeFromMercatorZ as nt, BoundedLRUCache as o, rotateX$2 as oi, validateAndEmit as on, findLineIntersection as or, mercatorYfromLat as ot, GeoJSONWrapper as p, transformMat4$2 as pi, derefLayers as pn, isPointableEvent as pr, NORTH_POLE_Y as pt, calculateTileMatrix as q, createIdentityMat4f64 as qn, fromEuler as qr, createLayout as qt, TextAnchorEnum as r, length$4 as ri, register as rn, evaluateZoomSnap as rr, latFromMercatorY as rt, TileCache as s, rotateY$2 as si, validateStyle as sn, getAABB as sr, mercatorZfromAltitude as st, getAnchorJustification as t, dot$5 as ti, codePointUsesLocalIdeographFontFamily as tn, distanceOfAnglesRadians as tr, MercatorCoordinate as tt, GeoJSONFeature as u, scaleAndAdd$2 as ui, ProjectionDefinition as un, getImageData as ur, VectorTile as ut, UnwrappedTileID as v, create$5 as vi, interpolateFactory as vn, lerp as vr, DEMData as vt, isCustomStyleLayer as w, multiply$5 as wi, GLOBAL_DISPATCHER_ID as wn, pointPlaneSignedDistance as wr, AlphaImage as wt, isInBoundsForZoomLngLat as x, fromScaling as xi, Event as xn, nextPowerOfTwo as xr, HEATMAP_FULL_RENDER_FBO_KEY as xt, calculateTileKey as y, equals$6 as yi, latest as yn, mapObject as yr, Texture as yt, parseGlyphPbf as z, Point as zi, MAX_VALID_LATITUDE as zn, zoomScale as zr, CollisionBoxArray as zt };
+export { projectToWorldCoordinates as $, degreesToRadians as $n, transformMat4$1 as $r, TRANSITION_SUFFIX as $t, evaluateSizeForZoom as A, perspective as Ai, sameOrigin as An, rollPitchBearingToQuat as Ar, toEvaluationFeature as At, isCluster as B, invert$5 as Bi, angleToRotateBetweenVectors2D as Bn, pixelsToTileUnits as Br, SegmentVector as Bt, addDynamicAttributes as C, equals$6 as Ci, AJAXError as Cn, pick as Cr, HEATMAP_FULL_RENDER_FBO_KEY as Ct, clipGeometry as D, invert$2 as Di, getReferrer as Dn, readImageUsingVideoFrame as Dr, RGBAImage as Dt, TextAnchorEnum as E, identity$2 as Ei, getJSON as En, rayPlaneIntersection as Er, AlphaImage as Et, potpack as F, translate$2 as Fi, AbortError as Fn, translatePosition as Fr, Uniform4f as Ft, GeoJSONVT as G, clone as Gn, sqrLen as Gr, PosArray as Gt, rtlWorkerPlugin as H, isOffscreenCanvasDistorted as Hi, arrayBufferToImageBitmap as Hn, create as Hr, CollisionCircleLayoutArray as Ht, isStyleImageWebGLData as I, create$6 as Ii, isAbortError as In, uniqueId as Ir, UniformColor as It, cameraDirectionFromPitchBearing as J, createMat4f64 as Jn, fromValues$2 as Jr, TriangleIndexArray as Jt, isFillExtrusionStyleLayer as K, createIdentityMat4f32 as Kn, zero as Kr, QuadTriangleArray as Kt, renderStyleImage as L, fromRotation$2 as Li, throwIfAborted as Ln, warnOnce as Lr, UniformColorArray as Lt, getAnchorAlignment as M, rotateY$3 as Mi, getProtocol as Mn, sphericalToCartesian as Mr, Uniform1i as Mt, ImageAtlas as N, rotateZ$3 as Ni, removeProtocol as Nn, subscribe as Nr, Uniform2f as Nt, clipLine as O, multiply$5 as Oi, getVideo as On, remapSaturate as Or, isCircleStyleLayer as Ot, ImagePosition as P, scale$5 as Pi, config as Pn, threePlaneIntersection as Pr, Uniform3f as Pt, maxMercatorHorizonAngle as Q, defaultEasing as Qn, scale$3 as Qr, Properties as Qt, parseGlyphPbf as R, create$8 as Ri, JSON_PREFIX as Rn, wrap$1 as Rr, UniformFloatArray as Rt, SymbolBucket as S, create$5 as Si, Evented as Sn, parseCacheControl as Sr, isHillshadeStyleLayer as St, getAnchorJustification as T, fromScaling as Ti, getArrayBuffer as Tn, radiansToDegrees as Tr, renderColorRamp as Tt, collisionCircleLayout as U, offscreenCanvasSupported as Ui, bezier as Un, length as Ur, LineStripIndexArray as Ut, codePointUsesLocalIdeographFontFamily as V, rotate$4 as Vi, arrayBufferToImage as Vn, EXTENT$1 as Vr, CollisionBoxArray as Vt, isLineStyleLayer as W, Point as Wi, clamp$2 as Wn, scale as Wr, Pos3dArray as Wt, cameraMercatorCoordinateFromCenterAndRotation as X, createVec4f64 as Xn, slerp as Xr, isRasterStyleLayer as Xt, cameraMercatorCoordinate as Y, createVec3f64 as Yn, multiply$2 as Yr, createLayout as Yt, getMercatorHorizon as Z, deepEqual$1 as Zn, mul$3 as Zr, DataConstantProperty as Zt, createStyleLayer as _, transformMat4$2 as _i, diff as _n, isWorker as _r, SubdivisionGranularityExpression as _t, GeoJSONFeature as a, len$4 as ai, emitValidationErrors as an, filterObject as ar, lngFromMercatorX as at, isBackgroundStyleLayer as b, clone$6 as bi, ErrorEvent as bn, mod as br, DEMData as bt, GeoJSONWrapper as c, normalize$4 as ci, validateStyleAndEmit as cn, getAngleDelta as cr, mercatorZfromAltitude as ct, OverscaledTileID as d, rotateZ$2 as di, featureFilter as dn, getRollPitchBearing as dr, VectorTile as dt, add$4 as ei, Transitionable as en, differenceOfAnglesDegrees as er, tileCoordinatesToMercatorCoordinates as et, UnwrappedTileID as f, scale$4 as fi, createExpression as fn, isImageBitmap as fr, EXTENT_BOUNDS as ft, Actor as g, transformMat3$1 as gi, ValidationError as gn, isTouchableOrPointableType as gr, SOUTH_POLE_Y as gt, isInBoundsForZoomLngLat as h, subtract$2 as hi, Color as hn, isTouchableEvent as hr, NORTH_POLE_Y as ht, MLTVectorTile as i, dot$5 as ii, SPEC_SOURCE_TYPES as in, extend as ir, latFromMercatorY as it, WritingMode as j, rotateX$3 as ji, addProtocol as jn, scaleZoom as jr, Uniform1f as jt, evaluateSizeForFeature as k, ortho as ki, makeRequest as kn, rollPitchBearingEqual as kr, polygonIntersectsPolygon as kt, fromVectorTileJs as l, rotateX$2 as li, emptyStyle as ln, getEdgeTiles as lr, LngLat as lt, compareTileId as m, sub$2 as mi, ProjectionDefinition as mn, isSafari as mr, isFillStyleLayer as mt, TileCache as n, cross$2 as ni, ZoomHistory as nn, ensureError as nr, MercatorCoordinate as nt, DictionaryCoder as o, length$4 as oi, validateAndEmit as on, findLineIntersection as or, mercatorXfromLng as ot, calculateTileKey as p, scaleAndAdd$2 as pi, interpolateFactory as pn, isPointableEvent as pr, Bounds as pt, calculateTileMatrix as q, createIdentityMat4f64 as qn, fromEuler as qr, RasterBoundsArray as qt, FeatureIndex as r, distance$2 as ri, register as rn, evaluateZoomSnap as rr, altitudeFromMercatorZ as rt, GEOJSON_TILE_LAYER_NAME as s, negate$2 as si, validateStyle as sn, getAABB as sr, mercatorYfromLat as st, BoundedLRUCache as t, clone$5 as ti, EvaluationParameters as tn, distanceOfAnglesRadians as tr, unprojectFromWorldCoordinates as tt, CanonicalTileID as u, rotateY$2 as ui, groupByLayout as un, getImageData as ur, earthRadius as ut, isCustomStyleLayer as v, transformQuat$1 as vi, derefLayers as vn, lerp as vr, SubdivisionGranularitySetting as vt, getOverlapMode as w, exactEquals$5 as wi, GLOBAL_DISPATCHER_ID as wn, pointPlaneSignedDistance as wr, isHeatmapStyleLayer as wt, isSymbolStyleLayer as x, copy$5 as xi, Event as xn, nextPowerOfTwo as xr, Texture as xt, validateCustomStyleLayer as y, zero$2 as yi, latest as yn, mapObject as yr, isColorReliefStyleLayer as yt, PbfReader as z, determinant$3 as zi, MAX_VALID_LATITUDE as zn, zoomScale as zr, UniformMatrix4f as zt };
 
 //# sourceMappingURL=maplibre-gl-shared-dev.mjs.map

@@ -1,3 +1,5 @@
+import dns from 'dns';
+
 import * as mammoth from 'mammoth';
 
 import { puterAI } from './puter';
@@ -60,43 +62,214 @@ export interface ResumeData {
  improvements: ResumeImprovement;
 }
 
+export function isPrivateOrReservedIp(ip: string): boolean {
+  if (ip === '0.0.0.0' || ip === '127.0.0.1' || ip.startsWith('127.')) return true;
+  if (ip.startsWith('10.')) return true;
+  if (ip.startsWith('169.254.')) return true; // Link-local / Cloud metadata
+  if (ip.startsWith('192.168.')) return true;
+  if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(ip)) return true;
+  if (ip.startsWith('100.64.')) return true; // Carrier-grade NAT
+  if (ip.startsWith('192.0.0.') || ip.startsWith('192.0.2.') || ip.startsWith('198.51.100.') || ip.startsWith('203.0.113.')) return true;
+
+  const lowerIp = ip.toLowerCase();
+  if (lowerIp === '::1' || lowerIp === '::' || lowerIp.startsWith('fe80:') || lowerIp.startsWith('fc') || lowerIp.startsWith('fd')) {
+    return true;
+  }
+  if (lowerIp.startsWith('::ffff:')) {
+    const v4 = lowerIp.substring(7);
+    return isPrivateOrReservedIp(v4);
+  }
+
+  return false;
+}
+
+export async function validateIpDnsSecurity(hostname: string): Promise<boolean> {
+  if (isPrivateOrReservedIp(hostname)) return false;
+
+  // In test environment, allow mock hostnames without requiring live DNS
+  if (process.env.NODE_ENV === 'test') {
+    return true;
+  }
+
+  try {
+    const addresses = await dns.promises.lookup(hostname, { all: true });
+    for (const addr of addresses) {
+      if (isPrivateOrReservedIp(addr.address)) {
+        return false;
+      }
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function isAllowedResumeUrl(fileUrl: string): boolean {
+  try {
+    const parsed = new URL(fileUrl);
+    if (parsed.protocol !== 'https:' && !(process.env.NODE_ENV === 'test' && parsed.protocol === 'http:')) {
+      return false;
+    }
+
+    // Only allow standard HTTPS port (443) or unspecified port (or port 80 in test)
+    if (parsed.port && parsed.port !== '443' && !(process.env.NODE_ENV === 'test' && parsed.port === '80')) {
+      return false;
+    }
+
+    const hostname = parsed.hostname.toLowerCase();
+
+    // Explicitly block local, private, and metadata hostnames
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0' ||
+      hostname === '::1' ||
+      hostname.endsWith('.internal') ||
+      hostname.endsWith('.local')
+    ) {
+      return false;
+    }
+
+    if (isPrivateOrReservedIp(hostname)) {
+      return false;
+    }
+
+    // Configured Supabase host
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (supabaseUrl) {
+      try {
+        const supabaseHost = new URL(supabaseUrl).hostname.toLowerCase();
+        if (hostname === supabaseHost) return true;
+      } catch {}
+    }
+
+    // Allowed storage domains (Supabase, AWS S3)
+    if (
+      hostname.endsWith('.supabase.co') ||
+      hostname.endsWith('.supabase.in') ||
+      hostname.endsWith('.amazonaws.com')
+    ) {
+      return true;
+    }
+
+    // In test environment, allow mock storage hosts
+    if (process.env.NODE_ENV === 'test' && (hostname === 'supabase-bucket' || hostname.includes('supabase'))) {
+      return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+const MAX_RESUME_SIZE = 10 * 1024 * 1024; // 10MB
+
+export async function fetchResumeWithSsrProtection(initialUrl: string, maxRedirects = 2): Promise<Buffer> {
+  let currentUrl = initialUrl;
+  let redirectsRemaining = maxRedirects;
+
+  while (true) {
+    if (!isAllowedResumeUrl(currentUrl)) {
+      throw new Error("Invalid resume URL. Protocol, port, or domain not permitted.");
+    }
+
+    const parsed = new URL(currentUrl);
+    const dnsSafe = await validateIpDnsSecurity(parsed.hostname);
+    if (!dnsSafe) {
+      throw new Error("Security violation: Target domain resolved to a private or restricted address.");
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    try {
+      const response = await fetch(currentUrl, {
+        signal: controller.signal,
+        redirect: 'manual', // Enforce manual redirect handling with security validation
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain'
+        }
+      });
+      clearTimeout(timeoutId);
+
+      // Handle redirect manually with validation on destination
+      if (response.status >= 300 && response.status < 400) {
+        if (redirectsRemaining <= 0) {
+          throw new Error("Too many redirects during resume download.");
+        }
+        redirectsRemaining--;
+        const location = response.headers.get('location');
+        if (!location) {
+          throw new Error("Redirect response missing Location header.");
+        }
+        currentUrl = new URL(location, currentUrl).toString();
+        continue;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to download resume: ${response.status} ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (
+        contentType.includes('text/html') ||
+        contentType.includes('application/xhtml+xml') ||
+        contentType.includes('text/javascript')
+      ) {
+        throw new Error("Invalid file content: Expected document, received HTML or script.");
+      }
+
+      const contentLengthHeader = response.headers.get('content-length');
+      if (contentLengthHeader && parseInt(contentLengthHeader, 10) > MAX_RESUME_SIZE) {
+        throw new Error("File size exceeds 10MB limit.");
+      }
+
+      if (!response.body) {
+        const arrayBuffer = await response.arrayBuffer();
+        if (arrayBuffer.byteLength > MAX_RESUME_SIZE) {
+          throw new Error("File size exceeds 10MB limit.");
+        }
+        return Buffer.from(arrayBuffer);
+      }
+
+      const reader = response.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let totalBytes = 0;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          totalBytes += value.length;
+          if (totalBytes > MAX_RESUME_SIZE) {
+            await reader.cancel();
+            throw new Error("File size exceeds 10MB limit.");
+          }
+          chunks.push(value);
+        }
+      }
+
+      return Buffer.concat(chunks);
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        throw new Error("Resume download timed out. Please download the file and upload it manually.");
+      }
+      throw err;
+    }
+  }
+}
+
 export async function parseResume(fileUrl: string): Promise<ResumeData> {
- let fileBuffer: Buffer;
- 
- if (fileUrl.startsWith('http')) {
- const controller = new AbortController();
- const timeoutId = setTimeout(() => controller.abort(), 10000);
+  let fileBuffer: Buffer;
 
- try {
- const response = await fetch(fileUrl, {
- signal: controller.signal,
- headers: {
- 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
- 'Accept': 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain'
- }
- });
- clearTimeout(timeoutId);
-
- if (!response.ok) throw new Error(`Failed to download resume: ${response.status} ${response.statusText}`);
- 
- const contentType = response.headers.get('content-type') || '';
- if (contentType.includes('text/html')) {
- throw new Error("Security block detected: The file provider is blocking automated access. Please download the file and upload it manually.");
- }
-
- const arrayBuffer = await response.arrayBuffer();
- fileBuffer = Buffer.from(arrayBuffer);
- } catch (err: any) {
- clearTimeout(timeoutId);
- if (err.name === 'AbortError') {
- throw new Error("Resume download timed out. Please download the file and upload it manually.");
- }
- throw err;
- }
- } else {
- // In case it's a local path or pre-downloaded buffer, but usually it's a url
- throw new Error("Invalid file URL provided.");
- }
+  if (fileUrl.startsWith('http')) {
+    fileBuffer = await fetchResumeWithSsrProtection(fileUrl);
+  } else {
+    throw new Error("Invalid file URL provided.");
+  }
 
  let text = '';
  const lowerUrl = fileUrl.toLowerCase();

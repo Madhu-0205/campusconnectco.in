@@ -9,7 +9,7 @@ export const metadata: Metadata = {
  title:"Editorial Standards | CampusConnectCo — Our Content Principles",
  description:
 "CampusConnectCo's editorial standards, fact-checking process, content review guidelines, and author policies. We are committed to accuracy, transparency, and fairness in all platform content.",
- alternates: { canonical:"https://campusconnectco.in/editorial" },
+ alternates: { canonical:"https://www.campusconnectco.in/editorial" },
 }
 
 const STANDARDS = [
@@ -101,12 +101,12 @@ export default async function EditorialPage() {
 "@context":"https://schema.org",
 "@type":"WebPage",
 "name":"Editorial Standards | CampusConnectCo",
-"url":"https://campusconnectco.in/editorial",
+"url":"https://www.campusconnectco.in/editorial",
 "description":"CampusConnectCo's editorial standards, content policies, and fact-checking process.",
 "publisher": {
 "@type":"Organization",
 "name":"CampusConnectCo",
-"url":"https://campusconnectco.in",
+"url":"https://www.campusconnectco.in",
  },
 "dateModified":"2026-06-25",
  }),

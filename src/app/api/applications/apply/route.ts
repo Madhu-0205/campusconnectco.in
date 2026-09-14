@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { logger } from "@/lib/logger";
+import { isOpportunityActive, isOpportunityExpired } from "@/lib/opportunities/lifecycle";
 import prisma from "@/lib/prisma";
 import { sanitizeInput } from "@/lib/security/sanitization";
 import { createClient } from "@/lib/supabase/server";
@@ -72,6 +73,7 @@ export async function POST(req: Request) {
         status: true,
         posted_by: true,
         title: true,
+        deadline: true,
         deletedAt: true,
         poster: {
           select: {
@@ -86,7 +88,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Gig not found" }, { status: 404 });
     }
 
-    if (gig.status !== "OPEN" && gig.status !== "active") {
+    if (isOpportunityExpired(gig.deadline)) {
+      return NextResponse.json({ error: "Application deadline has passed" }, { status: 400 });
+    }
+
+    if (!isOpportunityActive(gig.status, gig.deadline, gig.deletedAt)) {
       return NextResponse.json({ error: "This gig is no longer accepting applications" }, { status: 400 });
     }
 

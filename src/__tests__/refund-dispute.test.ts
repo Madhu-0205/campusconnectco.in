@@ -60,44 +60,22 @@ describe('Refund and Dispute Flow APIs', () => {
  process.env.RAZORPAY_KEY_ID = 'rzp_test_placeholder'; // Force mock mode for Razorpay
  });
 
- describe('Refund API', () => {
- it('should reject if transaction not found', async () => {
- vi.mocked(prisma.transaction.findUnique).mockResolvedValue(null);
- 
- const req = new NextRequest('http://localhost:3000/api/checkout/refund', {
- method: 'POST',
- body: JSON.stringify({ transactionId: 'd6b7b204-62e5-4d22-97b7-6f81e33c4bc1', reason: 'Test refund' })
- });
+  describe('Refund API (Payments Coming Soon)', () => {
+    it('should block refund with HTTP 503 PAYMENTS_COMING_SOON while payments are disabled', async () => {
+      const req = new NextRequest('http://localhost:3000/api/checkout/refund', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transactionId: 'd6b7b204-62e5-4d22-97b7-6f81e33c4bc1', reason: 'Test refund' })
+      });
 
- const res = await RefundPost(req);
- expect(res.status).toBe(404);
- });
-
- it('should process refund for PAID transaction', async () => {
- const mockTx = {
- id: 'd6b7b204-62e5-4d22-97b7-6f81e33c4bc1',
- buyerId: 'buyer-user-id',
- sellerId: 'seller-user-id',
- status: TransactionStatus.PAID,
- gigId: 'gig-123',
- paymentId: 'pay_123'
- };
- // @ts-ignore
- vi.mocked(prisma.transaction.findUnique).mockResolvedValue(mockTx);
- 
- const req = new NextRequest('http://localhost:3000/api/checkout/refund', {
- method: 'POST',
- body: JSON.stringify({ transactionId: mockTx.id, reason: 'Test refund' })
- });
-
- const res = await RefundPost(req);
- expect(res.status).toBe(200);
- expect(prisma.transaction.update).toHaveBeenCalledWith(expect.objectContaining({
- where: { id: mockTx.id },
- data: { status: TransactionStatus.REFUNDED }
- }));
- });
- });
+      const res = await RefundPost(req);
+      expect(res.status).toBe(503);
+      const json = await res.json();
+      expect(json.code).toBe('PAYMENTS_COMING_SOON');
+      expect(json.error).toBe('Payments are coming soon.');
+      expect(prisma.transaction.update).not.toHaveBeenCalled();
+    });
+  });
 
  describe('Dispute API', () => {
  it('should open a dispute for a PAID transaction and notify counterparty', async () => {

@@ -1,7 +1,5 @@
 import prisma from '@/lib/prisma';
 
-import { getOpenAI } from './client';
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type ContentType = 'gig' | 'post' | 'bio' | 'message' | 'cover_letter' | 'comment' | 'review';
@@ -19,7 +17,7 @@ export interface ModerationResult {
  autoReject: boolean;
  score: number; // 0–1 (1 = most problematic)
  categories: {
- openai: Record<string, boolean>;
+ automated: Record<string, boolean>;
  custom: string[];
  };
  reason?: string;
@@ -61,7 +59,7 @@ export async function moderateContent(input: ModerationInput): Promise<Moderatio
  flagged: true,
  autoReject: true,
  score: 1.0,
- categories: { openai: {}, custom: ['hard_block_pattern'] },
+ categories: { automated: { hard_block: true }, custom: ['hard_block_pattern'] },
  reason: 'Content contains contact info, external platform references, or prohibited material.',
  action: 'REJECT',
  };
@@ -87,40 +85,16 @@ export async function moderateContent(input: ModerationInput): Promise<Moderatio
  // 2. Soft flag check (accumulate count)
  const softHits = SOFT_FLAG_PATTERNS.filter(p => p.test(text)).length;
 
- let openaiCategories: Record<string, boolean> = {};
- let openaiScore = 0;
- let openaiFlagged = false;
+ const automatedCategories: Record<string, boolean> = {
+ contact_bypass: /phone|whatsapp|email|telegram|call me/i.test(text),
+ off_platform: /upwork|freelancer|fiverr|pay outside/i.test(text),
+ soft_flag: softHits > 0,
+ };
 
- const apiKey = process.env.OPENAI_API_KEY || "";
- const isPlaceholder = apiKey === "" || apiKey.includes("placeholder") || apiKey.includes("your_openai");
+ const customScore = Math.min(softHits * 0.25, 0.9);
+ const combinedScore = Math.min(customScore, 1.0);
 
- if (!isPlaceholder) {
- try {
- const openai = getOpenAI();
- const response = await openai.moderations.create({
- model: process.env.AI_MODERATION_MODEL || 'omni-moderation-latest',
- input: text,
- });
-
- const result = response.results[0];
- openaiFlagged = result.flagged;
- openaiCategories = result.categories as unknown as Record<string, boolean>;
-
- // Get max category score
- const scores = result.category_scores as unknown as Record<string, number>;
- openaiScore = Math.max(...Object.values(scores));
- } catch (err) {
- console.error('[moderator] OpenAI moderation API error:', err);
- // Fall back to custom rules only — don't block legitimate content
- }
- }
-
- // 4. Combine scores
- const customScore = Math.min(softHits * 0.15, 0.6);
- const combinedScore = Math.min(Math.max(openaiScore, customScore), 1.0);
-
- // 5. Determine action thresholds
- // Content-type-specific strictness
+ // 3. Determine action thresholds
  const strictTypes: ContentType[] = ['gig', 'post', 'bio'];
  const isStrict = strictTypes.includes(contentType);
 
@@ -128,7 +102,7 @@ export async function moderateContent(input: ModerationInput): Promise<Moderatio
  const flagThreshold = isStrict ? 0.4 : 0.55;
 
  let action: 'APPROVE' | 'FLAG' | 'REJECT';
- if (openaiFlagged || combinedScore >= rejectThreshold) {
+ if (combinedScore >= rejectThreshold) {
  action = 'REJECT';
  } else if (combinedScore >= flagThreshold || softHits >= 2) {
  action = 'FLAG';
@@ -142,11 +116,11 @@ export async function moderateContent(input: ModerationInput): Promise<Moderatio
  autoReject: action === 'REJECT',
  score: combinedScore,
  categories: {
- openai: openaiCategories,
+ automated: automatedCategories,
  custom: softHits > 0 ? ['soft_flag_pattern'] : [],
  },
  reason: action !== 'APPROVE'
- ? `Content score: ${(combinedScore * 100).toFixed(0)}%. ${openaiFlagged ? 'Flagged by OpenAI.' : ''} ${softHits > 0 ? `${softHits} soft flag(s) detected.` : ''}`.trim()
+ ? `Content score: ${(combinedScore * 100).toFixed(0)}%. ${softHits > 0 ? `${softHits} policy flag(s) detected.` : 'Flagged by automated moderation rules.'}`.trim()
  : undefined,
  action,
  };

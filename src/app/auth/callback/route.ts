@@ -178,9 +178,9 @@ export async function GET(request: Request) {
  redirectPath ="/client-hub";
  }
 
- // If a next parameter was provided (e.g. for password reset), use it instead of the default role-based redirect
+ // If a next parameter was provided (e.g. for password reset), validate against open redirects
  const next = searchParams.get("next");
- if (next && next.startsWith("/")) {
+ if (next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\")) {
  redirectPath = next;
  }
 

@@ -51,7 +51,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const { slug } = await params
  const collegeName = getCollegeFromSlug(slug)
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
 
  return {
  title: `Hire Vetted Students & Campus Freelancers from ${collegeName}`,
@@ -132,7 +132,7 @@ export default async function CollegeSEOPage({ params }: Props) {
  )
  const gigs = await getGigs(collegeName)
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
  const breadcrumbItems = [
  { name:"Home", url: `${baseUrl}` },
  { name:"Colleges", url: `${baseUrl}` },

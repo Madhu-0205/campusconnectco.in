@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  
  if (!cluster) return {};
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
  
  return {
  title: `${cluster.name} Hub: Internships, Careers, and Guides | CampusConnectCo`,
@@ -52,7 +52,7 @@ export default async function TopicHubPage({ params }: Props) {
  notFound();
  }
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
  const breadcrumbItems = [
  { name:"Home", url: `${baseUrl}` },
  { name:"Topics", url: `${baseUrl}/topics` },

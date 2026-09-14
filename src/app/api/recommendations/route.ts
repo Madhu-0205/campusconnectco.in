@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { calculateDistance, calculateMatchScore } from "@/lib/matching"
+import { getActiveOpportunityPrismaFilter } from "@/lib/opportunities/lifecycle"
 import prisma from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 
@@ -52,34 +53,107 @@ export async function GET(req: Request) {
 
     // ── ANONYMOUS USER DISCOVERY ──────────────────────────────────────────────
     if (authError || !user) {
-      if (type === "gigs") {
-        const publicGigs = await prisma.gig.findMany({
-          take: 10,
-          where: { status: "OPEN" },
-          orderBy: { createdAt: "desc" },
-          include: {
-            poster: {
-              select: { name: true, image: true, isVerified: true }
-            }
-          }
-        })
+      const now = Date.now()
+      const searchLat = lat
+      const searchLng = lng
 
-        const sanitized = publicGigs.map(gig => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { latitude, longitude, ...safeGig } = gig
-          return {
-            ...safeGig,
-            distance: null,
-            matchScore: 85,
-            badges: ["Trending on CampusConnectCo"],
-            recommendationReason: "Popular opportunity on CampusConnectCo"
-          }
-        })
+      // Fetch active, non-deleted gigs and/or internships
+      const fetchGigs = type === "gigs" || type === "all"
+      const fetchInternships = type === "internships" || type === "all"
 
-        return NextResponse.json(sanitized)
-      } else {
-        return NextResponse.json([])
+      const [publicGigs, publicInternships] = await Promise.all([
+        fetchGigs
+          ? prisma.gig.findMany({
+              take: 20,
+              where: {
+                status: "OPEN",
+                ...getActiveOpportunityPrismaFilter(),
+              },
+              orderBy: { createdAt: "desc" },
+              include: {
+                poster: {
+                  select: { name: true, image: true, isVerified: true }
+                }
+              }
+            })
+          : Promise.resolve([]),
+        fetchInternships
+          ? prisma.internship.findMany({
+              take: 20,
+              where: {
+                status: "OPEN",
+                ...getActiveOpportunityPrismaFilter(),
+              },
+              orderBy: { createdAt: "desc" },
+              include: {
+                poster: {
+                  select: { name: true, image: true, isVerified: true }
+                }
+              }
+            })
+          : Promise.resolve([])
+      ])
+
+      const rateItem = (item: any, itemType: "gig" | "internship") => {
+        const isRemote = (item.location?.toLowerCase().includes("remote") || item.work_mode?.toLowerCase() === "remote") ?? false
+        let distance: number | null = null
+        let proximityScore = 0
+
+        if (searchLat !== null && searchLng !== null && item.latitude != null && item.longitude != null) {
+          distance = calculateDistance(searchLat, searchLng, item.latitude, item.longitude)
+          if (distance <= 15) proximityScore = 30
+          else if (distance <= 50) proximityScore = 20
+          else if (distance <= 100) proximityScore = 10
+          else proximityScore = isRemote ? 15 : 0
+        } else if (isRemote) {
+          proximityScore = 20
+        }
+
+        const ageInDays = (now - new Date(item.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+        let freshnessScore = 1
+        if (ageInDays <= 3) freshnessScore = 10
+        else if (ageInDays <= 7) freshnessScore = 7
+        else if (ageInDays <= 14) freshnessScore = 4
+
+        const finalScore = Math.min(100, Math.round(proximityScore + freshnessScore))
+
+        const badges: string[] = []
+        if (distance !== null && distance <= 50) {
+          badges.push("Near your location")
+        } else if (isRemote) {
+          badges.push("Remote opportunity")
+        }
+        if (ageInDays <= 7) {
+          badges.push("Fresh opportunity")
+        }
+        if (badges.length === 0) {
+          badges.push("Verified opportunity")
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { latitude, longitude, ...safeItem } = item
+        return {
+          ...safeItem,
+          type: itemType,
+          distance: distance !== null ? Math.round(distance) : null,
+          matchScore: finalScore,
+          badges,
+          recommendationReason: badges[0] || "Verified opportunity"
+        }
       }
+
+      const rated = [
+        ...publicGigs.map(g => rateItem(g, "gig")),
+        ...publicInternships.map(i => rateItem(i, "internship"))
+      ]
+
+      rated.sort((a, b) => b.matchScore - a.matchScore)
+
+      return NextResponse.json(rated.slice(0, 10), {
+        headers: {
+          "Cache-Control": "private, no-store, must-revalidate"
+        }
+      })
     }
 
     // ── AUTHENTICATED USER DISCOVERY ──────────────────────────────────────────
@@ -92,7 +166,7 @@ export async function GET(req: Request) {
       return new NextResponse("User profile not found", { status: 404 })
     }
 
-    // Resolve location hierarchy
+    // Resolve location hierarchy: GPS -> User Saved -> College -> None
     let searchLat: number | null = null
     let searchLng: number | null = null
     let locationSource: "gps" | "user_saved" | "college" | "none" = "none"
@@ -119,34 +193,61 @@ export async function GET(req: Request) {
       }
     }
 
-    if (type === "gigs") {
-      const gigs = await prisma.gig.findMany({
-        take: 50,
-        where: {
-          status: "OPEN",
-          posted_by: { not: dbUser.id } // Exclude user's own gigs
-        },
-        include: {
-          poster: {
-            select: { name: true, image: true, isVerified: true }
-          }
-        }
-      })
+    if (type === "gigs" || type === "internships" || type === "all") {
+      const fetchGigs = type === "gigs" || type === "all"
+      const fetchInternships = type === "internships" || type === "all"
+
+      const [gigs, internships] = await Promise.all([
+        fetchGigs
+          ? prisma.gig.findMany({
+              take: 50,
+              where: {
+                status: "OPEN",
+                ...getActiveOpportunityPrismaFilter(),
+                posted_by: { not: dbUser.id }
+              },
+              include: {
+                poster: {
+                  select: { name: true, image: true, isVerified: true }
+                }
+              }
+            })
+          : Promise.resolve([]),
+        fetchInternships
+          ? prisma.internship.findMany({
+              take: 50,
+              where: {
+                status: "OPEN",
+                ...getActiveOpportunityPrismaFilter(),
+                posted_by: { not: dbUser.id }
+              },
+              include: {
+                poster: {
+                  select: { name: true, image: true, isVerified: true }
+                }
+              }
+            })
+          : Promise.resolve([])
+      ])
 
       const now = Date.now()
 
-      const ratedGigs = gigs.map((gig: any) => {
+      const rateItem = (item: any, itemType: "gig" | "internship") => {
+        const itemSkills = itemType === "gig" 
+          ? (Array.isArray(item.required_skills) ? item.required_skills.join(", ") : (item.tags || ""))
+          : (item.skills || item.tags || "")
+
         // 1. Skill Score (0 - 60)
-        const rawSkillScore = calculateMatchScore(dbUser.skills || "", gig.tags || "", gig.description)
+        const rawSkillScore = calculateMatchScore(dbUser.skills || "", itemSkills, item.description)
         const skillScore = (rawSkillScore / 100) * 60
 
         // 2. Proximity Score (0 - 30)
         let distance: number | null = null
         let proximityScore = 0
-        const isRemote = gig.location?.toLowerCase().includes("remote")
+        const isRemote = (item.location?.toLowerCase().includes("remote") || item.work_mode?.toLowerCase() === "remote") ?? false
 
-        if (searchLat !== null && searchLng !== null && gig.latitude != null && gig.longitude != null) {
-          distance = calculateDistance(searchLat, searchLng, gig.latitude, gig.longitude)
+        if (searchLat !== null && searchLng !== null && item.latitude != null && item.longitude != null) {
+          distance = calculateDistance(searchLat, searchLng, item.latitude, item.longitude)
           if (distance <= 15) {
             proximityScore = 30
           } else if (distance <= 50) {
@@ -161,7 +262,7 @@ export async function GET(req: Request) {
         }
 
         // 3. Freshness Score (0 - 10)
-        const ageInDays = (now - new Date(gig.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+        const ageInDays = (now - new Date(item.createdAt).getTime()) / (1000 * 60 * 60 * 24)
         let freshnessScore = 1
         if (ageInDays <= 3) freshnessScore = 10
         else if (ageInDays <= 7) freshnessScore = 7
@@ -194,19 +295,30 @@ export async function GET(req: Request) {
 
         // Strip sensitive private coordinates
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { latitude, longitude, ...safeGig } = gig
+        const { latitude, longitude, ...safeItem } = item
 
         return {
-          ...safeGig,
+          ...safeItem,
+          type: itemType,
           distance: distance !== null ? Math.round(distance) : null,
           matchScore: finalScore,
           badges,
           recommendationReason: badges[0] || "Recommended for your profile"
         }
-      })
+      }
 
-      ratedGigs.sort((a: any, b: any) => b.matchScore - a.matchScore)
-      return NextResponse.json(ratedGigs.slice(0, 10))
+      const rated = [
+        ...gigs.map(g => rateItem(g, "gig")),
+        ...internships.map(i => rateItem(i, "internship"))
+      ]
+
+      rated.sort((a, b) => b.matchScore - a.matchScore)
+
+      return NextResponse.json(rated.slice(0, 10), {
+        headers: {
+          "Cache-Control": "private, no-store, must-revalidate"
+        }
+      })
     } else {
       // Recommendation for Talent (Peers/Candidates)
       const talent = await prisma.user.findMany({
@@ -252,7 +364,11 @@ export async function GET(req: Request) {
       })
 
       ratedTalent.sort((a: any, b: any) => b.matchScore - a.matchScore)
-      return NextResponse.json(ratedTalent.slice(0, 10))
+      return NextResponse.json(ratedTalent.slice(0, 10), {
+        headers: {
+          "Cache-Control": "private, no-store, must-revalidate"
+        }
+      })
     }
   } catch (error) {
     console.error("API Error in src/app/api/recommendations/route.ts:", error)

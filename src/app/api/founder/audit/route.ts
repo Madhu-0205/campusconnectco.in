@@ -23,13 +23,19 @@ export async function GET(req: Request) {
  // Fetch audit logs for a specific transaction
  const [logs, transaction] = await Promise.all([
  getAudit().findMany({
- where: { transactionId },
+ where: { 
+ transactionId,
+ ...(auth.role === "ADMIN" ? {} : { transaction: { buyerId: auth.user!.id } })
+ },
  orderBy: { createdAt:"desc" },
  take: limit,
  skip: (page - 1) * limit,
  }),
  prisma.transaction.findUnique({
- where: { id: transactionId },
+ where: { 
+ id: transactionId,
+ ...(auth.role === "ADMIN" ? {} : { buyerId: auth.user!.id })
+ },
  include: {
  buyer: { select: { name: true, email: true } },
  seller: { select: { name: true, email: true } },
@@ -43,6 +49,7 @@ export async function GET(req: Request) {
 
  // Fetch recent audit logs across all transactions
  const logs = await getAudit().findMany({
+ where: auth.role === "ADMIN" ? {} : { transaction: { buyerId: auth.user!.id } },
  orderBy: { createdAt:"desc" },
  take: 50,
  });

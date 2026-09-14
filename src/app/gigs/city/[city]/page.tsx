@@ -36,7 +36,7 @@ function capitalizeCity(city: string): string {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const { city } = await params
  const cityName = capitalizeCity(city)
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
 
  return {
  title: `Best Campus Gigs & Student Freelance Work in ${cityName} | CampusConnectCo`,
@@ -114,7 +114,7 @@ export default async function CityGigsPage({ params }: Props) {
  take: 12,
  })
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
  const breadcrumbItems = [
  { name:"Home", url: `${baseUrl}` },
  { name:"Gigs", url: `${baseUrl}/gigs/find` },

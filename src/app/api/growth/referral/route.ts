@@ -51,7 +51,7 @@ export async function GET() {
  // Create new referral record (the"master" link for this user)
  const dbUser = await prisma.user.findUnique({ where: { id: user.id }, select: { name: true } })
  const code = generateReferralCode(dbUser?.name ||"USER", user.id)
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in"
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in"
  const link = `${baseUrl}/join?ref=${code}&utm_source=referral&utm_medium=share&utm_campaign=student_referral`
 
  

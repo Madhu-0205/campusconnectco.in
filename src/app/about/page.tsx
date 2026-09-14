@@ -12,7 +12,7 @@ export const metadata: Metadata = {
  images: [{ url:"/og-about.jpg" }],
  type:"website",
  },
- alternates: { canonical:"https://campusconnectco.in/about" },
+ alternates: { canonical:"https://www.campusconnectco.in/about" },
 }
 
 const PERSON_SCHEMA = [
@@ -21,7 +21,7 @@ const PERSON_SCHEMA = [
 "name":"Sathwik",
 "jobTitle":"Founder",
 "worksFor": {"@type":"Organization","name":"CampusConnectCo" },
-"url":"https://campusconnectco.in/about",
+"url":"https://www.campusconnectco.in/about",
 "knowsAbout": ["Student Entrepreneurship","EdTech","Career Development"],
  },
  {
@@ -29,7 +29,7 @@ const PERSON_SCHEMA = [
 "name":"Suro",
 "jobTitle":"Chief Executive Officer",
 "worksFor": {"@type":"Organization","name":"CampusConnectCo" },
-"url":"https://campusconnectco.in/about",
+"url":"https://www.campusconnectco.in/about",
 "knowsAbout": ["Operations","Platform Scaling","Student Marketplaces"],
  },
  {
@@ -37,7 +37,7 @@ const PERSON_SCHEMA = [
 "name":"Shanker",
 "jobTitle":"Lead Engineer",
 "worksFor": {"@type":"Organization","name":"CampusConnectCo" },
-"url":"https://campusconnectco.in/about",
+"url":"https://www.campusconnectco.in/about",
 "knowsAbout": ["Next.js","Artificial Intelligence","Full-Stack Development"],
  },
  {
@@ -45,7 +45,7 @@ const PERSON_SCHEMA = [
 "name":"Akash",
 "jobTitle":"Growth & UI Lead",
 "worksFor": {"@type":"Organization","name":"CampusConnectCo" },
-"url":"https://campusconnectco.in/about",
+"url":"https://www.campusconnectco.in/about",
 "knowsAbout": ["Digital Marketing","UI Design","Growth Strategy"],
  },
 ]
@@ -55,13 +55,13 @@ const ORG_SCHEMA = {
 "@graph": [
  {
 "@type":"Organization",
-"@id":"https://campusconnectco.in/#organization",
+"@id":"https://www.campusconnectco.in/#organization",
 "name":"CampusConnectCo",
 "alternateName":"CampusConnectCo India",
-"url":"https://campusconnectco.in",
+"url":"https://www.campusconnectco.in",
 "logo": {
 "@type":"ImageObject",
-"url":"https://campusconnectco.in/logo-v2.jpg",
+"url":"https://www.campusconnectco.in/logo-v2.jpg",
 "width": 512,
 "height": 512,
  },
@@ -93,10 +93,10 @@ const ORG_SCHEMA = {
  },
  {
 "@type":"AboutPage",
-"url":"https://campusconnectco.in/about",
+"url":"https://www.campusconnectco.in/about",
 "name":"About CampusConnectCo",
 "description":"The story of CampusConnectCo — founded by students to solve the experience paradox in India.",
-"publisher": {"@id":"https://campusconnectco.in/#organization" },
+"publisher": {"@id":"https://www.campusconnectco.in/#organization" },
  },
  ],
 }

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  if (!article) return {};
 
  const author = AUTHORS[article.authorId];
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
  
  return {
  title: `${article.title} | CampusConnectCo`,
@@ -65,7 +65,7 @@ export default async function GuideArticlePage({ params }: Props) {
  }
 
  const author = AUTHORS[article.authorId];
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
  
  const breadcrumbItems = [
  { name:"Home", url: `${baseUrl}` },
@@ -83,7 +83,7 @@ export default async function GuideArticlePage({ params }: Props) {
  authorName={author.name}
  publishedAt={article.publishedAt}
  updatedAt={article.updatedAt}
- images={["https://campusconnectco.in/logo-v2.jpg"]}
+ images={["https://www.campusconnectco.in/logo-v2.jpg"]}
  nonce={nonce}
  />
 

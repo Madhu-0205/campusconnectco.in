@@ -3,19 +3,25 @@ import { NextRequest, NextResponse } from"next/server";
 import Razorpay from"razorpay";
 import { z } from"zod";
 
-import { logger } from"@/lib/logger";
-import prisma from"@/lib/prisma";
-import { sanitizeInput } from"@/lib/security/sanitization";
-import { createClient } from"@/lib/supabase/server";
+import { logger } from "@/lib/logger";
+import { assertPaymentsEnabled } from "@/lib/payments/config";
+import prisma from "@/lib/prisma";
+import { sanitizeInput } from "@/lib/security/sanitization";
+import { createClient } from "@/lib/supabase/server";
 
 const RefundSchema = z.object({
- transactionId: z.string().uuid(),
- reason: z.string().optional(),
+  transactionId: z.string().uuid(),
+  reason: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
- try {
- const supabase = await createClient();
+  try {
+    const { errorResponse } = assertPaymentsEnabled();
+    if (errorResponse) {
+      return errorResponse;
+    }
+
+    const supabase = await createClient();
  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
  if (authError || !user) {

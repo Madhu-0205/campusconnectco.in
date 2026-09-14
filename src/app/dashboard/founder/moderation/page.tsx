@@ -14,7 +14,7 @@ interface ModerationEvent {
  action: 'FLAG' | 'REJECT';
  score: number;
  reason?: string;
- categories?: { openai: Record<string, boolean>; custom: string[] };
+    categories?: { automated?: Record<string, boolean>; openai?: Record<string, boolean>; custom: string[] };
  snippet: string;
  };
  createdAt: string;
@@ -187,14 +187,14 @@ export default function ModerationQueuePage() {
  {/* Expanded details */}
  {isExpanded && event.data.categories && (
  <div className="mt-3 p-3 bg-white/5 rounded-xl text-xs space-y-2">
- <p className="font-bold text-slate-400">OpenAI Categories:</p>
+ <p className="font-bold text-slate-400">Automated Checks:</p>
  <div className="flex flex-wrap gap-1.5">
- {Object.entries(event.data.categories.openai)
+ {Object.entries(event.data.categories.automated || event.data.categories.openai || {})
  .filter(([, v]) => v)
  .map(([k]) => (
  <span key={k} className="px-2 py-0.5 bg-red-500/20 text-red-400 rounded-md font-mono">{k}</span>
  ))}
- {Object.values(event.data.categories.openai).every(v => !v) && (
+ {Object.values(event.data.categories.automated || event.data.categories.openai || {}).every(v => !v) && (
  <span className="text-slate-600">None</span>
  )}
  </div>

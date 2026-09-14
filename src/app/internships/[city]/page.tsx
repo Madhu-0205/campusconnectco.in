@@ -8,111 +8,201 @@ import React from"react"
 
 
 import InternshipDetailsClient from "@/components/internships/InternshipDetailsClient"
-import { BreadcrumbSchema, FAQSchema, getWikidataURI } from "@/components/seo/JsonLd"
+import { RelatedOpportunitiesSection } from "@/components/opportunities/RelatedOpportunitiesSection"
+import { BreadcrumbSchema, FAQSchema, JobPostingSchema, getWikidataURI } from "@/components/seo/JsonLd"
+import { getActiveOpportunityPrismaFilter } from "@/lib/opportunities/lifecycle"
 import prisma from "@/lib/prisma"
+import { getRelatedOpportunitiesService } from "@/lib/recommendation-engine/service"
 
 
 interface Props {
- params: Promise<{ city: string }>
+  params: Promise<{ city: string }>
 }
 
 const TOP_CITIES = [
-"bangalore","pune","mumbai","delhi","hyderabad","chennai","kolkata"
+  "bangalore", "pune", "mumbai", "delhi", "hyderabad", "chennai", "kolkata"
 ]
 
 function getCollegesForCity(city: string): string[] {
- const c = city.toLowerCase()
- if (c ==="bangalore") return ["IIIT Bangalore","PES University","RV College of Engineering","BMS College of Engineering","PESIT"]
- if (c ==="pune") return ["COEP","MIT Pune","Symbiosis","Pune University","COEP Pune"]
- if (c ==="mumbai") return ["IIT Bombay","Veermata Jijabai Technological Institute","VJTI","DJ Sanghvi","NMIMS"]
- if (c ==="delhi") return ["IIT Delhi","Delhi Technological University","NSUT Delhi","IGDTUW","DTU"]
- if (c ==="chennai") return ["IIT Madras","Anna University","VIT Chennai","SRM Chennai","SSN College"]
- if (c ==="hyderabad") return ["IIT Hyderabad","IIIT Hyderabad","BITS Hyderabad","Osmania University"]
- return []
+  const c = city.toLowerCase()
+  if (c === "bangalore") return ["IIIT Bangalore", "PES University", "RV College of Engineering", "BMS College of Engineering", "PESIT"]
+  if (c === "pune") return ["COEP", "MIT Pune", "Symbiosis", "Pune University", "COEP Pune"]
+  if (c === "mumbai") return ["IIT Bombay", "Veermata Jijabai Technological Institute", "VJTI", "DJ Sanghvi", "NMIMS"]
+  if (c === "delhi") return ["IIT Delhi", "Delhi Technological University", "NSUT Delhi", "IGDTUW", "DTU"]
+  if (c === "chennai") return ["IIT Madras", "Anna University", "VIT Chennai", "SRM Chennai", "SSN College"]
+  if (c === "hyderabad") return ["IIT Hyderabad", "IIIT Hyderabad", "BITS Hyderabad", "Osmania University"]
+  return []
 }
 
 function capitalizeCity(city: string): string {
- const decoded = decodeURIComponent(city)
- return decoded.charAt(0).toUpperCase() + decoded.slice(1).toLowerCase()
+  const decoded = decodeURIComponent(city)
+  return decoded.charAt(0).toUpperCase() + decoded.slice(1).toLowerCase()
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { city } = await params
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
   if (uuidRegex.test(city)) {
     const internship = await prisma.internship.findUnique({
       where: { id: city },
-      select: { title: true, company: true }
+      select: { id: true, title: true, company: true, description: true, skills: true, createdAt: true }
     })
     if (internship) {
+      const pageUrl = `${baseUrl}/internships/${internship.id}`
+      const description = internship.description?.substring(0, 160) || `Apply for ${internship.title} internship at ${internship.company} on CampusConnectCo.`
+      const skillsList = internship.skills ? internship.skills.split(',').map((s: string) => s.trim()) : []
       return {
         title: `${internship.title} at ${internship.company} | CampusConnectCo`,
-        description: `Apply for ${internship.title} internship opportunity at ${internship.company} on CampusConnectCo.`,
+        description,
+        keywords: ['student internship', 'college internship', internship.company, ...skillsList],
+        alternates: { canonical: pageUrl },
+        openGraph: {
+          title: `${internship.title} at ${internship.company}`,
+          description,
+          url: pageUrl,
+          siteName: 'CampusConnectCo',
+          type: 'article',
+          publishedTime: internship.createdAt.toISOString(),
+          images: [{ url: "/logo-v2.jpg" }]
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: `${internship.title} at ${internship.company}`,
+          description,
+          site: '@campusconnect_in'
+        }
       }
     }
   }
 
   const cityName = capitalizeCity(city)
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
 
- return {
- title: `Best Student Internships in ${cityName} | CampusConnectCo`,
- description: `Find top college student internships, remote projects, and startup opportunities in ${cityName}. Earn stipend, build your career roadmap, and match with mentors.`,
- alternates: {
- canonical: `${baseUrl}/internships/${city.toLowerCase()}`,
- },
- openGraph: {
- title: `Match Student Internships & Startup Placements in ${cityName}`,
- description: `Browse student internships, college credits placement, and verified candidate profiles in ${cityName}, India.`,
- url: `${baseUrl}/internships/${city.toLowerCase()}`,
- type: 'website',
- images: [{ url:"/logo-v2.jpg" }],
- }
- }
+  return {
+    title: `Best Student Internships in ${cityName} | CampusConnectCo`,
+    description: `Find top college student internships, remote projects, and startup opportunities in ${cityName}. Earn stipend, build your career roadmap, and match with mentors.`,
+    alternates: {
+      canonical: `${baseUrl}/internships/${city.toLowerCase()}`,
+    },
+    openGraph: {
+      title: `Match Student Internships & Startup Placements in ${cityName}`,
+      description: `Browse student internships, college credits placement, and verified candidate profiles in ${cityName}, India.`,
+      url: `${baseUrl}/internships/${city.toLowerCase()}`,
+      type: 'website',
+      images: [{ url: "/logo-v2.jpg" }],
+    }
+  }
 }
 
 export async function generateStaticParams() {
- return TOP_CITIES.map(city => ({
- city
- }))
+  return TOP_CITIES.map(city => ({
+    city
+  }))
 }
 
 export default async function CityInternshipsPage({ params }: Props) {
- const nonce = (await headers()).get("x-nonce") || undefined
- const { city } = await params
- const decodedCity = decodeURIComponent(city).toLowerCase()
- const cityName = capitalizeCity(city)
+  const nonce = (await headers()).get("x-nonce") || undefined
+  const { city } = await params
+  const decodedCity = decodeURIComponent(city).toLowerCase()
+  const cityName = capitalizeCity(city)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
 
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
   if (uuidRegex.test(city)) {
     const internshipData = await prisma.internship.findUnique({
       where: { id: city }
     })
-    if (!internshipData) {
+    if (!internshipData || internshipData.deletedAt !== null) {
       notFound()
     }
-    return <InternshipDetailsClient internship={internshipData} />
+
+    const relatedOpportunities = await getRelatedOpportunitiesService(internshipData.id, 'internship', 4)
+    const skillsList = internshipData.skills ? internshipData.skills.split(',').map((s: string) => s.trim()) : []
+
+    const internshipFaqs = [
+      {
+        question: `Who can apply for the ${internshipData.title} internship?`,
+        answer: `Any eligible student enrolled in an accredited university or college who possesses the required skill profile (${internshipData.skills || "relevant technical knowledge"}).`
+      },
+      {
+        question: "Is this internship verified on CampusConnectCo?",
+        answer: `Yes, this internship posting is active and verified on CampusConnectCo with verified recruiter tracking.`
+      }
+    ]
+
+    return (
+      <article
+        className="min-h-screen bg-background text-foreground"
+        data-ai-citation-title={internshipData.title}
+        data-cc-entity="InternshipOpportunity"
+        data-cc-stipend={internshipData.stipend || 0}
+      >
+        <JobPostingSchema
+          title={internshipData.title}
+          description={internshipData.description || `Internship opportunity at ${internshipData.company}`}
+          datePosted={internshipData.createdAt.toISOString()}
+          validThrough={internshipData.deadline ? internshipData.deadline.toISOString() : undefined}
+          budget={internshipData.stipend || 0}
+          companyName={internshipData.company}
+          locationName={internshipData.location || "Remote"}
+          skills={skillsList}
+          nonce={nonce}
+        />
+        <FAQSchema faqs={internshipFaqs} nonce={nonce} />
+
+        {/* LLM Digest Section for RAG Engine Crawlers */}
+        <div 
+          className="sr-only" 
+          data-ai-digest="true" 
+          data-ai-last-updated={internshipData.updatedAt.toISOString()} 
+          data-ai-source-origin="CampusConnectCo"
+          aria-hidden="false"
+        >
+          <h2>Key Internship Facts: {internshipData.title}</h2>
+          <ul>
+            <li>Title: {internshipData.title}</li>
+            <li>Company: {internshipData.company}</li>
+            <li>Location: {internshipData.location || "Remote"}</li>
+            <li>Stipend: {internshipData.stipend ? `₹${internshipData.stipend}/month` : "Unpaid / Performance-based"}</li>
+            <li>Duration: {internshipData.duration || "Flexible"}</li>
+            <li>Required Skills: {internshipData.skills || "General"}</li>
+            <li>Created: {internshipData.createdAt.toISOString()}</li>
+          </ul>
+        </div>
+
+        <InternshipDetailsClient internship={internshipData} />
+
+        {/* Related Opportunities */}
+        <div className="max-w-5xl mx-auto px-4 pb-16">
+          <RelatedOpportunitiesSection 
+            opportunities={relatedOpportunities}
+            currentTitle={internshipData.title}
+          />
+        </div>
+      </article>
+    )
   }
 
   if (!decodedCity || decodedCity.length > 50) {
     notFound()
   }
 
- // 1. Fetch matching local internships
- const getInternships = unstable_cache(
- async (decodedCity: string) => prisma.internship.findMany({
- where: {
- status:"OPEN",
- deletedAt: null,
- location: { equals: decodedCity, mode:"insensitive" }
- },
- take: 12,
- orderBy: { createdAt:"desc" }
- }),
- [`internships-city-${decodedCity}`],
- { revalidate: 3600 }
- )
- const internships = await getInternships(decodedCity)
+  // 1. Fetch matching local internships
+  const getInternships = unstable_cache(
+    async (decodedCity: string) => prisma.internship.findMany({
+      where: {
+        status: "OPEN",
+        ...getActiveOpportunityPrismaFilter(),
+        location: { equals: decodedCity, mode: "insensitive" }
+      },
+      take: 12,
+      orderBy: { createdAt: "desc" }
+    }),
+    [`internships-city-${decodedCity}`],
+    { revalidate: 3600 }
+  )
+  const internships = await getInternships(decodedCity)
 
  // 2. Fetch matching local students via city name and college mappings
  const localColleges = getCollegesForCity(decodedCity)
@@ -145,7 +235,6 @@ export default async function CityInternshipsPage({ params }: Props) {
  )
  const students = await getStudents(decodedCity, localColleges)
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
  const breadcrumbItems = [
  { name:"Home", url: `${baseUrl}` },
  { name:"Internships", url: `${baseUrl}/dashboard/student/internships` },

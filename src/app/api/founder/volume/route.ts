@@ -11,6 +11,7 @@ export async function GET() {
  const transactions = await prisma.transaction.findMany({ take: 50,
  where: {
  status: { in: ["PAID","COMPLETED","RELEASED"] },
+ ...(auth.role === "ADMIN" ? {} : { buyerId: auth.user!.id }),
  },
  select: { platformFee: true, amount: true }
  })

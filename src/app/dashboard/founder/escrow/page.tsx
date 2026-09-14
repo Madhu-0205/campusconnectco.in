@@ -1,61 +1,71 @@
-import { ArrowLeft, Lock, ShieldCheck, RefreshCw, Activity } from"lucide-react";
-import Link from"next/link";
-import React from"react";
+import { ArrowLeft, Lock, ShieldCheck, RefreshCw, Activity, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import React from "react";
 
-import prisma from"@/lib/prisma";
+import prisma from "@/lib/prisma";
 
-export const dynamic ="force-dynamic";
+export const dynamic = "force-dynamic";
 
 export default async function EscrowPage() {
- let lockedVolume = 0;
- let releasedVolume = 0;
- let refundedVolume = 0;
- let escrowsList: any[] = [];
+  let lockedVolume = 0;
+  let releasedVolume = 0;
+  let refundedVolume = 0;
+  let escrowsList: any[] = [];
 
- try {
- const escrows = await prisma.escrow.findMany({
- include: {
- client: { select: { name: true, email: true } },
- worker: { select: { name: true, email: true } },
- gig: { select: { title: true } }
- },
- take: 100,
- orderBy: { createdAt:"desc" }
- });
+  try {
+    const escrows = await prisma.escrow.findMany({
+      include: {
+        client: { select: { name: true, email: true } },
+        worker: { select: { name: true, email: true } },
+        gig: { select: { title: true } }
+      },
+      take: 100,
+      orderBy: { createdAt: "desc" }
+    });
 
- escrowsList = escrows;
+    escrowsList = escrows;
 
- escrows.forEach((esc: any) => {
- if (esc.status ==="LOCKED") {
- lockedVolume += esc.amount;
- } else if (esc.status ==="RELEASED") {
- releasedVolume += esc.amount;
- } else if (esc.status ==="REFUNDED") {
- refundedVolume += esc.amount;
- }
- });
+    escrows.forEach((esc: any) => {
+      if (esc.status === "LOCKED") {
+        lockedVolume += esc.amount;
+      } else if (esc.status === "RELEASED") {
+        releasedVolume += esc.amount;
+      } else if (esc.status === "REFUNDED") {
+        refundedVolume += esc.amount;
+      }
+    });
 
- } catch (error) {
- console.error("[Escrow Dashboard Query Failed]:", error);
- }
+  } catch (error) {
+    console.error("[Escrow Dashboard Query Failed]:", error);
+  }
 
- return (
- <div className="min-h-screen text-slate-100 p-6 md:p-12" style={{ background:"var(--color-background)", fontFamily:"var(--font-body)" }}>
- <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
- 
- {/* Back button & Header */}
- <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
- <div>
- <Link href="/dashboard/founder" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold mb-3">
- <ArrowLeft size={16} />
- Back to Command Center
- </Link>
- <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight flex items-center gap-3">
- Escrow <span className="text-primary">Liquidity Ledger</span>
- </h1>
- <p className="text-slate-500 font-medium mt-1">Monitor locked gig balances, dispute locks, and completed milestones.</p>
- </div>
- </div>
+  return (
+    <div className="min-h-screen text-slate-100 p-6 md:p-12" style={{ background: "var(--color-background)", fontFamily: "var(--font-body)" }}>
+      <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        
+        {/* Back button & Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <Link href="/dashboard/founder" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold mb-3">
+              <ArrowLeft size={16} />
+              Back to Command Center
+            </Link>
+            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight flex items-center gap-3">
+              Escrow <span className="text-primary">Liquidity Ledger</span>
+            </h1>
+            <p className="text-slate-500 font-medium mt-1">Monitor locked gig balances, dispute locks, and completed milestones.</p>
+          </div>
+        </div>
+
+        {/* Payments Coming Soon Status Banner */}
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle size={20} className="text-amber-400 shrink-0" />
+            <p className="text-sm font-medium">
+              <strong>Payment Gate Active:</strong> Live financial operations and order processing are currently locked in &ldquo;Payments Coming Soon&rdquo; mode (<code className="text-xs bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-200">PAYMENTS_ENABLED = false</code>). Real historical records and ledger schemas remain preserved.
+            </p>
+          </div>
+        </div>
 
  {/* Metrics Grid */}
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

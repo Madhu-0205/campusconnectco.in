@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const { category: categorySlug } = await params;
  const cat = getCategoryFromSlug(categorySlug);
  const categoryName = cat ? cat.name : decodeURIComponent(categorySlug);
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
 
  return {
  title: `Best ${categoryName} Student Internships & Startup Roles | CampusConnectCo`,
@@ -95,7 +95,7 @@ export default async function CategoryInternshipsPage({ params }: Props) {
  take: 12,
  });
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
  const breadcrumbItems = [
  { name:"Home", url: baseUrl },
  { name:"Internships", url: `${baseUrl}/internships` },

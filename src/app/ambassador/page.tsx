@@ -11,7 +11,7 @@ export const metadata: Metadata = {
  description:"Earn while you lead. Be the first CampusConnectCo Campus Captain at your college.",
  images: [{ url:"/og-ambassador.jpg" }],
  },
- alternates: { canonical:"https://campusconnectco.in/ambassador" },
+ alternates: { canonical:"https://www.campusconnectco.in/ambassador" },
 }
 
 import { headers } from"next/headers"

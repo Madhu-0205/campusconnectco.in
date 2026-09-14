@@ -102,6 +102,7 @@ model Follows {
   following   User     @relation("following", fields: [followingId], references: [id])
 
   @@id([followerId, followingId])
+  @@index([followingId])
 }
 
 model ConnectionRequest {
@@ -131,6 +132,10 @@ model Notification {
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
   user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
 }
 
 model Project {
@@ -379,6 +384,7 @@ model UserSkill {
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, skillId])
+  @@index([skillId])
 }
 
 model GigSkill {
@@ -388,6 +394,7 @@ model GigSkill {
   skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
   @@id([gigId, skillId])
+  @@index([skillId])
 }
 
 model Internship {

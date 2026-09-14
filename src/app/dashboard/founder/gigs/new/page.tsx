@@ -15,7 +15,10 @@ export default function FounderPostGigPage() {
  title:"",
  description:"",
  budget:"",
- deadline:""
+ deadline:"",
+ tags:"",
+ work_mode:"remote",
+ city:""
  })
 
  const handleSubmit = async (e: React.FormEvent) => {
@@ -28,7 +31,9 @@ export default function FounderPostGigPage() {
  headers: {"Content-Type":"application/json" },
  body: JSON.stringify({
  ...formData,
- budget: parseFloat(formData.budget)
+ budget: parseFloat(formData.budget),
+ tags: formData.tags.trim() || undefined,
+ city: formData.city.trim() || undefined
  })
  })
 
@@ -85,6 +90,46 @@ export default function FounderPostGigPage() {
  value={formData.description}
  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
  />
+ </div>
+
+ <div className="space-y-3">
+ <label className="font-bold text-white uppercase tracking-wider ml-1">Skills & Tags</label>
+ <input
+ type="text"
+ placeholder="e.g. Community, Growth, Content, Event Planning"
+ className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white placeholder:text-slate-400"
+ value={formData.tags}
+ onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+ />
+ <p className="text-xs text-slate-500 ml-1">Comma-separated skills to power the precision recommendation graph.</p>
+ </div>
+
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+ <div className="space-y-3">
+ <label className="font-bold text-white uppercase tracking-wider ml-1">Work Mode</label>
+ <select
+ className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white"
+ value={formData.work_mode}
+ onChange={(e) => setFormData({ ...formData, work_mode: e.target.value })}
+ >
+ <option value="remote">Remote</option>
+ <option value="hybrid">Hybrid</option>
+ <option value="on-site">On-site</option>
+ </select>
+ </div>
+ <div className="space-y-3">
+ <label className="font-bold text-white uppercase tracking-wider ml-1">
+ City {formData.work_mode === "remote" ? "(Optional)" : "(Required)"}
+ </label>
+ <input
+ type="text"
+ required={formData.work_mode !== "remote"}
+ placeholder="e.g. Hyderabad, Bengaluru, Mumbai"
+ className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white placeholder:text-slate-400"
+ value={formData.city}
+ onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+ />
+ </div>
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">

@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
  const firstName = user.name?.split("")[0] ||"A student"
  const college = user.college ||"India"
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in"
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in"
 
  const CARD_TEMPLATES: Record<string, { headline: string; subtext: string; emoji: string }> = {
  first_gig: { headline: `${firstName} just shipped their first gig 🚀`, subtext: `Building real work before graduation at CampusConnectCo`, emoji:"🚀" },

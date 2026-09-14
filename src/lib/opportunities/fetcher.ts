@@ -4,6 +4,7 @@ import {
   computeCanonicalDistance,
   LocationType
 } from "@/lib/geo/distance"
+import { getActiveOpportunityPrismaFilter } from "@/lib/opportunities/lifecycle"
 import prisma from "@/lib/prisma"
 
 export interface OpportunityNormalized {
@@ -21,6 +22,8 @@ export interface OpportunityNormalized {
   isFeatured: boolean
   isUrgent: boolean
   createdAt: Date
+  deadline?: Date | null
+  isExpired?: boolean
   sourceId: string
   latitude?: number | null
   longitude?: number | null
@@ -70,72 +73,77 @@ export async function getUnifiedOpportunities(params: FetchOpportunitiesParams) 
   const fetchGigs = type === "all" || type === "gig"
   const fetchInternships = type === "all" || type === "internship"
 
-  // Gig.status defaults to "active" in schema; Internship.status defaults to "OPEN"
-  // Both must strictly exclude soft-deleted (deletedAt != null), INACTIVE, and COMPLETED records from active discovery
-  const gigWhere: any = { status: { in: ["OPEN", "active"] }, deletedAt: null }
-  const intWhere: any = { status: "OPEN", deletedAt: null }
+  // Authoritative Active Opportunity Filter:
+  // Both must strictly exclude soft-deleted (deletedAt != null), INACTIVE, COMPLETED, and expired deadline records
+  const activePrismaFilter = getActiveOpportunityPrismaFilter()
+
+  const gigAndConditions: any[] = [
+    { status: { in: ["OPEN", "active"] } },
+    activePrismaFilter
+  ]
+  const intAndConditions: any[] = [
+    { status: "OPEN" },
+    activePrismaFilter
+  ]
 
   // Work Mode filtering
   if (workMode && workMode !== "all") {
     if (workMode === "remote") {
-      gigWhere.work_mode = { in: ["remote", "Remote"] }
-      intWhere.OR = [{ location: { contains: "remote", mode: "insensitive" } }]
+      gigAndConditions.push({ work_mode: { in: ["remote", "Remote"] } })
+      intAndConditions.push({ location: { contains: "remote", mode: "insensitive" } })
     } else if (workMode === "on-site") {
-      gigWhere.work_mode = { in: ["on-site", "onsite", "in-person"] }
-      intWhere.NOT = [
-        { location: { contains: "remote", mode: "insensitive" } },
-        { location: { contains: "hybrid", mode: "insensitive" } }
-      ]
+      gigAndConditions.push({ work_mode: { in: ["on-site", "onsite", "in-person"] } })
+      intAndConditions.push({
+        NOT: [
+          { location: { contains: "remote", mode: "insensitive" } },
+          { location: { contains: "hybrid", mode: "insensitive" } }
+        ]
+      })
     } else if (workMode === "hybrid") {
-      gigWhere.work_mode = { in: ["hybrid", "Hybrid"] }
-      intWhere.OR = [
-        { location: { contains: "hybrid", mode: "insensitive" } }
-      ]
+      gigAndConditions.push({ work_mode: { in: ["hybrid", "Hybrid"] } })
+      intAndConditions.push({ location: { contains: "hybrid", mode: "insensitive" } })
     }
   }
 
   // 1. Search Query
   if (query.trim()) {
     const q = { contains: query.trim(), mode: "insensitive" }
-    gigWhere.OR = [{ title: q }, { description: q }]
-    intWhere.OR = [{ title: q }, { description: q }, { company: q }]
+    gigAndConditions.push({ OR: [{ title: q }, { description: q }] })
+    intAndConditions.push({ OR: [{ title: q }, { description: q }, { company: q }] })
   }
 
   // 2. Category / Tags
   if (category && category !== "all") {
-    gigWhere.tags = { contains: category, mode: "insensitive" }
-    intWhere.tags = { contains: category, mode: "insensitive" }
+    gigAndConditions.push({ tags: { contains: category, mode: "insensitive" } })
+    intAndConditions.push({ tags: { contains: category, mode: "insensitive" } })
   }
 
   // 3. Location text search
   if (location) {
     const loc = { contains: location, mode: "insensitive" }
-    gigWhere.OR = gigWhere.OR ? [
-      ...gigWhere.OR,
-      { city: loc }, { state: loc }
-    ] : [{ city: loc }, { state: loc }]
-    
-    intWhere.OR = intWhere.OR ? [
-      ...intWhere.OR,
-      { city: loc }, { state: loc }, { location: loc }
-    ] : [{ city: loc }, { state: loc }, { location: loc }]
+    gigAndConditions.push({ OR: [{ city: loc }, { state: loc }] })
+    intAndConditions.push({ OR: [{ city: loc }, { state: loc }, { location: loc }] })
   }
 
   // 4. Bounding-box candidate prefilter for database scalability
-  // Applies indexed range filters (minLat <= lat <= maxLat, minLng <= lng <= maxLng) directly in SQL
   if (isRadiusFiltering && hasUserLocation) {
     const bbox = computeBoundingBox(userLat!, userLng!, radiusKm as number)
-    gigWhere.latitude = { gte: bbox.minLat, lte: bbox.maxLat }
-    gigWhere.longitude = { gte: bbox.minLng, lte: bbox.maxLng }
-    intWhere.latitude = { gte: bbox.minLat, lte: bbox.maxLat }
-    intWhere.longitude = { gte: bbox.minLng, lte: bbox.maxLng }
+    gigAndConditions.push({
+      latitude: { gte: bbox.minLat, lte: bbox.maxLat },
+      longitude: { gte: bbox.minLng, lte: bbox.maxLng }
+    })
+    intAndConditions.push({
+      latitude: { gte: bbox.minLat, lte: bbox.maxLat },
+      longitude: { gte: bbox.minLng, lte: bbox.maxLng }
+    })
   } else if (isDistanceSort && (!radiusKm || radiusKm === "all")) {
     // When sorting purely by distance without a radius cap, prioritize items with coordinates
-    gigWhere.latitude = { not: null }
-    gigWhere.longitude = { not: null }
-    intWhere.latitude = { not: null }
-    intWhere.longitude = { not: null }
+    gigAndConditions.push({ latitude: { not: null }, longitude: { not: null } })
+    intAndConditions.push({ latitude: { not: null }, longitude: { not: null } })
   }
+
+  const gigWhere: any = { AND: gigAndConditions }
+  const intWhere: any = { AND: intAndConditions }
 
   // 5. Sorting & DB Take limits
   let gigOrderBy: any = { createdAt: "desc" }
@@ -214,6 +222,8 @@ export async function getUnifiedOpportunities(params: FetchOpportunitiesParams) 
       isFeatured: gig.isPremium || false,
       isUrgent: false,
       createdAt: gig.createdAt,
+      deadline: gig.deadline,
+      isExpired: false,
       latitude: (hasCoords && workMode !== "remote") ? gig.latitude : undefined,
       longitude: (hasCoords && workMode !== "remote") ? gig.longitude : undefined,
       distanceMeters,
@@ -267,6 +277,8 @@ export async function getUnifiedOpportunities(params: FetchOpportunitiesParams) 
       isFeatured: int.isFeatured || false,
       isUrgent: false, 
       createdAt: int.createdAt,
+      deadline: int.deadline,
+      isExpired: false,
       latitude: (hasCoords && workMode !== "remote") ? int.latitude : undefined,
       longitude: (hasCoords && workMode !== "remote") ? int.longitude : undefined,
       distanceMeters,

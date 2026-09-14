@@ -1,4 +1,5 @@
 import { z } from"zod";
+import { PAYMENTS_ENABLED } from "@/lib/payments/config";
 
 const EdgeEnvSchema = z.object({
  NEXT_PUBLIC_SUPABASE_URL: z.string().url("NEXT_PUBLIC_SUPABASE_URL must be a valid URL"),
@@ -12,8 +13,8 @@ const ServerEnvSchema = z.object({
  DATABASE_URL: z.string().url("DATABASE_URL must be a valid connection string"),
  DIRECT_URL: z.string().url("DIRECT_URL must be a valid connection string"),
  CRON_SECRET: z.string().min(5,"CRON_SECRET must be set"),
- RAZORPAY_KEY_ID: z.string().min(5,"RAZORPAY_KEY_ID must be set"),
- RAZORPAY_KEY_SECRET: z.string().min(5,"RAZORPAY_KEY_SECRET must be set"),
+ RAZORPAY_KEY_ID: PAYMENTS_ENABLED ? z.string().min(5,"RAZORPAY_KEY_ID must be set") : z.string().optional(),
+ RAZORPAY_KEY_SECRET: PAYMENTS_ENABLED ? z.string().min(5,"RAZORPAY_KEY_SECRET must be set") : z.string().optional(),
 });
 
 export function validateEnv(isEdge = false) {

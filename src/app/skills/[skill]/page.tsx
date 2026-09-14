@@ -30,7 +30,7 @@ function getSkillFromSlug(slug: string): string {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const { skill } = await params
  const decodedSkill = getSkillFromSlug(skill)
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
 
  return {
  title: `Best Campus Gigs & Startup Internships for ${decodedSkill} Students`,
@@ -122,7 +122,7 @@ export default async function SkillSEOPage({ params }: Props) {
  dbError = true
  }
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
  const breadcrumbItems = [
  { name:"Home", url: `${baseUrl}` },
  { name:"Skills", url: `${baseUrl}/skills` },

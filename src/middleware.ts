@@ -1,147 +1,193 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { authLimiter, generalApiLimiter, aiLimiter, resumeParseLimiter, searchLimiter, uploadLimiter } from '@/lib/rate-limit';
+import {
+  authLimiter,
+  generalApiLimiter,
+  aiLimiter,
+  resumeParseLimiter,
+  searchLimiter,
+  uploadLimiter,
+  paymentLimiter,
+  publicFormLimiter,
+  type RateLimitResult,
+} from '@/lib/rate-limit';
 import { validateEnv } from '@/lib/security/env-validator';
 import { updateSession } from '@/lib/supabase/middleware';
 
+function buildRateLimitResponse(message: string, result: RateLimitResult): NextResponse {
+  return new NextResponse(
+    JSON.stringify({ error: message }),
+    {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(result.reset),
+        'X-RateLimit-Limit': String(result.limit),
+        'X-RateLimit-Remaining': String(result.remaining),
+        'X-RateLimit-Reset': String(result.reset),
+      },
+    }
+  );
+}
+
 export async function proxy(request: NextRequest) {
- validateEnv(true);
- const path = request.nextUrl.pathname;
+  validateEnv(true);
+  const path = request.nextUrl.pathname;
 
- // Generate Request ID and Correlation ID for observability
- const requestId = crypto.randomUUID();
- const correlationId = request.headers.get('x-correlation-id') || crypto.randomUUID();
+  // Generate Request ID and Correlation ID for observability
+  const requestId = crypto.randomUUID();
+  const correlationId = request.headers.get('x-correlation-id') || crypto.randomUUID();
 
- // Inject into request headers
- request.headers.set('x-request-id', requestId);
- request.headers.set('x-correlation-id', correlationId);
+  // Inject into request headers
+  request.headers.set('x-request-id', requestId);
+  request.headers.set('x-correlation-id', correlationId);
 
- const ip = (request as any).ip || request.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  const ip = (request as any).ip || request.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
 
- const isDev = process.env.NODE_ENV === 'development';
+  const isDev = process.env.NODE_ENV === 'development';
+  const shouldRateLimit = process.env.DISABLE_RATE_LIMIT !== 'true';
+  let activeRateLimitInfo: RateLimitResult | null = null;
 
- if (!isDev) {
- // Apply strict rate limiting to authentication routes/endpoints
- const isAuthRoute = path.startsWith('/auth') || path.startsWith('/api/user/profile') || path.startsWith('/api/founder/verify-role');
- if (isAuthRoute) {
- const ok = await authLimiter.check(ip);
- if (!ok) {
- console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
- timestamp: new Date().toISOString(),
- event:"RATE_LIMIT_TRIGGERED",
- ipAddress: ip,
- requestId,
- correlationId,
- metadata: { path, context:"auth-limiter" }
- })}`);
+  if (shouldRateLimit) {
+    // 1. Payment & Escrow routes (high risk)
+    const isPaymentRoute = path.startsWith('/api/checkout') || path.startsWith('/api/payments');
+    if (isPaymentRoute && path !== '/api/checkout/webhook') {
+      const result = await paymentLimiter.checkWithInfo(ip);
+      activeRateLimitInfo = result;
+      if (!result.ok) {
+        console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+          timestamp: new Date().toISOString(),
+          event: "RATE_LIMIT_TRIGGERED",
+          ipAddress: ip,
+          requestId,
+          correlationId,
+          metadata: { path, context: "payment-limiter" }
+        })}`);
+        return buildRateLimitResponse('Too many payment operations. Please wait before trying again.', result);
+      }
+    }
 
- return new NextResponse(
- JSON.stringify({ error: 'Too many authentication attempts. Please try again later.' }),
- { status: 429, headers: { 'Content-Type': 'application/json' } }
- );
- }
- }
+    // 2. Public form submission (anti-spam)
+    if (path === '/api/colleges/submit') {
+      const result = await publicFormLimiter.checkWithInfo(ip);
+      activeRateLimitInfo = result;
+      if (!result.ok) {
+        return buildRateLimitResponse('Too many submissions. Please try again later.', result);
+      }
+    }
 
- // Apply strict rate limiting to file parser endpoints (heavy resources)
- if (path === '/api/ai/parse-resume' || path === '/api/ai/parse-file') {
- const ok = await resumeParseLimiter.check(ip);
- if (!ok) {
- console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
- timestamp: new Date().toISOString(),
- event:"RATE_LIMIT_TRIGGERED",
- ipAddress: ip,
- requestId,
- correlationId,
- metadata: { path, context:"resume-parser-limiter" }
- })}`);
+    // 3. Authentication endpoints (strict limit on auth actions)
+    const isAuthAction =
+      path.startsWith('/auth/callback') ||
+      path.startsWith('/api/user/profile') ||
+      path.startsWith('/api/founder/verify-role') ||
+      (path.startsWith('/auth') && request.method === 'POST');
 
- return new NextResponse(
- JSON.stringify({ error: 'Daily file upload limit reached. Please try again tomorrow.' }),
- { status: 429, headers: { 'Content-Type': 'application/json' } }
- );
- }
- }
+    if (isAuthAction) {
+      const result = await authLimiter.checkWithInfo(ip);
+      activeRateLimitInfo = result;
+      if (!result.ok) {
+        console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+          timestamp: new Date().toISOString(),
+          event: "RATE_LIMIT_TRIGGERED",
+          ipAddress: ip,
+          requestId,
+          correlationId,
+          metadata: { path, context: "auth-limiter" }
+        })}`);
+        return buildRateLimitResponse('Too many authentication attempts. Please try again later.', result);
+      }
+    }
 
- // Apply strict rate limiting to AI endpoints (costly resources)
- if (path.startsWith('/api/ai') && path !== '/api/ai/parse-resume' && path !== '/api/ai/parse-file') {
- const ok = await aiLimiter.check(ip);
- if (!ok) {
- console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
- timestamp: new Date().toISOString(),
- event:"RATE_LIMIT_TRIGGERED",
- ipAddress: ip,
- requestId,
- correlationId,
- metadata: { path, context:"ai-limiter" }
- })}`);
+    // 4. Heavy file parsers
+    if (path === '/api/ai/parse-resume' || path === '/api/ai/parse-file') {
+      const result = await resumeParseLimiter.checkWithInfo(ip);
+      activeRateLimitInfo = result;
+      if (!result.ok) {
+        console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+          timestamp: new Date().toISOString(),
+          event: "RATE_LIMIT_TRIGGERED",
+          ipAddress: ip,
+          requestId,
+          correlationId,
+          metadata: { path, context: "resume-parser-limiter" }
+        })}`);
+        return buildRateLimitResponse('Daily file upload limit reached. Please try again tomorrow.', result);
+      }
+    }
 
- return new NextResponse(
- JSON.stringify({ error: 'Too many AI requests. Please try again later.' }),
- { status: 429, headers: { 'Content-Type': 'application/json' } }
- );
- }
- }
+    // 5. Costly AI endpoints
+    if (path.startsWith('/api/ai') && path !== '/api/ai/parse-resume' && path !== '/api/ai/parse-file') {
+      const result = await aiLimiter.checkWithInfo(ip);
+      activeRateLimitInfo = result;
+      if (!result.ok) {
+        console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+          timestamp: new Date().toISOString(),
+          event: "RATE_LIMIT_TRIGGERED",
+          ipAddress: ip,
+          requestId,
+          correlationId,
+          metadata: { path, context: "ai-limiter" }
+        })}`);
+        return buildRateLimitResponse('Too many AI requests. Please try again later.', result);
+      }
+    }
 
- // Apply strict rate limiting to search endpoints (scraping protection) and colleges API
- if (path.startsWith('/api/search') || path.startsWith('/api/colleges')) {
- const ok = await searchLimiter.check(ip);
- if (!ok) {
- console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
- timestamp: new Date().toISOString(),
- event:"RATE_LIMIT_TRIGGERED",
- ipAddress: ip,
- requestId,
- correlationId,
- metadata: { path, context:"search-limiter" }
- })}`);
+    // 6. Search and college browsing
+    if (path.startsWith('/api/search') || (path.startsWith('/api/colleges') && path !== '/api/colleges/submit')) {
+      const result = await searchLimiter.checkWithInfo(ip);
+      activeRateLimitInfo = result;
+      if (!result.ok) {
+        console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+          timestamp: new Date().toISOString(),
+          event: "RATE_LIMIT_TRIGGERED",
+          ipAddress: ip,
+          requestId,
+          correlationId,
+          metadata: { path, context: "search-limiter" }
+        })}`);
+        return buildRateLimitResponse('Too many search requests. Please try again later.', result);
+      }
+    }
 
- return new NextResponse(
- JSON.stringify({ error: 'Too many search requests. Please try again later.' }),
- { status: 429, headers: { 'Content-Type': 'application/json' } }
- );
- }
- }
+    // 7. File uploads & application submissions
+    if (path.startsWith('/api/applications/apply') || path.startsWith('/api/internal/import-internship') || path === '/api/upload') {
+      const result = await uploadLimiter.checkWithInfo(ip);
+      activeRateLimitInfo = result;
+      if (!result.ok) {
+        console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
+          timestamp: new Date().toISOString(),
+          event: "RATE_LIMIT_TRIGGERED",
+          ipAddress: ip,
+          requestId,
+          correlationId,
+          metadata: { path, context: "upload-limiter" }
+        })}`);
+        return buildRateLimitResponse('Too many file uploads or operations. Please try again later.', result);
+      }
+    }
 
- // Apply strict rate limiting to file uploads/applications (abuse prevention)
- if (path.startsWith('/api/applications/apply') || path.startsWith('/api/internal/import-internship')) {
- const ok = await uploadLimiter.check(ip);
- if (!ok) {
- console.warn(`[SECURITY_AUDIT] ${JSON.stringify({
- timestamp: new Date().toISOString(),
- event:"RATE_LIMIT_TRIGGERED",
- ipAddress: ip,
- requestId,
- correlationId,
- metadata: { path, context:"upload-limiter" }
- })}`);
+    // 8. General API routes
+    const isSpecializedApi =
+      isPaymentRoute ||
+      path === '/api/colleges/submit' ||
+      isAuthAction ||
+      path.startsWith('/api/ai') ||
+      path.startsWith('/api/search') ||
+      path.startsWith('/api/applications/apply') ||
+      path.startsWith('/api/internal/import-internship') ||
+      path === '/api/upload' ||
+      path.startsWith('/api/colleges');
 
- return new NextResponse(
- JSON.stringify({ error: 'Too many file uploads or operations. Please try again later.' }),
- { status: 429, headers: { 'Content-Type': 'application/json' } }
- );
- }
- }
-
- // Apply rate limiting to general API routes (excluding health checks, status checks, and specialized API routes)
- const isSpecializedApi = 
- isAuthRoute || 
- path.startsWith('/api/ai') || 
- path.startsWith('/api/search') || 
- path.startsWith('/api/applications/apply') || 
- path.startsWith('/api/internal/import-internship') ||
- path.startsWith('/api/colleges');
-
- if (path.startsWith('/api') && path !== '/api/health' && path !== '/api/ready' && path !== '/api/live' && !isSpecializedApi) {
- const ok = await generalApiLimiter.check(ip);
- if (!ok) {
- return new NextResponse(
- JSON.stringify({ error: 'Too many requests. Please try again later.' }),
- { status: 429, headers: { 'Content-Type': 'application/json' } }
- );
- }
- }
- }
+    if (path.startsWith('/api') && path !== '/api/health' && path !== '/api/ready' && path !== '/api/live' && !isSpecializedApi) {
+      const result = await generalApiLimiter.checkWithInfo(ip);
+      activeRateLimitInfo = result;
+      if (!result.ok) {
+        return buildRateLimitResponse('Too many requests. Please try again later.', result);
+      }
+    }
+  }
 
  // 1. Generate a secure cryptographic nonce
  const nonce = btoa(crypto.randomUUID());
@@ -191,6 +237,13 @@ export async function proxy(request: NextRequest) {
  response.headers.set('x-nonce', nonce);
  response.headers.set('x-request-id', requestId);
  response.headers.set('x-correlation-id', correlationId);
+
+  // Attach rate limit telemetry headers if available
+  if (activeRateLimitInfo) {
+    response.headers.set('X-RateLimit-Limit', String(activeRateLimitInfo.limit));
+    response.headers.set('X-RateLimit-Remaining', String(activeRateLimitInfo.remaining));
+    response.headers.set('X-RateLimit-Reset', String(activeRateLimitInfo.reset));
+  }
 
  return response;
 }

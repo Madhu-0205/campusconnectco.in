@@ -69,28 +69,108 @@ export function normalizeError(error: unknown): NormalizedError {
 }
 
 // ---------------------------------------------------------------------------
+// Redaction Patterns & Helper
+// ---------------------------------------------------------------------------
+
+const SENSITIVE_KEY_PATTERNS = [
+  /password/i,
+  /passphrase/i,
+  /secret/i,
+  /token/i,
+  /api[_-]?key/i,
+  /auth(?:orization)?/i,
+  /bearer/i,
+  /credential/i,
+  /cookie/i,
+  /session(?:[_-]?id)?/i,
+  /access[_-]?key/i,
+  /private[_-]?key/i,
+  /service[_-]?role[_-]?key/i,
+  /anon[_-]?key/i,
+  /credit[_-]?card/i,
+  /cvv/i,
+  /card[_-]?number/i,
+  /pan/i,
+  /bank[_-]?account/i,
+  /ifsc/i,
+];
+
+const SENSITIVE_COORD_PATTERNS = [
+  /^latitude$/i,
+  /^longitude$/i,
+  /^lat$/i,
+  /^lng$/i,
+  /^userlat$/i,
+  /^userlng$/i,
+  /^userlatitude$/i,
+  /^userlongitude$/i,
+  /^exactlat$/i,
+  /^exactlng$/i,
+  /^coordinates$/i,
+];
+
+/**
+ * Recursively redacts sensitive keys (passwords, tokens, credentials, and coordinates).
+ */
+export function redactSensitiveData(value: unknown, seen = new WeakSet()): unknown {
+  if (value === null || value === undefined) return value;
+
+  if (typeof value === 'string') {
+    if (/Bearer\s+[A-Za-z0-9\-_.+/=]{15,}/i.test(value)) {
+      return value.replace(/Bearer\s+[A-Za-z0-9\-_.+/=]{15,}/gi, 'Bearer [REDACTED_TOKEN]');
+    }
+    return value;
+  }
+
+  if (typeof value !== 'object') return value;
+
+  if (seen.has(value)) {
+    return '[Circular]';
+  }
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    return value.map((item) => redactSensitiveData(item, seen));
+  }
+
+  const result: Record<string, unknown> = {};
+  for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
+    if (SENSITIVE_COORD_PATTERNS.some((p) => p.test(key))) {
+      result[key] = '[REDACTED_COORD]';
+    } else if (SENSITIVE_KEY_PATTERNS.some((p) => p.test(key))) {
+      result[key] = '[REDACTED]';
+    } else {
+      result[key] = redactSensitiveData(val, seen);
+    }
+  }
+
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
 /**
- * Safely serialise a value to JSON, handling circular references and
- * non-serialisable properties (e.g. Prisma errors, Google SDK errors).
+ * Safely serialise a value to JSON, handling circular references, non-serialisable
+ * properties, and applying recursive redaction to sensitive keys.
  * Never throws.
  */
 function safeStringify(value: unknown): string {
- const seen = new WeakSet();
- try {
- return JSON.stringify(value, (_key, val) => {
- if (typeof val === 'object' && val !== null) {
- if (seen.has(val)) return '[Circular]';
- seen.add(val);
- }
- if (typeof val === 'function' || typeof val === 'symbol') return '[NonSerializable]';
- return val;
- });
- } catch {
- return '{"_logger":"Payload could not be serialised"}';
- }
+  const seen = new WeakSet();
+  try {
+    const redacted = redactSensitiveData(value);
+    return JSON.stringify(redacted, (_key, val) => {
+      if (typeof val === 'object' && val !== null) {
+        if (seen.has(val)) return '[Circular]';
+        seen.add(val);
+      }
+      if (typeof val === 'function' || typeof val === 'symbol') return '[NonSerializable]';
+      return val;
+    });
+  } catch {
+    return '{"_logger":"Payload could not be serialised"}';
+  }
 }
 
 async function getTraceContext() {

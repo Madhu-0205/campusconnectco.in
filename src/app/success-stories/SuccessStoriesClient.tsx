@@ -191,7 +191,7 @@ export function SuccessStoriesClient({ nonce }: { nonce?: string }) {
 "@context":"https://schema.org",
 "@type":"EducationalOrganization",
 "name":"CampusConnectCo",
-"url":"https://campusconnectco.in",
+"url":"https://www.campusconnectco.in",
 "aggregateRating": {
 "@type":"AggregateRating",
 "ratingValue":"4.9",

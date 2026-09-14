@@ -14,7 +14,10 @@ export default function PostGigPage() {
  title:"",
  description:"",
  budget:"",
- deadline:""
+ deadline:"",
+ tags: "",
+ work_mode: "remote",
+ city: "",
  })
 
  const handleSubmit = async (e: React.FormEvent) => {
@@ -27,7 +30,9 @@ export default function PostGigPage() {
  headers: {"Content-Type":"application/json" },
  body: JSON.stringify({
  ...formData,
- budget: parseFloat(formData.budget)
+ budget: parseFloat(formData.budget),
+ tags: formData.tags.trim() || undefined,
+ city: formData.city.trim() || undefined,
  })
  })
 
@@ -84,6 +89,46 @@ export default function PostGigPage() {
  value={formData.description}
  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
  />
+ </div>
+
+ <div className="space-y-3">
+ <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Skills & Tags</label>
+ <input
+ type="text"
+ placeholder="e.g. React, TypeScript, Tailwind CSS, UI/UX"
+ className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-(--surface-2)/50 focus:bg-white :bg-surface-3 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground placeholder:text-slate-400"
+ value={formData.tags}
+ onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+ />
+ <p className="text-xs text-muted-foreground ml-1">Separate skills with commas to help our match engine connect with relevant students.</p>
+ </div>
+
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+ <div className="space-y-3">
+ <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Work Mode</label>
+ <select
+ className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-(--surface-2)/50 focus:bg-white :bg-surface-3 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground"
+ value={formData.work_mode}
+ onChange={(e) => setFormData({ ...formData, work_mode: e.target.value })}
+ >
+ <option value="remote">Remote</option>
+ <option value="hybrid">Hybrid</option>
+ <option value="on-site">On-site</option>
+ </select>
+ </div>
+ <div className="space-y-3">
+ <label className="font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+ City {formData.work_mode === "remote" ? "(Optional)" : "(Required)"}
+ </label>
+ <input
+ type="text"
+ required={formData.work_mode !== "remote"}
+ placeholder="e.g. Hyderabad, Bengaluru, Delhi"
+ className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-(--surface-2)/50 focus:bg-white :bg-surface-3 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all font-bold text-foreground placeholder:text-slate-400"
+ value={formData.city}
+ onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+ />
+ </div>
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

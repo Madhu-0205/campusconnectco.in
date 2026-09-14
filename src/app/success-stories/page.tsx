@@ -11,7 +11,7 @@ export const metadata: Metadata = {
  description:"Real students. Real gigs. Real career outcomes.",
  images: [{ url:"/og-success.jpg" }],
  },
- alternates: { canonical:"https://campusconnectco.in/success-stories" },
+ alternates: { canonical:"https://www.campusconnectco.in/success-stories" },
 }
 
 import { headers } from"next/headers"

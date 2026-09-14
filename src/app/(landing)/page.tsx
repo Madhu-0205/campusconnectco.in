@@ -2,66 +2,65 @@ import type { Metadata } from "next"
 import { headers } from "next/headers"
 import SmoothScroll from "@/components/ui/SmoothScroll"
 
-// Master Landing Components (15 Sections)
-import { MasterFeatures } from"@/components/landing/master/MasterFeatures"
-import { MasterFinalCTA } from"@/components/landing/master/MasterFinalCTA"
-import { MasterFounderValue } from"@/components/landing/master/MasterFounderValue"
-import { MasterHero } from"@/components/landing/master/MasterHero"
-import { MasterHowItWorks } from"@/components/landing/master/MasterHowItWorks"
-import { MasterLiveActivity } from"@/components/landing/master/MasterLiveActivity"
-import { MasterMapSection } from"@/components/landing/master/MasterMapSection"
-import { MasterProblem } from"@/components/landing/master/MasterProblem"
-import { MasterSolution } from"@/components/landing/master/MasterSolution"
-import { MasterStats } from"@/components/landing/master/MasterStats"
-import { MasterRecommendations } from"@/components/landing/master/MasterRecommendations"
-import { MasterStudentValue } from"@/components/landing/master/MasterStudentValue"
-import { MasterTrust } from"@/components/landing/master/MasterTrust"
-import { MasterPromoBar } from"@/components/landing/master/MasterPromoBar"
-import { V2Footer } from"@/components/navigation/V2Footer"
-import { V2Navbar } from"@/components/navigation/V2Navbar"
-import { WebsiteSchema, FAQSchema } from"@/components/seo/JsonLd"
-import prisma from"@/lib/prisma"
+// Master Landing Components (Reordered for Phase 11)
+import { MasterHero } from "@/components/landing/master/MasterHero"
+import { MasterLiveActivity } from "@/components/landing/master/MasterLiveActivity"
+import { MasterMapSection } from "@/components/landing/master/MasterMapSection"
+import { MasterTrust } from "@/components/landing/master/MasterTrust"
+import { MasterStats } from "@/components/landing/master/MasterStats"
+import { MasterFeatures } from "@/components/landing/master/MasterFeatures"
+import { MasterCategories } from "@/components/landing/master/MasterCategories"
+import { MasterSolution } from "@/components/landing/master/MasterSolution"
+import { MasterHowItWorks } from "@/components/landing/master/MasterHowItWorks"
+import { MasterCommunityStories } from "@/components/landing/master/MasterCommunityStories"
+import { MasterFAQ } from "@/components/landing/master/MasterFAQ"
+import { MasterFinalCTA } from "@/components/landing/master/MasterFinalCTA"
+import { MasterPromoBar } from "@/components/landing/master/MasterPromoBar"
+import { V2Footer } from "@/components/navigation/V2Footer"
+import { V2Navbar } from "@/components/navigation/V2Navbar"
+import { WebsiteSchema, FAQSchema } from "@/components/seo/JsonLd"
+import prisma from "@/lib/prisma"
 
 export const metadata: Metadata = {
- title:"Find Internships, Campus Gigs & Freelance Jobs | CampusConnectCo",
- description:
-"CampusConnectCo helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
- keywords: [
-"student internships",
-"college internships",
-"campus gigs",
-"freelance jobs",
-"AI career roadmap",
-"student networking",
-"career guidance",
-"internships for students",
-"verified internships",
-"remote internships",
- ],
- alternates: {
- canonical:"https://www.campusconnectco.in/",
- languages: {"en-IN":"https://www.campusconnectco.in/" },
- },
- openGraph: {
- title:"Find Internships, Campus Gigs & Freelance Jobs | CampusConnectCo",
- description:
-"CampusConnectCo helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
- url:"https://www.campusconnectco.in/",
- type:"website",
- images: [{ url:"/logo-v2.jpg", width: 1200, height: 630, alt:"CampusConnectCo homepage" }],
- },
- twitter: {
- card:"summary_large_image",
- title:"Find Internships, Campus Gigs & Freelance Jobs | CampusConnectCo",
- description:
-"CampusConnectCo helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
- images: ["/logo-v2.jpg"],
- site:"@campusconnectin",
- },
- robots: {
- index: true,
- follow: true,
- },
+  title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnectCo",
+  description:
+    "CampusConnectCo helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
+  keywords: [
+    "student internships",
+    "college internships",
+    "campus gigs",
+    "freelance jobs",
+    "AI career roadmap",
+    "student networking",
+    "career guidance",
+    "internships for students",
+    "verified internships",
+    "remote internships",
+  ],
+  alternates: {
+    canonical: "https://www.campusconnectco.in/",
+    languages: { "en-IN": "https://www.campusconnectco.in/" },
+  },
+  openGraph: {
+    title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnectCo",
+    description:
+      "CampusConnectCo helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
+    url: "https://www.campusconnectco.in/",
+    type: "website",
+    images: [{ url: "/logo-v2.jpg", width: 1200, height: 630, alt: "CampusConnectCo homepage" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnectCo",
+    description:
+      "CampusConnectCo helps students discover internships, campus gigs, freelance jobs, and AI career roadmaps across India with verified employers and secure payments.",
+    images: ["/logo-v2.jpg"],
+    site: "@campusconnectin",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 
@@ -120,20 +119,32 @@ export default async function CampusConnectLandingPage() {
 
   const landingFaqs = [
     {
-      question: "How do I discover gigs and internships on CampusConnectCo?",
-      answer: "You can browse verified campus gigs and remote startup internships directly through our live opportunity catalog and map discovery. Filter by city, required skills, or compensation."
+      question: "What is CampusConnectCo?",
+      answer: "CampusConnectCo is a platform connecting verified students with startups and founders for internships, campus gigs, and freelance opportunities. We focus on real deliverable-based work to help you build experience."
     },
     {
-      question: "How does milestone protection work on CampusConnectCo?",
-      answer: "CampusConnectCo is architected around deliverable milestones to ensure expectations are clear before work begins. (Online payment gateway processing is temporarily paused for compliance integration; direct hiring, verified applications, and student portfolios are fully live.)"
+      question: "Who can use it?",
+      answer: "Any university student or recent graduate can join to find opportunities. Founders, startups, and clients can join to post gigs and hire verified talent."
     },
     {
-      question: "How does the student academic email verification work?",
-      answer: "Students with valid academic email domains (.edu, .edu.in, .res.in) receive an official verification badge, boosting credibility and search visibility for startup recruiters."
+      question: "Are opportunities verified?",
+      answer: "Yes. All clients must verify their identity, and we actively monitor the platform to ensure opportunities are legitimate, paid, and safe."
     },
     {
-      question: "Can startups hire teams of students on CampusConnectCo?",
-      answer: "Yes! Founders can post gigs or internships, review verified applicant profiles, and assemble student teams across engineering, design, and marketing."
+      question: "How do I apply?",
+      answer: "Create a profile, add your skills, and you can instantly apply to any open gig or internship. Your profile acts as your dynamic resume."
+    },
+    {
+      question: "Can I find remote opportunities?",
+      answer: "Absolutely. You can filter by 'Remote' in the search interface to find opportunities you can complete from anywhere."
+    },
+    {
+      question: "Can I find opportunities near my college?",
+      answer: "Yes! Our MapLibre integration allows you to discover hyperlocal campus gigs and internships physically close to your university."
+    },
+    {
+      question: "Where can I track applications?",
+      answer: "Your personalized student dashboard automatically tracks the status of every application you submit (Pending, Reviewed, Accepted, Rejected)."
     }
   ]
 
@@ -152,48 +163,46 @@ export default async function CampusConnectLandingPage() {
           <V2Navbar />
         </div>
 
-        {/* 3. Hero */}
+        {/* 3. Hero / Value Proposition */}
         <MasterHero />
 
-        {/* 4. Live Opportunity Preview (Higher on homepage) */}
+        {/* 4. Live Opportunity Discovery (Immediately after Hero) */}
         <MasterLiveActivity opportunities={unifiedOpportunities} />
-
-        {/* 5. Location / Map Discovery with Synchronized List */}
+        
+        {/* Optional Context: Map based discovery alongside list */}
         <MasterMapSection opportunities={unifiedOpportunities} />
 
-        {/* 6. Platform Stats */}
+        {/* 5. Trust / Platform Signals */}
         <MasterStats 
           studentsCount={studentsCount} 
           opportunitiesCount={opportunitiesCount} 
           connectionsCount={connectionsCount} 
           foundersCount={foundersCount}
         />
-
-        {/* 7. Trust & Safety (Truthful milestone & verified identity messaging) */}
         <MasterTrust />
 
-        {/* 8. Student Value */}
-        <MasterStudentValue />
-
-        {/* 9. Smart Recommendations */}
-        <MasterRecommendations />
-
-        {/* 10. Founder & Recruiter Value */}
-        <MasterFounderValue />
-
-        {/* 11. How It Works */}
-        <MasterHowItWorks />
-
-        {/* 12. Core Features */}
+        {/* 6. What You Can Do */}
         <MasterFeatures />
 
-        {/* 13. Problem & Solution Context */}
+        {/* 7. Opportunity Categories */}
+        <MasterCategories />
+
+        {/* 8. Why CampusConnectCo */}
         <MasterSolution />
 
-        {/* 14. Final CTA */}
+        {/* 9. How It Works */}
+        <MasterHowItWorks />
+
+        {/* 10. Real Community Stories */}
+        <MasterCommunityStories />
+
+        {/* 11. FAQ */}
+        <MasterFAQ faqs={landingFaqs} />
+
+        {/* 12. Final CTA */}
         <MasterFinalCTA />
 
-        {/* 15. Footer */}
+        {/* 13. Footer */}
         <V2Footer />
 
       </main>

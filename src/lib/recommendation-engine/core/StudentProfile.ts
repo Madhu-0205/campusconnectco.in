@@ -1,21 +1,26 @@
 import { User, Application, SavedInternship, Gig } from"@prisma/client";
 
 export interface StudentProfileGraph {
- id: string;
- skills: string[];
- interests: string[];
- degree: string | null;
- branch: string | null;
- graduationYear: string | null;
- preferredCities: string[];
- preferredCompanies: string[];
- careerGoals: string[];
- languages: string[];
- certifications: string[];
- previousApplications: string[]; // IDs or Titles of applied roles
- savedOpportunities: string[];
- viewedOpportunities: string[];
- searchHistory: string[];
+  id: string;
+  skills: string[];
+  interests: string[];
+  degree: string | null;
+  branch: string | null;
+  graduationYear: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  collegeName?: string | null;
+  collegeLatitude?: number | null;
+  collegeLongitude?: number | null;
+  preferredCities: string[];
+  preferredCompanies: string[];
+  careerGoals: string[];
+  languages: string[];
+  certifications: string[];
+  previousApplications: string[]; // IDs or Titles of applied roles
+  savedOpportunities: string[];
+  viewedOpportunities: string[];
+  searchHistory: string[];
 }
 
 /**
@@ -51,12 +56,15 @@ export function buildStudentProfileGraph(
  id: user.id,
  skills,
  interests,
- degree: user.college || null,
- branch: user.branch || null,
- graduationYear: user.year || null,
- preferredCities: [], // To be populated if location tracking is added
- preferredCompanies: [], // To be populated from saved/applied metadata
- careerGoals: user.careerGoal ? [user.careerGoal.toLowerCase()] : [],
+    degree: user.college || null,
+    branch: user.branch || null,
+    graduationYear: user.year || null,
+    latitude: user.latitude || null,
+    longitude: user.longitude || null,
+    collegeName: user.college || null,
+    preferredCities: (user as any).city ? [(user as any).city.toLowerCase()] : [],
+    preferredCompanies: [], // To be populated from saved/applied metadata
+    careerGoals: user.careerGoal ? [user.careerGoal.toLowerCase()] : [],
  languages: ["english"], // Defaulting
  certifications: [], // Placeholder for expanded schema
  previousApplications,

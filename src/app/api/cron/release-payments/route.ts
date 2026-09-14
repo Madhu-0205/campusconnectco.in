@@ -1,17 +1,22 @@
 import { TransactionStatus } from"@prisma/client";
 import { NextResponse } from"next/server";
 
-import { triggerReferralConversion } from"@/lib/growth";
-import { logger } from"@/lib/logger";
-import prisma from"@/lib/prisma";
-import { safeCompare } from"@/lib/security/crypto";
-
+import { triggerReferralConversion } from "@/lib/growth";
+import { logger } from "@/lib/logger";
+import { assertPaymentsEnabled } from "@/lib/payments/config";
+import prisma from "@/lib/prisma";
+import { safeCompare } from "@/lib/security/crypto";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
- try {
- const authHeader = req.headers.get("authorization");
+  try {
+    const { errorResponse } = assertPaymentsEnabled();
+    if (errorResponse) {
+      return errorResponse;
+    }
+
+    const authHeader = req.headers.get("authorization");
  const cronSecret = process.env.CRON_SECRET;
 
  // 1. Basic auth for Cron (using CRON_SECRET or Vercel-provided check)

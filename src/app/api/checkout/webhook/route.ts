@@ -3,13 +3,19 @@ import crypto from"crypto";
 import { TransactionStatus, EscrowStatus } from"@prisma/client";
 import { NextRequest, NextResponse } from"next/server";
 
-import { logger } from"@/lib/logger";
-import prisma from"@/lib/prisma";
-import { safeCompare } from"@/lib/security/crypto";
+import { logger } from "@/lib/logger";
+import { assertPaymentsEnabled } from "@/lib/payments/config";
+import prisma from "@/lib/prisma";
+import { safeCompare } from "@/lib/security/crypto";
 
 export async function POST(req: NextRequest) {
- try {
- const bodyText = await req.text();
+  try {
+    const { errorResponse } = assertPaymentsEnabled();
+    if (errorResponse) {
+      return errorResponse;
+    }
+
+    const bodyText = await req.text();
  const signature = req.headers.get("x-razorpay-signature") ||"";
  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET ||"";
 
@@ -52,6 +58,7 @@ export async function POST(req: NextRequest) {
  if (eventName ==="order.paid" || eventName ==="payment.captured" || isMock) {
  const paymentEntity = event.payload?.payment?.entity;
  const orderId = paymentEntity?.order_id || event.orderId || event.payload?.order?.entity?.id;
+ const eventId = event.event_id || event.id || (paymentEntity?.id ? `evt_${paymentEntity.id}` : null);
 
  if (!orderId) {
  return NextResponse.json({ error:"Order ID not found in payload" }, { status: 400 });
@@ -65,6 +72,12 @@ export async function POST(req: NextRequest) {
  if (!transaction) {
  logger.warn(`No transaction found for order ID: ${orderId}`);
  return NextResponse.json({ message:"Transaction not found" }, { status: 200 }); // Return 200 to prevent Razorpay retries
+ }
+
+ // Event replay defense: Check if this specific webhook event was already recorded for this transaction
+ if (eventId && transaction.webhookEventId === eventId) {
+ logger.info(`Webhook event ${eventId} already processed for transaction ${transaction.id} (replay suppressed).`);
+ return NextResponse.json({ success: true, message:"Event already processed" });
  }
 
  if (transaction.status === TransactionStatus.PENDING) {
@@ -81,6 +94,7 @@ export async function POST(req: NextRequest) {
  status: TransactionStatus.PAID,
  paidAt: new Date(),
  paymentId: paymentEntity?.id || `pay_mock_${Math.random().toString(36).substring(2, 9)}`,
+ ...(eventId ? { webhookEventId: eventId } : {}),
  },
  });
  

@@ -8,6 +8,9 @@ export interface OpportunityNode {
  requiredSkills: string[];
  difficulty:"beginner" |"intermediate" |"advanced";
  location: string | null;
+ city?: string | null;
+ latitude?: number | null;
+ longitude?: number | null;
  domain: string;
  salary: number | null;
  experienceLevel: string;
@@ -40,7 +43,10 @@ export function buildOpportunityNodeFromGig(gig: Gig): OpportunityNode {
  company:"CampusConnectCo Client", // Default for gigs without org linking
  requiredSkills,
  difficulty:"intermediate", // Default mapping, could be derived from budget/tags
- location: null, // Gigs are typically remote or location-agnostic unless specified
+ location: gig.city ? `${gig.city}${gig.state ? `, ${gig.state}` : ''}` : null,
+ city: gig.city || null,
+ latitude: gig.latitude || null,
+ longitude: gig.longitude || null,
  domain: tags[0] ||"General",
  salary: gig.budget,
  experienceLevel:"student",
@@ -75,6 +81,9 @@ export function buildOpportunityNodeFromInternship(internship: Internship): Oppo
  requiredSkills,
  difficulty:"beginner", // Internships default to beginner
  location: internship.location || null,
+ city: internship.city || null,
+ latitude: internship.latitude || null,
+ longitude: internship.longitude || null,
  domain: tags[0] ||"General",
  salary: internship.stipend || null,
  experienceLevel:"entry-level",

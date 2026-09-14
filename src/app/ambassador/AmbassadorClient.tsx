@@ -84,13 +84,13 @@ export function AmbassadorClient({ nonce }: { nonce?: string }) {
 "@context":"https://schema.org",
 "@type":"EducationalOccupationalProgram",
 "name":"CampusConnectCo Campus Ambassador Program",
-"url":"https://campusconnectco.in/ambassador",
+"url":"https://www.campusconnectco.in/ambassador",
 "description":"Become a Campus Captain for CampusConnectCo. Lead your college community, earn from every student you onboard.",
 "educationalProgramMode":"online",
 "provider": {
 "@type":"Organization",
 "name":"CampusConnectCo",
-"url":"https://campusconnectco.in",
+"url":"https://www.campusconnectco.in",
  },
  }),
  }}

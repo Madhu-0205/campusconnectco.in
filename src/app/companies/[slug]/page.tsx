@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const { slug } = await params;
  const comp = getCompanyFromSlug(slug);
  const companyName = comp ? comp.name : decodeURIComponent(slug);
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
 
  return {
  title: `${companyName} Student Internships, Campus Drives & Hiring | CampusConnectCo`,
@@ -91,7 +91,7 @@ export default async function CompanySEOPage({ params }: Props) {
  take: 8,
  });
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
  const breadcrumbItems = [
  { name:"Home", url: baseUrl },
  { name:"Companies", url: `${baseUrl}/companies` },

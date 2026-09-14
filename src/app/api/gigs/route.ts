@@ -24,6 +24,9 @@ const GigCreateSchema = z.object({
     const d = new Date(val);
     return isNaN(d.getTime()) ? null : d;
   }),
+  tags: z.string().max(200, "Tags cannot exceed 200 characters").optional().nullable(),
+  work_mode: z.enum(["remote", "hybrid", "on-site"]).default("remote").optional(),
+  city: z.string().max(100, "City cannot exceed 100 characters").optional().nullable(),
 });
 
 const GigPatchSchema = z.object({
@@ -230,16 +233,22 @@ export async function POST(req: Request) {
  );
  }
 
- const {
- budget,
- deadline,
- } = parseResult.data;
+  const {
+    budget,
+    deadline,
+    tags,
+    work_mode,
+    city,
+  } = parseResult.data;
 
- const title = sanitizeInput(parseResult.data.title);
- const description = sanitizeInput(parseResult.data.description);
+  const title = sanitizeInput(parseResult.data.title);
+  const description = sanitizeInput(parseResult.data.description);
+  const cleanTags = tags ? sanitizeInput(tags) : null;
+  const cleanCity = city ? sanitizeInput(city) : null;
+  const skillsArray = cleanTags ? cleanTags.split(',').map(s => s.trim()).filter(Boolean) : null;
 
  //////////////////////////////////////////////////////
- // AUTO CREATE PROFILE IF MISSING â­ FIX
+ // AUTO CREATE PROFILE IF MISSING â­  FIX
  //////////////////////////////////////////////////////
 
  let dbUser = await prisma.user.findUnique({
@@ -274,18 +283,22 @@ export async function POST(req: Request) {
  // CREATE GIG
  //////////////////////////////////////////////////////
 
- const gig = await prisma.gig.create({
- data: {
- title,
- description,
- budget: Number(budget),
- deadline,
- posted_by: dbUser.id,
- status: initialStatus,
- latitude: dbUser.latitude,
- longitude: dbUser.longitude,
- },
- });
+  const gig = await prisma.gig.create({
+    data: {
+      title,
+      description,
+      budget: Number(budget),
+      deadline,
+      posted_by: dbUser.id,
+      status: initialStatus,
+      latitude: dbUser.latitude,
+      longitude: dbUser.longitude,
+      work_mode: work_mode || "remote",
+      city: cleanCity,
+      tags: cleanTags || "",
+      required_skills: skillsArray && skillsArray.length > 0 ? skillsArray : undefined,
+    },
+  });
 
  // Pre-compute gig vector embedding asynchronously in the background (fire-and-forget)
  import("@/lib/ai/embeddings").then(({ computeGigEmbedding }) => {

@@ -18,7 +18,7 @@ interface PaymentStatusEmailProps {
  status:"FUNDED" |"RELEASED";
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
 
 export const PaymentStatusEmail = ({ 
  recipientName, 

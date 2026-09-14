@@ -1,9 +1,12 @@
-import type { Metadata } from"next";
-import { headers } from"next/headers";
-import { notFound } from"next/navigation";
+import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 
-import GigDetailClient from"@/components/gigs/GigDetailClient";
-import prisma from"@/lib/prisma";
+import GigDetailClient from "@/components/gigs/GigDetailClient";
+import { RelatedOpportunitiesSection } from "@/components/opportunities/RelatedOpportunitiesSection";
+import { JobPostingSchema, FAQSchema } from "@/components/seo/JsonLd";
+import prisma from "@/lib/prisma";
+import { getRelatedOpportunitiesService } from "@/lib/recommendation-engine/service";
 
 
 interface PageProps {
@@ -66,87 +69,95 @@ async function getGigDetails(id: string) {
 }
 
 export default async function GigDetailPage(props: PageProps) {
- const nonce = (await headers()).get("x-nonce") || undefined;
- const params = await props.params;
- const gig = await getGigDetails(params.id);
+  const nonce = (await headers()).get("x-nonce") || undefined;
+  const params = await props.params;
+  const gig = await getGigDetails(params.id);
 
- if (!gig) {
- notFound();
- }
+  if (!gig) {
+    notFound();
+  }
 
- // Import JobPostingSchema and FAQSchema dynamically or inline from component
- const { JobPostingSchema, FAQSchema } = require("@/components/seo/JsonLd");
+  // Fetch deterministic related opportunities based on skills, work mode, and format
+  const relatedOpportunities = await getRelatedOpportunitiesService(gig.id, 'gig', 4);
 
- const faqs = [
- {
- question:"Who is eligible to apply for this gig on CampusConnectCo?",
- answer: `Any active college student possessing the required skills can apply. Academic verification (e.g., .edu email address) on CampusConnectCo is highly recommended to build E-E-A-T trust points.`
- },
- {
- question: "Are payments for this gig guaranteed?",
- answer: `CampusConnectCo structures all projects with milestone deliverable tracking. Project funds follow transparent milestones, releasing upon student deliverable verification.`
- },
- {
- question:"What is the work mode and location of this gig?",
- answer: `This opportunity is categorized as ${gig.work_mode ||"remote"}. Students can collaborate digitally and coordinate milestones through the platform's student operating system.`
- }
- ];
+  const faqs = [
+    {
+      question: "Who is eligible to apply for this gig on CampusConnectCo?",
+      answer: `Any active college student possessing the required skills can apply. Academic verification (e.g., .edu email address) on CampusConnectCo is highly recommended to build E-E-A-T trust points.`
+    },
+    {
+      question: "Are payments for this gig guaranteed?",
+      answer: `CampusConnectCo structures all projects with milestone deliverable tracking. Project funds follow transparent milestones, releasing upon student deliverable verification.`
+    },
+    {
+      question: "What is the work mode and location of this gig?",
+      answer: `This opportunity is categorized as ${gig.work_mode || "remote"}. Students can collaborate digitally and coordinate milestones through the platform's student operating system.`
+    }
+  ];
 
- const tagsList = gig.tags ? gig.tags.split(",").map((t: string) => t.trim()) : [];
+  const tagsList = gig.tags ? gig.tags.split(",").map((t: string) => t.trim()) : [];
 
- return (
- <article 
- className="min-h-screen bg-background text-foreground"
- data-ai-citation-title={gig.title}
- data-cc-entity="GigOpportunity"
- data-cc-verified={gig.poster.isVerified ?"true" :"false"}
- data-cc-budget={gig.budget}
- >
- <JobPostingSchema
- title={gig.title}
- description={gig.description}
- datePosted={gig.createdAt.toISOString()}
- validThrough={gig.deadline ? gig.deadline.toISOString() : undefined}
- budget={gig.budget}
- companyName={gig.poster.name ||"CampusConnectCo Recruiter"}
- locationName={gig.work_mode}
- skills={tagsList}
- nonce={nonce}
- />
- <FAQSchema faqs={faqs} nonce={nonce} />
- 
- {/* LLM Digest Section for RAG Engine Crawlers */}
- <div 
- className="sr-only" 
- data-ai-digest="true" 
- data-ai-last-updated={gig.updatedAt.toISOString()} 
- data-ai-source-origin="CampusConnectCo"
- aria-hidden="false"
- >
- <h2>Key Opportunity Facts: {gig.title}</h2>
- <ul>
- <li>Opportunity Name: {gig.title}</li>
- <li>Value Amount: INR {gig.budget.toLocaleString("en-IN")}</li>
- <li>Environment: {gig.work_mode ||"Remote"}</li>
- <li>Recruiter Profile: {gig.poster.name ||"Recruiter"} (Status: {gig.poster.isVerified ?"Academic Verified" :"Standard"})</li>
- <li>Required Skills: {gig.tags ||"General Skills"}</li>
- <li>Publication Timestamp: {gig.createdAt.toISOString()}</li>
- <li>Application Deadline: {gig.deadline ? gig.deadline.toISOString() :"No set deadline"}</li>
- <li>Milestone Safeguard: Transparent milestone deliverable sign-offs.</li>
- </ul>
- <p>Detailed Description: {gig.description}</p>
- </div>
+  return (
+    <article 
+      className="min-h-screen bg-background text-foreground"
+      data-ai-citation-title={gig.title}
+      data-cc-entity="GigOpportunity"
+      data-cc-verified={gig.poster.isVerified ? "true" : "false"}
+      data-cc-budget={gig.budget}
+    >
+      <JobPostingSchema
+        title={gig.title}
+        description={gig.description}
+        datePosted={gig.createdAt.toISOString()}
+        validThrough={gig.deadline ? gig.deadline.toISOString() : undefined}
+        budget={gig.budget}
+        companyName={gig.poster.name || "CampusConnectCo Recruiter"}
+        locationName={gig.work_mode}
+        skills={tagsList}
+        nonce={nonce}
+      />
+      <FAQSchema faqs={faqs} nonce={nonce} />
+      
+      {/* LLM Digest Section for RAG Engine Crawlers */}
+      <div 
+        className="sr-only" 
+        data-ai-digest="true" 
+        data-ai-last-updated={gig.updatedAt.toISOString()} 
+        data-ai-source-origin="CampusConnectCo"
+        aria-hidden="false"
+      >
+        <h2>Key Opportunity Facts: {gig.title}</h2>
+        <ul>
+          <li>Opportunity Name: {gig.title}</li>
+          <li>Value Amount: INR {gig.budget.toLocaleString("en-IN")}</li>
+          <li>Environment: {gig.work_mode || "Remote"}</li>
+          <li>Recruiter Profile: {gig.poster.name || "Recruiter"} (Status: {gig.poster.isVerified ? "Academic Verified" : "Standard"})</li>
+          <li>Required Skills: {gig.tags || "General Skills"}</li>
+          <li>Publication Timestamp: {gig.createdAt.toISOString()}</li>
+          <li>Application Deadline: {gig.deadline ? gig.deadline.toISOString() : "No set deadline"}</li>
+          <li>Milestone Safeguard: Transparent milestone deliverable sign-offs.</li>
+        </ul>
+        <p>Detailed Description: {gig.description}</p>
+      </div>
 
- <GigDetailClient gig={gig} />
- </article>
- );
+      <GigDetailClient gig={gig} />
+
+      {/* Related Opportunities Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <RelatedOpportunitiesSection 
+          opportunities={relatedOpportunities} 
+          currentTitle={gig.title} 
+        />
+      </div>
+    </article>
+  );
 }
 
 // Generate metadata for SEO
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
  const params = await props.params;
  const gig = await getGigDetails(params.id);
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in';
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in';
 
  if (!gig) {
  return { title:"Gig Not Found | CampusConnectCo" };

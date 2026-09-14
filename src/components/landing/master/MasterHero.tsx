@@ -76,7 +76,7 @@ export function MasterHero() {
   };
 
   return (
-    <section className="relative w-full min-h-[90vh] flex items-center justify-center pt-24 pb-20 overflow-hidden bg-[#FAFCFA]">
+    <section className="relative w-full min-h-[75vh] flex items-center justify-center pt-16 pb-16 overflow-hidden bg-[#FAFCFA]">
       {/* Background Decorators - Soft Green Atmospheric Blobs */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden flex justify-center">
         {/* Soft green glow top right */}
@@ -108,8 +108,8 @@ export function MasterHero() {
               </StaggerItem>
 
               <StaggerItem>
-                <p className="text-lg md:text-xl text-[#4A5550] max-w-lg mb-10 font-medium leading-relaxed">
-                  CampusConnectCo connects you with local internships, campus gigs, and startup jobs. Build your verified profile, track applications, and get paid securely.
+                <p className="text-lg md:text-xl text-[#4A5550] max-w-lg mb-8 font-medium leading-relaxed">
+                  Discover verified internships, campus gigs, and freelance opportunities built for students and emerging professionals.
                 </p>
               </StaggerItem>
 
@@ -119,13 +119,13 @@ export function MasterHero() {
                     href="/opportunities" 
                     className="w-full sm:w-auto px-8 h-14 rounded-xl bg-[#1FA971] hover:bg-[#199160] text-white font-bold flex items-center justify-center transition-all shadow-lg shadow-[#1FA971]/20 text-lg hover:-translate-y-0.5"
                   >
-                    Explore Opportunities
+                    Find Opportunities
                   </Link>
                   <Link 
                     href="/auth/founder"
                     className="w-full sm:w-auto px-8 h-14 rounded-xl bg-white border border-gray-200 text-[#232B27] font-semibold flex items-center justify-center hover:bg-gray-50 transition-all shadow-sm text-lg hover:-translate-y-0.5"
                   >
-                    I&apos;m hiring talent
+                    Post an Opportunity
                   </Link>
                 </div>
               </StaggerItem>

@@ -6,12 +6,12 @@ export const metadata: Metadata = {
  title:"Cookie Policy | CampusConnectCo",
  description:"Learn how CampusConnectCo uses cookies to improve your experience.",
  alternates: {
- canonical:"https://campusconnectco.in/cookies",
+ canonical:"https://www.campusconnectco.in/cookies",
  },
  openGraph: {
  title:"Cookie Policy | CampusConnectCo",
  description:"Learn how CampusConnectCo uses cookies to improve your experience.",
- url:"https://campusconnectco.in/cookies",
+ url:"https://www.campusconnectco.in/cookies",
  siteName:"CampusConnectCo",
  locale:"en_IN",
  type:"website",

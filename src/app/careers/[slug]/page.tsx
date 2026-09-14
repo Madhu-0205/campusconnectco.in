@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  const { slug } = await params;
  const career = getCareerFromSlug(slug);
  const careerTitle = career ? career.title : decodeURIComponent(slug);
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
 
  return {
  title: `How to Become a ${careerTitle}: Student Career Roadmap & Internships | CampusConnectCo`,
@@ -74,7 +74,7 @@ export default async function CareerPathSEOPage({ params }: Props) {
  orderBy: { createdAt:"desc" },
  });
 
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://campusconnectco.in";
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
  const breadcrumbItems = [
  { name:"Home", url: baseUrl },
  { name:"Careers", url: `${baseUrl}/careers` },

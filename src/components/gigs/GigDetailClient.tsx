@@ -28,17 +28,20 @@ import {
  Bookmark,
  Share2,
  Check,
-} from"lucide-react";
-import Link from"next/link";
+ Flag,
+} from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 import OpportunityOwnerControls from "@/components/opportunities/OpportunityOwnerControls";
-import { Button } from"@/components/ui/Button";
-import { Card } from"@/components/ui/Card";
-import { VerificationBadge } from"@/components/ui/VerificationBadge";
+import { ReportModal } from "@/components/opportunities/ReportModal";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { VerificationBadge } from "@/components/ui/VerificationBadge";
 import { useOpportunityEngagement } from "@/hooks/useOpportunityEngagement";
-import { createClient } from"@/lib/supabase/client";
+import { isOpportunityActive, isOpportunityExpired } from "@/lib/opportunities/lifecycle";
+import { createClient } from "@/lib/supabase/client";
 
 interface GigDetailProps {
  gig: {
@@ -49,6 +52,8 @@ interface GigDetailProps {
  deadline: Date | null;
  status: string;
  tags: string | null;
+ city?: string | null;
+ work_mode?: string | null;
  latitude: number | null;
  longitude: number | null;
  createdAt: Date;
@@ -92,6 +97,7 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
 
  const [isApplying, setIsApplying] = useState(false);
  const [showApplicationForm, setShowApplicationForm] = useState(false);
+ const [isReportModalOpen, setIsReportModalOpen] = useState(false);
  const [coverLetter, setCoverLetter] = useState("");
  const [error, setError] = useState("");
  const [success, setSuccess] = useState("");
@@ -173,9 +179,11 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
    (app) => app.applicant.id === currentUserId
  );
 
- const isOwner = currentUserId === gig.poster.id;
- const hasApplied = !!userApplication;
- const canApply = currentUserId && !isOwner && !hasApplied && gig.status === "OPEN";
+  const isOwner = currentUserId === gig.poster.id;
+  const hasApplied = !!userApplication;
+  const isExpired = isOpportunityExpired(gig.deadline);
+  const isActive = isOpportunityActive(gig.status, gig.deadline);
+  const canApply = Boolean(currentUserId && !isOwner && !hasApplied && isActive);
 
  const handleApply = async (e: React.FormEvent) => {
    e.preventDefault();
@@ -313,6 +321,16 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
               </div>
             )}
 
+            {/* Non-owner Status Indicator for Expired Deadline */}
+            {!isOwner && isExpired && gig.status !== "INACTIVE" && gig.status !== "COMPLETED" && (
+              <div className="p-4 rounded-2xl border text-sm flex items-center gap-2.5 border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <Clock className="h-5 w-5 shrink-0" />
+                <span>
+                  The application deadline for this gig passed on {new Date(gig.deadline!).toLocaleDateString()}. This opportunity is no longer accepting new submissions.
+                </span>
+              </div>
+            )}
+
             {/* Gig Header */}
             <Card className="p-8">
               <div className="flex items-start justify-between mb-4">
@@ -332,6 +350,15 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsReportModalOpen(true)}
+                    aria-label="Report gig"
+                    title="Report gig"
+                    className="p-2 rounded-xl border border-border hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-colors cursor-pointer"
+                  >
+                    <Flag size={16} />
+                  </button>
                   <button
                     type="button"
                     onClick={shareOpportunity}
@@ -356,9 +383,15 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
                     <Bookmark size={16} className={isSaved ? "fill-current" : ""} />
                   </button>
                   <span
-                    className={`px-3 py-1 rounded-full font-semibold ${gig.status === "OPEN" ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300" : "bg-gray-100 text-gray-700"}`}
+                    className={`px-3 py-1 rounded-full font-semibold ${
+                      isExpired
+                        ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                        : gig.status === "OPEN"
+                        ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300"
+                        : "bg-gray-100 text-gray-700"
+                    }`}
                   >
-                    {gig.status}
+                    {isExpired ? "EXPIRED" : gig.status}
                   </span>
                 </div>
               </div>
@@ -597,17 +630,80 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
  )}
 
  {canApply && !showApplicationForm && (
- <Card className="p-6">
- <Button
- onClick={() => setShowApplicationForm(true)}
- className="w-full"
- size="lg"
- >
- <Send size={20} className="mr-2" />
- Apply for this Gig
- </Button>
- </Card>
+  <>
+    {/* Desktop Inline CTA */}
+    <Card className="p-6 hidden lg:block">
+      <Button
+        onClick={() => setShowApplicationForm(true)}
+        className="w-full"
+        size="lg"
+      >
+        <Send size={20} className="mr-2" />
+        Apply for this Gig
+      </Button>
+    </Card>
+
+    {/* Mobile Sticky CTA */}
+    <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-md border-t border-border z-50 lg:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.05)] pb-safe">
+      <Button
+        onClick={() => {
+          setShowApplicationForm(true);
+          // Scroll down to where the form will appear
+          setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+        }}
+        className="w-full shadow-lg shadow-primary/20"
+        size="lg"
+      >
+        <Send size={20} className="mr-2" />
+        Apply for this Gig
+      </Button>
+    </div>
+  </>
  )}
+
+  {!currentUserId && isActive && (
+    <>
+      {/* Desktop Inline CTA for Anonymous Visitors */}
+      <Card className="p-6 hidden lg:block">
+        <Button asChild className="w-full" size="lg">
+          <Link href={`/auth/sign-in?returnUrl=/gigs/${gig.id}`}>
+            <Send size={20} className="mr-2" />
+            Apply for this Gig
+          </Link>
+        </Button>
+      </Card>
+
+      {/* Mobile Sticky CTA for Anonymous Visitors */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-md border-t border-border z-50 lg:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.05)] pb-safe">
+        <Button asChild className="w-full shadow-lg shadow-primary/20" size="lg">
+          <Link href={`/auth/sign-in?returnUrl=/gigs/${gig.id}`}>
+            <Send size={20} className="mr-2" />
+            Apply for this Gig
+          </Link>
+        </Button>
+      </div>
+    </>
+  )}
+
+  {isExpired && !hasApplied && !isOwner && (
+    <>
+      {/* Desktop Closed CTA */}
+      <Card className="p-6 hidden lg:block">
+        <Button disabled className="w-full bg-muted text-muted-foreground cursor-not-allowed" size="lg">
+          <Clock size={20} className="mr-2" />
+          Applications Closed (Deadline Passed)
+        </Button>
+      </Card>
+
+      {/* Mobile Closed CTA */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-md border-t border-border z-50 lg:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.05)] pb-safe">
+        <Button disabled className="w-full bg-muted text-muted-foreground cursor-not-allowed" size="lg">
+          <Clock size={20} className="mr-2" />
+          Applications Closed
+        </Button>
+      </div>
+    </>
+  )}
 
  {showApplicationForm && (
  <Card className="p-6">
@@ -887,28 +983,36 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-4 pt-3 border-t border-border">
-            Platform payments are currently in transition mode. Direct settlements are handled off-platform; milestone tracking and sign-off remain active.
+            Payments are coming soon. Secure payment and settlement features will be available on CampusConnectCo in a future release. Milestone tracking and deliverable sign-off remain active.
           </p>
         </Card>
 
 
- {/* Location */}
- {(gig.latitude || gig.poster.latitude) && (
- <Card className="p-6">
- <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
- <MapPin size={20} className="text-primary" />
- Location
- </h3>
- <p className="text-muted-foreground">
- {gig.latitude && gig.longitude
- ? `Lat: ${gig.latitude.toFixed(4)}, Long: ${gig.longitude.toFixed(4)}`
- :"Location-based gig"}
- </p>
- </Card>
- )}
- </div>
- </div>
- </div>
- </div>
- );
+            {/* Location */}
+            {(gig.city || gig.work_mode || gig.latitude || gig.poster.latitude) && (
+              <Card className="p-6">
+                <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
+                  <MapPin size={20} className="text-primary" />
+                  Location & Work Mode
+                </h3>
+                <p className="text-muted-foreground font-medium">
+                  {gig.city
+                    ? `${gig.city}${gig.work_mode ? ` (${gig.work_mode})` : ""}`
+                    : (gig.work_mode || "Campus / Regional Opportunity")}
+                </p>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        entityId={gig.id}
+        entityType="gig"
+        title={gig.title}
+      />
+    </div>
+  );
 }

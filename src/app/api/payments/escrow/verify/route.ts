@@ -2,16 +2,22 @@ import crypto from"crypto";
 
 import { NextRequest, NextResponse } from"next/server";
 
-import { getSession } from"@/lib/auth-checks";
-import { logger } from"@/lib/logger";
-import prisma from"@/lib/prisma";
+import { requireRole } from "@/lib/auth-checks";
+import { logger } from "@/lib/logger";
+import { assertPaymentsEnabled } from "@/lib/payments/config";
+import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
- try {
- const user = await getSession();
- if (!user || (user.role !=="CLIENT" && user.role !=="STARTUP" && user.role !=="FOUNDER")) {
- return NextResponse.json({ error:"Unauthorized" }, { status: 401 });
- }
+  try {
+    const { errorResponse: paymentGateError } = assertPaymentsEnabled();
+    if (paymentGateError) {
+      return paymentGateError;
+    }
+
+    const { user, errorResponse } = await requireRole(["CLIENT", "STARTUP", "FOUNDER"]);
+    if (errorResponse || !user) {
+      return errorResponse || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, gigId } = await req.json();
 

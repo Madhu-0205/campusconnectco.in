@@ -19,7 +19,7 @@ export async function generateMetadata({
  params: Promise<{ username: string }>
 }): Promise<Metadata> {
  const { username } = await params
- const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://campusconnectco.in'
+ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
  const pageUrl = `${baseUrl}/profile/${username}`
 
  let displayName = username
