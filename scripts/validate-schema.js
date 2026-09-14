@@ -8,11 +8,12 @@ const hasValidDbUrl = (dbUrl.startsWith('postgresql://') || dbUrl.startsWith('po
 
 // Step 1: Validate schema syntax (no live DB connection required)
 // Prisma validate still requires a parseable URL in the env var, so provide a
-// dummy value if the real one is missing. This only checks .prisma file syntax.
 try {
-  const validateEnv = hasValidDbUrl
-    ? { ...process.env }
-    : { ...process.env, DATABASE_URL: 'postgresql://placeholder:5432/validate', DIRECT_URL: 'postgresql://placeholder:5432/validate' };
+  const validateEnv = {
+    ...process.env,
+    DATABASE_URL: process.env.DATABASE_URL || 'postgresql://placeholder:5432/validate',
+    DIRECT_URL: process.env.DIRECT_URL || process.env.DATABASE_URL || 'postgresql://placeholder:5432/validate',
+  };
   execSync('npx prisma validate', { encoding: 'utf-8', stdio: 'pipe', env: validateEnv });
   console.log('✅ Prisma schema syntax is valid.');
 } catch (error) {
