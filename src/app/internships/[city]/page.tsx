@@ -39,16 +39,19 @@ function capitalizeCity(city: string): string {
   return decoded.charAt(0).toUpperCase() + decoded.slice(1).toLowerCase()
 }
 
+const getInternshipById = React.cache(async (id: string) => {
+  return prisma.internship.findUnique({
+    where: { id },
+  });
+});
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { city } = await params
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.campusconnectco.in'
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
   if (uuidRegex.test(city)) {
-    const internship = await prisma.internship.findUnique({
-      where: { id: city },
-      select: { id: true, title: true, company: true, description: true, skills: true, createdAt: true }
-    })
+    const internship = await getInternshipById(city)
     if (internship) {
       const pageUrl = `${baseUrl}/internships/${internship.id}`
       const description = internship.description?.substring(0, 160) || `Apply for ${internship.title} internship at ${internship.company} on CampusConnectCo.`
@@ -110,9 +113,7 @@ export default async function CityInternshipsPage({ params }: Props) {
 
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
   if (uuidRegex.test(city)) {
-    const internshipData = await prisma.internship.findUnique({
-      where: { id: city }
-    })
+    const internshipData = await getInternshipById(city)
     if (!internshipData || internshipData.deletedAt !== null) {
       notFound()
     }
