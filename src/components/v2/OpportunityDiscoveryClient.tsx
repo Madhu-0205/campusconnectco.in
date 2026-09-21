@@ -219,19 +219,20 @@ export function OpportunityDiscoveryClient({
         if (localWorkMode !== "all") params.set("workMode", localWorkMode)
         else params.delete("workMode")
 
-        if (
-          searchParams.get("q") !== localSearch ||
-          searchParams.get("location") !== localLocation ||
-          searchParams.get("category") !== localCategory ||
-          searchParams.get("type") !== localType ||
-          searchParams.get("workMode") !== localWorkMode
-        ) {
-          params.delete("page")
-        }
+        const hasFilterChanged =
+          (searchParams.get("q") || "") !== localSearch.trim() ||
+          (searchParams.get("location") || "") !== localLocation.trim() ||
+          (searchParams.get("category") || "all") !== localCategory ||
+          (searchParams.get("type") || "all") !== localType ||
+          (searchParams.get("workMode") || "all") !== localWorkMode
 
-        startTransition(() => {
-          router.replace(`?${params.toString()}`, { scroll: false })
-        })
+        if (hasFilterChanged) {
+          params.delete("page")
+          const qs = params.toString()
+          startTransition(() => {
+            router.replace(qs ? `?${qs}` : "/opportunities", { scroll: false })
+          })
+        }
       }
     }, 400)
 
