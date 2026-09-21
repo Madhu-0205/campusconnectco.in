@@ -15,11 +15,16 @@ import { MasterHowItWorks } from "@/components/landing/master/MasterHowItWorks"
 import { MasterCommunityStories } from "@/components/landing/master/MasterCommunityStories"
 import { MasterFAQ } from "@/components/landing/master/MasterFAQ"
 import { MasterFinalCTA } from "@/components/landing/master/MasterFinalCTA"
-import { MasterPromoBar } from "@/components/landing/master/MasterPromoBar"
 import { V2Footer } from "@/components/navigation/V2Footer"
 import { V2Navbar } from "@/components/navigation/V2Navbar"
+import { StudentOpportunityJourney } from "@/components/onboarding/StudentOpportunityJourney"
 import { WebsiteSchema, FAQSchema } from "@/components/seo/JsonLd"
 import prisma from "@/lib/prisma"
+
+function cleanTitleString(val: string | null | undefined): string {
+  if (!val) return ""
+  return val.replace(/\s+(?:#|-|\/|\()?(\d{10,16})\)?$/i, "").trim()
+}
 
 export const metadata: Metadata = {
   title: "Find Internships, Campus Gigs & Freelance Jobs | CampusConnectCo",
@@ -91,30 +96,40 @@ export default async function CampusConnectLandingPage() {
 
   // Transform recent gigs & internships into a unified Opportunity type with coordinates
   const unifiedOpportunities = [
-    ...latestGigs.map(g => ({
-      id: g.id,
-      title: g.title,
-      company: g.poster?.startup?.name || g.poster?.company_name || 'Campus Partner',
-      location: g.city ? `${g.city}${g.state ? `, ${g.state}` : ''}` : (g.work_mode || 'Remote'),
-      budget: g.budget,
-      type: 'gig' as const,
-      lat: g.latitude,
-      lng: g.longitude,
-      href: `/gigs/${g.id}`,
-      createdAt: g.createdAt
-    })),
-    ...latestInternships.map(i => ({
-      id: i.id,
-      title: i.title,
-      company: i.company || 'Startup',
-      location: i.city ? `${i.city}${i.state ? `, ${i.state}` : ''}` : (i.location || 'Remote'),
-      budget: i.stipend,
-      type: 'internship' as const,
-      lat: i.latitude,
-      lng: i.longitude,
-      href: `/opportunities?q=${encodeURIComponent(i.title)}`,
-      createdAt: i.createdAt
-    }))
+    ...latestGigs.map(g => {
+      const rawCompany = g.poster?.startup?.name || g.poster?.company_name || 'Campus Partner';
+      const cleanGigCompany = cleanTitleString(rawCompany);
+      const cleanGigTitle = cleanTitleString(g.title);
+      return {
+        id: g.id,
+        title: cleanGigTitle,
+        company: cleanGigCompany,
+        location: g.city ? `${g.city}${g.state ? `, ${g.state}` : ''}` : (g.work_mode || 'Remote'),
+        budget: g.budget,
+        type: 'gig' as const,
+        lat: g.latitude,
+        lng: g.longitude,
+        href: `/gigs/${g.id}`,
+        createdAt: g.createdAt
+      };
+    }),
+    ...latestInternships.map(i => {
+      const rawCompany = i.company || 'Startup';
+      const cleanIntCompany = cleanTitleString(rawCompany);
+      const cleanIntTitle = cleanTitleString(i.title);
+      return {
+        id: i.id,
+        title: cleanIntTitle,
+        company: cleanIntCompany,
+        location: i.city ? `${i.city}${i.state ? `, ${i.state}` : ''}` : (i.location || 'Remote'),
+        budget: i.stipend,
+        type: 'internship' as const,
+        lat: i.latitude,
+        lng: i.longitude,
+        href: `/opportunities?q=${encodeURIComponent(cleanIntTitle)}`,
+        createdAt: i.createdAt
+      };
+    })
   ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
   const landingFaqs = [
@@ -155,16 +170,14 @@ export default async function CampusConnectLandingPage() {
 
       <main className="landing-body flex flex-col min-h-screen w-full max-w-full overflow-x-hidden bg-[#FAFCFA] text-[#232B27]">
         
-        {/* 1. Promotional Bar */}
-        <MasterPromoBar />
-
-        {/* 2. Navigation */}
-        <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100">
-          <V2Navbar />
-        </div>
+        {/* 1. Navigation & Discovery Prompt */}
+        <V2Navbar />
 
         {/* 3. Hero / Value Proposition */}
         <MasterHero />
+
+        {/* 3b. Interactive Student Onboarding Journey */}
+        <StudentOpportunityJourney />
 
         {/* 4. Live Opportunity Discovery (Immediately after Hero) */}
         <MasterLiveActivity opportunities={unifiedOpportunities} />

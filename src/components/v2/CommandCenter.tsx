@@ -13,7 +13,7 @@ export const CommandCenter = () => {
  const [open, setOpen] = useState(false)
  const [role, setRole] = useState<string | null>(null)
  const router = useRouter()
- const supabase = createClient()
+ const supabase = React.useMemo(() => createClient(), [])
 
  useEffect(() => {
  // Fetch user role on mount
@@ -103,27 +103,69 @@ export const CommandCenter = () => {
  No results found.
  </Command.Empty>
  
- {/* ── Public / Common Opportunities ── */}
- <Command.Group heading="Opportunities" className="px-2 py-3 text-xs font-medium text-muted-foreground **:[[cmdk-group-heading]]:mb-2 **:[[cmdk-group-heading]]:px-2">
- <Command.Item
- onSelect={() => runCommand(() => router.push("/gigs/find"))}
- className="flex cursor-pointer items-center rounded-lg px-3 py-3 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
- >
- <Compass className="mr-3 h-4 w-4 text-muted-foreground group-aria-selected:text-foreground transition-colors" />
- <span>Browse Campus Gigs</span>
- <ArrowRight className="ml-auto h-4 w-4 opacity-0 transition-opacity group-aria-selected:opacity-100" />
- </Command.Item>
- <Command.Item
- onSelect={() => runCommand(() => router.push("/internships"))}
- className="flex cursor-pointer items-center rounded-lg px-3 py-3 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
- >
- <FileText className="mr-3 h-4 w-4 text-muted-foreground group-aria-selected:text-foreground transition-colors" />
- <span>Find Internships</span>
- <ArrowRight className="ml-auto h-4 w-4 opacity-0 transition-opacity group-aria-selected:opacity-100" />
- </Command.Item>
- </Command.Group>
- 
- <Command.Separator className="h-px w-full bg-border" />
+          {/* ── Public / Common Opportunities ── */}
+          <Command.Group heading="Opportunities" className="px-2 py-3 text-xs font-medium text-muted-foreground **:[[cmdk-group-heading]]:mb-2 **:[[cmdk-group-heading]]:px-2">
+            <Command.Item
+              onSelect={() => runCommand(() => router.push("/opportunities"))}
+              className="flex cursor-pointer items-center rounded-lg px-3 py-3 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
+            >
+              <Compass className="mr-3 h-4 w-4 text-emerald-600 group-aria-selected:text-emerald-700 transition-colors" />
+              <span>Browse All Opportunities</span>
+              <ArrowRight className="ml-auto h-4 w-4 opacity-0 transition-opacity group-aria-selected:opacity-100" />
+            </Command.Item>
+            <Command.Item
+              onSelect={() => runCommand(() => router.push("/opportunities?type=internship"))}
+              className="flex cursor-pointer items-center rounded-lg px-3 py-3 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
+            >
+              <FileText className="mr-3 h-4 w-4 text-blue-600 group-aria-selected:text-blue-700 transition-colors" />
+              <span>Find Internships</span>
+              <ArrowRight className="ml-auto h-4 w-4 opacity-0 transition-opacity group-aria-selected:opacity-100" />
+            </Command.Item>
+            <Command.Item
+              onSelect={() => runCommand(() => router.push("/opportunities?type=gig"))}
+              className="flex cursor-pointer items-center rounded-lg px-3 py-3 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
+            >
+              <Compass className="mr-3 h-4 w-4 text-amber-600 group-aria-selected:text-amber-700 transition-colors" />
+              <span>Browse Campus Gigs</span>
+              <ArrowRight className="ml-auto h-4 w-4 opacity-0 transition-opacity group-aria-selected:opacity-100" />
+            </Command.Item>
+          </Command.Group>
+
+          <Command.Separator className="h-px w-full bg-border" />
+
+          {/* ── Domains & Categories ── */}
+          <Command.Group heading="Categories & Modes" className="px-2 py-3 text-xs font-medium text-muted-foreground **:[[cmdk-group-heading]]:mb-2 **:[[cmdk-group-heading]]:px-2">
+            <Command.Item
+              onSelect={() => runCommand(() => router.push("/opportunities?category=engineering"))}
+              className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
+            >
+              <span className="mr-3 text-xs font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">DEV</span>
+              <span>Engineering & Software</span>
+            </Command.Item>
+            <Command.Item
+              onSelect={() => runCommand(() => router.push("/opportunities?category=design"))}
+              className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
+            >
+              <span className="mr-3 text-xs font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">UI/UX</span>
+              <span>Design & Creative</span>
+            </Command.Item>
+            <Command.Item
+              onSelect={() => runCommand(() => router.push("/opportunities?category=marketing"))}
+              className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
+            >
+              <span className="mr-3 text-xs font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">MKT</span>
+              <span>Growth & Marketing</span>
+            </Command.Item>
+            <Command.Item
+              onSelect={() => runCommand(() => router.push("/opportunities?workMode=remote"))}
+              className="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm aria-selected:bg-surface-2 aria-selected:text-foreground transition-colors group"
+            >
+              <span className="mr-3 text-xs font-mono px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">REMOTE</span>
+              <span>Remote Work Opportunities</span>
+            </Command.Item>
+          </Command.Group>
+
+          <Command.Separator className="h-px w-full bg-border" />
  
  {/* ── Student Tools ── */}
  {isStudent && (

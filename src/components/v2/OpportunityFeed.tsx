@@ -6,13 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 
-import { GigCard } from "@/components/v2/GigCard";
-import { InternshipCard } from "@/components/v2/InternshipCard";
 import { useMapContext } from "@/components/v2/maps/MapContext";
 import {
   OpportunityQuickPreviewModal,
   QuickPreviewOpportunity,
 } from "@/components/v2/OpportunityQuickPreviewModal";
+import { PremiumOpportunityCard } from "@/components/v2/PremiumOpportunityCard";
 
 export interface Opportunity {
   id: string;
@@ -172,45 +171,25 @@ export const OpportunityFeed = ({
                   onMouseLeave={() => mapContext?.setHoveredId(null)}
                   onClick={() => mapContext?.setSelectedId(opp.id)}
                 >
-                  {/* Type badge */}
-                  <div className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                    opp.type === "gig" ? "bg-primary/10 text-primary border border-primary/20" : "bg-blue-500/10 text-blue-600 border border-blue-500/20"
-                  }`}>
-                    {opp.type === "gig" ? "Gig" : "Internship"}
-                  </div>
-                  {opp.type === "gig" ? (
-                    <GigCard
-                      id={opp.id}
-                      title={opp.title}
-                      company={opp.company}
-                      location={opp.location}
-                      compensation={opp.compensation || "Negotiable"}
-                      duration={opp.duration || "Flexible"}
-                      tags={opp.tags}
-                      logoUrl={opp.logoUrl}
-                      href={opp.href}
-                      isFeatured={opp.isFeatured}
-                      distanceFormatted={opp.distanceFormatted}
-                      onQuickPreview={() => handleOpenPreview(opp)}
-                      className="h-full"
-                    />
-                  ) : (
-                    <InternshipCard
-                      id={opp.id}
-                      role={opp.title}
-                      company={opp.company}
-                      location={opp.location}
-                      type={opp.workType || "Full-time"}
-                      stipend={opp.stipend || "Unpaid"}
-                      tags={opp.tags}
-                      logoUrl={opp.logoUrl}
-                      href={opp.href}
-                      isUrgent={opp.isUrgent}
-                      distanceFormatted={opp.distanceFormatted}
-                      onQuickPreview={() => handleOpenPreview(opp)}
-                      className="h-full"
-                    />
-                  )}
+                  <PremiumOpportunityCard
+                    id={opp.id}
+                    title={opp.title}
+                    company={opp.company}
+                    location={opp.location}
+                    type={opp.type}
+                    compensation={opp.compensation}
+                    stipend={opp.stipend}
+                    duration={opp.duration}
+                    workMode={opp.workType}
+                    tags={opp.tags}
+                    logoUrl={opp.logoUrl}
+                    href={opp.href}
+                    isFeatured={opp.isFeatured}
+                    isUrgent={opp.isUrgent}
+                    distanceFormatted={opp.distanceFormatted}
+                    onQuickPreview={() => handleOpenPreview(opp)}
+                    className="h-full"
+                  />
                 </motion.div>
               );
             })}

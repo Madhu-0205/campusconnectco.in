@@ -520,17 +520,109 @@ export function OpportunityDiscoveryClient({
           </div>
         )}
 
-        {/* Active City Location Chip */}
-        {localLocation && (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-700 border border-blue-500/20 text-xs font-medium w-fit">
-            <span>Location: <strong className="capitalize">{localLocation}</strong></span>
+        {/* Active Filter Chips Bar */}
+        {(localSearch || localCategory !== "all" || localType !== "all" || localWorkMode !== "all" || localLocation || isLocationActive) && (
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              Active Filters:
+            </span>
+
+            {localSearch && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-2 border border-border text-xs font-medium text-foreground">
+                <span>&ldquo;{localSearch}&rdquo;</span>
+                <button
+                  type="button"
+                  onClick={() => setLocalSearch("")}
+                  className="p-0.5 hover:bg-surface-3 rounded text-muted-foreground hover:text-foreground cursor-pointer"
+                  title="Clear search keyword"
+                  aria-label="Clear search keyword"
+                >
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+
+            {localType !== "all" && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 text-xs font-medium">
+                <span>Type: <strong className="capitalize">{localType}</strong></span>
+                <button
+                  type="button"
+                  onClick={() => setLocalType("all")}
+                  className="p-0.5 hover:bg-emerald-500/20 rounded cursor-pointer"
+                  title="Clear type filter"
+                  aria-label="Clear type filter"
+                >
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+
+            {localCategory !== "all" && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20 text-xs font-medium">
+                <span>Category: <strong className="capitalize">{localCategory}</strong></span>
+                <button
+                  type="button"
+                  onClick={() => setLocalCategory("all")}
+                  className="p-0.5 hover:bg-primary/20 rounded cursor-pointer"
+                  title="Clear category filter"
+                  aria-label="Clear category filter"
+                >
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+
+            {localWorkMode !== "all" && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-700 border border-blue-500/20 text-xs font-medium">
+                <span>Mode: <strong className="capitalize">{localWorkMode}</strong></span>
+                <button
+                  type="button"
+                  onClick={() => setLocalWorkMode("all")}
+                  className="p-0.5 hover:bg-blue-500/20 rounded cursor-pointer"
+                  title="Clear work mode filter"
+                  aria-label="Clear work mode filter"
+                >
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+
+            {localLocation && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-800 border border-amber-500/20 text-xs font-medium">
+                <span>City: <strong className="capitalize">{localLocation}</strong></span>
+                <button
+                  type="button"
+                  onClick={() => setLocalLocation("")}
+                  className="p-0.5 hover:bg-amber-500/20 rounded cursor-pointer"
+                  title="Clear city filter"
+                  aria-label="Clear city filter"
+                >
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+
+            {isLocationActive && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-800 border border-emerald-500/20 text-xs font-medium">
+                <span>Radius: <strong>{activeRadius === "all" ? "All India" : `${activeRadius} km`}</strong></span>
+                <button
+                  type="button"
+                  onClick={handleClearLocation}
+                  className="p-0.5 hover:bg-emerald-500/20 rounded cursor-pointer"
+                  title="Clear location filter"
+                  aria-label="Clear location filter"
+                >
+                  <X size={12} />
+                </button>
+              </span>
+            )}
+
             <button
               type="button"
-              onClick={() => setLocalLocation("")}
-              className="p-0.5 hover:bg-blue-500/20 rounded text-blue-700"
-              title="Remove location filter"
+              onClick={handleResetAllFilters}
+              className="text-xs font-bold text-primary hover:underline ml-1 cursor-pointer"
             >
-              <X size={11} />
+              Reset all
             </button>
           </div>
         )}
@@ -704,8 +796,30 @@ export function OpportunityDiscoveryClient({
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-64 rounded-2xl bg-surface-2 animate-pulse border border-border"
-            />
+              className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs animate-pulse flex flex-col justify-between h-64"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-5 w-24 bg-slate-200 rounded-md" />
+                  <div className="h-5 w-16 bg-slate-100 rounded-md" />
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-slate-200 shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 bg-slate-200 rounded-md w-4/5" />
+                    <div className="h-3.5 bg-slate-100 rounded-md w-1/2" />
+                  </div>
+                </div>
+                <div className="mt-5 flex gap-3">
+                  <div className="h-4 w-28 bg-slate-100 rounded-md" />
+                  <div className="h-4 w-20 bg-slate-100 rounded-md" />
+                </div>
+              </div>
+              <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
+                <div className="h-3.5 w-16 bg-slate-100 rounded-md" />
+                <div className="h-3.5 w-20 bg-slate-200 rounded-md" />
+              </div>
+            </div>
           ))}
         </div>
       ) : (

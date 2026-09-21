@@ -6,7 +6,7 @@ import {
  MessageSquare, Users, Bell, Search, ChevronDown, Building2,
  LogOut, Settings, UserCircle, Plus, GraduationCap,
  ArrowUp, Trophy, Gift, Target,
- Shield, CreditCard, Info, Menu, X, LucideIcon
+ Shield, CreditCard, Info, Menu, X, LucideIcon, Compass
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -38,7 +38,14 @@ interface NavLink {
 }
 
 const getNavLinks = (role: string | null): NavLink[] => {
- if (!role) return []
+  if (!role) {
+    return [
+      { label: 'Discover', href: '/opportunities', icon: Compass },
+      { label: 'Internships', href: '/opportunities?type=internship', icon: Briefcase },
+      { label: 'Campus Gigs', href: '/opportunities?type=gig', icon: Sparkles },
+      { label: 'For Founders', href: '/auth/founder', icon: Building2 },
+    ]
+  }
 
  const common: NavLink[] = [
  { label: 'Post a Gig', href: '/post-gig', icon: Plus, highlight: true },
@@ -167,7 +174,7 @@ export function NavbarClient({
 
  {/* Desktop Nav Links */}
  <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
- {mounted && userId && navLinks.map(link => {
+ {mounted && navLinks.map(link => {
  const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
  const badgeCount = link.badge === 'messages' ? unreadMessages
  : link.badge === 'applications' ? pendingApplications : 0
