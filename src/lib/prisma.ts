@@ -27,6 +27,14 @@ function getPrismaDatabaseUrl(): string {
   const connectTimeout = Math.min(Math.max(parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10), 1), 60);
 
   const url = new URL(rawUrl);
+
+  // If pointing to Supabase pooler on session mode (port 5432), route to transaction pooler (port 6543)
+  // to avoid FATAL (EMAXCONNSESSION) pool_size: 15 exhaustion in serverless environments
+  if (url.hostname.includes("pooler.supabase.com") && url.port === "5432") {
+    url.port = "6543";
+    url.searchParams.set("pgbouncer", "true");
+  }
+
   if (!url.searchParams.has("connection_limit")) {
     url.searchParams.set("connection_limit", String(connectionLimit));
   }
