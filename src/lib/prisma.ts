@@ -22,7 +22,7 @@ function assertDatabaseUrl(value?: string): string {
 
 function getPrismaDatabaseUrl(): string {
   const rawUrl = assertDatabaseUrl(process.env.DATABASE_URL);
-  const connectionLimit = Math.min(Math.max(parseInt(process.env.DB_CONNECTION_LIMIT || "10", 10), 1), 100);
+  const connectionLimit = Math.min(Math.max(parseInt(process.env.DB_CONNECTION_LIMIT || "1", 10), 1), 100);
   const poolTimeout = Math.min(Math.max(parseInt(process.env.DB_POOL_TIMEOUT || "30", 10), 1), 120);
   const connectTimeout = Math.min(Math.max(parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10), 1), 60);
 
@@ -59,6 +59,8 @@ export async function withRetry<T>(
         msg.includes("kind: Closed") ||
         msg.includes("Closed") ||
         msg.includes("closed early") ||
+        msg.includes("max clients reached") ||
+        msg.includes("EMAXCONNSESSION") ||
         code === "P1001" ||
         code === "P1017" ||
         code === "P1018" ||
