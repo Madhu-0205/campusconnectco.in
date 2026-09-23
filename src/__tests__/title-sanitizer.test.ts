@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   sanitizeGeneratedTitleSuffix,
   normalizeTitle,
@@ -6,6 +6,72 @@ import {
   STAGING_TIMESTAMP_MAX_DATE
 } from "@/lib/automation/normalizer";
 import { loadSnapshot, simulateRollback } from "../../scratch/rollback_title_cleanup";
+
+// Mock @/lib/prisma to ensure test-safe, fast, deterministic rollback simulation
+vi.mock("@/lib/prisma", () => ({
+  default: {
+    internship: {
+      findMany: vi.fn().mockImplementation(async ({ where }: any) => {
+        const ids: string[] = where?.id?.in || [];
+        const mockDatabaseRecords = [
+          {
+            id: "ebcbfbba-1b35-46a7-b007-d6dc8c4a6250",
+            title: "Publisher Test",
+            company: "FutureLabs",
+            status: "PENDING_APPROVAL",
+            externalId: null
+          },
+          {
+            id: "591a4ed3-1d32-43db-8225-688672baed41",
+            title: "ML Research Intern Pilot",
+            company: "Citadel Global Markets",
+            status: "OPEN",
+            externalId: null
+          },
+          {
+            id: "07fab83e-41cb-41a9-8632-7195c26562de",
+            title: "ML Research Intern Pilot",
+            company: "Citadel Global Markets",
+            status: "OPEN",
+            externalId: null
+          },
+          {
+            id: "8f77c66c-ddbb-4365-99b6-b244c34701be",
+            title: "ML Research Intern Pilot",
+            company: "Citadel Global Markets",
+            status: "OPEN",
+            externalId: null
+          },
+          {
+            id: "57831efd-6018-4b41-bf2f-fc33b0b18821",
+            title: "ML Research Intern Pilot",
+            company: "Citadel Global Markets",
+            status: "OPEN",
+            externalId: null
+          },
+          {
+            id: "a8b93e43-fbfa-42be-931a-b9c7b6949456",
+            title: "Distributed Systems Research Intern",
+            company: "AgentReach Corp",
+            status: "OPEN",
+            externalId: null
+          },
+          // Extraneous unselected record to verify isolation
+          {
+            id: "99999999-9999-9999-9999-999999999999",
+            title: "Unrelated Internship",
+            company: "Extraneous Corp",
+            status: "OPEN",
+            externalId: null
+          }
+        ];
+        return mockDatabaseRecords.filter((r) => ids.includes(r.id));
+      }),
+      update: vi.fn()
+    },
+    $transaction: vi.fn()
+  }
+}));
 
 describe("Title Sanitizer — Generated Numeric Suffixes & Strict Validation", () => {
   describe("1. Generated Timestamp Suffixes", () => {
@@ -277,13 +343,38 @@ describe("Title Sanitizer — Generated Numeric Suffixes & Strict Validation", (
     });
 
     it("verifies rollback simulation targets only the 6 snapshot records", async () => {
+      const startTime = performance.now();
       const sim = await simulateRollback();
+      const elapsed = performance.now() - startTime;
+
       expect(sim.targetCount).toBe(6);
       expect(sim.updates).toHaveLength(6);
+
+      const snapshot = loadSnapshot();
+      const snapshotIds = new Set(snapshot.map((s) => s.id));
 
       const targetIds = sim.updates.map((u) => u.id);
       expect(targetIds).toContain("ebcbfbba-1b35-46a7-b007-d6dc8c4a6250");
       expect(targetIds).toContain("a8b93e43-fbfa-42be-931a-b9c7b6949456");
+
+      // Verify that every targeted record is strictly one of the 6 snapshot records
+      for (const id of targetIds) {
+        expect(snapshotIds.has(id)).toBe(true);
+      }
+      expect(targetIds).not.toContain("99999999-9999-9999-9999-999999999999");
+
+      // Verify fast execution (well under 5000ms timeout)
+      expect(elapsed).toBeLessThan(100);
+    });
+
+    it("verifies rollback simulation rejects when a snapshot record is missing from current state", async () => {
+      await expect(
+        simulateRollback({
+          currentRecords: [
+            { id: "ebcbfbba-1b35-46a7-b007-d6dc8c4a6250", title: "Test", company: "Test" }
+          ]
+        })
+      ).rejects.toThrow(/Cannot rollback: Record .* not found in database!/);
     });
   });
 });
