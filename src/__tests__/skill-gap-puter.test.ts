@@ -14,7 +14,10 @@ vi.mock('@/lib/prisma', () => ({
   },
 }));
 
-vi.mock('@/lib/ai/puter', () => ({
+vi.mock('@/lib/ai/adapter', () => ({
+  aiAdapter: {
+    chat: vi.fn(),
+  },
   puterAI: {
     chat: vi.fn(),
   },
@@ -23,9 +26,9 @@ vi.mock('@/lib/ai/puter', () => ({
 import { POST } from '@/app/api/ai/skill-gap/route';
 import { protectApi } from '@/lib/auth-checks';
 import prisma from '@/lib/prisma';
-import { puterAI } from '@/lib/ai/puter';
+import { aiAdapter } from '@/lib/ai/adapter';
 
-describe('POST /api/ai/skill-gap — Puter-Only Integration & Resilience', () => {
+describe('POST /api/ai/skill-gap — Groq AI Integration & Resilience', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -64,7 +67,7 @@ describe('POST /api/ai/skill-gap — Puter-Only Integration & Resilience', () =>
     expect(data.error).toBe('targetRole is required');
   });
 
-  it('should successfully parse Puter AI chat response and return structured skill gap', async () => {
+  it('should successfully parse AI chat response and return structured skill gap', async () => {
     vi.mocked(protectApi).mockResolvedValue({
       user: { id: 'usr-student-1', role: 'STUDENT' },
       errorResponse: null,
@@ -78,7 +81,7 @@ describe('POST /api/ai/skill-gap — Puter-Only Integration & Resilience', () =>
       ],
     } as any);
 
-    vi.mocked(puterAI.chat).mockResolvedValue(JSON.stringify({
+    vi.mocked(aiAdapter.chat).mockResolvedValue(JSON.stringify({
       matchedSkills: ['React', 'JavaScript'],
       missingSkills: ['TypeScript', 'Next.js', 'Tailwind CSS'],
       learningPlan: [
@@ -97,13 +100,13 @@ describe('POST /api/ai/skill-gap — Puter-Only Integration & Resilience', () =>
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBe(true);
-    expect(data.poweredBy).toBe('Puter.js');
+    expect(data.poweredBy).toBe('Groq (openai/gpt-oss-120b)');
     expect(data.data.matchedSkills).toEqual(['React', 'JavaScript']);
     expect(data.data.missingSkills).toEqual(['TypeScript', 'Next.js', 'Tailwind CSS']);
     expect(data.data.learningPlan).toHaveLength(3);
   });
 
-  it('should employ deterministic fallback when Puter AI times out or throws without returning 500', async () => {
+  it('should employ deterministic fallback when AI times out or throws without returning 500', async () => {
     vi.mocked(protectApi).mockResolvedValue({
       user: { id: 'usr-student-1', role: 'STUDENT' },
       errorResponse: null,
@@ -116,8 +119,8 @@ describe('POST /api/ai/skill-gap — Puter-Only Integration & Resilience', () =>
       ],
     } as any);
 
-    // Simulate Puter timeout or network offline exception
-    vi.mocked(puterAI.chat).mockRejectedValue(new Error('Puter AI request timed out after 12000ms'));
+    // Simulate timeout or network offline exception
+    vi.mocked(aiAdapter.chat).mockRejectedValue(new Error('Groq AI request timed out after 12000ms'));
 
     const req = new NextRequest('http://localhost:3000/api/ai/skill-gap', {
       method: 'POST',
@@ -128,7 +131,7 @@ describe('POST /api/ai/skill-gap — Puter-Only Integration & Resilience', () =>
     expect(res.status).toBe(200); // Must NOT return 500
     const data = await res.json();
     expect(data.success).toBe(true);
-    expect(data.poweredBy).toBe('Puter.js');
+    expect(data.poweredBy).toBe('Groq (openai/gpt-oss-120b)');
     expect(data.isFallback).toBe(true);
     expect(Array.isArray(data.data.matchedSkills)).toBe(true);
     expect(Array.isArray(data.data.missingSkills)).toBe(true);

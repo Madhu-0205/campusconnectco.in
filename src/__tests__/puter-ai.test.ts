@@ -17,18 +17,19 @@ import {
   interviewQuestionPrompt,
   interviewEvaluationPrompt
 } from "../lib/ai/prompts";
-import { puterAI } from "../lib/ai/puter";
+import { aiAdapter, puterAI } from "../lib/ai/adapter";
 
-describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
+describe("CampusConnect Intelligence Layer — Groq AI Integration", () => {
   describe("1. Privacy & Security Guards", () => {
-    it("should redact sensitive tokens, payment keys, and credentials", () => {
+    it("should redact sensitive tokens, payment keys, credentials, and gsk_ keys", () => {
       const sensitiveInput =
-        "My token is Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9 and session sb-access-token-12345. Razorpay key rzp_test_99999 and resend re_secret_key.";
+        "My token is Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9 and session sb-access-token-12345. Razorpay key rzp_test_99999, Groq key gsk_test1234567890abcdef and resend re_secret_key.";
       const scrubbed = scrubSensitiveData(sensitiveInput);
 
       expect(scrubbed).not.toContain("Bearer eyJhbGci");
       expect(scrubbed).not.toContain("sb-access-token-12345");
       expect(scrubbed).not.toContain("rzp_test_99999");
+      expect(scrubbed).not.toContain("gsk_test1234567890abcdef");
       expect(scrubbed).not.toContain("re_secret_key");
       expect(scrubbed).toContain("[REDACTED_TOKEN]");
       expect(scrubbed).toContain("[REDACTED_SESSION]");
@@ -56,7 +57,7 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
   });
 
   describe("2. Schema Validation & Safe Parsing", () => {
-    it("should validate and parse structured match explanations", () => {
+    it("should validate and parse structured match explanations with Groq attribution", () => {
       const validJson = JSON.stringify({
         summary: "Strong skill overlap with React and TypeScript requirements.",
         scoreBreakdown: {
@@ -65,12 +66,12 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
           freshnessExplanation: "Posted within the last 48 hours."
         },
         suggestedAction: "Submit application with portfolio links.",
-        poweredBy: "Puter.js"
+        poweredBy: "Groq (openai/gpt-oss-120b)"
       });
 
       const parsed = safeParseJson(validJson, MatchExplanationSchema, {} as any);
       expect(parsed.summary).toBe("Strong skill overlap with React and TypeScript requirements.");
-      expect(parsed.poweredBy).toBe("Puter.js");
+      expect(parsed.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
     });
 
     it("should gracefully recover from malformed JSON using safe fallback", () => {
@@ -83,12 +84,12 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
           freshnessExplanation: "Default freshness explanation"
         },
         suggestedAction: "Apply now",
-        poweredBy: "Puter.js" as const
+        poweredBy: "Groq (openai/gpt-oss-120b)" as const
       };
 
       const parsed = safeParseJson(malformedJson, MatchExplanationSchema, fallback);
       expect(parsed.summary).toBe("Default fallback summary");
-      expect(parsed.poweredBy).toBe("Puter.js");
+      expect(parsed.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
     });
   });
 
@@ -124,6 +125,7 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
       expect(prompt).toContain("TechNova");
       expect(prompt).toContain("[VERIFIED DATA]");
       expect(prompt).toContain("[AI ADVICE]");
+      expect(prompt).toContain("Groq (openai/gpt-oss-120b)");
     });
 
     it("should generate grounded opportunity summary prompt without hallucination", () => {
@@ -140,11 +142,11 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
       expect(prompt).toContain("Frontend Next.js Developer");
       expect(prompt).toContain("Stripe Partner");
       expect(prompt).toContain("₹25,000");
-      expect(prompt).toContain("Puter.js");
+      expect(prompt).toContain("Groq (openai/gpt-oss-120b)");
     });
   });
 
-  describe("4. Puter AI Adapter Resilience & Fallbacks", () => {
+  describe("4. AI Adapter Resilience & Fallbacks", () => {
     it("should provide structured resume analysis with grade, ATS score, and suggestions", async () => {
       const sampleResume = `
         Arjun Sharma - Computer Science Student
@@ -153,17 +155,17 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
         Education: B.Tech Computer Science, Pragati Engineering College.
       `;
 
-      const result = await puterAI.analyzeResume(sampleResume, { timeoutMs: 3000 });
+      const result = await aiAdapter.analyzeResume(sampleResume, { timeoutMs: 3000 });
 
       expect(result).toHaveProperty("score");
       expect(result.score).toBeGreaterThanOrEqual(60);
       expect(result).toHaveProperty("grade");
       expect(result.skills.length).toBeGreaterThan(0);
-      expect(result.poweredBy).toBe("Puter.js");
+      expect(result.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
     });
 
     it("should generate grounded match explanations", async () => {
-      const result = await puterAI.explainMatch({
+      const result = await aiAdapter.explainMatch({
         opportunityTitle: "React Gig",
         opportunityType: "gig",
         companyName: "Acme Corp",
@@ -182,11 +184,11 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
       expect(result).toHaveProperty("summary");
       expect(result.scoreBreakdown).toBeDefined();
       expect(result.scoreBreakdown.skillMatchExplanation).toContain("React");
-      expect(result.poweredBy).toBe("Puter.js");
+      expect(result.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
     });
 
     it("should generate structured opportunity summary", async () => {
-      const result = await puterAI.summarizeOpportunity({
+      const result = await aiAdapter.summarizeOpportunity({
         title: "Node.js Backend Developer",
         company: "Apex Tech",
         description: "Develop REST APIs using Prisma and Express.",
@@ -199,11 +201,11 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
       expect(result).toHaveProperty("whatYouWillDo");
       expect(result.whatYouWillDo.length).toBeGreaterThan(0);
       expect(result).toHaveProperty("whoThisSuits");
-      expect(result.poweredBy).toBe("Puter.js");
+      expect(result.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
     });
 
     it("should generate interview questions and evaluation with disclaimer", async () => {
-      const questionResult = await puterAI.generateInterviewQuestion({
+      const questionResult = await aiAdapter.generateInterviewQuestion({
         roleTitle: "Next.js Frontend Engineer",
         difficulty: "MEDIUM",
         chatHistory: []
@@ -211,9 +213,9 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
 
       expect(questionResult.question).toBeDefined();
       expect(questionResult.question.length).toBeGreaterThan(15);
-      expect(questionResult.poweredBy).toBe("Puter.js");
+      expect(questionResult.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
 
-      const evalResult = await puterAI.evaluateInterview({
+      const evalResult = await aiAdapter.evaluateInterview({
         roleTitle: "Next.js Frontend Engineer",
         difficulty: "MEDIUM",
         chatHistory: [
@@ -225,7 +227,7 @@ describe("CampusConnect Intelligence Layer — Puter.js Integration", () => {
       expect(evalResult).toHaveProperty("score");
       expect(evalResult.feedback).toHaveProperty("technical");
       expect(evalResult.disclaimer).toContain("Advisory only");
-      expect(evalResult.poweredBy).toBe("Puter.js");
+      expect(evalResult.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
     }, 15000);
   });
 });

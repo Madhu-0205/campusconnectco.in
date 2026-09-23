@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { puterAI } from "@/lib/ai/puter";
+import { aiAdapter } from "@/lib/ai/adapter";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 
@@ -40,8 +40,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "roleTitle and difficulty are required" }, { status: 400 });
     }
 
-    // Call Puter AI to generate opening interview question
-    const { question: firstQuestion } = await puterAI.generateInterviewQuestion({
+    // Call AI to generate opening interview question
+    const { question: firstQuestion } = await aiAdapter.generateInterviewQuestion({
       roleTitle,
       difficulty: difficulty as any,
       chatHistory: []
@@ -98,8 +98,8 @@ export async function PATCH(req: Request) {
     const questionCount = history.filter((m) => m.role === "assistant").length;
 
     if (questionCount < 5) {
-      // Ask next question via Puter AI
-      const { question: nextQuestion } = await puterAI.generateInterviewQuestion({
+      // Ask next question via AI
+      const { question: nextQuestion, poweredBy } = await aiAdapter.generateInterviewQuestion({
         roleTitle: interview.roleTitle,
         difficulty: interview.difficulty as any,
         chatHistory: history
@@ -117,11 +117,11 @@ export async function PATCH(req: Request) {
         status: "ongoing",
         nextQuestion,
         questionNumber: questionCount + 1,
-        poweredBy: "Puter.js"
+        poweredBy
       });
     } else {
-      // 5 questions completed! Evaluate and grade via Puter AI
-      const evaluation = await puterAI.evaluateInterview({
+      // 5 questions completed! Evaluate and grade via AI
+      const evaluation = await aiAdapter.evaluateInterview({
         roleTitle: interview.roleTitle,
         difficulty: interview.difficulty as any,
         chatHistory: history
@@ -158,7 +158,7 @@ export async function PATCH(req: Request) {
         success: true,
         status: "completed",
         data: updatedInterview,
-        poweredBy: "Puter.js"
+        poweredBy: evaluation.poweredBy
       });
  }
  } catch (error: any) {

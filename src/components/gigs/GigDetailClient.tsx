@@ -457,16 +457,11 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />
                 <h3 className="font-bold text-foreground">Why this matches you</h3>
-                <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Puter AI</span>
+                <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Groq AI</span>
               </div>
-              <a
-                href="https://developer.puter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[11px] text-muted-foreground hover:text-primary transition-colors font-medium"
-              >
-                Powered by Puter
-              </a>
+              <span className="text-[11px] text-muted-foreground font-medium">
+                Powered by Groq
+              </span>
             </div>
 
             {matchExplanation ? (
@@ -528,16 +523,11 @@ export default function GigDetailClient({ gig }: GigDetailProps) {
             <div className="flex items-center gap-2">
               <Brain className="h-5 w-5 text-primary" />
               <h3 className="font-bold text-foreground">AI Opportunity Summary</h3>
-              <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Puter AI</span>
+              <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Groq AI</span>
             </div>
-            <a
-              href="https://developer.puter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] text-muted-foreground hover:text-primary transition-colors font-medium"
-            >
-              Powered by Puter
-            </a>
+            <span className="text-[11px] text-muted-foreground font-medium">
+              Powered by Groq
+            </span>
           </div>
 
           {aiSummary ? (

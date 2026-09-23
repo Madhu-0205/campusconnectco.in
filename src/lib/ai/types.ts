@@ -1,8 +1,8 @@
 /**
- * TypeScript Interfaces for CampusConnect Intelligence Layer (Puter.js)
+ * TypeScript Interfaces for CampusConnect Intelligence Layer (Groq / openai/gpt-oss-120b)
  *
  * SCOPE & BOUNDARIES:
- * - Puter.js is strictly an advisory/intelligence layer.
+ * - The AI model is strictly an advisory/intelligence layer.
  * - Authoritative marketplace data, user identities, roles, and deterministic
  *   recommendation rankings originate solely from PostgreSQL & Prisma.
  */
@@ -11,6 +11,8 @@ export interface AIChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
+
+export type AIPoweredBy = "Groq (openai/gpt-oss-120b)" | "Puter.js";
 
 export interface CopilotContextData {
   user?: {
@@ -58,7 +60,7 @@ export interface MatchExplanationOutput {
     freshnessExplanation: string;
   };
   suggestedAction: string;
-  poweredBy: "Puter.js";
+  poweredBy: AIPoweredBy;
 }
 
 export interface OpportunitySummaryInput {
@@ -80,7 +82,7 @@ export interface OpportunitySummaryOutput {
   locationDetails: string;
   importantRequirements: string[];
   preparationTips: string[];
-  poweredBy: "Puter.js";
+  poweredBy: AIPoweredBy;
 }
 
 export interface ResumeAnalysisOutput {
@@ -100,7 +102,7 @@ export interface ResumeAnalysisOutput {
     contentDepth: number;
     keywordDensity: number;
   };
-  poweredBy: "Puter.js";
+  poweredBy: AIPoweredBy;
 }
 
 export interface InterviewQuestionInput {
@@ -120,12 +122,16 @@ export interface InterviewEvaluationOutput {
   };
   summary: string;
   disclaimer: string;
-  poweredBy: "Puter.js";
+  poweredBy: AIPoweredBy;
 }
 
-export interface PuterAIAdapterOptions {
+export interface AIAdapterOptions {
   model?: string;
   temperature?: number;
   maxTokens?: number;
   timeoutMs?: number;
+  signal?: AbortSignal;
+  authToken?: string; // legacy support
 }
+
+export type PuterAIAdapterOptions = AIAdapterOptions;

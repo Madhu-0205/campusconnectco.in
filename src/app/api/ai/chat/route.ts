@@ -1,7 +1,6 @@
-
-
 import { streamChatResponse, ChatContext } from '@/lib/ai/chatAssistant';
 import { scrubSensitiveData, validatePromptLength } from '@/lib/ai/guards';
+import { sanitizeErrorString } from '@/lib/ai/provider';
 import { aiLimiter } from '@/lib/rate-limit';
 import { createClient } from '@/lib/supabase/server';
 
@@ -48,7 +47,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Sanitize and validate every incoming message
+    // Sanitize and validate every incoming message (4000 char limit enforced)
     const sanitizedMessages = messages.map((m) => ({
       role: m.role === 'assistant' ? 'assistant' : 'user',
       content: validatePromptLength(scrubSensitiveData(String(m.content || '')), 4000),
@@ -71,27 +70,45 @@ export async function POST(req: Request) {
           currentPage: context?.currentPage ? scrubSensitiveData(context.currentPage) : undefined,
         };
 
-    // Return a streaming response using ReadableStream
+    // Return a streaming response using ReadableStream conforming strictly to:
+    // data: {"delta":"..."}\n\n and data: [DONE]\n\n
     const encoder = new TextEncoder();
+    const abortSignal = req.signal;
+
     const readable = new ReadableStream({
       async start(controller) {
         try {
-          await streamChatResponse(sanitizedMessages, safeContext, (chunk) => {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: chunk })}\n\n`));
-          });
-          // Send done signal
+          await streamChatResponse(
+            sanitizedMessages,
+            safeContext,
+            (chunk) => {
+              if (chunk) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: chunk })}\n\n`));
+              }
+            },
+            abortSignal
+          );
+          // Send terminal completion signal
           controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
           controller.close();
         } catch (err: any) {
-          console.error('[Puter Chat Stream Error]:', err?.message || err);
-          controller.enqueue(
-            encoder.encode(
-              `data: ${JSON.stringify({
-                delta: '\n\nAI assistance is temporarily unavailable. Please retry in a moment or explore verified opportunities directly.',
-              })}\n\n`
-            )
-          );
-          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+          const sanitizedErr = sanitizeErrorString(err?.message || String(err || 'Stream error'));
+          if (!abortSignal.aborted) {
+            console.error('[AI Chat Stream Error]:', sanitizedErr);
+            const isThrottled = err?.status === 429 || sanitizedErr.includes('429') || sanitizedErr.includes('rate limit');
+            const fallbackMessage = isThrottled
+              ? '\n\nAI assistance is currently busy with high request volume. Please retry in a few moments or explore verified opportunities directly.'
+              : '\n\nAI assistance is temporarily unavailable. Please retry in a moment or explore verified opportunities directly.';
+
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({
+                  delta: fallbackMessage,
+                })}\n\n`
+              )
+            );
+            controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+          }
           controller.close();
         }
       },
@@ -99,13 +116,17 @@ export async function POST(req: Request) {
 
     return new Response(readable, {
       headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'X-Vercel-AI-Data-Stream': 'v1',
-        'Cache-Control': 'no-cache',
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        'Connection': 'keep-alive',
       },
     });
   } catch (e: any) {
-    console.error('[chat]', e);
-    return new Response(e.message || 'Internal Server Error', { status: 500 });
+    const sanitized = sanitizeErrorString(e?.message || 'Internal Server Error');
+    console.error('[chat]', sanitized);
+    return new Response(JSON.stringify({ error: sanitized }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

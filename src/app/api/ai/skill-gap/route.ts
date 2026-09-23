@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { aiAdapter } from "@/lib/ai/adapter";
 import { safeParseJson } from "@/lib/ai/guards";
-import { puterAI } from "@/lib/ai/puter";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 
@@ -82,7 +82,7 @@ Return ONLY a valid JSON object matching this structure:
 `;
 
     try {
-      const responseText = await puterAI.chat([
+      const responseText = await aiAdapter.chat([
         {
           role: "system",
           content: "You are a professional technical recruiter and talent advisor. Return ONLY valid JSON matching the schema.",
@@ -94,10 +94,10 @@ Return ONLY a valid JSON object matching this structure:
       ]);
 
       const parsed = safeParseJson<SkillGapResult>(responseText, SkillGapSchema, fallbackResult);
-      return NextResponse.json({ success: true, data: parsed, poweredBy: "Puter.js" });
+      return NextResponse.json({ success: true, data: parsed, poweredBy: "Groq (openai/gpt-oss-120b)" });
     } catch {
       // Graceful fallback to deterministic response
-      return NextResponse.json({ success: true, data: fallbackResult, poweredBy: "Puter.js", isFallback: true });
+      return NextResponse.json({ success: true, data: fallbackResult, poweredBy: "Groq (openai/gpt-oss-120b)", isFallback: true });
     }
   } catch (error: any) {
     console.error("[SKILL_GAP_POST_ERROR]:", error);

@@ -93,7 +93,7 @@ export const CopilotChat = () => {
  <div>
  <div className="flex items-center gap-2">
  <h3 className="font-bold text-foreground leading-tight">Career Copilot</h3>
- <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Puter AI</span>
+ <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Groq AI</span>
  </div>
  <p className="text-xs text-muted-foreground font-medium">CampusConnectCo Intelligence</p>
  </div>
@@ -197,14 +197,9 @@ export const CopilotChat = () => {
  </form>
           <div className="flex items-center justify-between text-[10px] text-muted-foreground/60 mt-3 px-1 font-medium">
             <span>AI Copilot can make mistakes. Verify info.</span>
-            <a
-              href="https://developer.puter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors inline-flex items-center gap-1 font-semibold"
-            >
-              Powered by Puter
-            </a>
+            <span className="inline-flex items-center gap-1 font-semibold">
+              Powered by Groq
+            </span>
           </div>
  </div>
  </motion.div>

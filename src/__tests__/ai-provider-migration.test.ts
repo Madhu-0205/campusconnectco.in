@@ -1,17 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { puterAI } from "@/lib/ai/puter";
+import { aiAdapter } from "@/lib/ai/adapter";
 import { POST as chatRouteHandler } from "@/app/api/ai/chat/route";
 import { NextRequest } from "next/server";
 
-describe("AI Provider Migration: Puter.js as Sole Provider", () => {
-  it("should have zero Groq API key dependencies in ServerEnvSchema", async () => {
-    // Verified: No GROQ_API_KEY environment variable required
-    expect(process.env.GROQ_API_KEY).toBeUndefined();
+describe("AI Provider Migration: Groq (openai/gpt-oss-120b)", () => {
+  it("should have zero Puter auth token dependencies in ServerEnvSchema", async () => {
+    expect(process.env.PUTER_AUTH_TOKEN).toBeUndefined();
   });
 
-  it("should verify puterAI provides Career Copilot responses with Puter.js attribution", async () => {
-    const res = await puterAI.copilotChat("What is CampusConnect?", [], undefined, { timeoutMs: 2000 });
-    expect(res.poweredBy).toBe("Puter.js");
+  it("should verify aiAdapter provides Career Copilot responses with Groq attribution", async () => {
+    const res = await aiAdapter.copilotChat("What is CampusConnect?", [], undefined, { timeoutMs: 2000 });
+    expect(res.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
     expect(res.message).toBeTruthy();
     expect(res.message.toLowerCase()).toContain("campusconnect");
   }, 15000);
@@ -34,8 +33,8 @@ describe("AI Provider Migration: Puter.js as Sole Provider", () => {
     expect(response.status).toBe(200);
   });
 
-  it("should verify Smart Match explanation uses Puter adapter and returns valid schema", async () => {
-    const explanation = await puterAI.explainMatch({
+  it("should verify Smart Match explanation uses Groq adapter and returns valid schema", async () => {
+    const explanation = await aiAdapter.explainMatch({
       opportunityTitle: "Frontend Developer Intern",
       opportunityType: "internship",
       companyName: "Nexus Labs",
@@ -54,11 +53,11 @@ describe("AI Provider Migration: Puter.js as Sole Provider", () => {
     expect(explanation.summary).toBeTruthy();
     expect(explanation.scoreBreakdown).toBeDefined();
     expect(explanation.suggestedAction).toBeTruthy();
-    expect(explanation.poweredBy).toBe("Puter.js");
+    expect(explanation.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
   }, 20000);
 
-  it("should verify Opportunity Summary uses Puter adapter and returns structured fields", async () => {
-    const summary = await puterAI.summarizeOpportunity({
+  it("should verify Opportunity Summary uses Groq adapter and returns structured fields", async () => {
+    const summary = await aiAdapter.summarizeOpportunity({
       title: "Fullstack Developer Gig",
       company: "Startup Hub",
       description: "Build a responsive dashboard using React, Node.js, and PostgreSQL for student event tracking.",
@@ -71,28 +70,28 @@ describe("AI Provider Migration: Puter.js as Sole Provider", () => {
     expect(summary.whatYouWillDo.length).toBeGreaterThan(0);
     expect(summary.skillsNeeded.length).toBeGreaterThan(0);
     expect(summary.whoThisSuits).toBeTruthy();
-    expect(summary.poweredBy).toBe("Puter.js");
+    expect(summary.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
   }, 20000);
 
-  it("should verify Resume Analyzer uses Puter adapter and returns ATS score breakdown", async () => {
-    const analysis = await puterAI.analyzeResume(
+  it("should verify Resume Analyzer uses Groq adapter and returns ATS score breakdown", async () => {
+    const analysis = await aiAdapter.analyzeResume(
       "John Doe. Computer Science undergraduate. Skilled in React, TypeScript, Python. Built student marketplace web application."
     );
 
     expect(analysis.score).toBeGreaterThanOrEqual(0);
     expect(analysis.score).toBeLessThanOrEqual(100);
     expect(analysis.strengths.length).toBeGreaterThan(0);
-    expect(analysis.poweredBy).toBe("Puter.js");
+    expect(analysis.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
   }, 20000);
 
-  it("should verify Mock Interview uses Puter adapter and generates interview questions", async () => {
-    const questionRes = await puterAI.generateInterviewQuestion({
+  it("should verify Mock Interview uses Groq adapter and generates interview questions", async () => {
+    const questionRes = await aiAdapter.generateInterviewQuestion({
       roleTitle: "Frontend Engineer",
       difficulty: "MEDIUM",
       chatHistory: [],
     });
 
-    expect(questionRes.poweredBy).toBe("Puter.js");
+    expect(questionRes.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
     expect(questionRes.question).toBeTruthy();
   }, 20000);
 });

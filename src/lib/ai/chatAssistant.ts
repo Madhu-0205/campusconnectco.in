@@ -1,4 +1,5 @@
-import { puterAI } from './puter';
+import { aiAdapter } from './adapter';
+import { careerCopilotSystemPrompt } from './prompts';
 import type { AIChatMessage, CopilotContextData } from './types';
 
 export interface ChatContext {
@@ -11,58 +12,95 @@ export interface ChatContext {
   studentName?: string;
   currentPage?: string;
   mode: 'gig-help' | 'career-advice' | 'general';
+  authToken?: string; // legacy support
 }
 
 export async function streamChatResponse(
   messages: { role: string; content: string }[],
   context: ChatContext,
-  onChunk: (chunk: string) => void
+  onChunk: (chunk: string) => void,
+  signal?: AbortSignal
 ): Promise<void> {
-  const userMessages = messages.filter(m => m.role === 'user');
+  const userMessages = messages.filter((m) => m.role === 'user');
   const lastUserMsg = userMessages.pop();
   const userQuery = lastUserMsg?.content || 'What is CampusConnectCo?';
 
   const history: AIChatMessage[] = messages
-    .filter(m => m !== lastUserMsg)
-    .map(m => ({
+    .filter((m) => m !== lastUserMsg)
+    .map((m) => ({
       role: m.role as 'user' | 'assistant' | 'system',
       content: m.content,
     }));
 
   const copilotContext: CopilotContextData = {
-    user: context.studentName ? {
-      id: context.userId,
-      name: context.studentName,
-      careerGoal: context.mode === 'career-advice' ? 'Software Engineering / Freelancing' : undefined,
-      skills: context.studentSkills || undefined,
-    } : undefined,
+    user: context.studentName
+      ? {
+          id: context.userId,
+          name: context.studentName,
+          careerGoal: context.mode === 'career-advice' ? 'Software Engineering / Freelancing' : undefined,
+          skills: context.studentSkills || undefined,
+        }
+      : undefined,
   };
 
-  const { message } = await puterAI.copilotChat(userQuery, history, copilotContext);
+  // If Groq provider is available and configured, stream real tokens natively!
+  if (aiAdapter.isAvailable()) {
+    const systemPrompt = careerCopilotSystemPrompt(copilotContext);
+    const fullMessages: AIChatMessage[] = [
+      { role: 'system', content: systemPrompt },
+      ...history.slice(-6),
+      { role: 'user', content: userQuery },
+    ];
 
-  // Stream out the message in small chunks for responsive UX
+    try {
+      let yieldedAny = false;
+      for await (const chunk of aiAdapter.streamChat(fullMessages, { signal })) {
+        if (chunk) {
+          yieldedAny = true;
+          onChunk(chunk);
+        }
+      }
+      if (yieldedAny) return;
+    } catch (err: any) {
+      if (signal?.aborted || err?.isAbortError) {
+        throw err;
+      }
+      console.warn('[streamChatResponse] Native Groq streaming error, employing grounded fallback:', err?.message || err);
+    }
+  }
+
+  // Fallback (when unconfigured or on provider failure)
+  const { message } = await aiAdapter.copilotChat(userQuery, history, copilotContext, {
+    signal,
+  });
+
+  // Stream out the fallback message in small chunks for consistent UX
   const words = message.split(' ');
   const chunkSize = 4;
   for (let i = 0; i < words.length; i += chunkSize) {
+    if (signal?.aborted) break;
     const chunk = words.slice(i, i + chunkSize).join(' ') + (i + chunkSize < words.length ? ' ' : '');
     onChunk(chunk);
-    // Micro-delay between chunks for smooth streaming
-    await new Promise(r => setTimeout(r, 20));
+    await new Promise((r) => setTimeout(r, 20));
   }
 }
 
 export async function getQuickGigTips(gigDescription: string, studentSkills: string): Promise<string[]> {
   try {
-    const raw = await puterAI.chat([
-      {
-        role: 'system',
-        content: 'Return a JSON object with a "tips" key containing a list of 3 brief, actionable tips (strings) for a student applying to this gig. Max 15 words each. Return ONLY valid JSON.',
-      },
-      {
-        role: 'user',
-        content: `Gig: ${gigDescription.slice(0, 300)}\nStudent skills: ${studentSkills}`,
-      },
-    ], { temperature: 0.6, maxTokens: 250 });
+    const raw = await aiAdapter.chat(
+      [
+        {
+          role: 'system',
+          content:
+            'Return a JSON object with a "tips" key containing a list of 3 brief, actionable tips (strings) for a student applying to this gig. Max 15 words each. Return ONLY valid JSON.',
+        },
+        {
+          role: 'user',
+          content: `Gig: ${gigDescription.slice(0, 300)}\nStudent skills: ${studentSkills}`,
+        },
+      ],
+      { temperature: 0.6, maxTokens: 250 }
+    );
 
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed.tips) && parsed.tips.length > 0) {

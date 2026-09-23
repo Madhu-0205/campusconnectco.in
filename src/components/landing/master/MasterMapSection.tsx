@@ -3,7 +3,7 @@
 import { MapPin, ArrowRight, Sparkles } from "lucide-react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useMemo } from "react"
 
 import { Reveal } from "@/components/ui/motion/Reveal"
 import { MapProvider, useMapContext, MarkerData } from "@/components/v2/maps/MapContext"
@@ -43,20 +43,27 @@ function SynchronizedDiscoveryContent({ opportunities = [] }: { opportunities: M
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   // Filter opportunities with coordinates for markers
-  const oppsWithCoords = opportunities.filter(o => o.lat && o.lng && Number.isFinite(o.lat) && Number.isFinite(o.lng))
+  const oppsWithCoords = useMemo(
+    () => opportunities.filter(o => o.lat && o.lng && Number.isFinite(o.lat) && Number.isFinite(o.lng)),
+    [opportunities]
+  )
   const displayOpps = oppsWithCoords.length > 0 ? oppsWithCoords : opportunities.slice(0, 6)
 
-  const markers: MarkerData[] = oppsWithCoords.map(o => ({
-    id: o.id,
-    type: o.type === 'gig' ? 'gig' : 'internship',
-    lat: o.lat!,
-    lng: o.lng!,
-    title: o.title,
-    subtitle: o.company,
-    location: o.location,
-    compensation: typeof o.budget === 'number' ? `₹${o.budget.toLocaleString('en-IN')}` : (o.budget ? String(o.budget) : undefined),
-    url: o.href || (o.type === 'gig' ? `/gigs/${o.id}` : `/internships/${o.id}`)
-  }))
+  const markers: MarkerData[] = useMemo(
+    () =>
+      oppsWithCoords.map(o => ({
+        id: o.id,
+        type: o.type === 'gig' ? 'gig' : 'internship',
+        lat: o.lat!,
+        lng: o.lng!,
+        title: o.title,
+        subtitle: o.company,
+        location: o.location,
+        compensation: typeof o.budget === 'number' ? `₹${o.budget.toLocaleString('en-IN')}` : (o.budget ? String(o.budget) : undefined),
+        url: o.href || (o.type === 'gig' ? `/gigs/${o.id}` : `/internships/${o.id}`)
+      })),
+    [oppsWithCoords]
+  )
 
   // Auto-scroll selected card into view
   useEffect(() => {

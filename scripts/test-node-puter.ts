@@ -1,15 +1,22 @@
-import { puter } from '@heyputer/puter.js';
+import { defaultGroqProvider, GroqProvider } from '../src/lib/ai/provider';
 
-async function testNodePuter() {
-  console.log('puter keys:', Object.keys(puter));
-  console.log('puter.ai keys:', puter.ai ? Object.keys(puter.ai) : null);
-  
-  try {
-    const res = await puter.ai.chat('Hello', { model: 'gpt-4o-mini' });
-    console.log('Node puter result:', res);
-  } catch (err: any) {
-    console.log('Node puter error:', err.message, err.status, err.response?.data);
+async function testGroqProvider() {
+  console.log('Provider model:', defaultGroqProvider.getModel());
+  console.log('Provider available (GROQ_API_KEY configured):', defaultGroqProvider.isAvailable());
+  console.log('Provider attribution:', defaultGroqProvider.getAttribution());
+
+  if (defaultGroqProvider.isAvailable()) {
+    try {
+      const res = await defaultGroqProvider.chat([
+        { role: 'user', content: 'Hello, please return the word "GROQ_OK".' }
+      ]);
+      console.log('Groq chat response:', res);
+    } catch (err: any) {
+      console.log('Groq chat error:', err?.message);
+    }
+  } else {
+    console.log('GROQ_API_KEY is not configured in process.env. Skipping live call.');
   }
 }
 
-testNodePuter();
+testGroqProvider();

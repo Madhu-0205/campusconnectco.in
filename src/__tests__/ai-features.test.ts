@@ -54,13 +54,35 @@ vi.mock("../lib/ai/resumeParser", () => {
  };
 });
 
-// Mock Puter AI adapter
+// Mock AI adapter
+vi.mock("../lib/ai/adapter", () => {
+  return {
+    aiAdapter: {
+      isAvailable: vi.fn().mockReturnValue(false),
+      copilotChat: vi.fn().mockResolvedValue({
+        message: "Highlight skills and customize your portfolio for the role.",
+        poweredBy: "Groq (openai/gpt-oss-120b)",
+        isFallback: false,
+      }),
+      chat: vi.fn().mockResolvedValue("Highlight skills"),
+    },
+    puterAI: {
+      isAvailable: vi.fn().mockReturnValue(false),
+      copilotChat: vi.fn().mockResolvedValue({
+        message: "Highlight skills and customize your portfolio for the role.",
+        poweredBy: "Groq (openai/gpt-oss-120b)",
+        isFallback: false,
+      }),
+      chat: vi.fn().mockResolvedValue("Highlight skills"),
+    },
+  };
+});
 vi.mock("../lib/ai/puter", () => {
   return {
     puterAI: {
       copilotChat: vi.fn().mockResolvedValue({
         message: "Highlight skills and customize your portfolio for the role.",
-        poweredBy: "Puter.js",
+        poweredBy: "Groq (openai/gpt-oss-120b)",
         isFallback: false,
       }),
       chat: vi.fn().mockResolvedValue("Highlight skills"),

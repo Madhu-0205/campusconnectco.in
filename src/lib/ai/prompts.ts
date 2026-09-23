@@ -1,8 +1,8 @@
 /**
- * Centralized Prompt Architecture for CampusConnect Intelligence Layer (Puter.js)
+ * Centralized Prompt Architecture for CampusConnect Intelligence Layer (Groq / openai/gpt-oss-120b)
  *
  * CORE PRINCIPLE:
- * "CampusConnect decides what is true. Puter helps users understand, create, and act on it."
+ * "CampusConnect decides what is true. AI helps users understand, create, and act on it."
  *
  * RULES ENFORCED IN PROMPTS:
  * 1. Never invent platform facts (salaries, companies, deadlines, locations, roles).
@@ -49,7 +49,7 @@ ${context.topRecommendations
 `;
   }
 
-  return `You are the CampusConnectCo Career Copilot, powered by Puter.js.
+  return `You are the CampusConnectCo Career Copilot, powered by Groq (openai/gpt-oss-120b).
 You are an expert, encouraging mentor for students finding freelance gigs and tech internships across India.
 
 ABOUT CAMPUSCONNECT:
@@ -62,15 +62,15 @@ ${contextSection}
 STRICT GUIDELINES:
 1. Ground your answers strictly in CampusConnectCo platform features and any verified student/marketplace data provided above.
 2. If the user asks "What is CampusConnectCo?", explain the platform clearly, highlighting verified internships, student gigs, and career tools.
-2. If the student asks what to apply for, reference the VERIFIED TOP MATCHES above with their exact titles and companies.
-3. Clearly distinguish between:
+3. If the student asks what to apply for, reference the VERIFIED TOP MATCHES above with their exact titles and companies.
+4. Clearly distinguish between:
    - [VERIFIED DATA]: Factual details explicitly provided in the platform context.
    - [AI ADVICE]: Suggested next steps, study resources, and resume preparation.
-4. NEVER invent compensation, company facts, deadlines, or locations not present in the verified context.
-5. If data is not available, explicitly state: "This detail is not specified in the current opportunity record."
-6. Keep answers concise, actionable, structured with markdown, and tailored for college students.
-7. End responses with actionable next steps.
-8. You MUST NOT alter or claim to alter deterministic recommendation scores, eligibility, distances, roles, application state, authorization, or payment state. You may explain, advise, and assist, but all platform data and states are strictly deterministic.`.trim();
+5. NEVER invent compensation, company facts, deadlines, or locations not present in the verified context.
+6. If data is not available, explicitly state: "This detail is not specified in the current opportunity record."
+7. Keep answers concise, actionable, structured with markdown, and tailored for college students.
+8. End responses with actionable next steps.
+9. You MUST NOT alter or claim to alter deterministic recommendation scores, eligibility, distances, roles, application state, authorization, or payment state. You may explain, advise, and assist, but all platform data and states are strictly deterministic.`.trim();
 }
 
 export function matchExplanationPrompt(input: MatchExplanationInput): string {
@@ -102,7 +102,7 @@ Return ONLY valid JSON with this exact schema:
     "freshnessExplanation": "Explanation of freshness status"
   },
   "suggestedAction": "Concrete next step (e.g. apply, review missing skill)",
-  "poweredBy": "Puter.js"
+  "poweredBy": "Groq (openai/gpt-oss-120b)"
 }
 Do NOT wrap in extra preamble. Output valid JSON only.`.trim();
 }
@@ -130,7 +130,7 @@ Return ONLY a valid JSON object matching this schema:
   "locationDetails": "${scrubSensitiveData(input.location)}",
   "importantRequirements": ["Requirement 1", "Requirement 2"],
   "preparationTips": ["Tip 1", "Tip 2"],
-  "poweredBy": "Puter.js"
+  "poweredBy": "Groq (openai/gpt-oss-120b)"
 }
 Output valid JSON only without markdown formatting.`.trim();
 }
@@ -164,7 +164,7 @@ Return ONLY a valid JSON object matching this exact schema:
     "contentDepth": number (0-100),
     "keywordDensity": number (0-100)
   },
-  "poweredBy": "Puter.js"
+  "poweredBy": "Groq (openai/gpt-oss-120b)"
 }
 Output valid JSON only.`.trim();
 }
@@ -176,7 +176,7 @@ export function interviewQuestionPrompt(input: InterviewQuestionInput): string {
 
   return `You are conducting a live technical mock interview for the role of "${scrubSensitiveData(
     input.roleTitle
-  )}" at ${input.difficulty} difficulty on CampusConnectCo, powered by Puter.js.
+  )}" at ${input.difficulty} difficulty on CampusConnectCo, powered by Groq (openai/gpt-oss-120b).
 
 INTERVIEW CONVERSATION SO FAR:
 ${historyText || "No previous questions yet. This is the opening question."}
@@ -215,7 +215,7 @@ Return ONLY a valid JSON object matching this schema:
   },
   "summary": "2-sentence summary of candidate performance",
   "disclaimer": "AI-generated interview feedback. Advisory only, not a certified assessment.",
-  "poweredBy": "Puter.js"
+  "poweredBy": "Groq (openai/gpt-oss-120b)"
 }
 Output valid JSON only.`.trim();
 }

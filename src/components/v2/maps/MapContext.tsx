@@ -35,9 +35,9 @@ type MapContextType = {
   selectedId: string | null
   setSelectedId: (id: string | null) => void
   markers: MarkerData[]
-  setMarkers: (markers: MarkerData[]) => void
+  setMarkers: React.Dispatch<React.SetStateAction<MarkerData[]>>
   userLocation: UserLocation | null
-  setUserLocation: (loc: UserLocation | null) => void
+  setUserLocation: React.Dispatch<React.SetStateAction<UserLocation | null>>
   locationStatus: "idle" | "requesting" | "success" | "error"
   setLocationStatus: (status: "idle" | "requesting" | "success" | "error") => void
   locationError: string | null

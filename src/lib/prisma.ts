@@ -22,26 +22,31 @@ function assertDatabaseUrl(value?: string): string {
 
 function getPrismaDatabaseUrl(): string {
   const rawUrl = assertDatabaseUrl(process.env.DATABASE_URL);
-  const connectionLimit = Math.min(Math.max(parseInt(process.env.DB_CONNECTION_LIMIT || "1", 10), 1), 100);
-  const poolTimeout = Math.min(Math.max(parseInt(process.env.DB_POOL_TIMEOUT || "30", 10), 1), 120);
-  const connectTimeout = Math.min(Math.max(parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10), 1), 60);
+  const connectionLimit = Math.min(Math.max(parseInt(process.env.DB_CONNECTION_LIMIT || "2", 10), 1), 20);
+  const poolTimeout = Math.min(Math.max(parseInt(process.env.DB_POOL_TIMEOUT || "20", 10), 1), 60);
+  const connectTimeout = Math.min(Math.max(parseInt(process.env.DB_CONNECT_TIMEOUT || "15", 10), 1), 60);
 
   const url = new URL(rawUrl);
 
-  // If pointing to Supabase pooler on session mode (port 5432), route to transaction pooler (port 6543)
-  // to avoid FATAL (EMAXCONNSESSION) pool_size: 15 exhaustion in serverless environments
-  if (url.hostname.includes("pooler.supabase.com") && url.port === "5432") {
-    url.port = "6543";
-    url.searchParams.set("pgbouncer", "true");
+  // If pointing to Supabase pooler:
+  if (url.hostname.includes("pooler.supabase.com")) {
+    // Route from session mode (port 5432) to transaction mode (port 6543)
+    if (url.port === "5432") {
+      url.port = "6543";
+    }
+    // Transaction pooler (port 6543) requires pgbouncer=true to disable prepared statement caching
+    if (url.port === "6543") {
+      url.searchParams.set("pgbouncer", "true");
+    }
   }
 
-  if (!url.searchParams.has("connection_limit")) {
+  if (process.env.DB_CONNECTION_LIMIT || !url.searchParams.has("connection_limit") || url.searchParams.get("connection_limit") === "1") {
     url.searchParams.set("connection_limit", String(connectionLimit));
   }
-  if (!url.searchParams.has("pool_timeout")) {
+  if (process.env.DB_POOL_TIMEOUT || !url.searchParams.has("pool_timeout")) {
     url.searchParams.set("pool_timeout", String(poolTimeout));
   }
-  if (!url.searchParams.has("connect_timeout")) {
+  if (process.env.DB_CONNECT_TIMEOUT || !url.searchParams.has("connect_timeout")) {
     url.searchParams.set("connect_timeout", String(connectTimeout));
   }
 
@@ -50,8 +55,8 @@ function getPrismaDatabaseUrl(): string {
 
 export async function withRetry<T>(
   fn: () => Promise<T>,
-  retries = 3,
-  initialDelayMs = 200
+  retries = 2,
+  initialDelayMs = 150
 ): Promise<T> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -60,6 +65,13 @@ export async function withRetry<T>(
       const errorObj = err as Record<string, unknown>;
       const msg = typeof errorObj?.message === "string" ? errorObj.message : "";
       const code = typeof errorObj?.code === "string" ? errorObj.code : "";
+      const name = typeof errorObj?.name === "string" ? errorObj.name : "";
+
+      // Do not retry on client abortion or request cancellation
+      if (name === "AbortError" || msg.includes("aborted") || msg.includes("cancelled")) {
+        throw err;
+      }
+
       const isTransient =
         msg.includes("Connection reset") ||
         msg.includes("Connection reset by peer") ||
@@ -77,7 +89,10 @@ export async function withRetry<T>(
         code === "P1022";
 
       if (isTransient && attempt < retries) {
-        const backoff = Math.min(2000, initialDelayMs * 2 ** (attempt - 1));
+        // Exponential backoff with randomized jitter to break thundering herds
+        const expDelay = initialDelayMs * 2 ** (attempt - 1);
+        const jitter = Math.floor(Math.random() * (expDelay / 2));
+        const backoff = Math.min(1000, expDelay + jitter);
         if (process.env.NODE_ENV !== "production") {
           console.warn(`[Prisma] Transient query error. Retry ${attempt}/${retries} after ${backoff}ms:`, msg || code);
         }
@@ -136,7 +151,7 @@ function createPrismaClient() {
       $allModels: {
         $allOperations({ operation, args, query }) {
           if (IDEMPOTENT_READ_OPERATIONS.has(operation)) {
-            return withRetry(() => query(args), 3, 200);
+            return withRetry(() => query(args), 2, 150);
           }
           // Mutations (create, update, upsert, delete, etc.) execute directly to prevent duplicate side effects
           return query(args);

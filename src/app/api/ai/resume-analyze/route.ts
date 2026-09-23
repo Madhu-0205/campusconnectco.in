@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { puterAI } from "@/lib/ai/puter";
+import { aiAdapter } from "@/lib/ai/adapter";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
 
@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Call Puter AI Resume Analyzer
-    const parsed = await puterAI.analyzeResume(resumeText);
+    // Call AI Resume Analyzer
+    const parsed = await aiAdapter.analyzeResume(resumeText);
 
     const formattedResult = {
       score: parsed.score,
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
         content_depth: parsed.sectionScores.contentDepth,
         keyword_density: parsed.sectionScores.keywordDensity
       },
-      poweredBy: "Puter.js"
+      poweredBy: parsed.poweredBy
     };
 
     // ── Persist the result to the database ──────────────────────────────────

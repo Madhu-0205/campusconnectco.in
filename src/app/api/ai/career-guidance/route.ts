@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { puterAI } from '@/lib/ai/puter';
+import { aiAdapter } from '@/lib/ai/adapter';
 import prisma from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 
@@ -58,7 +58,7 @@ Return ONLY valid JSON.
 
     let guidanceData: any;
     try {
-      const content = await puterAI.chat([
+      const content = await aiAdapter.chat([
         { role: 'system', content: prompt }
       ], { temperature: 0.3, maxTokens: 1000 });
 

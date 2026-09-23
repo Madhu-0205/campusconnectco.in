@@ -22,7 +22,8 @@ export function scrubSensitiveData(text: string): string {
 
   let cleaned = text;
 
-  // Replace sensitive tokens with safe placeholders
+  // Replace sensitive tokens and API keys with safe placeholders
+  cleaned = cleaned.replace(/gsk_[a-zA-Z0-9_\-]+/gi, "[REDACTED_API_KEY]");
   cleaned = cleaned.replace(/bearer\s+[a-zA-Z0-9_\-\.]+/gi, "[REDACTED_TOKEN]");
   cleaned = cleaned.replace(/sb-[a-zA-Z0-9_\-]+/gi, "[REDACTED_SESSION]");
   cleaned = cleaned.replace(/rzp_(live|test)_[a-zA-Z0-9]+/gi, "[REDACTED_PAYMENT_KEY]");
@@ -51,6 +52,8 @@ export function validatePromptLength(text: string, maxLength: number = 4000): st
 // 2. Output Validation Schemas
 // ---------------------------------------------------------------------------
 
+const PoweredBySchema = z.enum(["Groq (openai/gpt-oss-120b)", "Puter.js"]).default("Groq (openai/gpt-oss-120b)");
+
 export const MatchExplanationSchema = z.object({
   summary: z.string().default("This opportunity aligns with your profile skills and campus location."),
   scoreBreakdown: z.object({
@@ -59,7 +62,7 @@ export const MatchExplanationSchema = z.object({
     freshnessExplanation: z.string().default("Opportunity posted recently.")
   }),
   suggestedAction: z.string().default("Review details and apply if interested."),
-  poweredBy: z.literal("Puter.js").default("Puter.js")
+  poweredBy: PoweredBySchema
 });
 
 export const OpportunitySummarySchema = z.object({
@@ -70,7 +73,7 @@ export const OpportunitySummarySchema = z.object({
   locationDetails: z.string().default("Campus or remote location as specified."),
   importantRequirements: z.array(z.string()).default([]),
   preparationTips: z.array(z.string()).default([]),
-  poweredBy: z.literal("Puter.js").default("Puter.js")
+  poweredBy: PoweredBySchema
 });
 
 export const ResumeAnalysisSchema = z.object({
@@ -90,7 +93,7 @@ export const ResumeAnalysisSchema = z.object({
     contentDepth: z.number().min(0).max(100).default(70),
     keywordDensity: z.number().min(0).max(100).default(65)
   }),
-  poweredBy: z.literal("Puter.js").default("Puter.js")
+  poweredBy: PoweredBySchema
 });
 
 export const InterviewEvaluationSchema = z.object({
@@ -104,7 +107,7 @@ export const InterviewEvaluationSchema = z.object({
   }),
   summary: z.string().default("AI-generated interview simulation assessment."),
   disclaimer: z.string().default("AI-generated interview feedback. Advisory only, not a certified assessment."),
-  poweredBy: z.literal("Puter.js").default("Puter.js")
+  poweredBy: PoweredBySchema
 });
 
 // ---------------------------------------------------------------------------

@@ -1,34 +1,19 @@
 import type { Metadata } from "next"
-import { Inter, Space_Mono } from "next/font/google"
 import { headers } from "next/headers"
 import Script from "next/script"
 import { Toaster } from "react-hot-toast"
 
-import { GAScripts } from"@/components/Analytics/GoogleAnalytics"
-import MainWrapper from"@/components/MainWrapper"
-import Navbar from"@/components/navigation/Navbar"
-import { ClientOnlyProviders } from"@/components/providers/ClientOnlyProviders"
-import { ThemeProvider } from"@/components/providers/ThemeProvider"
-import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from"@/components/seo/JsonLd"
-import { ToastProvider } from"@/components/ToastProvider"
-import FooterWrapper from"@/components/ui/FooterWrapper"
-import { CommandCenter } from"@/components/v2/CommandCenter"
+import { GAScripts } from "@/components/Analytics/GoogleAnalytics"
+import MainWrapper from "@/components/MainWrapper"
+import Navbar from "@/components/navigation/Navbar"
+import { ClientOnlyProviders } from "@/components/providers/ClientOnlyProviders"
+import { ThemeProvider } from "@/components/providers/ThemeProvider"
+import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/seo/JsonLd"
+import { ToastProvider } from "@/components/ToastProvider"
+import FooterWrapper from "@/components/ui/FooterWrapper"
+import { CommandCenter } from "@/components/v2/CommandCenter"
 
-import"./globals.css"
-
-const inter = Inter({
- variable:"--font-inter",
- subsets: ["latin"],
- weight: ["300","400","500","600","700","800","900"],
- display:"swap",
-})
-
-const spaceMono = Space_Mono({
- variable:"--font-mono",
- subsets: ["latin"],
- weight: ["400","700"],
- display:"swap",
-})
+import "./globals.css"
 
 export const viewport = {
  width:"device-width",
@@ -113,8 +98,7 @@ export default async function RootLayout({
 
  return (
  <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
- <body className={`${inter.variable} ${spaceMono.variable} font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-black relative overflow-x-hidden`}>
- <Script src="https://js.puter.com/v2/" strategy="afterInteractive" nonce={nonce} />
+ <body className="font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-black relative overflow-x-hidden">
  <GAScripts nonce={nonce} />
  <OrganizationSchema nonce={nonce} />
  <WebSiteSchema nonce={nonce} />

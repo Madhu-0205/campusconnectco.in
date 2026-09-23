@@ -2,7 +2,7 @@ import dns from 'dns';
 
 import * as mammoth from 'mammoth';
 
-import { puterAI } from './puter';
+import { aiAdapter } from './adapter';
 
 const pdfParse = require('pdf-parse');
 
@@ -290,9 +290,9 @@ export async function parseResume(fileUrl: string): Promise<ResumeData> {
  throw new Error("Could not extract any text from the document.");
  }
 
-  // Send to Puter AI
+  // Send to AI provider
   try {
-    const content = await puterAI.chat([
+    const content = await aiAdapter.chat([
       {
         role: 'system',
         content: `You are an expert AI Career Coach and ATS Optimizer. Extract and analyze the resume data from the text provided.
@@ -341,13 +341,13 @@ Return ONLY valid JSON. Ensure there are no duplicate skills. Provide realistic 
     ], { temperature: 0.3, maxTokens: 1500 });
 
     if (!content) {
-      throw new Error("Puter AI returned empty response");
+      throw new Error("AI returned empty response");
     }
 
     const cleaned = content.replace(/```json/g, '').replace(/```/g, '').trim();
     return JSON.parse(cleaned) as ResumeData;
   } catch (err: any) {
-    console.warn('[resumeParser] Puter AI parsing fallback:', err?.message || err);
+    console.warn('[resumeParser] AI parsing fallback:', err?.message || err);
     // Grounded fallback resume analysis
     return {
       personalInfo: { name: "Student Applicant", email: "", phone: "", linkedin: "", github: "", portfolio: "" },
@@ -396,7 +396,7 @@ export async function generateProfileBio(resumeData: ResumeData): Promise<string
   `;
 
   try {
-    const response = await puterAI.chat([
+    const response = await aiAdapter.chat([
       {
         role: 'system',
         content: "Write a 3-sentence first-person professional bio for a student with this background. Make it confident, specific, and authentic. Avoid generic phrases. Max 150 words."

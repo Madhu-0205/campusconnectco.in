@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { puterAI } from "@/lib/ai/puter";
+import { aiAdapter } from "@/lib/ai/adapter";
 import type { AIChatMessage, CopilotContextData } from "@/lib/ai/types";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
@@ -92,14 +92,14 @@ export async function POST(req: NextRequest) {
       }))
     };
 
-    // 4. Query Puter AI Copilot
-    const result = await puterAI.copilotChat(lastUserQuery, messages, contextData);
+    // 4. Query AI Copilot
+    const result = await aiAdapter.copilotChat(lastUserQuery, messages, contextData);
 
     return NextResponse.json({
       success: true,
       role: "assistant",
       content: result.message,
-      poweredBy: "Puter.js"
+      poweredBy: result.poweredBy
     });
   } catch (error: any) {
     console.error("[COPILOT_CHAT_API_ERROR]", error);

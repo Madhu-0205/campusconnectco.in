@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { puterAI } from "@/lib/ai/puter";
+import { aiAdapter } from "@/lib/ai/adapter";
 import type { MatchExplanationInput } from "@/lib/ai/types";
 import { protectApi } from "@/lib/auth-checks";
 import prisma from "@/lib/prisma";
@@ -188,12 +188,12 @@ export async function POST(req: NextRequest) {
       };
     }
 
-    const explanation = await puterAI.explainMatch(explanationInput);
+    const explanation = await aiAdapter.explainMatch(explanationInput);
 
     return NextResponse.json({
       success: true,
       data: explanation,
-      poweredBy: "Puter.js"
+      poweredBy: explanation.poweredBy
     });
   } catch (error: any) {
     console.error("[MATCH_EXPLANATION_ERROR]", error);

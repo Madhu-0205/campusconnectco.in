@@ -46,10 +46,17 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  const [streaming, setStreaming] = useState(false);
  const bottomRef = useRef<HTMLDivElement>(null);
  const inputRef = useRef<HTMLTextAreaElement>(null);
+ const abortRef = useRef<AbortController | null>(null);
 
  useEffect(() => {
  bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
  }, [messages]);
+
+ useEffect(() => {
+ return () => {
+ abortRef.current?.abort();
+ };
+ }, []);
 
  const sendMessage = async (text?: string) => {
  const userMessage = (text || input).trim();
@@ -78,13 +85,19 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  ...context,
  };
 
+ abortRef.current?.abort();
+ abortRef.current = new AbortController();
+
+ const clientHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
+
  const res = await fetch('/api/ai/chat', {
  method: 'POST',
- headers: { 'Content-Type': 'application/json' },
+ headers: clientHeaders,
  body: JSON.stringify({
  messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
  context: chatContext,
  }),
+ signal: abortRef.current.signal,
  });
 
  if (!res.ok) throw new Error(await res.text());
@@ -92,18 +105,36 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  const reader = res.body!.getReader();
  const decoder = new TextDecoder();
  let fullContent = '';
+ let buffer = '';
 
  while (true) {
  const { done, value } = await reader.read();
  if (done) break;
 
- const chunk = decoder.decode(value, { stream: true });
- const lines = chunk.split('\n').filter(Boolean);
+ buffer += decoder.decode(value, { stream: true });
+ const lines = buffer.split('\n');
+ buffer = lines.pop() || '';
 
  for (const line of lines) {
- if (line.startsWith('0:')) {
+ const trimmed = line.trim();
+ if (!trimmed || trimmed.startsWith(':')) continue;
+ if (trimmed === 'data: [DONE]') break;
+
+ if (trimmed.startsWith('data:')) {
  try {
- const text = JSON.parse(line.slice(2));
+ const parsed = JSON.parse(trimmed.slice(5).trim());
+ if (parsed.delta) {
+ fullContent += parsed.delta;
+ setMessages(prev =>
+ prev.map(m =>
+ m.id === assistantMsgId ? { ...m, content: fullContent } : m
+ )
+ );
+ }
+ } catch {}
+ } else if (trimmed.startsWith('0:')) {
+ try {
+ const text = JSON.parse(trimmed.slice(2));
  fullContent += text;
  setMessages(prev =>
  prev.map(m =>
@@ -114,14 +145,34 @@ export function AIChatWidget({ context, initialMessage, className }: AIChatWidge
  }
  }
  }
- } catch {
+
+ if (buffer.trim().startsWith('data:')) {
+ try {
+ const parsed = JSON.parse(buffer.trim().slice(5).trim());
+ if (parsed.delta) {
+ fullContent += parsed.delta;
+ }
+ } catch {}
+ }
+
+ if (!fullContent.trim()) {
+ fullContent = 'AI assistance is temporarily unavailable. Please retry in a moment or explore verified opportunities directly.';
+ }
+ setMessages(prev =>
+ prev.map(m =>
+ m.id === assistantMsgId ? { ...m, content: fullContent } : m
+ )
+ );
+ } catch (err: unknown) {
+ if ((err as { name?: string })?.name !== 'AbortError') {
  setMessages(prev =>
  prev.map(m =>
  m.id === assistantMsgId
- ? { ...m, content: 'Sorry, something went wrong. Please try again.' }
+ ? { ...m, content: 'Sorry, something went wrong. Please check your connection and try again.' }
  : m
  )
  );
+ }
  } finally {
  setStreaming(false);
  inputRef.current?.focus();

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { puterAI } from "@/lib/ai/puter";
+import { aiAdapter } from "@/lib/ai/adapter";
 import type { OpportunitySummaryInput } from "@/lib/ai/types";
 import prisma from "@/lib/prisma";
 import { aiLimiter } from "@/lib/rate-limit";
@@ -93,13 +93,13 @@ async function handleOpportunitySummary(gigId?: string | null, internshipId?: st
     };
   }
 
-  const summary = await puterAI.summarizeOpportunity(summaryInput);
+  const summary = await aiAdapter.summarizeOpportunity(summaryInput);
 
   return NextResponse.json({
     success: true,
     data: summary,
     ...summary,
-    poweredBy: "Puter.js"
+    poweredBy: summary.poweredBy
   });
 }
 

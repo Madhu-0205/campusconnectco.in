@@ -348,10 +348,12 @@ export default function AIServiceAgent() {
     try {
       let fullText = "";
 
-      // Post to unified /api/ai/chat endpoint (Puter-only with rate limiting & scrubbing)
+      const clientHeaders: Record<string, string> = { "Content-Type": "application/json" };
+
+      // Post to unified /api/ai/chat endpoint (Groq-backed with rate limiting & scrubbing)
       const res = await fetch("/api/ai/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: clientHeaders,
         body: JSON.stringify({
           messages: [...history, { role: "user", content: userText }],
           context: {
@@ -368,18 +370,22 @@ export default function AIServiceAgent() {
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
 
         for (const line of lines) {
-          if (line.startsWith("data:")) {
-            const data = line.slice(5).trim();
-            if (data === "[DONE]") break;
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith(":")) continue;
+          if (trimmed === "data: [DONE]") break;
+          if (trimmed.startsWith("data:")) {
+            const data = trimmed.slice(5).trim();
             try {
               const parsed = JSON.parse(data);
               if (parsed.delta) {
@@ -393,6 +399,18 @@ export default function AIServiceAgent() {
             }
           }
         }
+      }
+
+      if (buffer.trim().startsWith("data:")) {
+        try {
+          const parsed = JSON.parse(buffer.trim().slice(5).trim());
+          if (parsed.delta) {
+            fullText += parsed.delta;
+            setMessages((prev) =>
+              prev.map((m) => (m.id === assistantId ? { ...m, content: fullText } : m))
+            );
+          }
+        } catch {}
       }
 
       setAiStatus("ready");
@@ -483,10 +501,10 @@ export default function AIServiceAgent() {
                   <h2 className="font-bold text-sm leading-none text-white tracking-tight">CampusConnectCo AI</h2>
                   <p className="text-[10.5px] mt-1 text-emerald-50/90 font-medium">
                     {isStreaming
-                      ? "Thinking… · Powered by Puter"
+                      ? "Thinking… · Powered by Groq"
                       : aiStatus === "unavailable"
                       ? "AI Temporarily Unavailable"
-                      : "AI Ready · Powered by Puter"}
+                      : "AI Ready · Powered by Groq"}
                   </p>
                 </div>
               </div>
@@ -671,7 +689,7 @@ export default function AIServiceAgent() {
                     </button>
                   </form>
                   <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 text-center font-medium">
-                    CampusConnectCo AI · Powered by Puter
+                    CampusConnectCo AI · Powered by Groq
                   </p>
                 </footer>
               </>

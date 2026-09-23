@@ -63,6 +63,7 @@ export function V2Footer() {
  <ul className="space-y-4 flex flex-col">
  <FooterLink href="/privacy">Privacy Policy</FooterLink>
  <FooterLink href="/terms">Terms of Service</FooterLink>
+ <FooterLink href="/dmca">DMCA Policy</FooterLink>
  <FooterLink href="/refund-policy">Refund Policy</FooterLink>
  <FooterLink href="/community-guidelines">Guidelines</FooterLink>
  </ul>
@@ -84,14 +85,9 @@ export function V2Footer() {
           <div className="flex items-center gap-3">
             <p>© {new Date().getFullYear()} CampusConnectCo. All rights reserved.</p>
             <span className="text-border">•</span>
-            <a
-              href="https://developer.puter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs hover:text-foreground text-text-3/80 transition-colors"
-            >
-              Powered by Puter
-            </a>
+            <span className="text-xs text-text-3/80">
+              Powered by Groq
+            </span>
           </div>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
  <a href="https://twitter.com/campusconnect" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Twitter</a>

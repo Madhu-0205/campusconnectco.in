@@ -14,14 +14,9 @@ const AppFooter: FC = () => {
           © {new Date().getFullYear()} All rights reserved.
         </span>
         <span className="text-border text-xs">•</span>
-        <a
-          href="https://developer.puter.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Powered by Puter
-        </a>
+        <span className="text-xs text-muted-foreground">
+          Powered by Groq
+        </span>
       </div>
  {/* Links */}
  <div className="flex flex-wrap items-center gap-6 text-xs text-muted-foreground font-mono">
@@ -36,6 +31,12 @@ const AppFooter: FC = () => {
  className="transition-colors hover:text-foreground"
  >
  Privacy
+ </Link>
+ <Link
+ href="/dmca"
+ className="transition-colors hover:text-foreground"
+ >
+ DMCA
  </Link>
  <Link
  href="/trust"
