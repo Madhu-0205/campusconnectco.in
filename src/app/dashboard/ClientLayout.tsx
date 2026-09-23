@@ -35,6 +35,7 @@ const founderItems = [
  { icon: Users, label:"Users", href:"/dashboard/founder/users" },
  { icon: Briefcase, label:"Gigs", href:"/dashboard/founder/gigs" },
  { icon: GraduationCap, label:"Internships", href:"/dashboard/founder/internships" },
+ { icon: Sparkles, label:"Opportunity Agent", href:"/dashboard/founder/opportunity-agent" },
  { icon: FileText, label:"Applications", href:"/dashboard/founder/applications" },
  { icon: ShieldAlert, label:"Approvals", href:"/dashboard/founder/approvals" },
  { icon: BarChart, label:"Reports", href:"/dashboard/founder/reports" },

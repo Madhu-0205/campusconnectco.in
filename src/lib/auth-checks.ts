@@ -8,10 +8,28 @@ export const FOUNDER_EMAILS = [
 "madhuvalurouthu52@gmail.com"
 ];
 
+export const AUTOMATION_BOT_EMAILS = [
+ "opportunity-bot@campusconnectco.in",
+ "bot@campusconnectco.in",
+ "founder-automation@campusconnectco.in"
+];
+
 export function isPrivilegedEmail(email: string | null | undefined): boolean {
  if (!email) return false;
- return FOUNDER_EMAILS.includes(email.toLowerCase().trim());
+ const clean = email.toLowerCase().trim();
+ return FOUNDER_EMAILS.includes(clean) || AUTOMATION_BOT_EMAILS.includes(clean);
 }
+
+export function isAutomationBotEmail(email: string | null | undefined): boolean {
+ if (!email) return false;
+ const clean = email.toLowerCase().trim();
+ return (
+   AUTOMATION_BOT_EMAILS.includes(clean) ||
+   clean.startsWith("opportunity-bot") ||
+   clean.startsWith("automation-bot")
+ );
+}
+
 
 /**
  * Server-side utility to get the current session user
@@ -96,39 +114,64 @@ export async function getUserRoleFromDb(userId: string) {
  return profile?.role || null;
 }
 
+export function assertNotAutomationBot(user: { email?: string | null } | null | undefined): NextResponse | null {
+  if (user && isAutomationBotEmail(user.email)) {
+    return NextResponse.json(
+      { error: "Access Denied: Automation bot accounts are strictly restricted from administrative, user management, and financial endpoints." },
+      { status: 403 }
+    );
+  }
+  return null;
+}
+
 /**
  * Protects an API route by validating session and role from database
  */
-export async function protectApi(allowedRoles: ("ADMIN" |"FOUNDER" |"STUDENT" |"STARTUP" |"CLIENT" |"COLLEGE")[]) {
- const user = await getSession();
+export async function protectApi(
+  allowedRoles: ("ADMIN" | "FOUNDER" | "STUDENT" | "STARTUP" | "CLIENT" | "COLLEGE")[],
+  options?: { disallowAutomationBot?: boolean }
+) {
+  const user = await getSession();
 
- if (!user) {
- return { errorResponse: NextResponse.json({ error:"Unauthorized" }, { status: 401 }), user: null };
- }
+  if (!user) {
+    return { errorResponse: NextResponse.json({ error: "Unauthorized" }, { status: 401 }), user: null };
+  }
 
- const profile = await getAuthProfileFromDb(user.id);
- 
- if (profile?.isSuspended) {
- return { errorResponse: NextResponse.json({ error:"Account suspended" }, { status: 403 }), user, role: profile.role };
- }
+  // Automation Bot Permissions Boundary
+  if (options?.disallowAutomationBot && isAutomationBotEmail(user.email)) {
+    return {
+      errorResponse: NextResponse.json(
+        { error: "Access Denied: Automation bot accounts are strictly restricted from administrative, user management, and financial endpoints." },
+        { status: 403 }
+      ),
+      user,
+      role: "FOUNDER"
+    };
+  }
 
- const normalizedRole = profile?.role ? profile.role.toUpperCase() : null;
+  const profile = await getAuthProfileFromDb(user.id);
+  
+  if (profile?.isSuspended) {
+    return { errorResponse: NextResponse.json({ error: "Account suspended" }, { status: 403 }), user, role: profile.role };
+  }
 
- if (!normalizedRole || !allowedRoles.includes(normalizedRole as (typeof allowedRoles)[number])) {
- console.warn(`[AUTH] Unauthorized access attempt by ${user.email} (Role: ${normalizedRole}) to restricted API`);
- logSecurityEvent("AUTH_LOGIN_FAILED", {
- userId: user.id,
- metadata: {
- email: user.email,
- attemptedRole: normalizedRole ||"unknown",
- allowedRoles,
- context:"api"
- }
- }).catch(() => {});
- return { errorResponse: NextResponse.json({ error:"Forbidden" }, { status: 403 }), user, role: normalizedRole };
- }
+  const normalizedRole = profile?.role ? profile.role.toUpperCase() : null;
 
- return { errorResponse: null, user, role: normalizedRole };
+  if (!normalizedRole || !allowedRoles.includes(normalizedRole as (typeof allowedRoles)[number])) {
+    console.warn(`[AUTH] Unauthorized access attempt by ${user.email} (Role: ${normalizedRole}) to restricted API`);
+    logSecurityEvent("AUTH_LOGIN_FAILED", {
+      userId: user.id,
+      metadata: {
+        email: user.email,
+        attemptedRole: normalizedRole || "unknown",
+        allowedRoles,
+        context: "api"
+      }
+    }).catch(() => {});
+    return { errorResponse: NextResponse.json({ error: "Forbidden" }, { status: 403 }), user, role: normalizedRole };
+  }
+
+  return { errorResponse: null, user, role: normalizedRole };
 }
 
 /**

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from"next/server";
 import { z } from"zod";
 
 import { protectApi, requireUser } from "@/lib/auth-checks";
+import { sanitizeGeneratedTitleSuffix } from "@/lib/automation/normalizer";
 import { isValidLifecycleTransition } from "@/lib/opportunities/lifecycle";
 import prisma from "@/lib/prisma";
 import { generalApiLimiter } from "@/lib/rate-limit";
@@ -164,10 +165,12 @@ export async function POST(req: Request) {
 
     const data = parseResult.data;
 
-    // Sanitize string inputs
-    const title = sanitizeInput(data.title);
+    // Sanitize string inputs and strip accidental generated timestamp suffixes
+    const rawTitle = sanitizeInput(data.title);
+    const title = sanitizeGeneratedTitleSuffix(rawTitle).cleanTitle;
     const description = sanitizeInput(data.description);
-    const company = sanitizeInput(data.company);
+    const rawCompany = sanitizeInput(data.company);
+    const company = sanitizeGeneratedTitleSuffix(rawCompany).cleanTitle;
     const skills = data.skills ? sanitizeInput(data.skills) : null;
     const duration = data.duration ? sanitizeInput(data.duration) : null;
     const location = data.location ? sanitizeInput(data.location) : null;
@@ -255,9 +258,9 @@ export async function PATCH(req: Request) {
 
     // Construct update record with sanitization
     const updateData: any = {};
-    if (data.title !== undefined) updateData.title = sanitizeInput(data.title);
+    if (data.title !== undefined) updateData.title = sanitizeGeneratedTitleSuffix(sanitizeInput(data.title)).cleanTitle;
     if (data.description !== undefined) updateData.description = sanitizeInput(data.description);
-    if (data.company !== undefined) updateData.company = sanitizeInput(data.company);
+    if (data.company !== undefined) updateData.company = sanitizeGeneratedTitleSuffix(sanitizeInput(data.company)).cleanTitle;
     if (data.skills !== undefined) updateData.skills = data.skills ? sanitizeInput(data.skills) : null;
     if (data.stipend !== undefined) updateData.stipend = data.stipend;
     if (data.duration !== undefined) updateData.duration = data.duration ? sanitizeInput(data.duration) : null;

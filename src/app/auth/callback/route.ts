@@ -129,7 +129,7 @@ export async function GET(request: Request) {
  collegeId: validatedCollegeId,
  acceptedTerms: true,
  acceptedTermsAt: new Date(),
- acceptedTermsVersion:"1.0",
+ acceptedTermsVersion: "1.0;oauth-age-certified-13+",
  },
  select: {
  role: true,

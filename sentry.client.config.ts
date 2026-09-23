@@ -1,5 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 
+import { sanitizeSentryBreadcrumb, sanitizeSentryEvent } from "./src/lib/telemetry/sentry-privacy";
+
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN,
   
@@ -7,20 +9,25 @@ Sentry.init({
 
   integrations: [
     Sentry.replayIntegration({
+      maskAllInputs: true,
       maskAllText: true,
       blockAllMedia: true,
+      mask: ['input', 'textarea', 'select', '[contenteditable="true"]', '.mask-replay', '[data-sentry-mask]'],
+      block: ['img', 'video', 'canvas', 'svg', '.block-replay'],
+      networkDetailAllowUrls: [],
     }),
   ],
 
   tracesSampleRate: 0.1,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
+  // Session Replay strictly disabled by default (wiretapping / privacy compliance)
+  replaysSessionSampleRate: 0.0,
+  replaysOnErrorSampleRate: 0.0,
+
+  beforeBreadcrumb(breadcrumb) {
+    return sanitizeSentryBreadcrumb(breadcrumb);
+  },
 
   beforeSend(event) {
-    if (event.request?.headers) {
-      delete event.request.headers['authorization'];
-      delete event.request.headers['cookie'];
-    }
-    return event;
+    return sanitizeSentryEvent(event);
   },
 });

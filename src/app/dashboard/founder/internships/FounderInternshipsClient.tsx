@@ -179,6 +179,7 @@ export default function InternshipManagementPage() {
  </div>
  <button
  onClick={openNew}
+ data-testid="founder-new-internship-btn"
  className="px-5 py-2.5 bg-(--primary) rounded-xl font-bold text-sm flex items-center gap-2 hover:brightness-110 transition-colors shadow-lg shadow-(--primary)/20"
  >
  <Plus size={16} /> New Internship
@@ -355,37 +356,37 @@ export default function InternshipManagementPage() {
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="md:col-span-2 space-y-1.5">
  <label className="font-black uppercase tracking-wider text-slate-500">Title *</label>
- <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
+ <input type="text" data-testid="founder-internship-title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
  placeholder="Frontend Developer Intern" className="w-full p-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40 font-medium" />
  </div>
  <div className="space-y-1.5">
  <label className="font-black uppercase tracking-wider text-slate-500">Company *</label>
- <input type="text" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })}
+ <input type="text" data-testid="founder-internship-company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })}
  placeholder="Acme Corp" className="w-full p-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40" />
  </div>
  <div className="space-y-1.5">
  <label className="font-black uppercase tracking-wider text-slate-500">Location</label>
  <div className="relative">
  <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
- <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
+ <input type="text" data-testid="founder-internship-location" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
  placeholder="Remote / Bangalore" className="w-full pl-9 pr-3 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40" />
  </div>
  </div>
  <div className="md:col-span-2 space-y-1.5">
  <label className="font-black uppercase tracking-wider text-slate-500">Description *</label>
- <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
+ <textarea data-testid="founder-internship-description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
  rows={4} placeholder="Describe responsibilities, requirements..." className="w-full p-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40 resize-none" />
  </div>
  <div className="space-y-1.5">
  <label className="font-black uppercase tracking-wider text-slate-500">Skills (comma-separated)</label>
- <input type="text" value={form.skills} onChange={(e) => setForm({ ...form, skills: e.target.value })}
+ <input type="text" data-testid="founder-internship-skills" value={form.skills} onChange={(e) => setForm({ ...form, skills: e.target.value })}
  placeholder="React, TypeScript, Node.js" className="w-full p-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40" />
  </div>
  <div className="space-y-1.5">
  <label className="font-black uppercase tracking-wider text-slate-500">Duration</label>
  <div className="relative">
  <Clock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
- <input type="text" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })}
+ <input type="text" data-testid="founder-internship-duration" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })}
  placeholder="3 months" className="w-full pl-9 pr-3 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40" />
  </div>
  </div>
@@ -393,13 +394,13 @@ export default function InternshipManagementPage() {
  <label className="font-black uppercase tracking-wider text-slate-500">Monthly Stipend (₹)</label>
  <div className="relative">
  <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
- <input type="number" value={form.stipend} onChange={(e) => setForm({ ...form, stipend: e.target.value })}
+ <input type="number" data-testid="founder-internship-stipend" value={form.stipend} onChange={(e) => setForm({ ...form, stipend: e.target.value })}
  placeholder="10000" className="w-full pl-9 pr-3 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40" />
  </div>
  </div>
  <div className="space-y-1.5">
  <label className="font-black uppercase tracking-wider text-slate-500">Application Deadline</label>
- <input type="date" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+ <input type="date" data-testid="founder-internship-deadline" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })}
  className="w-full p-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40" />
  </div>
  <div className="space-y-1.5">
@@ -445,7 +446,7 @@ export default function InternshipManagementPage() {
  <label className="font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
  <ExternalLink size={12} /> Official Application Link
  </label>
- <input type="url" value={form.applicationLink ||""}
+ <input type="url" data-testid="founder-internship-link" value={form.applicationLink ||""}
  onChange={(e) => setForm({ ...form, applicationLink: e.target.value })}
  placeholder="https://company.com/apply" className="w-full p-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:ring-2 focus:ring-(--primary)/40" />
  <p className="text-slate-400">Students will be redirected here when they click Apply. Leave blank to collect interest through the platform.</p>
@@ -455,7 +456,7 @@ export default function InternshipManagementPage() {
  <button onClick={() => setShowModal(false)} className="px-5 py-2.5 bg-white/5 rounded-xl font-bold text-sm hover:bg-white/10 transition-colors">
  Cancel
  </button>
- <button onClick={handleSave} disabled={saving}
+ <button onClick={handleSave} disabled={saving} data-testid="founder-internship-save-btn"
  className="px-5 py-2.5 bg-(--primary) rounded-xl font-bold text-sm flex items-center gap-2 hover:brightness-110 transition-colors disabled:opacity-60">
  {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
  {saving ?"Saving..." : editingId ?"Update" :"Create"}

@@ -243,6 +243,19 @@ export default function PricingClient() {
  className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#F59E0B] hover:bg-[#D97706] text-[#0A1628] font-black rounded-2xl transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:shadow-[0_0_50px_rgba(245,158,11,0.5)] hover:-translate-y-0.5">
  Upgrade to Growth →
  </Link>
+ <div className="mt-3 p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] text-slate-400 space-y-1 text-left">
+ <p className="font-semibold text-slate-300">
+ Auto-renews monthly at ₹2,499/mo until cancelled.
+ </p>
+ <p>
+ Cancel anytime with 1 click in Account Settings &gt; Billing before your next renewal date. No cancellation fees.
+ </p>
+ <p>
+ <Link href="/terms#subscription" className="text-[#F59E0B] hover:underline font-medium">
+ Subscription &amp; Cancellation Policy →
+ </Link>
+ </p>
+ </div>
  </motion.div>
  </div>
 

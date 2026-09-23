@@ -58,12 +58,13 @@ export default function SignUpForm() {
 
  const [step, setStep] = useState(1)
  const [form, setForm] = useState({
- name:"",
- email:"",
- password:"",
+ name: "",
+ email: "",
+ password: "",
+ birthYear: "",
  role: initialRole,
- college:"",
- collegeId:"",
+ college: "",
+ collegeId: "",
  })
  const [showPassword, setShowPassword] = useState(false)
  const [loading, setLoading] = useState(false)
@@ -71,6 +72,7 @@ export default function SignUpForm() {
  const [error, setError] = useState("")
  const [success, setSuccess] = useState(false)
  const [acceptedTerms, setAcceptedTerms] = useState(false)
+ const [ageEligibilityAttested, setAgeEligibilityAttested] = useState(false)
  const [marketingConsent, setMarketingConsent] = useState(false)
 
  const handleGoogleSignUp = async () => {
@@ -120,6 +122,18 @@ export default function SignUpForm() {
  try {
  if (!acceptedTerms) {
  throw new Error("You must agree to the Terms & Conditions and Privacy Policy to create an account.")
+ }
+
+ if (!form.birthYear) {
+ throw new Error("Please enter your birth year to confirm age eligibility.")
+ }
+ const calculatedAge = new Date().getFullYear() - Number(form.birthYear)
+ if (isNaN(calculatedAge) || calculatedAge < 13) {
+ throw new Error("You must be at least 13 years of age to create an account on CampusConnectCo.")
+ }
+
+ if (!ageEligibilityAttested) {
+ throw new Error("You must confirm your age eligibility to create an account.")
  }
 
  if (form.password.length < 8) throw new Error("Password must be at least 8 characters")
@@ -333,6 +347,9 @@ export default function SignUpForm() {
  {googleLoading ? <Loader2 size={18} className="animate-spin text-muted-foreground" /> : <GoogleIcon />}
  {googleLoading ?"Redirecting to Google..." :"Continue with Google"}
  </button>
+ <p className="text-[11px] text-muted-foreground text-center mt-1">
+ By signing up, you self-attest that you are at least 13 years of age and agree to our Terms &amp; Privacy Policy.
+ </p>
 
  {/* Next button */}
  <button
@@ -407,6 +424,23 @@ export default function SignUpForm() {
  )}
  </div>
 
+ {/* Birth Year for Age Assurance */}
+ <div>
+ <label className="block font-black text-muted-foreground uppercase tracking-widest mb-2">
+ Birth Year <span className="text-[10px] lowercase text-muted-foreground">(Minimum platform age: 13)</span>
+ </label>
+ <input
+ type="number"
+ placeholder="e.g. 2004"
+ min={1920}
+ max={new Date().getFullYear()}
+ value={form.birthYear}
+ onChange={(e) => setForm({ ...form, birthYear: e.target.value })}
+ required
+ className="w-full bg-(--surface-2) border border-(--border) text-foreground placeholder-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-(--primary)/50 focus:border-(--primary)/50 outline-none transition-all font-medium"
+ />
+ </div>
+
  {/* Consent Checkboxes */}
  <div className="space-y-4 pt-2">
  <label className="flex items-start gap-3 cursor-pointer group">
@@ -423,7 +457,25 @@ export default function SignUpForm() {
  </div>
  </div>
  <p className="text-sm text-muted-foreground leading-snug">
- I have read and agree to the <Link href="/terms" className="text-foreground font-medium hover:text-(--primary) transition-colors hover:underline">Terms & Conditions</Link> and <Link href="/privacy" className="text-foreground font-medium hover:text-(--primary) transition-colors hover:underline">Privacy Policy</Link>.
+ I have read and agree to the <Link href="/terms" className="text-foreground font-medium hover:text-(--primary) transition-colors hover:underline">Terms &amp; Conditions</Link> and <Link href="/privacy" className="text-foreground font-medium hover:text-(--primary) transition-colors hover:underline">Privacy Policy</Link>.
+ </p>
+ </label>
+
+ <label className="flex items-start gap-3 cursor-pointer group">
+ <div className="relative flex items-center justify-center mt-0.5 shrink-0">
+ <input 
+ type="checkbox" 
+ required
+ checked={ageEligibilityAttested}
+ onChange={(e) => setAgeEligibilityAttested(e.target.checked)}
+ className="peer sr-only" 
+ />
+ <div className="w-5 h-5 rounded border border-border bg-surface peer-checked:bg-(--primary) peer-checked:border-(--primary) peer-focus:ring-2 peer-focus:ring-(--primary)/50 transition-all flex items-center justify-center">
+ <CheckCircle2 size={14} className="text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+ </div>
+ </div>
+ <p className="text-sm text-muted-foreground leading-snug">
+ I self-attest that I am at least 13 years of age and meet the platform eligibility criteria.
  </p>
  </label>
 
@@ -440,7 +492,7 @@ export default function SignUpForm() {
  </div>
  </div>
  <p className="text-sm text-muted-foreground leading-snug">
- I would like to receive updates about internships, jobs, events, scholarships and new features by email.
+ I would like to receive updates about internships, gigs, events, scholarships and new features by email.
  </p>
  </label>
  </div>
@@ -448,7 +500,7 @@ export default function SignUpForm() {
  {/* Submit */}
  <button
  type="submit"
- disabled={loading || googleLoading || !acceptedTerms}
+ disabled={loading || googleLoading || !acceptedTerms || !ageEligibilityAttested || !form.birthYear}
  className={`w-full font-black py-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] mt-2 ${ form.role ==="CLIENT" ?"bg-[#F59E0B] shadow-[0_0_20px_rgba(245,158,11,0.3)]" :"bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" }`}
  >
  {loading ? <><Loader2 className="animate-spin" size={18} /> Creating Account...</> :"Create Account"}

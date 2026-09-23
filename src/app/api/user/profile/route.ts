@@ -120,7 +120,7 @@ export async function POST(req: Request) {
  }
 
  const body = await req.json();
- const { id, email, name, role, acceptedTerms, marketingConsent } = body;
+ const { id, email, name, role, acceptedTerms, marketingConsent, birthYear, ageEligibilityAttested } = body;
 
  if (!id || !email) {
  return NextResponse.json({ error:"id and email are required" }, { status: 400 });
@@ -128,6 +128,28 @@ export async function POST(req: Request) {
 
  if (acceptedTerms !== true) {
  return NextResponse.json({ error:"You must accept the Terms & Conditions and Privacy Policy." }, { status: 400 });
+ }
+
+ // 🛡️ Check if user already exists
+ const existingUser = await prisma.user.findUnique({ where: { id } });
+
+ // 🛡️ Server-Side Age Assurance Verification for new registrations (COPPA & Platform Eligibility)
+ if (!existingUser) {
+ if (ageEligibilityAttested !== true) {
+ return NextResponse.json(
+ { error:"Age eligibility self-attestation is required to create an account." },
+ { status: 400 }
+ );
+ }
+ if (birthYear !== undefined && birthYear !== null && birthYear !== "") {
+ const calculatedAge = new Date().getFullYear() - Number(birthYear);
+ if (isNaN(calculatedAge) || calculatedAge < 13) {
+ return NextResponse.json(
+ { error:"Age eligibility requirement not met: Platform requires minimum age of 13." },
+ { status: 400 }
+ );
+ }
+ }
  }
 
  // Enforce that the user can only create/update their own profile
@@ -168,7 +190,6 @@ export async function POST(req: Request) {
 
  // Upsert — safe to call even if row already exists (e.g. from auth trigger)
  // We'll check if the user exists first so we only send the email on real creation
- const existingUser = await prisma.user.findUnique({ where: { id } });
  const user = await prisma.user.upsert({
  where: { id },
  update: {
@@ -185,7 +206,7 @@ export async function POST(req: Request) {
  college: authUser.user_metadata?.college || body.college || null,
  acceptedTerms: true,
  acceptedTermsAt: new Date(),
- acceptedTermsVersion:"1.0",
+ acceptedTermsVersion:"1.0;age-attested-13+",
  marketingConsent: !!marketingConsent,
  marketingConsentAt: marketingConsent ? new Date() : null,
  },

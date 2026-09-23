@@ -1,6 +1,7 @@
-import { Resend } from"resend";
+import { Resend } from "resend";
 
-import { logger } from"@/lib/logger";
+import { isUnsubscribeSecretValid } from "@/lib/email/tokens";
+import { logger } from "@/lib/logger";
 
 const resendApiKey = process.env.RESEND_API_KEY;
 
@@ -71,4 +72,31 @@ export async function sendTransactionalEmail(options: EmailSendOptions): Promise
  // We gracefully fail here so business logic isn't interrupted by an email failure
  return false;
  }
+}
+
+/**
+ * Sends a commercial/marketing email.
+ * FAILS CLOSED: Strictly blocks transmission if COMPANY_PHYSICAL_POSTAL_ADDRESS
+ * is absent, invalid, or a placeholder.
+ */
+export async function sendMarketingEmail(options: EmailSendOptions): Promise<boolean> {
+  const secretValidation = isUnsubscribeSecretValid();
+  if (!secretValidation.valid) {
+    logger.error("[Email Config Error] Commercial email delivery blocked: Dedicated UNSUBSCRIBE_TOKEN_SECRET is missing, weak, or invalid.");
+    return false;
+  }
+
+  const companyAddress = process.env.COMPANY_PHYSICAL_POSTAL_ADDRESS;
+  const isAddressConfigured = 
+    !!companyAddress && 
+    companyAddress.trim().length > 0 && 
+    !companyAddress.includes('[') && 
+    !companyAddress.toLowerCase().includes('placeholder');
+
+  if (!isAddressConfigured) {
+    logger.error("[Email Config Error] Commercial email delivery blocked: Valid COMPANY_PHYSICAL_POSTAL_ADDRESS is not configured.");
+    return false;
+  }
+
+  return sendTransactionalEmail(options);
 }

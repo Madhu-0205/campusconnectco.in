@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useOpportunityEngagement } from "@/hooks/useOpportunityEngagement";
-import { isOpportunityActive, isOpportunityExpired } from "@/lib/opportunities/lifecycle";
+import { isOpportunityExpired } from "@/lib/opportunities/lifecycle";
 import { createClient } from "@/lib/supabase/client";
 
 interface InternshipRecord {

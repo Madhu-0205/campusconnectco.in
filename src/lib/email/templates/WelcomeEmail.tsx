@@ -8,30 +8,33 @@ import {
  Preview,
  Section,
  Text,
-} from"@react-email/components";
-import * as React from"react";
+} from "@react-email/components";
+import * as React from "react";
+
+import { EmailFooter } from "./EmailFooter";
 
 interface WelcomeEmailProps {
  name: string;
  role: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||"https://www.campusconnectco.in";
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.campusconnectco.in";
 
 export const WelcomeEmail = ({ name, role }: WelcomeEmailProps) => {
- const isStudent = role ==="STUDENT";
+ const isStudent = role === "STUDENT";
  
  return (
  <Html>
  <Head />
- <Preview>Welcome to CampusConnectCo! 🎉</Preview>
+ <Preview>Your CampusConnectCo account has been created</Preview>
  <Body style={main}>
  <Container style={container}>
- <Heading style={h1}>Welcome to CampusConnectCo, {name}! 🚀</Heading>
+ <Heading style={h1}>Account Created</Heading>
  <Text style={text}>
- {isStudent 
- ?"We're thrilled to have you here. Your journey to finding the best gigs, internships, and opportunities starts now." 
- :"We're thrilled to have you here. Ready to find top talent for your next big project?"}
+ Hello {name},
+ </Text>
+ <Text style={text}>
+ Your CampusConnectCo account has been successfully created. You can now access your dashboard and manage your account settings.
  </Text>
  
  <Section style={buttonContainer}>
@@ -44,13 +47,10 @@ export const WelcomeEmail = ({ name, role }: WelcomeEmailProps) => {
  </Section>
  
  <Text style={text}>
- If you have any questions or need help, just reply to this email. We&apos;re always here for you.
+ If you did not create this account, please contact our support team immediately.
  </Text>
  
- <Text style={footer}>
- Best,<br />
- The CampusConnectCo Team
- </Text>
+ <EmailFooter isMarketing={false} baseUrl={baseUrl} />
  </Container>
  </Body>
  </Html>
@@ -60,7 +60,7 @@ export const WelcomeEmail = ({ name, role }: WelcomeEmailProps) => {
 export default WelcomeEmail;
 
 const main = {
- backgroundColor:"#ffffff",
+ backgroundColor: "#ffffff",
  fontFamily:
  '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
 };
@@ -101,9 +101,3 @@ const button = {
  padding:"14px 24px",
 };
 
-const footer = {
- color:"#898989",
- fontSize:"14px",
- lineHeight:"22px",
- marginTop:"24px",
-};

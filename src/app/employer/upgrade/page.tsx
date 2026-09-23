@@ -245,6 +245,12 @@ export default function EmployerUpgradePage() {
  {plan.id !=="ENTERPRISE" && <ArrowRight size={13} className="inline ml-1.5" />}
  </button>
  </Link>
+
+ {plan.price !== "Free" && plan.price !== "Custom" && (
+ <p className="text-[10px] text-slate-500 text-center mt-2 leading-tight">
+ Auto-renews monthly at {plan.price}/mo. Cancel anytime with 1 click from your Account Settings.
+ </p>
+ )}
  </div>
  )
  })}

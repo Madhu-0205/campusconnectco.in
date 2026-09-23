@@ -2,9 +2,9 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Student & Founder Full E2E Lifecycle Suite", () => {
   const STUDENT_EMAIL = "e2e_student@university.edu";
-  const STUDENT_PASSWORD = "Password123!";
+  const STUDENT_PASSWORD = process.env.STUDENT_PASSWORD || "TestStudentPass123!";
   const FOUNDER_EMAIL = "madhuvalurouthu52@gmail.com";
-  const FOUNDER_PASSWORD = "Password123!";
+  const FOUNDER_PASSWORD = process.env.FOUNDER_PASSWORD || "";
   const PRAGATI_GIG_ID = "718353bf-07f3-4b03-a8bd-c27b8fec5a84";
   const PRAGATI_COLLEGE_ID = "22222222-3333-4444-5555-666666666666";
 

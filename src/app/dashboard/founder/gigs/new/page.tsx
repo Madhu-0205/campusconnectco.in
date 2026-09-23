@@ -73,6 +73,7 @@ export default function FounderPostGigPage() {
  <input
  required
  type="text"
+ data-testid="founder-gig-title"
  placeholder="e.g. Campus Ambassador Program 2024"
  className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white placeholder:text-slate-400"
  value={formData.title}
@@ -85,6 +86,7 @@ export default function FounderPostGigPage() {
  <textarea
  required
  rows={6}
+ data-testid="founder-gig-description"
  placeholder="Outline the responsibilities, perks, and requirements..."
  className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-medium text-white placeholder:text-slate-400 resize-none"
  value={formData.description}
@@ -96,6 +98,7 @@ export default function FounderPostGigPage() {
  <label className="font-bold text-white uppercase tracking-wider ml-1">Skills & Tags</label>
  <input
  type="text"
+ data-testid="founder-gig-skills"
  placeholder="e.g. Community, Growth, Content, Event Planning"
  className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white placeholder:text-slate-400"
  value={formData.tags}
@@ -108,6 +111,7 @@ export default function FounderPostGigPage() {
  <div className="space-y-3">
  <label className="font-bold text-white uppercase tracking-wider ml-1">Work Mode</label>
  <select
+ data-testid="founder-gig-workmode"
  className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white"
  value={formData.work_mode}
  onChange={(e) => setFormData({ ...formData, work_mode: e.target.value })}
@@ -123,6 +127,7 @@ export default function FounderPostGigPage() {
  </label>
  <input
  type="text"
+ data-testid="founder-gig-city"
  required={formData.work_mode !== "remote"}
  placeholder="e.g. Hyderabad, Bengaluru, Mumbai"
  className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white placeholder:text-slate-400"
@@ -139,6 +144,7 @@ export default function FounderPostGigPage() {
  required
  type="number"
  min="0"
+ data-testid="founder-gig-budget"
  placeholder="5000"
  className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white placeholder:text-slate-400"
  value={formData.budget}
@@ -149,6 +155,7 @@ export default function FounderPostGigPage() {
  <label className="font-bold text-white uppercase tracking-wider ml-1">Deadline</label>
  <input
  type="date"
+ data-testid="founder-gig-deadline"
  className="w-full px-6 py-4 rounded-xl border-white/5 bg-[#111116] focus:border-blue-500 focus:ring-0 outline-none transition-all font-bold text-white placeholder:text-slate-400"
  value={formData.deadline}
  onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
@@ -158,7 +165,7 @@ export default function FounderPostGigPage() {
 
  <div className="pt-6 flex justify-end gap-4">
  <Button type="button" variant="ghost" onClick={() => router.back()} className="rounded-xl font-bold px-6">Cancel</Button>
- <Button type="submit" disabled={loading} className="rounded-xl font-bold px-10 h-12 bg-(--primary) hover:bg-blue-600 text-white shadow-lg active:scale-95 transition-all">
+ <Button type="submit" disabled={loading} data-testid="founder-gig-submit-btn" className="rounded-xl font-bold px-10 h-12 bg-(--primary) hover:bg-blue-600 text-white shadow-lg active:scale-95 transition-all">
  {loading ?"Publishing..." :"Publish Listing"}
  </Button>
  </div>

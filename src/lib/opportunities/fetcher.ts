@@ -1,3 +1,4 @@
+import { sanitizeGeneratedTitleSuffix } from "@/lib/automation/normalizer"
 import {
   isValidCoordinate,
   computeBoundingBox,
@@ -205,12 +206,16 @@ export async function getUnifiedOpportunities(params: FetchOpportunitiesParams) 
       }
     }
 
+    const rawGigCompany = gig.poster?.name || "CampusConnectCo Member";
+    const { cleanTitle: cleanGigCompany } = sanitizeGeneratedTitleSuffix(rawGigCompany);
+    const { cleanTitle: cleanGigTitle } = sanitizeGeneratedTitleSuffix(gig.title, { company: rawGigCompany });
+
     return {
       id: `gig-${gig.id}`,
       sourceId: gig.id,
       type: "gig",
-      title: gig.title,
-      company: gig.poster?.name || "CampusConnectCo Member",
+      title: cleanGigTitle,
+      company: cleanGigCompany,
       location: gig.city ? `${gig.city}${gig.state ? `, ${gig.state}` : ""}` : (gig.work_mode || "Remote"),
       compensation: gig.budget ? `₹${gig.budget.toLocaleString("en-IN")}` : undefined,
       rawCompensation: gig.budget,
@@ -260,12 +265,15 @@ export async function getUnifiedOpportunities(params: FetchOpportunitiesParams) 
       }
     }
 
+    const { cleanTitle: cleanIntCompany } = sanitizeGeneratedTitleSuffix(int.company);
+    const { cleanTitle: cleanIntTitle } = sanitizeGeneratedTitleSuffix(int.title, { company: int.company });
+
     return {
       id: `internship-${int.id}`,
       sourceId: int.id,
       type: "internship",
-      title: int.title,
-      company: int.company,
+      title: cleanIntTitle,
+      company: cleanIntCompany,
       location: int.city ? `${int.city}${int.state ? `, ${int.state}` : ""}` : (int.location || "Remote"),
       compensation: int.stipend ? `₹${int.stipend.toLocaleString("en-IN")}/mo` : undefined,
       rawCompensation: int.stipend || 0,

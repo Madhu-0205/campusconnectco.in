@@ -51,10 +51,11 @@
   --grad-gold:    linear-gradient(135deg, #FDE68A, #F59E0B);
   --grad-hero:    radial-gradient(ellipse at 50% -20%, rgba(31, 169, 113, 0.12) 0%, transparent 60%);
 
-  /* ── Fonts (injected by next/font) ───────────────────────────── */
-  --font-heading: var(--font-inter, 'Inter', sans-serif);
-  --font-body:    var(--font-inter, 'Inter', sans-serif);
-  --font-mono:    var(--font-jetbrains, 'JetBrains Mono', monospace);
+  /* ── Fonts (Native System Font Fallbacks — Zero External Network Leakage) ── */
+  --font-inter:   -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: var(--font-inter);
+  --font-body:    var(--font-inter);
+  --font-mono:    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* ── Shadows (Ambient and directional light) ───────────────────────── */
   --shadow-card:      0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.02);

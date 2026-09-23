@@ -48,6 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { route: '/terms-and-conditions', priority: 0.5, changeFreq: 'yearly' },
     { route: '/privacy-policy', priority: 0.5, changeFreq: 'yearly' },
     { route: '/refund-policy', priority: 0.5, changeFreq: 'yearly' },
+    { route: '/dmca', priority: 0.5, changeFreq: 'yearly' },
     { route: '/contact-us', priority: 0.6, changeFreq: 'monthly' },
     // Community
     { route: '/ambassador', priority: 0.85, changeFreq: 'weekly' },

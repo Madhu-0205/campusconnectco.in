@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from"next/server";
 
-import { protectApi } from"@/lib/auth-checks";
-import prisma from"@/lib/prisma";
+import { protectApi } from "@/lib/auth-checks";
+import { sanitizeGeneratedTitleSuffix } from "@/lib/automation/normalizer";
+import prisma from "@/lib/prisma";
 
 export async function GET() {
  const { errorResponse } = await protectApi(["FOUNDER", "ADMIN"]);
@@ -37,11 +38,14 @@ export async function POST(request: NextRequest) {
  return NextResponse.json({ error:"Title, description, and company are required" }, { status: 400 });
  }
 
+ const { cleanTitle: sanitizedTitle } = sanitizeGeneratedTitleSuffix(title);
+ const { cleanTitle: sanitizedCompany } = sanitizeGeneratedTitleSuffix(company);
+
  const internship = await prisma.internship.create({
  data: {
- title,
+ title: sanitizedTitle,
  description,
- company,
+ company: sanitizedCompany,
  skills: skills || null,
  stipend: stipend ? parseFloat(stipend) : null,
  duration: duration || null,
