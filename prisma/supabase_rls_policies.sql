@@ -441,9 +441,19 @@ CREATE POLICY "Users can delete their own avatars"
 REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM authenticated, anon;
 REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public FROM authenticated, anon;
 
--- Explicitly allow public access only to non-sensitive tables
-GRANT SELECT ON "gigs", "User", "Project", "Post", "PostLike", "Skill", "Internship", "Announcement", "PlatformSetting", "CampusLeaderboard" TO anon;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+-- Explicitly allow public access only to non-sensitive tables (User table excluded from anon access)
+GRANT SELECT ON "gigs", "Project", "Post", "PostLike", "Skill", "Internship", "Announcement", "PlatformSetting", "CampusLeaderboard" TO anon;
+
+-- Authenticated table-level write operations
+GRANT INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+
+-- Authenticated table-level read operations for general tables (User table uses least-privilege column grants)
+GRANT SELECT ON "gigs", "Project", "Post", "PostLike", "Skill", "Internship", "Announcement", "PlatformSetting", "CampusLeaderboard", "applications", "Escrow", "Transaction", "TransactionAudit", "Dispute", "Conversation", "messages", "UserSkill", "GigSkill", "SavedInternship", "Review", "Endorsement", "Task", "Startup", "ResumeAnalysis", "CareerRoadmap", "UserEmbedding", "GigEmbedding", "Analytics", "Organization", "Member", "Subscription", "CampusDrive", "MockInterview", "CopilotSession", "UserGamification", "XpEvent", "Badge", "UserBadge", "Referral", "Ambassador", "ShareCard", "Notification", "Follows", "ConnectionRequest" TO authenticated;
+
+-- Column-level security on User table (sensitive banking and GPS credentials blocked from anon/authenticated):
+REVOKE SELECT ON "User" FROM anon, authenticated;
+GRANT SELECT ("id", "name", "full_name", "role", "bio", "skills", "portfolio", "linkedin", "github", "instagram", "image", "avatar_url", "branch", "college", "year", "username", "city", "state", "country") ON "User" TO authenticated;
+
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated, anon;
 
 -- =========================================================================

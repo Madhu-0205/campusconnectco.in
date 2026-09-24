@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 import {
   scrubSensitiveData,
@@ -155,13 +155,52 @@ describe("CampusConnect Intelligence Layer — Groq AI Integration", () => {
         Education: B.Tech Computer Science, Pragati Engineering College.
       `;
 
-      const result = await aiAdapter.analyzeResume(sampleResume, { timeoutMs: 3000 });
+      const mockResponse = JSON.stringify({
+        score: 85,
+        grade: "A",
+        strengths: [
+          "Identified core technical competencies in React and TypeScript.",
+          "Clear professional contact format and education timeline.",
+          "Structured section breakdown for ATS parsers.",
+        ],
+        weaknesses: [
+          "Add more quantifiable achievement metrics (% efficiency, user reach, load latency).",
+          "Expand deployment and testing tool mentions.",
+        ],
+        skills: ["React", "TypeScript", "Node.js", "SQL", "Git", "Next.js"],
+        missingSkills: ["Docker", "AWS"],
+        suggestions: [
+          "Include metrics on project outcomes (e.g. 'reduced latency by 20%').",
+          "Highlight your top GitHub repository links with live demos.",
+          "Align top summary keywords with specific role job descriptions.",
+        ],
+        keywords: ["React", "TypeScript", "Node.js", "SQL", "Git", "Next.js"],
+        experienceLevel: "Fresher",
+        summary: "Resume demonstrates strong foundational readiness with an ATS score of 85/100.",
+        sectionScores: {
+          skillsMatch: 85,
+          structure: 85,
+          contentDepth: 80,
+          keywordDensity: 80,
+        },
+        poweredBy: "Groq (openai/gpt-oss-120b)",
+      });
 
-      expect(result).toHaveProperty("score");
-      expect(result.score).toBeGreaterThanOrEqual(60);
-      expect(result).toHaveProperty("grade");
-      expect(result.skills.length).toBeGreaterThan(0);
-      expect(result.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
+      const provider = aiAdapter.getProvider();
+      const chatSpy = vi.spyOn(provider, "chat").mockResolvedValue(mockResponse);
+
+      try {
+        const result = await aiAdapter.analyzeResume(sampleResume, { timeoutMs: 3000 });
+
+        expect(chatSpy).toHaveBeenCalled();
+        expect(result).toHaveProperty("score");
+        expect(result.score).toBeGreaterThanOrEqual(60);
+        expect(result).toHaveProperty("grade");
+        expect(result.skills.length).toBeGreaterThan(0);
+        expect(result.poweredBy).toBe("Groq (openai/gpt-oss-120b)");
+      } finally {
+        chatSpy.mockRestore();
+      }
     });
 
     it("should generate grounded match explanations", async () => {

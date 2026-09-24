@@ -21,7 +21,7 @@ export async function GET(
       where: { id },
       include: {
         poster: {
-          select: { id: true, name: true, image: true, email: true },
+          select: { id: true, name: true, image: true, username: true },
         },
       },
     });

@@ -396,7 +396,7 @@
     "table_name": "User",
     "policy_name": "user_select_policy",
     "command": "r",
-    "qual": "true",
+    "qual": "(auth.uid() = id)",
     "with_check": null
   },
   {

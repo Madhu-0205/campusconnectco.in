@@ -6,12 +6,16 @@ import { safeCompare } from"@/lib/security/crypto";
 
 export async function GET(req: Request) {
  try {
- // 1. Authenticate the cron request (e.g., using a bearer token in headers)
- const authHeader = req.headers.get("authorization");
- if (!authHeader || !safeCompare(authHeader, `Bearer ${process.env.CRON_SECRET}`)) {
- // return new NextResponse("Unauthorized", { status: 401 });
- // Bypassing for local testing purposes.
- }
+    // 1. Authenticate the cron request (fail closed if secret unconfigured)
+    if (!process.env.CRON_SECRET) {
+      console.error("[CRON Error] CRON_SECRET is not configured on the server");
+      return new NextResponse("CRON_SECRET is not configured", { status: 500 });
+    }
+
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !safeCompare(authHeader, `Bearer ${process.env.CRON_SECRET}`)) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
 
  // 2. Fetch Weekly Metrics
  const [funnel, aiMetrics, retention] = await Promise.all([
@@ -51,7 +55,10 @@ export async function GET(req: Request) {
  // await sendEmail({ to:"founders@campusconnectco.in", subject:"Weekly Analytics", html: htmlReport });
  console.log("[CRON] Weekly Report Generated Successfully:\n", htmlReport);
 
- return NextResponse.json({ success: true, message:"Report generated and sent." });
+    return new NextResponse(htmlReport, {
+      status: 200,
+      headers: { "Content-Type": "text/html" }
+    });
  } catch (error) {
  console.error("[CRON Error]", error);
  return new NextResponse("Internal Server Error", { status: 500 });

@@ -124,3 +124,4 @@ export const searchLimiter = new RateLimiter(5 * 60 * 1000, 30, "search");
 export const uploadLimiter = new RateLimiter(60 * 1000, 5, "upload");
 export const paymentLimiter = new RateLimiter(5 * 60 * 1000, 15, "payment");
 export const publicFormLimiter = new RateLimiter(60 * 1000, 10, "form");
+export const analyticsLimiter = new RateLimiter(60 * 1000, 60, "analytics");

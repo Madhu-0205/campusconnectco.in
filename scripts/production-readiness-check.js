@@ -13,14 +13,30 @@ let hasWarnings = false;
 
 const execute = (cmd, errorMessage, isCritical = true) => {
   try {
-    return execSync(cmd, { stdio: 'pipe' }).toString().trim();
+    const result = execSync(cmd, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      encoding: 'utf8',
+      maxBuffer: 20 * 1024 * 1024,
+    });
+
+    return result.trim();
   } catch (error) {
     console.error(`❌ ${isCritical ? 'FAILED' : 'WARNING'}: ${errorMessage}`);
+
+    if (error.stdout) {
+      console.error(error.stdout.toString());
+    }
+
+    if (error.stderr) {
+      console.error(error.stderr.toString());
+    }
+
     if (isCritical) {
       hasCriticalFailure = true;
     } else {
       hasWarnings = true;
     }
+
     return null;
   }
 };
@@ -50,7 +66,7 @@ if (execute('npx tsc --noEmit', 'TypeScript Compilation Failed.', true) !== null
 if (execute('npm run lint', 'ESLint Failed.', true) !== null) {
   console.log('✅ ESLint passed.');
 }
-if (execute('npm run test --run', 'Vitest Suite Failed.', true) !== null) {
+if (execute('npm test', 'Vitest Suite Failed.', true) !== null) {
   console.log('✅ Vitest passed.');
 }
 

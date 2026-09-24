@@ -13,6 +13,17 @@ import { sanitizeSentryBreadcrumb, sanitizeSentryEvent, scrubUrlString } from ".
 import { proxy as middleware } from "../middleware";
 
 // Mock dependencies
+vi.mock("resend", () => ({
+  Resend: class {
+    emails = {
+      send: vi.fn().mockResolvedValue({
+        data: { id: "test-email-id" },
+        error: null,
+      }),
+    };
+  },
+}));
+
 vi.mock("../lib/supabase/middleware", () => ({
   updateSession: vi.fn().mockImplementation((request) => {
     const { NextResponse } = require("next/server");
