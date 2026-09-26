@@ -82,20 +82,21 @@ export function isAutoPublishSourceAllowed(
       .includes(normalizedSource);
   }
 
-  // 2. Explicit environment variable allowlist
-  const envAllowlist = process.env.OPPORTUNITY_CANARY_SOURCE_ALLOWLIST;
-  if (envAllowlist) {
-    const allowed = envAllowlist.split(",").map((s) => s.trim().toLowerCase());
-    return allowed.includes(normalizedSource);
-  }
+  // 2. In production or when explicitly enforced in test
+  const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+  const isTestEnforced = process.env.OPPORTUNITY_CANARY_ENFORCE_IN_TEST === "true";
 
-  // 3. In production, default strictly to the frozen Stage 3 canary allowlist
-  if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
+  if (isProduction || isTestEnforced) {
+    const envAllowlist = process.env.OPPORTUNITY_CANARY_SOURCE_ALLOWLIST;
+    if (envAllowlist) {
+      const allowed = envAllowlist.split(",").map((s) => s.trim().toLowerCase());
+      return allowed.includes(normalizedSource);
+    }
     return CANARY_AUTOPUBLISH_SOURCES.includes(normalizedSource);
   }
 
-  // 4. In test / dev environments without explicit allowlist configured, allow all
-  // to avoid breaking existing Phase 1 & Phase 2 synthetic test harnesses
+  // 3. In non-production test/dev environments without explicit enforcement, allow all
+  // to avoid breaking Phase 1 & Phase 2 synthetic test harnesses
   return true;
 }
 

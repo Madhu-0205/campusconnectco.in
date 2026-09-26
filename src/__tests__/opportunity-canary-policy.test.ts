@@ -125,13 +125,16 @@ describe("Phase 16D Stage 3: Canary Policy Safety Matrix", () => {
 
   let originalAllowlist: string | undefined;
   let originalAutopublish: string | undefined;
+  let originalEnforceInTest: string | undefined;
 
   beforeEach(() => {
     originalAllowlist = process.env.OPPORTUNITY_CANARY_SOURCE_ALLOWLIST;
     originalAutopublish = process.env.OPPORTUNITY_AUTOPUBLISH_ENABLED;
+    originalEnforceInTest = process.env.OPPORTUNITY_CANARY_ENFORCE_IN_TEST;
     // Set explicit canary allowlist for test suite
     process.env.OPPORTUNITY_CANARY_SOURCE_ALLOWLIST = "github_student_internships";
     process.env.OPPORTUNITY_AUTOPUBLISH_ENABLED = "true";
+    process.env.OPPORTUNITY_CANARY_ENFORCE_IN_TEST = "true";
   });
 
   afterEach(() => {
@@ -144,6 +147,11 @@ describe("Phase 16D Stage 3: Canary Policy Safety Matrix", () => {
       process.env.OPPORTUNITY_AUTOPUBLISH_ENABLED = originalAutopublish;
     } else {
       delete process.env.OPPORTUNITY_AUTOPUBLISH_ENABLED;
+    }
+    if (originalEnforceInTest !== undefined) {
+      process.env.OPPORTUNITY_CANARY_ENFORCE_IN_TEST = originalEnforceInTest;
+    } else {
+      delete process.env.OPPORTUNITY_CANARY_ENFORCE_IN_TEST;
     }
   });
 
