@@ -1,15 +1,18 @@
 /**
- * Production Opportunity Discovery Cron Endpoint
- * CampusConnectCo — Phase 16B
+ * Production Opportunity Discovery & Lifecycle Cron Endpoint
+ * CampusConnectCo — Phase 16D (Phase 4)
  *
  * Exclusively authenticated via CRON_SECRET bearer token.
  * Rejects browser Founder sessions (separation of concerns).
- * Invokes runDueOpportunitySources() and returns execution metrics.
+ * Supports explicit actions:
+ * - ?action=discover (default: discovery across due sources)
+ * - ?action=revalidate (lifecycle revalidation across active opportunities)
+ * - ?action=all (both discovery and revalidation)
+ * Returns comprehensive, structured run telemetry without secret leakage.
  */
 
 import { NextRequest, NextResponse } from "next/server";
-
-import { runDueOpportunitySources } from "@/lib/automation/sources/scheduler";
+import { runScheduledPipeline, sanitizeSecrets } from "@/lib/automation/sources/scheduler";
 import { safeCompare } from "@/lib/security/crypto";
 
 export const dynamic = "force-dynamic";
@@ -35,15 +38,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const { searchParams } = new URL(request.url);
+  const actionParam = searchParams.get("action")?.toLowerCase();
+  const sourceParam = searchParams.get("source");
+  const sourceSubset = sourceParam ? sourceParam.split(",").map((s) => s.trim()) : undefined;
+  const action: "discover" | "revalidate" | "all" =
+    actionParam === "revalidate" ? "revalidate" : actionParam === "all" ? "all" : "discover";
+
   try {
-    const result = await runDueOpportunitySources();
+    const telemetry = await runScheduledPipeline({ action, sourceSubset });
+
     return NextResponse.json(
       {
-        message: "Continuous discovery cycle executed successfully.",
-        runId: result.runId,
-        metrics: result.metrics,
-        dueSources: result.dueSources,
-        skippedSources: result.skippedSources
+        message: `Scheduled ${action} cycle executed successfully.`,
+        runId: telemetry.runId,
+        action: telemetry.action,
+        telemetry
       },
       {
         status: 200,
@@ -51,9 +61,12 @@ export async function POST(request: NextRequest) {
       }
     );
   } catch (err: any) {
-    console.error("[Cron: Opportunity Discovery] Failed:", err.message);
+    const rawError = err instanceof Error ? err.message : "Cron execution failed";
+    const cleanError = sanitizeSecrets(rawError);
+    console.error("[Cron: Opportunity Discovery] Failed:", cleanError);
+
     return NextResponse.json(
-      { error: "Cron execution failed", details: err.message },
+      { error: "Cron execution failed", details: cleanError },
       {
         status: 500,
         headers: { "Cache-Control": "no-store" }

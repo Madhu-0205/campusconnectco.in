@@ -6,6 +6,12 @@
       "memory": 1024
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/opportunity-discovery",
+      "schedule": "0 0 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*).(jpg|jpeg|png|webp|svg|ico)",
