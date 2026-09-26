@@ -41,12 +41,17 @@ export async function POST(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const actionParam = searchParams.get("action")?.toLowerCase();
   const sourceParam = searchParams.get("source");
+  const forceParam = searchParams.get("force") === "true";
   const sourceSubset = sourceParam ? sourceParam.split(",").map((s) => s.trim()) : undefined;
   const action: "discover" | "revalidate" | "all" =
     actionParam === "revalidate" ? "revalidate" : actionParam === "all" ? "all" : "discover";
 
   try {
-    const telemetry = await runScheduledPipeline({ action, sourceSubset });
+    const telemetry = await runScheduledPipeline({
+      action,
+      sourceSubset,
+      forceAllSources: forceParam || !!sourceSubset
+    });
 
     return NextResponse.json(
       {

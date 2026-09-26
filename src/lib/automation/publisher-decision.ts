@@ -36,7 +36,7 @@
 import defaultPrisma from "@/lib/prisma";
 import { evaluateAuthenticity } from "./authenticity";
 import { canonicalizeUrl, validateSafeUrl } from "./normalizer";
-import { evaluateQuality, isAutoPublishEnabled } from "./quality";
+import { evaluateQuality, isAutoPublishEnabled, isAutoPublishSourceAllowed } from "./quality";
 import {
   CanonicalOpportunity,
   OpportunityType,
@@ -111,6 +111,7 @@ export interface EvaluateAutoPublishOptions {
   now?: Date;
   prismaClient?: AutoPublishPrismaDelegate;
   isAutoPublishEnabledOverride?: boolean;
+  canarySourceAllowlistOverride?: string[];
 }
 
 const SUSPICIOUS_SHORTENER_DOMAINS = new Set([
@@ -753,17 +754,25 @@ export async function evaluateOpportunityForAutoPublish(
     decision = "NEEDS_REVIEW";
     publishable = false;
   }
-  // Precedence 4: AUTO_PUBLISH (All 11 Gates Passed + Feature Flag Enabled)
+  // Precedence 4: AUTO_PUBLISH (All 11 Gates Passed + Feature Flag Enabled + Canary Allowlist)
   else {
     const isAutoPublishOn =
       options?.isAutoPublishEnabledOverride !== undefined
         ? options.isAutoPublishEnabledOverride
         : isAutoPublishEnabled();
 
-    if (isAutoPublishOn) {
+    const isSourceCanaryAllowed = isAutoPublishSourceAllowed(candidate.source, options);
+
+    if (isAutoPublishOn && isSourceCanaryAllowed) {
       decision = "AUTO_PUBLISH";
       publishable = true;
       reasons.push("All 11 deterministic auto-publish gates passed; eligible for automated publishing.");
+    } else if (isAutoPublishOn && !isSourceCanaryAllowed) {
+      decision = "NEEDS_REVIEW";
+      publishable = false;
+      reasons.push(
+        `All 11 deterministic gates passed, but source '${candidate.source}' is not in the active Phase 16D canary auto-publish allowlist; routed to Founder Review Queue.`
+      );
     } else {
       decision = "NEEDS_REVIEW";
       publishable = false;

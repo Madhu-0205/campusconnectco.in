@@ -46,7 +46,7 @@ import {
   SourceConfig,
   SourceTrustLevel
 } from "./types";
-import { isAutoPublishEnabled } from "./quality";
+import { isAutoPublishEnabled, isAutoPublishSourceAllowed } from "./quality";
 
 const TRUST_RANK: Record<SourceTrustLevel, number> = {
   OFFICIAL: 5,
@@ -143,6 +143,7 @@ export interface PublishOpportunityDirectlyOptions {
   now?: Date;
   prismaClient?: DirectPublisherPrismaDelegate;
   isAutoPublishEnabledOverride?: boolean;
+  canarySourceAllowlistOverride?: string[];
   botUserId?: string;
 }
 
@@ -179,7 +180,8 @@ export async function publishOpportunityDirectly(
     sourceConfig,
     now,
     prismaClient: prisma as any,
-    isAutoPublishEnabledOverride
+    isAutoPublishEnabledOverride,
+    canarySourceAllowlistOverride: options.canarySourceAllowlistOverride
   });
 
   const baseTelemetry = {
@@ -207,11 +209,14 @@ export async function publishOpportunityDirectly(
 
   // If the candidate is completely authentic/safe, but was flagged as DUPLICATE_FOUND because it already exists
   if (isDuplicate && matchedId && nonDuplicateFailures.length === 0) {
-    if (!isAutoPublishOn) {
+    const isSourceCanaryAllowed = isAutoPublishSourceAllowed(candidate.source, options);
+    if (!isAutoPublishOn || !isSourceCanaryAllowed) {
       return {
         success: false,
         action: "SKIPPED_NOT_PUBLISHABLE",
-        reason: "Active duplicate detected, but OPPORTUNITY_AUTOPUBLISH_ENABLED is false; update skipped.",
+        reason: !isAutoPublishOn
+          ? "Active duplicate detected, but OPPORTUNITY_AUTOPUBLISH_ENABLED is false; update skipped."
+          : `Active duplicate detected, but source '${candidate.source}' is not in canary allowlist; update skipped.`,
         errorClassification: "FEATURE_FLAG_DISABLED",
         decisionResult,
         telemetry: baseTelemetry
@@ -354,9 +359,12 @@ export async function publishOpportunityDirectly(
     const isFeatureFlagDisabled =
       decisionResult.decision === "NEEDS_REVIEW" &&
       decisionResult.reasons.some((r) => r.includes("OPPORTUNITY_AUTOPUBLISH_ENABLED"));
+    const isCanaryRestricted =
+      decisionResult.decision === "NEEDS_REVIEW" &&
+      decisionResult.reasons.some((r) => r.includes("canary auto-publish allowlist"));
 
     let errorClassification: PublicationErrorClassification = "DECISION_REJECTED";
-    if (isFeatureFlagDisabled) {
+    if (isFeatureFlagDisabled || isCanaryRestricted) {
       errorClassification = "FEATURE_FLAG_DISABLED";
     } else if (
       decisionResult.failureCodes.includes("CATEGORY_UNSUPPORTED_FOR_AUTO_PUBLISH") ||
