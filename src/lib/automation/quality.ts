@@ -52,7 +52,8 @@ const DISPOSABLE_EMAIL_DOMAINS = [
  * All non-canary sources route strictly to NEEDS_REVIEW even if all 11 gates pass.
  */
 export const CANARY_AUTOPUBLISH_SOURCES: readonly string[] = [
-  "github_student_internships"
+  "github_student_internships",
+  "github_new_grad_jobs"
 ];
 
 /**

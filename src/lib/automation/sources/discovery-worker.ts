@@ -648,6 +648,34 @@ export async function runDiscoveryForSource(
   }
 }
 
+export const DEFAULT_SOURCE_FETCH_TIMEOUT_MS = 8000;
+
+/**
+ * Executes a network fetch with a deterministic AbortController timeout.
+ */
+export async function fetchWithTimeout(
+  url: string,
+  init?: RequestInit,
+  timeoutMs: number = DEFAULT_SOURCE_FETCH_TIMEOUT_MS
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      ...init,
+      signal: controller.signal
+    });
+    return res;
+  } catch (err: any) {
+    if (err.name === "AbortError" || err.message?.includes("aborted")) {
+      throw new Error(`HTTP request to ${url} timed out after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /**
  * Fetches raw items from the source endpoint according to its explicit discoveryMethod.
  * Handles timeouts, invalid payloads, and error codes safely.
@@ -656,7 +684,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
   try {
     // 1. Devfolio Official Hackathons API (structured_api)
     if (config.source === "devfolio_hackathons") {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: {
           "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)",
           Accept: "application/json"
@@ -697,7 +725,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
 
     // 4. RemoteOK Public Developer Feed (structured_feed)
     if (config.source === "remoteok_tech_jobs") {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: {
           "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)",
           Accept: "application/json"
@@ -736,7 +764,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
 
     // 5. GitHub Curated Student Internships Feed (structured_feed)
     if (config.source === "github_student_internships") {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: {
           "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)"
         }
@@ -774,7 +802,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
 
     // 6. GitHub Curated New Grad & Early Career Positions (structured_feed)
     if (config.source === "github_new_grad_jobs") {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: {
           "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)"
         }
@@ -813,41 +841,46 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
     if (config.source === "github_tech_apprenticeships") {
       const sampleFiles = [
         "amazon.md", "accenture.md", "adobe-digital-academy.md", "airbnb.md", "7factor.md",
-        "affirm.md", "allstate.md", "dropbox.md", "google.md", "ibm.md",
-        "intuit.md", "linkedin.md", "lyft.md", "microsoft.md", "pinterest.md"
+        "affirm.md", "allstate.md", "dropbox.md", "google.md", "ibm.md"
       ];
-      const items: RawDiscoveredItem[] = [];
-      for (const file of sampleFiles.slice(0, config.maxItemsPerRun || 15)) {
-        try {
-          const res = await fetch(`https://raw.githubusercontent.com/FrancesCoronel/apprenticeships/main/content/apprenticeships/${file}`, {
-            headers: { "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)" }
-          });
-          if (res.ok) {
-            const text = await res.text();
-            const company = text.match(/company:\s*"([^"]+)"/)?.[1] || "";
-            const desc = text.match(/description:\s*"([^"]+)"/)?.[1] || "";
-            const link = text.match(/link:\s*"([^"]+)"/)?.[1] || "";
-            const locMatch = text.match(/location:\s*\n\s*-\s*"([^"]+)"/)?.[1] || "United States (Remote)";
-            if (company && link) {
-              const isRemote = locMatch.toLowerCase().includes("remote");
-              items.push({
-                source: config.source,
-                sourceName: config.sourceName,
-                sourceUrl: link,
-                externalId: file.replace(".md", ""),
-                applicationUrl: link,
-                title: `${company} Software Apprenticeship`,
-                company,
-                description: desc || `${company} hands-on software engineering apprenticeship program. Open for early career talent.`,
-                opportunityType: "APPRENTICESHIP" as const,
-                location: locMatch,
-                workMode: isRemote ? "remote" : "hybrid",
-                tags: ["apprenticeship", "early-career", "trainee", "software-engineering"]
-              });
-            }
+      const filesToFetch = sampleFiles.slice(0, Math.min(config.maxItemsPerRun || 5, 5));
+      const fetchResults = await Promise.allSettled(
+        filesToFetch.map(async (file) => {
+          const res = await fetchWithTimeout(
+            `https://raw.githubusercontent.com/FrancesCoronel/apprenticeships/main/content/apprenticeships/${file}`,
+            { headers: { "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)" } },
+            5000
+          );
+          if (!res.ok) return null;
+          const text = await res.text();
+          const company = text.match(/company:\s*"([^"]+)"/)?.[1] || "";
+          const desc = text.match(/description:\s*"([^"]+)"/)?.[1] || "";
+          const link = text.match(/link:\s*"([^"]+)"/)?.[1] || "";
+          const locMatch = text.match(/location:\s*\n\s*-\s*"([^"]+)"/)?.[1] || "United States (Remote)";
+          if (company && link) {
+            const isRemote = locMatch.toLowerCase().includes("remote");
+            return {
+              source: config.source,
+              sourceName: config.sourceName,
+              sourceUrl: link,
+              externalId: file.replace(".md", ""),
+              applicationUrl: link,
+              title: `${company} Software Apprenticeship`,
+              company,
+              description: desc || `${company} hands-on software engineering apprenticeship program. Open for early career talent.`,
+              opportunityType: "APPRENTICESHIP" as const,
+              location: locMatch,
+              workMode: isRemote ? "remote" : "hybrid",
+              tags: ["apprenticeship", "early-career", "trainee", "software-engineering"]
+            } as RawDiscoveredItem;
           }
-        } catch {
-          // ignore individual file fetch issue
+          return null;
+        })
+      );
+      const items: RawDiscoveredItem[] = [];
+      for (const r of fetchResults) {
+        if (r.status === "fulfilled" && r.value) {
+          items.push(r.value);
         }
       }
       return items;
@@ -855,7 +888,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
 
     // 8. Global Tech Conferences & Events (tech-conferences/conference-data)
     if (config.source === "confs_tech_events") {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: { "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)" }
       });
       if (res.ok) {
@@ -889,7 +922,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
 
     // 9. Undergraduate Research Internships (zapplyjobs)
     if (config.source === "zapply_undergrad_research") {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: { "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)" }
       });
       if (res.ok) {
@@ -937,7 +970,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
 
     // 10. Indian Postgrad Scholarships & Fellowships (anjalibhavan)
     if (config.source === "indian_postgrad_scholarships") {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: { "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)" }
       });
       if (res.ok) {
@@ -980,7 +1013,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
 
     // 11. Curated CS Fellowships & Scholarships (monajalal)
     if (config.source === "monajalal_cs_fellowships") {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: { "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)" }
       });
       if (res.ok) {
@@ -1028,7 +1061,7 @@ async function fetchRawItemsFromSource(config: SourceConfig): Promise<RawDiscove
 
     // 14. Generic Structured API / Feed Fallback
     if (config.endpointUrl) {
-      const res = await fetch(config.endpointUrl, {
+      const res = await fetchWithTimeout(config.endpointUrl, {
         headers: { "User-Agent": "CampusConnectCo-OpportunityBot/1.0 (+https://campusconnectco.in)" }
       });
       if (!res.ok) throw new Error(`${config.sourceName} endpoint returned HTTP ${res.status}`);

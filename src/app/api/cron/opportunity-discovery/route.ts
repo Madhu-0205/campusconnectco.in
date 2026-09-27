@@ -42,6 +42,8 @@ export async function POST(request: NextRequest) {
   const actionParam = searchParams.get("action")?.toLowerCase();
   const sourceParam = searchParams.get("source");
   const forceParam = searchParams.get("force") === "true";
+  const maxSourcesParam = searchParams.get("maxSources") || searchParams.get("batchSize");
+  const maxSources = maxSourcesParam ? parseInt(maxSourcesParam, 10) : undefined;
   const sourceSubset = sourceParam ? sourceParam.split(",").map((s) => s.trim()) : undefined;
   const action: "discover" | "revalidate" | "all" =
     actionParam === "revalidate" ? "revalidate" : actionParam === "all" ? "all" : "discover";
@@ -50,7 +52,8 @@ export async function POST(request: NextRequest) {
     const telemetry = await runScheduledPipeline({
       action,
       sourceSubset,
-      forceAllSources: forceParam || !!sourceSubset
+      forceAllSources: forceParam || !!sourceSubset,
+      maxSourcesPerInvocation: maxSources
     });
 
     return NextResponse.json(

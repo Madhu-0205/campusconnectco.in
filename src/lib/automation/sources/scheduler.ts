@@ -33,10 +33,14 @@ export interface SchedulerExecutionResult {
   completedAt: Date;
   dueSources: string[];
   skippedSources: { source: string; nextEligibleRunAt: Date; reason: string }[];
+  deferredSources?: { source: string; nextEligibleRunAt: Date; reason: string }[];
+  nextEligibleSource?: string | null;
+  boundedWorkBudget?: number;
   metrics: AutomationRunMetrics & {
     publishableCandidates?: number;
     reviewCandidates?: number;
     publishedCandidates?: number;
+    sourcesDeferred?: number;
   };
   results: DiscoveryRunResult[];
 }
@@ -50,6 +54,9 @@ export interface ScheduledRunTelemetry {
   sourcesAttempted: number;
   sourcesSucceeded: number;
   sourcesFailed: number;
+  sourcesDeferred?: number;
+  deferredSources?: { source: string; nextEligibleRunAt: string; reason: string }[];
+  nextEligibleSource?: string | null;
   recordsDiscovered: number;
   recordsNormalized: number;
   duplicates: number;
@@ -95,8 +102,22 @@ export function sanitizeSecrets(message: string): string {
  * Executes a continuous discovery cycle across all sources that are due for polling.
  * Decoupled from execution triggers (CRON, CLI, or manual Founder action).
  */
+export interface RunDueOptions {
+  forceAll?: boolean;
+  now?: Date;
+  sourceSubset?: string[];
+  maxSourcesPerInvocation?: number;
+  maxDurationMs?: number;
+  prisma?: any;
+}
+
+/**
+ * Executes a continuous discovery cycle across all sources that are due for polling.
+ * Decoupled from execution triggers (CRON, CLI, or manual Founder action).
+ * Enforces bounded source processing per invocation (default 1 source per invocation).
+ */
 export async function runDueOpportunitySources(
-  options?: { forceAll?: boolean; now?: Date; sourceSubset?: string[] }
+  options?: RunDueOptions
 ): Promise<SchedulerExecutionResult> {
   const now = options?.now || new Date();
   const runId = `sched_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
@@ -110,9 +131,30 @@ export async function runDueOpportunitySources(
   const dueSources: SourceConfig[] = [];
   const skippedSources: { source: string; nextEligibleRunAt: Date; reason: string }[] = [];
 
-  // 1. Fetch health records if model exists
-  const healthMap = new Map<string, any>();
-  if (legacyPrisma.sourceHealth?.findMany) {
+  // 1. Fetch health records from PlatformSetting (and fallback to legacy model if present)
+  const healthMap = new Map<string, { lastAttempt: Date | null; consecutiveFailures: number; lastSuccess?: string | null }>();
+  try {
+    if (prisma.platformSetting?.findMany) {
+      const settings = await prisma.platformSetting.findMany({
+        where: {
+          key: { in: enabledSources.map((s) => `opp_source_health:${s.source}`) }
+        }
+      });
+      for (const s of settings) {
+        try {
+          const parsed = JSON.parse(s.value);
+          const sourceId = s.key.replace("opp_source_health:", "");
+          healthMap.set(sourceId, {
+            lastAttempt: parsed.lastAttempt ? new Date(parsed.lastAttempt) : null,
+            consecutiveFailures: parsed.consecutiveFailures || 0,
+            lastSuccess: parsed.lastSuccess || null
+          });
+        } catch {}
+      }
+    }
+  } catch {}
+
+  if (healthMap.size === 0 && legacyPrisma.sourceHealth?.findMany) {
     try {
       const healthRecords = await legacyPrisma.sourceHealth.findMany({
         where: {
@@ -120,7 +162,10 @@ export async function runDueOpportunitySources(
         }
       });
       for (const h of healthRecords) {
-        healthMap.set(h.source, h);
+        healthMap.set(h.source, {
+          lastAttempt: h.lastRun || null,
+          consecutiveFailures: h.failureCount || 0
+        });
       }
     } catch {}
   }
@@ -133,8 +178,8 @@ export async function runDueOpportunitySources(
     }
 
     const health = healthMap.get(config.source);
-    const lastAttempt = health?.lastRun || null;
-    const consecutiveFailures = health?.failureCount || 0;
+    const lastAttempt = health?.lastAttempt || null;
+    const consecutiveFailures = health?.consecutiveFailures || 0;
 
     const nextEligible = calculateNextEligibleRun(config, lastAttempt, consecutiveFailures, now);
 
@@ -149,6 +194,39 @@ export async function runDueOpportunitySources(
     }
   }
 
+  // 2b. Fair scheduling: Order due sources by staleness (longest waiting / never-run runs first)
+  dueSources.sort((a, b) => {
+    const timeA = healthMap.get(a.source)?.lastAttempt?.getTime() || 0;
+    const timeB = healthMap.get(b.source)?.lastAttempt?.getTime() || 0;
+    return timeA - timeB;
+  });
+
+  // 2c. Bounded work budget: Default to 1 source per invocation to guarantee serverless safety
+  const defaultBatchSize = process.env.OPPORTUNITY_DISCOVERY_BATCH_SIZE
+    ? parseInt(process.env.OPPORTUNITY_DISCOVERY_BATCH_SIZE, 10)
+    : 1;
+
+  const maxSources =
+    options?.maxSourcesPerInvocation ??
+    (options?.sourceSubset && options.sourceSubset.length > 0
+      ? options.sourceSubset.length
+      : defaultBatchSize);
+
+  const sourcesToRun = dueSources.slice(0, maxSources);
+  const deferredSources: { source: string; nextEligibleRunAt: Date; reason: string }[] = dueSources
+    .slice(maxSources)
+    .map((s) => {
+      const h = healthMap.get(s.source);
+      const nextEligible = calculateNextEligibleRun(s, h?.lastAttempt || null, h?.consecutiveFailures || 0, now);
+      return {
+        source: s.source,
+        nextEligibleRunAt: nextEligible,
+        reason: `Deferred to next scheduled invocation (bounded work budget: ${maxSources} source per invocation)`
+      };
+    });
+
+  const nextEligibleSource = deferredSources.length > 0 ? deferredSources[0].source : null;
+
   // 3. Initialize aggregate AutomationRun log if supported
   if (legacyPrisma.automationRun?.create) {
     try {
@@ -156,7 +234,12 @@ export async function runDueOpportunitySources(
         data: {
           runId,
           source: "scheduler_batch",
-          query: JSON.stringify({ dueCount: dueSources.length, skippedCount: skippedSources.length }),
+          query: JSON.stringify({
+            dueCount: dueSources.length,
+            runningCount: sourcesToRun.length,
+            deferredCount: deferredSources.length,
+            skippedCount: skippedSources.length
+          }),
           status: "RUNNING",
           startedAt
         }
@@ -169,10 +252,12 @@ export async function runDueOpportunitySources(
     publishableCandidates?: number;
     reviewCandidates?: number;
     publishedCandidates?: number;
+    sourcesDeferred?: number;
   } = {
-    sourcesAttempted: dueSources.length,
+    sourcesAttempted: 0,
     sourcesSucceeded: 0,
     sourcesFailed: 0,
+    sourcesDeferred: deferredSources.length,
     itemsDiscovered: 0,
     itemsNormalized: 0,
     itemsNew: 0,
@@ -187,13 +272,28 @@ export async function runDueOpportunitySources(
     publishedCandidates: 0
   };
 
-  // 4. Run each due source inside an isolated try/catch boundary
-  for (const sourceConfig of dueSources) {
+  // 4. Run each bounded due source inside an isolated try/catch boundary
+  const maxDurationMs = options?.maxDurationMs ?? 25000;
+  for (const sourceConfig of sourcesToRun) {
+    // Check execution budget before starting each source
+    if (Date.now() - startedAt.getTime() > maxDurationMs) {
+      deferredSources.push({
+        source: sourceConfig.source,
+        nextEligibleRunAt: now,
+        reason: `Deferred: invocation duration exceeded safety budget of ${maxDurationMs}ms`
+      });
+      metrics.sourcesDeferred = deferredSources.length;
+      continue;
+    }
+
+    metrics.sourcesAttempted++;
+
     try {
       const res = await runDiscoveryForSource(sourceConfig);
       results.push(res);
 
-      if (res.errors.length > 0 && res.itemsProcessed === 0) {
+      const isSuccess = res.errors.length === 0 || res.itemsProcessed > 0;
+      if (!isSuccess && res.itemsProcessed === 0) {
         metrics.sourcesFailed++;
       } else {
         metrics.sourcesSucceeded++;
@@ -210,6 +310,44 @@ export async function runDueOpportunitySources(
       metrics.publishableCandidates = (metrics.publishableCandidates || 0) + (res.publishableCount || 0);
       metrics.reviewCandidates = (metrics.reviewCandidates || 0) + (res.reviewCount || 0);
       metrics.publishedCandidates = (metrics.publishedCandidates || 0) + (res.publishedCount || 0);
+
+      // Persist source health and rotation cursor in PlatformSetting
+      try {
+        if (prisma.platformSetting?.upsert) {
+          const prevHealth = healthMap.get(sourceConfig.source);
+          const consecutiveFailures = isSuccess ? 0 : (prevHealth?.consecutiveFailures || 0) + 1;
+          await prisma.platformSetting.upsert({
+            where: { key: `opp_source_health:${sourceConfig.source}` },
+            update: {
+              value: JSON.stringify({
+                source: sourceConfig.source,
+                lastAttempt: now.toISOString(),
+                lastSuccess: isSuccess ? now.toISOString() : (prevHealth?.lastSuccess || null),
+                consecutiveFailures,
+                lastDurationMs: res.durationMs,
+                lastStatus: isSuccess ? "SUCCESS" : "FAILED"
+              })
+            },
+            create: {
+              key: `opp_source_health:${sourceConfig.source}`,
+              value: JSON.stringify({
+                source: sourceConfig.source,
+                lastAttempt: now.toISOString(),
+                lastSuccess: isSuccess ? now.toISOString() : null,
+                consecutiveFailures,
+                lastDurationMs: res.durationMs,
+                lastStatus: isSuccess ? "SUCCESS" : "FAILED"
+              })
+            }
+          });
+
+          await prisma.platformSetting.upsert({
+            where: { key: "opp_source_cursor" },
+            update: { value: JSON.stringify({ lastSource: sourceConfig.source, updatedAt: now.toISOString() }) },
+            create: { key: "opp_source_cursor", value: JSON.stringify({ lastSource: sourceConfig.source, updatedAt: now.toISOString() }) }
+          });
+        }
+      } catch {}
     } catch (err: any) {
       metrics.sourcesFailed++;
       const safeErr = sanitizeSecrets(err?.message || "Unknown error");
@@ -219,6 +357,7 @@ export async function runDueOpportunitySources(
 
   const completedAt = new Date();
   metrics.durationMs = completedAt.getTime() - startedAt.getTime();
+  metrics.sourcesDeferred = deferredSources.length;
 
   // 5. Complete aggregate AutomationRun record if supported
   if (legacyPrisma.automationRun?.update) {
@@ -226,7 +365,7 @@ export async function runDueOpportunitySources(
       await legacyPrisma.automationRun.update({
         where: { runId },
         data: {
-          status: metrics.sourcesFailed === dueSources.length && dueSources.length > 0 ? "FAILED" : "COMPLETED",
+          status: metrics.sourcesFailed === sourcesToRun.length && sourcesToRun.length > 0 ? "FAILED" : "COMPLETED",
           itemsFound: metrics.itemsDiscovered,
           itemsProcessed: metrics.itemsNormalized,
           itemsPublished: metrics.publishedCandidates || 0,
@@ -245,8 +384,11 @@ export async function runDueOpportunitySources(
     runId,
     startedAt,
     completedAt,
-    dueSources: dueSources.map((s) => s.source),
+    dueSources: sourcesToRun.map((s) => s.source),
     skippedSources,
+    deferredSources,
+    nextEligibleSource,
+    boundedWorkBudget: maxSources,
     metrics,
     results
   };
@@ -269,9 +411,12 @@ export async function runScheduledPipeline(options?: {
   action?: "discover" | "revalidate" | "all";
   forceAllSources?: boolean;
   batchSize?: number;
+  maxSourcesPerInvocation?: number;
+  maxDurationMs?: number;
   now?: Date;
   sourceSubset?: string[];
   revalidationOptions?: RevalidationOptions;
+  prisma?: any;
 }): Promise<ScheduledRunTelemetry> {
   const action = options?.action || "discover";
   const now = options?.now || new Date();
@@ -288,7 +433,10 @@ export async function runScheduledPipeline(options?: {
       discoveryResult = await runDueOpportunitySources({
         forceAll: options?.forceAllSources,
         now,
-        sourceSubset: options?.sourceSubset
+        sourceSubset: options?.sourceSubset,
+        maxSourcesPerInvocation: options?.maxSourcesPerInvocation,
+        maxDurationMs: options?.maxDurationMs,
+        prisma: options?.prisma
       });
     } catch (err: any) {
       const safeErr = sanitizeSecrets(err?.message || "Discovery failed");
@@ -302,6 +450,7 @@ export async function runScheduledPipeline(options?: {
       revalidationResult = await runOpportunityRevalidation({
         now,
         batchSize: options?.batchSize,
+        prisma: options?.prisma,
         ...options?.revalidationOptions
       });
     } catch (err: any) {
@@ -323,6 +472,13 @@ export async function runScheduledPipeline(options?: {
     sourcesAttempted: discoveryResult?.metrics.sourcesAttempted ?? 0,
     sourcesSucceeded: discoveryResult?.metrics.sourcesSucceeded ?? 0,
     sourcesFailed: discoveryResult?.metrics.sourcesFailed ?? 0,
+    sourcesDeferred: discoveryResult?.metrics.sourcesDeferred ?? (discoveryResult?.deferredSources?.length ?? 0),
+    deferredSources: discoveryResult?.deferredSources?.map((d) => ({
+      source: d.source,
+      nextEligibleRunAt: d.nextEligibleRunAt.toISOString(),
+      reason: d.reason
+    })),
+    nextEligibleSource: discoveryResult?.nextEligibleSource ?? null,
     recordsDiscovered: discoveryResult?.metrics.itemsDiscovered ?? 0,
     recordsNormalized: discoveryResult?.metrics.itemsNormalized ?? 0,
     duplicates: discoveryResult?.metrics.duplicatesPrevented ?? 0,
