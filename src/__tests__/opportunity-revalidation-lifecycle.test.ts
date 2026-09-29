@@ -695,4 +695,185 @@ describe("Phase 16D: Lifecycle Revalidation & Outage Resilience Engine (Phase 3)
     expect(summary.closed).toBe(1);
     expect(summary.activeAndHealthy).toBe(1);
   });
+
+  // Additional 4: Independent Flag Semantics Matrix (Cases 1 - 9)
+  describe("Independent Flag Semantics Matrix", () => {
+    // CASE 1: revalidation=true, autoExpire=true -> 404/410 -> CONFIRMED_REMOVAL -> CLOSED
+    it("CASE 1: revalidation=true, autoExpire=true -> 404/410 -> CONFIRMED_REMOVAL -> CLOSED", async () => {
+      const prisma = createMockPrisma([
+        { id: "case1", status: "OPEN", applicationLink: "https://example.com/job", deletedAt: null }
+      ]);
+      const res = await revalidateOpportunity("case1", {
+        prisma,
+        fetchFn: async () => new Response("Not Found", { status: 404 }),
+        revalidationEnabledOverride: true,
+        autoExpireEnabledOverride: true
+      });
+      expect(res.urlClassification).toBe("CONFIRMED_REMOVAL");
+      expect(res.currentStatus).toBe("CLOSED");
+      expect(res.actionTaken).toBe("STATUS_CHANGED");
+      const rec = await prisma.internship.findUnique({ where: { id: "case1" } });
+      expect(rec?.status).toBe("CLOSED");
+    });
+
+    // CASE 2: revalidation=false, autoExpire=true -> 404/410 -> CONFIRMED_REMOVAL -> OPEN (DRY_RUN)
+    it("CASE 2: revalidation=false, autoExpire=true -> 404/410 -> CONFIRMED_REMOVAL -> OPEN (DRY_RUN)", async () => {
+      const prisma = createMockPrisma([
+        { id: "case2", status: "OPEN", applicationLink: "https://example.com/job", deletedAt: null }
+      ]);
+      const res = await revalidateOpportunity("case2", {
+        prisma,
+        fetchFn: async () => new Response("Not Found", { status: 404 }),
+        revalidationEnabledOverride: false,
+        autoExpireEnabledOverride: true
+      });
+      expect(res.urlClassification).toBe("CONFIRMED_REMOVAL");
+      expect(res.currentStatus).toBe("OPEN");
+      expect(res.actionTaken).toBe("NO_ACTION");
+      const rec = await prisma.internship.findUnique({ where: { id: "case2" } });
+      expect(rec?.status).toBe("OPEN");
+    });
+
+    // CASE 3: revalidation=true, autoExpire=false -> 404/410 -> CONFIRMED_REMOVAL -> CLOSED
+    it("CASE 3: revalidation=true, autoExpire=false -> 404/410 -> CONFIRMED_REMOVAL -> CLOSED", async () => {
+      const prisma = createMockPrisma([
+        { id: "case3", status: "OPEN", applicationLink: "https://example.com/job", deletedAt: null }
+      ]);
+      const res = await revalidateOpportunity("case3", {
+        prisma,
+        fetchFn: async () => new Response("Gone", { status: 410 }),
+        revalidationEnabledOverride: true,
+        autoExpireEnabledOverride: false
+      });
+      expect(res.urlClassification).toBe("CONFIRMED_REMOVAL");
+      expect(res.currentStatus).toBe("CLOSED");
+      expect(res.actionTaken).toBe("STATUS_CHANGED");
+      const rec = await prisma.internship.findUnique({ where: { id: "case3" } });
+      expect(rec?.status).toBe("CLOSED");
+    });
+
+    // CASE 4: revalidation=false, autoExpire=true -> TEMPORARY_OUTAGE threshold -> must NOT mutate to CLOSED
+    it("CASE 4: revalidation=false, autoExpire=true -> TEMPORARY_OUTAGE threshold -> must NOT mutate to CLOSED", async () => {
+      const key = getFailureTrackingKey("case4");
+      const prisma = createMockPrisma(
+        [{ id: "case4", status: "OPEN", applicationLink: "https://example.com/job", deletedAt: null }],
+        { [key]: JSON.stringify({ consecutiveFailures: 2, firstFailedAt: mockNow.toISOString() }) }
+      );
+      const res = await revalidateOpportunity("case4", {
+        prisma,
+        fetchFn: async () => new Response("503", { status: 503 }),
+        revalidationEnabledOverride: false,
+        autoExpireEnabledOverride: true,
+        maxConsecutiveFailures: 3
+      });
+      expect(res.urlClassification).toBe("TEMPORARY_OUTAGE");
+      expect(res.currentStatus).toBe("OPEN");
+      expect(res.actionTaken).toBe("NO_ACTION");
+      const rec = await prisma.internship.findUnique({ where: { id: "case4" } });
+      expect(rec?.status).toBe("OPEN");
+    });
+
+    // CASE 5: revalidation=true, autoExpire=false -> TEMPORARY_OUTAGE threshold -> mutate to CLOSED
+    it("CASE 5: revalidation=true -> TEMPORARY_OUTAGE threshold -> CLOSED", async () => {
+      const key = getFailureTrackingKey("case5");
+      const prisma = createMockPrisma(
+        [{ id: "case5", status: "OPEN", applicationLink: "https://example.com/job", deletedAt: null }],
+        { [key]: JSON.stringify({ consecutiveFailures: 2, firstFailedAt: mockNow.toISOString() }) }
+      );
+      const res = await revalidateOpportunity("case5", {
+        prisma,
+        fetchFn: async () => new Response("503", { status: 503 }),
+        revalidationEnabledOverride: true,
+        autoExpireEnabledOverride: false,
+        maxConsecutiveFailures: 3
+      });
+      expect(res.urlClassification).toBe("TEMPORARY_OUTAGE");
+      expect(res.currentStatus).toBe("CLOSED");
+      expect(res.actionTaken).toBe("STATUS_CHANGED");
+      const rec = await prisma.internship.findUnique({ where: { id: "case5" } });
+      expect(rec?.status).toBe("CLOSED");
+    });
+
+    // CASE 6: autoExpire=true -> deadline passed -> EXPIRED
+    it("CASE 6: autoExpire=true -> deadline passed -> EXPIRED", async () => {
+      const pastDeadline = new Date(mockNow.getTime() - 24 * 60 * 60 * 1000);
+      const prisma = createMockPrisma([
+        { id: "case6", status: "OPEN", deadline: pastDeadline, deletedAt: null }
+      ]);
+      const res = await revalidateOpportunity("case6", {
+        prisma,
+        now: mockNow,
+        autoExpireEnabledOverride: true,
+        revalidationEnabledOverride: false
+      });
+      expect(res.deadlineExpired).toBe(true);
+      expect(res.currentStatus).toBe("EXPIRED");
+      expect(res.actionTaken).toBe("STATUS_CHANGED");
+      const rec = await prisma.internship.findUnique({ where: { id: "case6" } });
+      expect(rec?.status).toBe("EXPIRED");
+    });
+
+    // CASE 7: autoExpire=false -> deadline passed -> OPEN
+    it("CASE 7: autoExpire=false -> deadline passed -> OPEN", async () => {
+      const pastDeadline = new Date(mockNow.getTime() - 24 * 60 * 60 * 1000);
+      const prisma = createMockPrisma([
+        { id: "case7", status: "OPEN", deadline: pastDeadline, deletedAt: null }
+      ]);
+      const res = await revalidateOpportunity("case7", {
+        prisma,
+        now: mockNow,
+        autoExpireEnabledOverride: false,
+        revalidationEnabledOverride: true
+      });
+      expect(res.deadlineExpired).toBe(true);
+      expect(res.currentStatus).toBe("OPEN");
+      expect(res.actionTaken).toBe("NO_ACTION");
+      const rec = await prisma.internship.findUnique({ where: { id: "case7" } });
+      expect(rec?.status).toBe("OPEN");
+    });
+
+    // CASE 8: 403/WAF -> SOURCE_UNAVAILABLE -> no closure
+    it("CASE 8: 403/WAF -> SOURCE_UNAVAILABLE -> remains OPEN", async () => {
+      const prisma = createMockPrisma([
+        { id: "case8", status: "OPEN", applicationLink: "https://example.com/job", deletedAt: null }
+      ]);
+      const res = await revalidateOpportunity("case8", {
+        prisma,
+        fetchFn: async () => new Response("Forbidden", { status: 403 }),
+        revalidationEnabledOverride: true,
+        autoExpireEnabledOverride: true
+      });
+      expect(res.urlClassification).toBe("SOURCE_UNAVAILABLE");
+      expect(res.currentStatus).toBe("OPEN");
+      expect(res.actionTaken).toBe("NO_ACTION");
+      const rec = await prisma.internship.findUnique({ where: { id: "case8" } });
+      expect(rec?.status).toBe("OPEN");
+    });
+
+    // CASE 9: terminal CLOSED/EXPIRED -> TERMINAL_PRESERVED
+    it("CASE 9: terminal CLOSED/EXPIRED -> TERMINAL_PRESERVED", async () => {
+      const mockFetch = vi.fn();
+      const prisma = createMockPrisma([
+        { id: "case9-closed", status: "CLOSED", applicationLink: "https://example.com/job", deletedAt: null },
+        { id: "case9-expired", status: "EXPIRED", applicationLink: "https://example.com/job", deletedAt: null }
+      ]);
+      const res1 = await revalidateOpportunity("case9-closed", {
+        prisma,
+        fetchFn: mockFetch,
+        revalidationEnabledOverride: true,
+        autoExpireEnabledOverride: true
+      });
+      const res2 = await revalidateOpportunity("case9-expired", {
+        prisma,
+        fetchFn: mockFetch,
+        revalidationEnabledOverride: true,
+        autoExpireEnabledOverride: true
+      });
+      expect(res1.actionTaken).toBe("TERMINAL_PRESERVED");
+      expect(res1.currentStatus).toBe("CLOSED");
+      expect(res2.actionTaken).toBe("TERMINAL_PRESERVED");
+      expect(res2.currentStatus).toBe("EXPIRED");
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+  });
 });

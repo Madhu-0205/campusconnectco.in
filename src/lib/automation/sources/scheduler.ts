@@ -131,11 +131,14 @@ export async function runDueOpportunitySources(
   const dueSources: SourceConfig[] = [];
   const skippedSources: { source: string; nextEligibleRunAt: Date; reason: string }[] = [];
 
+  const activePrisma = options?.prisma || prisma;
+  const activeLegacyPrisma = (options?.prisma as unknown as Record<string, any>) || legacyPrisma;
+
   // 1. Fetch health records from PlatformSetting (and fallback to legacy model if present)
   const healthMap = new Map<string, { lastAttempt: Date | null; consecutiveFailures: number; lastSuccess?: string | null }>();
   try {
-    if (prisma.platformSetting?.findMany) {
-      const settings = await prisma.platformSetting.findMany({
+    if (activePrisma.platformSetting?.findMany) {
+      const settings = await activePrisma.platformSetting.findMany({
         where: {
           key: { in: enabledSources.map((s) => `opp_source_health:${s.source}`) }
         }
@@ -154,9 +157,9 @@ export async function runDueOpportunitySources(
     }
   } catch {}
 
-  if (healthMap.size === 0 && legacyPrisma.sourceHealth?.findMany) {
+  if (healthMap.size === 0 && activeLegacyPrisma.sourceHealth?.findMany) {
     try {
-      const healthRecords = await legacyPrisma.sourceHealth.findMany({
+      const healthRecords = await activeLegacyPrisma.sourceHealth.findMany({
         where: {
           source: { in: enabledSources.map((s) => s.source) }
         }
@@ -228,9 +231,9 @@ export async function runDueOpportunitySources(
   const nextEligibleSource = deferredSources.length > 0 ? deferredSources[0].source : null;
 
   // 3. Initialize aggregate AutomationRun log if supported
-  if (legacyPrisma.automationRun?.create) {
+  if (activeLegacyPrisma.automationRun?.create) {
     try {
-      await legacyPrisma.automationRun.create({
+      await activeLegacyPrisma.automationRun.create({
         data: {
           runId,
           source: "scheduler_batch",
@@ -313,10 +316,10 @@ export async function runDueOpportunitySources(
 
       // Persist source health and rotation cursor in PlatformSetting
       try {
-        if (prisma.platformSetting?.upsert) {
+        if (activePrisma.platformSetting?.upsert) {
           const prevHealth = healthMap.get(sourceConfig.source);
           const consecutiveFailures = isSuccess ? 0 : (prevHealth?.consecutiveFailures || 0) + 1;
-          await prisma.platformSetting.upsert({
+          await activePrisma.platformSetting.upsert({
             where: { key: `opp_source_health:${sourceConfig.source}` },
             update: {
               value: JSON.stringify({
@@ -341,7 +344,7 @@ export async function runDueOpportunitySources(
             }
           });
 
-          await prisma.platformSetting.upsert({
+          await activePrisma.platformSetting.upsert({
             where: { key: "opp_source_cursor" },
             update: { value: JSON.stringify({ lastSource: sourceConfig.source, updatedAt: now.toISOString() }) },
             create: { key: "opp_source_cursor", value: JSON.stringify({ lastSource: sourceConfig.source, updatedAt: now.toISOString() }) }
@@ -360,9 +363,9 @@ export async function runDueOpportunitySources(
   metrics.sourcesDeferred = deferredSources.length;
 
   // 5. Complete aggregate AutomationRun record if supported
-  if (legacyPrisma.automationRun?.update) {
+  if (activeLegacyPrisma.automationRun?.update) {
     try {
-      await legacyPrisma.automationRun.update({
+      await activeLegacyPrisma.automationRun.update({
         where: { runId },
         data: {
           status: metrics.sourcesFailed === sourcesToRun.length && sourcesToRun.length > 0 ? "FAILED" : "COMPLETED",

@@ -112,9 +112,6 @@ export function isRevalidationEnabled(options?: RevalidationOptions): boolean {
   if (options?.revalidationEnabledOverride !== undefined) {
     return options.revalidationEnabledOverride;
   }
-  if (options?.autoExpireEnabledOverride !== undefined) {
-    return options.autoExpireEnabledOverride;
-  }
   return process.env.OPPORTUNITY_REVALIDATION_ENABLED === "true";
 }
 
@@ -415,7 +412,10 @@ export async function revalidateOpportunity(
 
   // A. Confirmed Removal (404 / 410 or affirmative removal in body)
   if (classification === "CONFIRMED_REMOVAL") {
-    const isClosureEnabled = isRevalidationEnabled(options) || isAutoExpireEnabled(options);
+    const isClosureEnabled =
+      isRevalidationEnabled(options) ||
+      (options?.autoExpireEnabledOverride === true &&
+        options?.revalidationEnabledOverride === undefined);
     if (!isClosureEnabled) {
       return {
         opportunityId,
