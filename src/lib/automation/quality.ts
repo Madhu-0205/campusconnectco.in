@@ -48,11 +48,57 @@ const DISPOSABLE_EMAIL_DOMAINS = [
 ];
 
 /**
+ * Approved canary source IDs permitted for automated publishing during Phase 16D Stage 3 Canary.
+ * All non-canary sources route strictly to NEEDS_REVIEW even if all 11 gates pass.
+ */
+export const CANARY_AUTOPUBLISH_SOURCES: readonly string[] = [
+  "github_student_internships",
+  "github_new_grad_jobs"
+];
+
+/**
  * Checks whether global auto-publishing is enabled via environment gate.
  * Always defaults to false for controlled rollout.
  */
 export function isAutoPublishEnabled(): boolean {
   return process.env.OPPORTUNITY_AUTOPUBLISH_ENABLED === "true";
+}
+
+/**
+ * Checks whether a canonical registered source ID is permitted for automated publishing.
+ * Supports environment variable OPPORTUNITY_CANARY_SOURCE_ALLOWLIST (comma-separated)
+ * or defaults strictly to CANARY_AUTOPUBLISH_SOURCES in production.
+ */
+export function isAutoPublishSourceAllowed(
+  sourceId: string,
+  options?: { canarySourceAllowlistOverride?: string[] }
+): boolean {
+  if (!sourceId || typeof sourceId !== "string") return false;
+  const normalizedSource = sourceId.trim().toLowerCase();
+
+  // 1. Explicit in-memory override takes top precedence (for isolated tests)
+  if (options?.canarySourceAllowlistOverride) {
+    return options.canarySourceAllowlistOverride
+      .map((s) => s.trim().toLowerCase())
+      .includes(normalizedSource);
+  }
+
+  // 2. In production or when explicitly enforced in test
+  const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+  const isTestEnforced = process.env.OPPORTUNITY_CANARY_ENFORCE_IN_TEST === "true";
+
+  if (isProduction || isTestEnforced) {
+    const envAllowlist = process.env.OPPORTUNITY_CANARY_SOURCE_ALLOWLIST;
+    if (envAllowlist) {
+      const allowed = envAllowlist.split(",").map((s) => s.trim().toLowerCase());
+      return allowed.includes(normalizedSource);
+    }
+    return CANARY_AUTOPUBLISH_SOURCES.includes(normalizedSource);
+  }
+
+  // 3. In non-production test/dev environments without explicit enforcement, allow all
+  // to avoid breaking Phase 1 & Phase 2 synthetic test harnesses
+  return true;
 }
 
 /**

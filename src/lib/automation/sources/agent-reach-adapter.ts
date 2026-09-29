@@ -8,6 +8,7 @@
  */
 
 import { exec } from "child_process";
+import fs from "fs";
 import { promisify } from "util";
 import { RawDiscoveredItem } from "../types";
 
@@ -72,6 +73,11 @@ export async function discoverViaAgentReachWeb(
   sourceId: string = "agent_reach_web",
   maxItems: number = 10
 ): Promise<RawDiscoveredItem[]> {
+  if (!fs.existsSync(/*turbopackIgnore: true*/ AGENT_REACH_VENV_PYTHON)) {
+    console.warn(`[Agent-Reach Web] Environment not found at ${AGENT_REACH_VENV_PYTHON}; skipping.`);
+    return [];
+  }
+
   const pythonScript = `
 import json, sys
 from agent_reach.channels.web import WebChannel
@@ -87,7 +93,7 @@ except Exception as e:
   try {
     const { stdout } = await execAsync(
       `${AGENT_REACH_VENV_PYTHON} -c '${pythonScript.replace(/'/g, "'\\''")}'`,
-      { timeout: 30000 }
+      { timeout: 5000 }
     );
 
     const res = JSON.parse(stdout);
@@ -112,6 +118,11 @@ export async function discoverViaAgentReachFeed(
   sourceId: string = "agent_reach_feed",
   maxItems: number = 10
 ): Promise<RawDiscoveredItem[]> {
+  if (!fs.existsSync(/*turbopackIgnore: true*/ AGENT_REACH_VENV_PYTHON)) {
+    console.warn(`[Agent-Reach Feed] Environment not found at ${AGENT_REACH_VENV_PYTHON}; skipping.`);
+    return [];
+  }
+
   const pythonScript = `
 import json, sys, feedparser
 
@@ -134,7 +145,7 @@ except Exception as e:
   try {
     const { stdout } = await execAsync(
       `${AGENT_REACH_VENV_PYTHON} -c '${pythonScript.replace(/'/g, "'\\''")}'`,
-      { timeout: 25000 }
+      { timeout: 5000 }
     );
 
     const res = JSON.parse(stdout);

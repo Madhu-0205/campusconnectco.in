@@ -98,6 +98,7 @@ export async function updateSession(request: NextRequest) {
     path === '/api/ready' ||
     path === '/api/live' ||
     path === '/api/stats' ||
+    path.startsWith('/api/cron') ||
     path.startsWith('/api/opportunities') ||
     path.startsWith('/api/search') ||
     path.startsWith('/api/skills') ||

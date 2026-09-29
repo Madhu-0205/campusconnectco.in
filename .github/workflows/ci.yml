@@ -15,8 +15,8 @@ jobs:
       DIRECT_URL: ${{ secrets.DIRECT_URL || secrets.DATABASE_URL || 'postgresql://placeholder:5432/ci_dummy' }}
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
-      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' }}
-      CRON_SECRET: ${{ secrets.CRON_SECRET || 'ci_cron_secret_placeholder' }}
+      NEXT_PUBLIC_APP_URL: 'http://localhost:3000'
+      CRON_SECRET: 'ci_cron_secret_placeholder'
       NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
 
     steps:
