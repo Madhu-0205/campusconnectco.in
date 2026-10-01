@@ -110,14 +110,14 @@ export async function POST(req: NextRequest) {
  });
 
  } catch (parseError: any) {
- console.error("[Parser Internal Error]:", parseError);
- return NextResponse.json(
- { 
- error:"Failed to parse file content", 
- details: parseError.message 
- },
- { status: 500 }
- );
+    console.error("[Parser Internal Error]:", parseError);
+    return NextResponse.json(
+      { 
+        error: "Failed to parse file content", 
+        details: "An error occurred during file parsing. Please ensure the document is not password-protected and is a supported format." 
+      },
+      { status: 500 }
+    );
  }
 
  } catch (error: any) {

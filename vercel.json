@@ -4,12 +4,19 @@
     "src/app/api/ai/**/*": {
       "maxDuration": 60,
       "memory": 1024
+    },
+    "src/app/api/cron/**/*": {
+      "maxDuration": 60
     }
   },
   "crons": [
     {
       "path": "/api/cron/opportunity-discovery",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/agent-monitor",
+      "schedule": "0 * * * *"
     }
   ],
   "headers": [

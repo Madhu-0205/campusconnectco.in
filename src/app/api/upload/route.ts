@@ -58,8 +58,8 @@ export async function POST(req: Request) {
 
  return NextResponse.json({ url: secureUrl });
 
- } catch (e: any) {
- console.error('[Upload API Route Error]:', e);
- return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
- }
+  } catch (e: any) {
+    console.error('[Upload API Route Error]:', e);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }

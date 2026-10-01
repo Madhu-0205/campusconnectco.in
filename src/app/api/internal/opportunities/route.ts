@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from"next/server";
 import { z } from"zod";
 
 import { prisma } from"@/lib/prisma";
+import { triggerAgentPipelineForOpportunity } from "@/lib/agents";
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 15;
@@ -149,6 +150,26 @@ export async function POST(request: NextRequest) {
  applicationLink: data.applicationLink || null,
  tags: data.tags || null,
  },
+ });
+
+ // Trigger AI Agent Layer (asynchronously above deterministic write)
+ triggerAgentPipelineForOpportunity({
+   opportunity: {
+     id: internship.id,
+     title: internship.title,
+     company: internship.company,
+     description: internship.description,
+     skills: internship.skills,
+     stipend: internship.stipend,
+     duration: internship.duration,
+     location: internship.location,
+     deadline: internship.deadline,
+     applicationLink: internship.applicationLink,
+     source: internship.source
+   },
+   autoMatchStudents: true
+ }).catch((agentErr) => {
+   console.warn(`[Internal API] AI Agent background execution notice:`, agentErr?.message || agentErr);
  });
 
  // Check if it was created or updated by comparing timestamps

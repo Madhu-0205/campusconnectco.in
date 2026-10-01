@@ -93,8 +93,8 @@ Return ONLY valid JSON.
  });
 
  return NextResponse.json({ status: 'completed', result: guidanceData });
- } catch (e: any) {
- console.error("[career-guidance Route Error]:", e);
- return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
- }
+  } catch (e: any) {
+    console.error("[career-guidance Route Error]:", e);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }

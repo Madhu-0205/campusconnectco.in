@@ -23,8 +23,8 @@ export async function GET(req: Request) {
  const feed = await assembleHomeFeed(user.id);
 
  return NextResponse.json(feed);
- } catch (e: any) {
- console.error('[feed]', e);
- return NextResponse.json({ error: e.message }, { status: 500 });
- }
+  } catch (e: any) {
+    console.error('[feed]', e);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }
