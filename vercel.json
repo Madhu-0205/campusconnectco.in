@@ -13,10 +13,6 @@
     {
       "path": "/api/cron/opportunity-discovery",
       "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/agent-monitor",
-      "schedule": "0 * * * *"
     }
   ],
   "headers": [
