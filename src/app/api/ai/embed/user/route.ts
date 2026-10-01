@@ -18,7 +18,8 @@ export async function POST(req: Request) {
 
  const vector = await computeUserEmbedding(userId);
  return NextResponse.json({ success: true, dimensions: vector.length });
- } catch (e: any) {
- return NextResponse.json({ error: e.message }, { status: 500 });
- }
+  } catch (e: any) {
+    console.error('[embed/user]', e);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }

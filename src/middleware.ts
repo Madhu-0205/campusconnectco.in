@@ -46,7 +46,8 @@ export async function proxy(request: NextRequest) {
   const ip = (request as any).ip || request.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
 
   const isDev = process.env.NODE_ENV === 'development';
-  const shouldRateLimit = process.env.DISABLE_RATE_LIMIT !== 'true';
+  // Rate limiting cannot be disabled in production, even if DISABLE_RATE_LIMIT is set
+  const shouldRateLimit = process.env.NODE_ENV === 'production' || process.env.DISABLE_RATE_LIMIT !== 'true';
   let activeRateLimitInfo: RateLimitResult | null = null;
 
   if (shouldRateLimit) {

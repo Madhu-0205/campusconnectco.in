@@ -52,10 +52,10 @@ export async function POST(req: Request) {
  let resumeData;
  try {
  resumeData = await parseResume(resolvedUrl);
- } catch (err: any) {
- console.error("[parseResume Error]:", err);
- return NextResponse.json({ error: err.message || 'Failed to parse resume' }, { status: 422 });
- }
+  } catch (err: any) {
+    console.error("[parseResume Error]:", err);
+    return NextResponse.json({ error: 'Failed to parse resume. Please ensure the file is a valid PDF or DOCX.' }, { status: 422 });
+  }
 
  try {
  // Update Prisma User

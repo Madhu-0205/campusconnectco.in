@@ -39,6 +39,7 @@ const TRACKING_PARAMS = [
 
 const PRIVATE_IP_PATTERNS = [
   /^localhost$/i,
+  /\.localhost$/i,
   /^127\.\d+\.\d+\.\d+$/,
   /^0\.0\.0\.0$/,
   /^10\.\d+\.\d+\.\d+$/,
@@ -46,17 +47,24 @@ const PRIVATE_IP_PATTERNS = [
   /^192\.168\.\d+\.\d+$/,
   /^169\.254\.\d+\.\d+$/,
   /^::1$/,
+  /^::$/,
+  /^0:0:0:0:0:0:0:1$/,
+  /^0:0:0:0:0:0:0:0$/,
   /^fe80:/i,
   /^fc00:/i,
-  /^fd00:/i
+  /^fd00:/i,
+  /^::ffff:(127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+|192\.168\.\d+\.\d+|169\.254\.\d+\.\d+|0\.0\.0\.0)$/i
 ];
 
 const PROMPT_INJECTION_PATTERNS = [
   /ignore\s+(all\s+)?(previous|prior)\s+instructions/i,
-  /system\s+prompt/i,
+  /system\s+(prompt|instruction)/i,
   /you\s+are\s+now\s+in\s+developer\s+mode/i,
   /mark\s+(this\s+)?(as\s+)?(verified|official|approved)/i,
   /bypass\s+(verification|security|auth|role)/i,
+  /reveal\s+(the\s+)?(system\s+prompt|instructions)/i,
+  /(call|use)\s+(the\s+)?(database|internal|admin)\s+tool/i,
+  /(modify|update)\s+verification/i,
   /drop\s+table/i,
   /truncate\s+table/i,
   /delete\s+from/i,
@@ -64,6 +72,22 @@ const PROMPT_INJECTION_PATTERNS = [
   /javascript:/i,
   /on\w+\s*=/i // inline event handlers like onload=, onerror=
 ];
+
+function resolveIpv4MappedHost(host: string): string | null {
+  if (host.startsWith("::ffff:") || host.startsWith("0:0:0:0:0:ffff:")) {
+    const rest = host.replace(/^(::ffff:|0:0:0:0:0:ffff:)/i, "");
+    if (rest.includes(".")) return rest;
+    const parts = rest.split(":");
+    if (parts.length === 2) {
+      const p1 = parseInt(parts[0], 16);
+      const p2 = parseInt(parts[1], 16);
+      if (!isNaN(p1) && !isNaN(p2)) {
+        return `${(p1 >> 8) & 0xff}.${p1 & 0xff}.${(p2 >> 8) & 0xff}.${p2 & 0xff}`;
+      }
+    }
+  }
+  return null;
+}
 
 /**
  * Validates whether a URL is safe and legitimate.
@@ -98,12 +122,31 @@ export function validateSafeUrl(rawUrl: string): { valid: boolean; error?: strin
     return { valid: false, error: "Protocol must be HTTP or HTTPS" };
   }
 
-  const hostname = parsed.hostname.toLowerCase();
+  const rawHostname = parsed.hostname.toLowerCase();
+  const cleanHost = rawHostname.replace(/^\[|\]$/g, "");
 
-  // SSRF Protection: Check for private network / localhost
-  for (const pattern of PRIVATE_IP_PATTERNS) {
-    if (pattern.test(hostname)) {
-      return { valid: false, error: `Disallowed private or loopback destination (${hostname})` };
+  // SSRF Protection: Check for private network / localhost / numeric encodings
+  if (
+    cleanHost === "localhost" ||
+    cleanHost.endsWith(".localhost") ||
+    /^\d+$/.test(cleanHost) || // Decimal IP representation (e.g. 2130706433)
+    /^0x[0-9a-f]+$/i.test(cleanHost) // Hex IP representation
+  ) {
+    return { valid: false, error: `Disallowed private or loopback destination (${cleanHost})` };
+  }
+
+  // Resolve IPv4-mapped IPv6 (e.g. [::ffff:7f00:1] -> 127.0.0.1)
+  const mappedIpv4 = resolveIpv4MappedHost(cleanHost);
+  const hostsToCheck = [cleanHost, rawHostname];
+  if (mappedIpv4) {
+    hostsToCheck.push(mappedIpv4);
+  }
+
+  for (const host of hostsToCheck) {
+    for (const pattern of PRIVATE_IP_PATTERNS) {
+      if (pattern.test(host)) {
+        return { valid: false, error: `Disallowed private or loopback destination (${cleanHost})` };
+      }
     }
   }
 

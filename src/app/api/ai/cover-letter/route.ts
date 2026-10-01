@@ -66,8 +66,8 @@ export async function POST(req: Request) {
  });
 
  return NextResponse.json({ coverLetter });
- } catch (e: any) {
- console.error('[cover-letter]', e);
- return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
- }
+  } catch (e: any) {
+    console.error('[cover-letter]', e);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }

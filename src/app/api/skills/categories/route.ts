@@ -38,14 +38,14 @@ export async function GET(): Promise<NextResponse<SkillCategoriesResponse | ApiE
  },
  },
  );
- } catch (err) {
- console.error("[/api/skills/categories] Error:", err);
- return NextResponse.json<ApiErrorResponse>(
- {
- error:"Failed to fetch skill categories",
- details: err instanceof Error ? err.message :"Unknown error",
- },
- { status: 500 },
- );
- }
+  } catch (err) {
+    console.error("[/api/skills/categories] Error:", err);
+    return NextResponse.json<ApiErrorResponse>(
+      {
+        error: "Failed to fetch skill categories",
+        details: process.env.NODE_ENV === "development" && err instanceof Error ? err.message : undefined,
+      },
+      { status: 500 },
+    );
+  }
 }

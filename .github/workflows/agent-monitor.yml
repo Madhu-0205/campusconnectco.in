@@ -1,0 +1,34 @@
+name: Agent Monitor
+
+on:
+  schedule:
+    # Run hourly at minute 0
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-monitor
+  cancel-in-progress: false
+
+jobs:
+  agent-monitor:
+    name: Trigger Agent Automation Cycle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Agent Monitor
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::CRON_SECRET is not configured in GitHub repository secrets."
+            exit 1
+          fi
+          curl --fail-with-body \
+            --silent \
+            --show-error \
+            --max-time 55 \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            https://www.campusconnectco.in/api/cron/agent-monitor

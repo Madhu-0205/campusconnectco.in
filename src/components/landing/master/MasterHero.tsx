@@ -97,9 +97,9 @@ export function MasterHero() {
     <section className="relative w-full min-h-[75vh] flex items-center justify-center pt-12 sm:pt-16 pb-16 overflow-hidden bg-[#FAFCFA]">
       {/* Background Decorators - Subtle Green Atmospheric Glows */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden flex justify-center">
-        <div className="absolute top-[-5%] right-[-5%] w-[500px] h-[500px] bg-[#1FA971]/6 rounded-full blur-[100px]" />
-        <div className="absolute top-[10%] left-[-10%] w-[450px] h-[450px] bg-amber-100/30 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[300px] bg-[#E8F3EE]/50 rounded-[100%] blur-[100px]" />
+        <div className="absolute top-[-5%] right-[-5%] w-125 h-125 bg-[#1FA971]/6 rounded-full blur-[100px]" />
+        <div className="absolute top-[10%] left-[-10%] w-112.5 h-112.5 bg-amber-100/30 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] left-[20%] w-150 h-75 bg-[#E8F3EE]/50 rounded-[100%] blur-[100px]" />
       </div>
 
       <div className="container relative z-20 mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">

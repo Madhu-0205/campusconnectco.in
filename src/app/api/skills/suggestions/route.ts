@@ -155,16 +155,16 @@ export async function GET(
 "Cache-Control":"public, s-maxage=60, stale-while-revalidate=30",
  },
  });
- } catch (err) {
- console.error("[/api/skills/suggestions] Error:", err);
- return NextResponse.json<ApiErrorResponse>(
- {
- error:"Failed to fetch skill suggestions",
- details: err instanceof Error ? err.message :"Unknown error",
- },
- { status: 500 },
- );
- }
+  } catch (err) {
+    console.error("[/api/skills/suggestions] Error:", err);
+    return NextResponse.json<ApiErrorResponse>(
+      {
+        error: "Failed to fetch skill suggestions",
+        details: process.env.NODE_ENV === "development" && err instanceof Error ? err.message : undefined,
+      },
+      { status: 500 },
+    );
+  }
 }
 
 /*

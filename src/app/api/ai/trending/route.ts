@@ -36,8 +36,8 @@ export async function GET(req: Request) {
  ]);
 
  return NextResponse.json({ gigs, skills, topics });
- } catch (e: any) {
- console.error('[trending]', e);
- return NextResponse.json({ error: e.message }, { status: 500 });
- }
+  } catch (e: any) {
+    console.error('[trending]', e);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }

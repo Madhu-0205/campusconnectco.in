@@ -934,3 +934,50 @@ model ModerationEvent {
   riskScore  Float?
   createdAt  DateTime @default(now())
 }
+
+model AgentRun {
+  id            String          @id @default(uuid()) @db.Uuid
+  agentType     String
+  entityType    String
+  entityId      String
+  status        String          // "RUNNING", "COMPLETED", "FAILED", "TIMEOUT"
+  startedAt     DateTime        @default(now())
+  completedAt   DateTime?
+  model         String?
+  inputSummary  String?         @db.Text
+  outputSummary String?         @db.Text
+  error         String?         @db.Text
+  decisions     AgentDecision[]
+
+  @@index([agentType, status])
+  @@index([entityType, entityId])
+  @@index([startedAt])
+}
+
+model AgentDecision {
+  id           String   @id @default(uuid()) @db.Uuid
+  agentRunId   String   @db.Uuid
+  decisionType String
+  decision     String
+  reason       String   @db.Text
+  confidence   Float?
+  createdAt    DateTime @default(now())
+  agentRun     AgentRun @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+
+  @@index([agentRunId])
+  @@index([decisionType])
+}
+
+model SourceEvidence {
+  id            String   @id @default(uuid()) @db.Uuid
+  opportunityId String
+  sourceUrl     String   @db.Text
+  evidenceType  String
+  contentHash   String?
+  observedAt    DateTime @default(now())
+  metadata      Json?
+
+  @@index([opportunityId])
+  @@index([evidenceType])
+  @@index([observedAt])
+}

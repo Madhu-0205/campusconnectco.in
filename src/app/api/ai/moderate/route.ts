@@ -57,8 +57,8 @@ export async function POST(req: Request) {
  }
 
  return NextResponse.json(result);
- } catch (e: any) {
- console.error('[moderate]', e);
- return NextResponse.json({ error: e.message || 'Internal Server Error' }, { status: 500 });
- }
+  } catch (e: any) {
+    console.error('[moderate]', e);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }

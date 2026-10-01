@@ -115,7 +115,7 @@ export default async function EmployerProfilePage() {
  <div className="px-6 pb-6">
  <div className="flex items-end justify-between -mt-10 mb-4 gap-4">
  {/* Logo */}
- <div className="w-20 h-20 rounded-2xl border-4 border-[var(--color-surface)] overflow-hidden bg-[#1FA971]/20 flex items-center justify-center shrink-0">
+ <div className="w-20 h-20 rounded-2xl border-4 border-(--color-surface) overflow-hidden bg-[#1FA971]/20 flex items-center justify-center shrink-0">
  {org.logo ? (
  <Image src={org.logo} alt={org.name} width={80} height={80} className="object-cover" priority />
  ) : (
