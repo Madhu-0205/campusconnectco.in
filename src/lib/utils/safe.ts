@@ -93,19 +93,15 @@ export const formatINR = (val: unknown): string => {
  * Safely get initials from a name string.
  */
 export const getInitials = (name: unknown): string => {
- const str = safeString(name,"?");
- return str
- .split("")
- .filter(Boolean)
- .map((w) => w[0])
- .join("")
- .toUpperCase()
- .slice(0, 2);
+  const str = safeString(name, "?").trim();
+  if (!str || str === "?") return "?";
+  const words = str.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return str.slice(0, 2).toUpperCase();
 };
 
-/**
- * Safely truncate a string with ellipsis.
- */
 export const truncate = (val: unknown, maxLen = 80): string => {
  const str = safeString(val);
  if (str.length <= maxLen) return str;

@@ -16,10 +16,11 @@ import { MasterCommunityStories } from "@/components/landing/master/MasterCommun
 import { MasterFAQ } from "@/components/landing/master/MasterFAQ"
 import { MasterFinalCTA } from "@/components/landing/master/MasterFinalCTA"
 import { V2Footer } from "@/components/navigation/V2Footer"
-import { V2Navbar } from "@/components/navigation/V2Navbar"
+import { V2Navbar, type V2NavbarUser } from "@/components/navigation/V2Navbar"
 import { StudentOpportunityJourney } from "@/components/onboarding/StudentOpportunityJourney"
 import { WebsiteSchema, FAQSchema } from "@/components/seo/JsonLd"
 import prisma from "@/lib/prisma"
+import { createClient } from "@/lib/supabase/server"
 
 function cleanTitleString(val: string | null | undefined): string {
   if (!val) return ""
@@ -71,6 +72,42 @@ export const metadata: Metadata = {
 
 export default async function CampusConnectLandingPage() {
   const nonce = (await headers()).get("x-nonce") || undefined
+
+  // Fetch current user session
+  let initialAuthUser: V2NavbarUser | null = null;
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const meta = user.user_metadata || {};
+      let role = (meta.role as string) || "STUDENT";
+      let name = meta.full_name || meta.name || user.email?.split("@")[0] || null;
+      let avatar = meta.avatar_url || meta.picture || null;
+
+      try {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { role: true, full_name: true, name: true, avatar_url: true, image: true }
+        });
+        if (dbUser) {
+          if (dbUser.role) role = dbUser.role;
+          if (dbUser.full_name || dbUser.name) name = dbUser.full_name || dbUser.name;
+          if (dbUser.avatar_url || dbUser.image) avatar = dbUser.avatar_url || dbUser.image;
+        }
+      } catch {
+        // Fallback to metadata
+      }
+
+      initialAuthUser = {
+        id: user.id,
+        role,
+        name,
+        avatar,
+      };
+    }
+  } catch {
+    // Unauthenticated
+  }
 
   // Fetch real database metrics & opportunities
   const [studentsCount, gigsCount, internshipsCount, connectionsCount, foundersCount, latestGigs, latestInternships] = await Promise.all([
@@ -171,7 +208,7 @@ export default async function CampusConnectLandingPage() {
       <main className="landing-body flex flex-col min-h-screen w-full max-w-full overflow-x-hidden bg-[#FAFCFA] text-[#232B27]">
         
         {/* 1. Navigation & Discovery Prompt */}
-        <V2Navbar />
+        <V2Navbar initialUser={initialAuthUser} />
 
         {/* 3. Hero / Value Proposition */}
         <MasterHero />
