@@ -112,21 +112,43 @@ export function NavbarClient({
  setIsMobileMenuOpen(false)
  }
 
- const syncUser = useCallback(async () => {
- const { data: { user }, error } = await supabase.auth.getUser()
- if (error || !user) {
- setUserId(null)
- setUserRole(null)
- setUserName(null)
- setUserAvatar(null)
- return
- }
+  const syncUser = useCallback(async () => {
+    const { data: { user }, error } = await supabase.auth.getUser()
+    if (error || !user) {
+      setUserId(null)
+      setUserRole(null)
+      setUserName(null)
+      setUserAvatar(null)
+      return
+    }
 
- setUserId(user.id)
- const meta = user.user_metadata ?? {}
- setUserName(meta.full_name ?? meta.name ?? user.email?.split('@')[0] ?? null)
- setUserAvatar(meta.avatar_url ?? meta.picture ?? null)
- }, [supabase])
+    setUserId(user.id)
+    const meta = user.user_metadata ?? {}
+    const defaultRole = (meta.role as string) || 'STUDENT'
+    setUserRole(defaultRole)
+    const fallbackName = meta.full_name ?? meta.name ?? user.email?.split('@')[0] ?? null
+    setUserName(fallbackName)
+    const fallbackAvatar = meta.avatar_url ?? meta.picture ?? null
+    setUserAvatar(fallbackAvatar)
+
+    try {
+      const { data: profile } = await supabase
+        .from('User')
+        .select('role, full_name, name, avatar_url, image')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (profile) {
+        if (profile.role) setUserRole(profile.role)
+        const name = profile.full_name || profile.name || fallbackName
+        setUserName(name)
+        const avatar = profile.avatar_url || profile.image || fallbackAvatar
+        setUserAvatar(avatar)
+      }
+    } catch {
+      // keep metadata fallbacks
+    }
+  }, [supabase])
 
  useEffect(() => {
  // eslint-disable-next-line react-hooks/set-state-in-effect

@@ -8,10 +8,11 @@ import { useSearchParams, useRouter } from"next/navigation";
 import { useState, useMemo, useEffect, useCallback } from"react";
 import { toast } from"sonner";
 
-import UserCard from"@/components/networking/UserCard";
-import { ErrorBoundary } from"@/components/ui/ErrorBoundary";
-import { UserCardSkeleton } from"@/components/ui/Skeletons";
-import { safeArray } from"@/lib/utils/safe";
+import UserCard from "@/components/networking/UserCard";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { UserCardSkeleton } from "@/components/ui/Skeletons";
+import { cn } from "@/lib/utils";
+import { safeArray } from "@/lib/utils/safe";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -195,7 +196,7 @@ export default function NetworkPage() {
  </div>
 
  {/* Search */}
- <div className="cc-glass rounded-xl p-4 flex flex-col gap-4">
+ <div className="bg-card border border-border rounded-2xl p-4 shadow-card flex flex-col gap-4">
  <div className="flex flex-col md:flex-row gap-3 items-center">
  <div className="relative flex-1 w-full">
  <Search
@@ -206,49 +207,56 @@ export default function NetworkPage() {
  value={search}
  onChange={(e) => setSearch(e.target.value)}
  placeholder="Search by name, skill, or college…"
- className="w-full bg-[#0F1629] border border-border rounded-xl pl-10 pr-4 py-3 text-foreground font-medium placeholder:text-muted-foreground focus:outline-none focus:border-[#1FA971]/50 focus:ring-1 focus:ring-[#1FA971]/30 transition-all"
+ className="w-full bg-surface border border-border rounded-xl pl-10 pr-4 py-3 text-foreground font-medium placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-xs"
  />
  </div>
  {search && (
  <button
  onClick={() => setSearch("")}
- className="flex items-center gap-1.5 px-3 py-2 bg-accent rounded-lg font-medium text-muted-foreground hover:bg-accent transition-colors"
+ className="flex items-center gap-1.5 px-3.5 py-2.5 bg-surface-2 border border-border rounded-xl font-medium text-muted-foreground hover:text-foreground hover:bg-surface transition-colors text-sm"
  >
- <RotateCcw size={12} /> Clear
+ <RotateCcw size={14} /> Clear
  </button>
  )}
  </div>
  </div>
 
- {/* Tabs */}
- <div className="flex gap-1.5 bg-[#0F1629] p-1 rounded-xl border border-white/5 w-fit">
- {TABS.map((tab) => {
- const isActive = activeTab === tab.key;
- const Icon = tab.icon;
- let count: number | null = null;
- if (tab.key ==="connections") count = connections.length;
- if (tab.key ==="pending") count = pendingReceived.length + pendingSent.length;
+  {/* Tabs */}
+  <div className="flex gap-1.5 bg-surface-2 p-1.5 rounded-2xl border border-border w-fit shadow-xs">
+    {TABS.map((tab) => {
+      const isActive = activeTab === tab.key;
+      const Icon = tab.icon;
+      let count: number | null = null;
+      if (tab.key === "connections") count = connections.length;
+      if (tab.key === "pending") count = pendingReceived.length + pendingSent.length;
 
- return (
- <button
- key={tab.key}
- onClick={() => switchTab(tab.key)}
- className={`relative flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${ isActive ?"bg-[#1FA971] text-foreground shadow-[0_0_20px_rgba(31,169,113,0.3)]" :"text-muted-foreground hover:text-foreground hover:bg-accent" }`}
- >
- <Icon size={15} />
- {tab.label}
- {count !== null && count > 0 && (
- <span
- className={`ml-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full font-bold ${ isActive ?"bg-white/20" :"bg-accent text-muted-foreground" }`}
- >
- {count}
- </span>
- )}
- </button>
- );
- })}
- </div>
-
+      return (
+        <button
+          key={tab.key}
+          onClick={() => switchTab(tab.key)}
+          className={cn(
+            "relative flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200",
+            isActive
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-surface"
+          )}
+        >
+          <Icon size={16} />
+          {tab.label}
+          {count !== null && count > 0 && (
+            <span
+              className={cn(
+                "ml-1 min-w-[20px] h-[20px] px-1 flex items-center justify-center rounded-full text-xs font-bold",
+                isActive ? "bg-white/20 text-white" : "bg-surface border border-border text-muted-foreground"
+              )}
+            >
+              {count}
+            </span>
+          )}
+        </button>
+      );
+    })}
+  </div>
  {/* Tab Content */}
  <ErrorBoundary section="NetworkContent">
  <AnimatePresence mode="wait">

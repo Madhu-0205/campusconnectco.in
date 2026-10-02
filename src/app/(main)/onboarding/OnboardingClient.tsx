@@ -7,150 +7,17 @@ import {
  Loader2, Search, ChevronDown, Compass
 } from"lucide-react"
 import { useSearchParams, useRouter } from"next/navigation"
-import { useState, useEffect, useRef } from"react"
-import { toast } from"sonner"
+import { useState, useEffect, useRef, useCallback } from "react"
+import { toast } from "sonner"
 
 
-import { ReferralTracker } from"@/components/growth/ReferralTracker"
-import { ResumeUploader } from"@/components/resume/ResumeUploader"
-import SkillSelector from"@/components/SkillSelector"
-import { LocationMap } from"@/components/ui/LocationMap"
-import { VerificationBadge } from"@/components/ui/VerificationBadge"
-import { Skill, SKILLS_DATASET } from"@/lib/skills-dataset"
-
-// ── Searchable College Dropdown (API-driven) ─────────────────────────────────
-function CollegeDropdown({
- value,
- onChange,
- onCollegeId,
- city,
- state
-}: { 
- value: string; 
- onChange: (v: string) => void;
- onCollegeId?: (id: string) => void;
- city?: string;
- state?: string;
-}) {
- const [open, setOpen] = useState(false)
- const [search, setSearch] = useState("")
- const [colleges, setColleges] = useState<any[]>([])
- const [loading, setLoading] = useState(false)
- const containerRef = useRef<HTMLDivElement>(null)
- const inputRef = useRef<HTMLInputElement>(null)
-
- useEffect(() => {
- async function fetchColleges() {
- setLoading(true)
- try {
- const params = new URLSearchParams()
- if (search) params.set("q", search)
- if (!search && state) params.set("state", state)
- const res = await fetch(`/api/colleges?${params.toString()}`)
- const data = await res.json()
- setColleges(data.colleges || [])
- } catch (err) {
- console.error(err)
- } finally {
- setLoading(false)
- }
- }
- 
- const timeoutId = setTimeout(() => {
- if (open) fetchColleges()
- }, 300)
- 
- return () => clearTimeout(timeoutId)
- }, [search, open, state])
-
- useEffect(() => {
- function handleOut(e: MouseEvent) {
- if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
- setOpen(false)
- }
- }
- document.addEventListener("mousedown", handleOut)
- return () => document.removeEventListener("mousedown", handleOut)
- }, [])
-
- return (
- <div ref={containerRef} className="relative">
- <button
- type="button"
- onClick={() => { setOpen(!open); setTimeout(() => inputRef.current?.focus(), 100) }}
- className="w-full bg-(--surface-2) border border-(--border) text-left p-3.5 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 focus:border-[#1FA971]/50 outline-none transition-all flex items-center justify-between"
- >
- <span className={value ?"text-white font-medium" :"text-slate-600"}>
- {value ||"Select your college…"}
- </span>
- <ChevronDown size={16} className={`text-muted-foreground transition-transform ${open ?"rotate-180" :""}`} />
- </button>
-
- <AnimatePresence>
- {open && (
- <motion.div
- initial={{ opacity: 0, y: -8 }}
- animate={{ opacity: 1, y: 0 }}
- exit={{ opacity: 0, y: -8 }}
- transition={{ duration: 0.15 }}
- className="absolute z-50 w-full mt-2 bg-surface border border-(--border) rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
- >
- <div className="p-2 border-b border-white/5 flex items-center gap-2 px-3">
- <Search size={14} className="text-muted-foreground shrink-0" />
- <input
- ref={inputRef}
- type="text"
- placeholder="Search college…"
- value={search}
- onChange={e => setSearch(e.target.value)}
- className="w-full bg-transparent text-white placeholder-slate-500 focus:outline-none py-2 text-sm"
- />
- </div>
- <ul className="max-h-52 overflow-y-auto py-1">
- {loading ? (
- <li className="px-4 py-3 text-center text-sm text-slate-500 flex items-center justify-center gap-2"><Loader2 size={14} className="animate-spin" /> Fetching...</li>
- ) : colleges.length === 0 ? (
- <li className="px-4 py-3 text-center text-sm text-slate-500">No colleges found. Type to add manually.</li>
- ) : colleges.map(college => (
- <li key={college.id}>
- <button
- type="button"
- onClick={() => { 
- onChange(college.name); 
- if (onCollegeId) onCollegeId(college.id);
- setOpen(false); 
- setSearch(""); 
- }}
- className={`w-full px-4 py-2 text-left text-sm transition-colors hover:bg-primary/20 hover:text-white ${value === college.name ?"bg-primary/20 text-white font-bold" :"text-slate-400"}`}
- >
- <div className="font-medium text-white">{college.name}</div>
- <div className="text-xs text-slate-500">{college.city}, {college.state}</div>
- </button>
- </li>
- ))}
- {search && colleges.length === 0 && (
- <li>
- <button
- type="button"
- onClick={() => { 
- onChange(search); 
- if (onCollegeId) onCollegeId("");
- setOpen(false); 
- }}
- className="w-full px-4 py-3 text-left text-sm bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors"
- >
- Add &quot;{search}&quot; manually
- </button>
- </li>
- )}
- </ul>
- </motion.div>
- )}
- </AnimatePresence>
- </div>
- )
-}
-
+import { ReferralTracker } from "@/components/growth/ReferralTracker"
+import { ResumeUploader } from "@/components/resume/ResumeUploader"
+import SkillSelector from "@/components/SkillSelector"
+import { CollegeDropdown, type CollegeDropdownItem } from "@/components/ui/CollegeDropdown"
+import { LocationMap } from "@/components/ui/LocationMap"
+import { VerificationBadge } from "@/components/ui/VerificationBadge"
+import { Skill, SKILLS_DATASET } from "@/lib/skills-dataset"
 
 // ── Main Component ───────────────────────────────────────────────────────────
 export default function OnboardingPage() {
@@ -190,13 +57,21 @@ export default function OnboardingPage() {
  const [parseStatus, setParseStatus] = useState<'idle' | 'processing' | 'done'>('idle')
 
  // Called by LocationMap when reverse geocoding succeeds (marker drag / map click / GPS)
- const handleLocationSelected = (loc: { city: string; state: string; country: string; latitude: number; longitude: number }) => {
- setForm(prev => ({ ...prev, city: loc.city, state: loc.state, country: loc.country, latitude: loc.latitude, longitude: loc.longitude }))
- setLocationStatus('detected')
- }
+   const handleLocationSelected = useCallback((loc: { city: string; state: string; country: string; latitude: number; longitude: number; college?: string; collegeId?: string }) => {
+    setForm(prev => ({
+      ...prev,
+      city: loc.city || prev.city,
+      state: loc.state || prev.state,
+      country: loc.country || prev.country,
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+      college: loc.college || prev.college,
+      collegeId: loc.collegeId || prev.collegeId,
+    }))
+    setLocationStatus('detected')
+  }, [])
 
- // Called by LocationMap when it can't geocode (network/CSP failure)
- const handleGeocodeFailed = () => {
+const handleGeocodeFailed = () => {
  setLocationStatus('failed')
  }
 
@@ -359,7 +234,7 @@ export default function OnboardingPage() {
  const currentScore = completionScore()
 
  return (
- <div className="min-h-screen bg-background text-white py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative overflow-hidden" style={{ fontFamily:"var(--font-body, 'DM Sans', sans-serif)" }}>
+ <div className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative overflow-hidden" style={{ fontFamily:"var(--font-body, 'DM Sans', sans-serif)" }}>
  <ReferralTracker />
  {/* Background gradients */}
  <div className="absolute top-[-10%] right-[-10%] w-125 h-125 bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
@@ -368,7 +243,7 @@ export default function OnboardingPage() {
  <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10 items-stretch">
  
  {/* ── LEFT PANEL: Live Profile Card Preview ───────────────────────── */}
- <div className="lg:col-span-4 flex flex-col justify-between bg-(--surface)/60 border border-(--border) rounded-4xl p-6 backdrop-blur-md relative overflow-hidden shadow-2xl">
+ <div className="lg:col-span-4 flex flex-col justify-between bg-card border border-border rounded-4xl p-6 relative overflow-hidden shadow-card">
  <div className="absolute -top-24 -left-24 w-48 h-48 bg-primary/10 blur-[80px] rounded-full pointer-events-none" />
  
  <div className="relative z-10">
@@ -385,18 +260,18 @@ export default function OnboardingPage() {
  </div>
  <div>
  <div className="flex items-center gap-1.5 flex-wrap">
- <h3 className="font-bold text-white leading-tight">{form.name ||"Student Name"}</h3>
+ <h3 className="font-bold text-foreground leading-tight">{form.name ||"Student Name"}</h3>
  <VerificationBadge isVerified={isVerified} />
  </div>
- <p className="text-xs text-slate-400 mt-1">{form.college ||"Select College"}</p>
+ <p className="text-xs text-muted-foreground mt-1">{form.college ||"Select College"}</p>
  </div>
  </div>
 
- <div className="w-full h-px bg-white/5" />
+ <div className="w-full h-px bg-border" />
 
  <div className="space-y-2">
  <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider block">Course details</span>
- <p className="text-xs text-slate-300 font-semibold">{form.branch ||"Branch/Course"} · {form.year} Year</p>
+ <p className="text-xs text-foreground font-semibold">{form.branch ||"Branch/Course"} · {form.year} Year</p>
  </div>
 
  {selectedSkills.length > 0 && (
@@ -428,18 +303,18 @@ export default function OnboardingPage() {
  {form.bio && (
  <div className="space-y-2">
  <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider block">Biography</span>
- <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed italic">&quot;{form.bio}&quot;</p>
+ <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed italic">&quot;{form.bio}&quot;</p>
  </div>
  )}
 
  <div className="flex gap-2.5 pt-2">
- <div className={`p-1.5 rounded-lg border text-xs transition-colors ${form.github ?"border-white/20 text-white" :"border-white/5 text-slate-600"}`}>
+ <div className={`p-1.5 rounded-lg border text-xs transition-colors ${form.github ?"border-primary/40 text-primary bg-primary/5" :"border-border text-muted-foreground"}`}>
  <Github size={14} />
  </div>
- <div className={`p-1.5 rounded-lg border text-xs transition-colors ${form.linkedin ?"border-white/20 text-white" :"border-white/5 text-slate-600"}`}>
+ <div className={`p-1.5 rounded-lg border text-xs transition-colors ${form.linkedin ?"border-primary/40 text-primary bg-primary/5" :"border-border text-muted-foreground"}`}>
  <Linkedin size={14} />
  </div>
- <div className={`p-1.5 rounded-lg border text-xs transition-colors ${form.portfolio ?"border-white/20 text-white" :"border-white/5 text-slate-600"}`}>
+ <div className={`p-1.5 rounded-lg border text-xs transition-colors ${form.portfolio ?"border-primary/40 text-primary bg-primary/5" :"border-border text-muted-foreground"}`}>
  <Globe size={14} />
  </div>
  </div>
@@ -447,14 +322,14 @@ export default function OnboardingPage() {
  </div>
 
  {/* Completeness Bar */}
- <div className="mt-8 border-t border-white/5 pt-5 space-y-2">
+ <div className="mt-8 border-t border-border pt-5 space-y-2">
  <div className="flex justify-between items-center text-xs">
  <span className="font-bold text-slate-500 uppercase tracking-wider">Completeness score</span>
  <span className={`font-black uppercase tracking-wider font-mono ${currentScore === 100 ?"text-emerald-400" :"text-primary"}`}>
  {currentScore}%
  </span>
  </div>
- <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+ <div className="h-1.5 w-full bg-surface-2 rounded-full overflow-hidden">
  <div 
  className={`h-full rounded-full transition-all duration-500 bg-linear-to-r from-primary to-primary`}
  style={{ width: `${currentScore}%` }}
@@ -464,14 +339,14 @@ export default function OnboardingPage() {
  </div>
 
  {/* ── RIGHT PANEL: Steps Form Wizard ──────────────────────────────── */}
- <div className="lg:col-span-8 bg-(--surface) border border-(--border) rounded-4xl p-8 backdrop-blur-md shadow-2xl flex flex-col justify-between">
+ <div className="lg:col-span-8 bg-card border border-border rounded-4xl p-8 shadow-card flex flex-col justify-between">
  
  <div className="space-y-6">
  {/* Top Wizard Steps Tracker */}
- <div className="flex items-center justify-between border-b border-white/5 pb-4">
+ <div className="flex items-center justify-between border-b border-border pb-4">
  <div>
  <span className="text-[10px] font-black uppercase tracking-widest text-primary font-mono">Step {step} of 5</span>
- <h2 className="text-xl font-black text-white mt-0.5">
+ <h2 className="text-xl font-black text-foreground mt-0.5">
  {step === 1 &&"Location & Proximity"}
  {step === 2 &&"Academic Identity"}
  {step === 3 &&"Core Capabilities"}
@@ -484,7 +359,7 @@ export default function OnboardingPage() {
  {[1, 2, 3, 4, 5].map(idx => (
  <div 
  key={idx} 
- className={`h-1.5 rounded-full transition-all duration-300 ${idx === step ?"w-6 bg-primary" : idx < step ?"w-2 bg-emerald-500" :"w-2 bg-white/10"}`} 
+ className={`h-1.5 rounded-full transition-all duration-300 ${idx === step ?"w-6 bg-primary" : idx < step ?"w-2 bg-emerald-500" :"w-2 bg-border"}`} 
  />
  ))}
  </div>
@@ -537,7 +412,7 @@ export default function OnboardingPage() {
  <button
  type="button"
  onClick={() => setLocationStatus('manual')}
- className="text-xs text-slate-400 hover:text-white underline underline-offset-2 transition-colors"
+ className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
  >
  Edit location
  </button>
@@ -547,23 +422,23 @@ export default function OnboardingPage() {
  {/* City / State inputs — always rendered and editable */}
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">City</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">City</label>
  <input 
  name="city"
  placeholder="e.g. Hyderabad"
  value={form.city}
  onChange={e => handleCityChange(e.target.value)}
- className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 focus:border-[#1FA971]/50 outline-none transition-all font-medium text-sm"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm shadow-xs"
  />
  </div>
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">State</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">State</label>
  <input 
  name="state"
  placeholder="e.g. Telangana"
  value={form.state}
  onChange={e => handleStateChange(e.target.value)}
- className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 focus:border-[#1FA971]/50 outline-none transition-all font-medium text-sm"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm shadow-xs"
  />
  </div>
  </div>
@@ -577,46 +452,59 @@ export default function OnboardingPage() {
  
  <div className="space-y-4">
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Legal Student Name</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">Legal Student Name</label>
  <input 
  placeholder="e.g. Sathwik Sharma"
  value={form.name}
  onChange={e => setForm({ ...form, name: e.target.value })}
- className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 focus:border-[#1FA971]/50 outline-none transition-all font-medium text-sm"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm shadow-xs"
  />
  </div>
 
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Current College/University</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">Current College/University</label>
  <CollegeDropdown 
- value={form.college} 
- city={form.city}
- state={form.state}
- onChange={val => setForm({ ...form, college: val })} 
- onCollegeId={id => setForm({ ...form, collegeId: id })}
- />
+  value={form.college} 
+  city={form.city}
+  state={form.state}
+  onChange={(val, item) => {
+    setForm(prev => ({
+      ...prev,
+      college: val,
+      collegeId: item?.id || prev.collegeId,
+      city: item?.city || prev.city,
+      state: item?.state || prev.state,
+      latitude: item?.latitude || prev.latitude,
+      longitude: item?.longitude || prev.longitude,
+    }))
+    if (item?.latitude && item?.longitude) {
+      setLocationStatus('detected')
+    }
+  }} 
+  onCollegeId={id => setForm(prev => ({ ...prev, collegeId: id }))}
+/>
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Degree/Major</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">Degree/Major</label>
  <input 
  placeholder="e.g. Computer Science"
  value={form.branch}
  onChange={e => setForm({ ...form, branch: e.target.value })}
- className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 focus:border-[#1FA971]/50 outline-none transition-all font-medium text-sm"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm shadow-xs"
  />
  </div>
 
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Current Study Year</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">Current Study Year</label>
  <select
  value={form.year}
  onChange={e => setForm({ ...form, year: e.target.value })}
- className="w-full bg-(--surface-2) border border-(--border) text-white p-3.5 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 focus:border-[#1FA971]/50 outline-none transition-all font-medium text-sm appearance-none cursor-pointer"
+ className="w-full bg-surface border border-border text-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm appearance-none cursor-pointer shadow-xs"
  >
  {["1st","2nd","3rd","4th","Alumni"].map(y => (
- <option key={y} value={y} className="bg-surface-2">{y} Year</option>
+ <option key={y} value={y} className="bg-surface text-foreground">{y} Year</option>
  ))}
  </select>
  </div>
@@ -667,12 +555,12 @@ export default function OnboardingPage() {
  )}
 
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Extracted / Written Biography</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">Extracted / Written Biography</label>
  <textarea 
  placeholder="Describe your capabilities. Highlighting your past projects and working style increases hiring rates."
  value={form.bio}
  onChange={e => setForm({ ...form, bio: e.target.value })}
- className="w-full bg-(--surface-2) border border-(--border) rounded-xl p-3.5 text-sm min-h-30 focus:outline-none focus:ring-2 focus:ring-[#1FA971]/50"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground rounded-xl p-3.5 text-sm min-h-30 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-medium shadow-xs"
  />
  </div>
  </div>
@@ -685,52 +573,52 @@ export default function OnboardingPage() {
  
  <div className="space-y-4">
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Career Objective</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">Career Objective</label>
  <input 
  placeholder="e.g. Frontend developer looking for remote React internships"
  value={form.careerGoal}
  onChange={e => setForm({ ...form, careerGoal: e.target.value })}
- className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 focus:border-[#1FA971]/50 outline-none transition-all font-medium text-sm"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground p-3.5 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm shadow-xs"
  />
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">GitHub URL</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">GitHub URL</label>
  <div className="relative">
- <span className="absolute left-3.5 top-3.5 text-slate-600"><Github size={16} /></span>
+ <span className="absolute left-3.5 top-3.5 text-muted-foreground"><Github size={16} /></span>
  <input 
  placeholder="https://github.com/yourusername"
  value={form.github}
  onChange={e => setForm({ ...form, github: e.target.value })}
- className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 pl-10 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 outline-none transition-all font-medium text-sm"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground p-3.5 pl-10 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm shadow-xs"
  />
  </div>
  </div>
 
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">LinkedIn URL</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">LinkedIn URL</label>
  <div className="relative">
- <span className="absolute left-3.5 top-3.5 text-slate-600"><Linkedin size={16} /></span>
+ <span className="absolute left-3.5 top-3.5 text-muted-foreground"><Linkedin size={16} /></span>
  <input 
  placeholder="https://linkedin.com/in/yourusername"
  value={form.linkedin}
  onChange={e => setForm({ ...form, linkedin: e.target.value })}
- className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 pl-10 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 outline-none transition-all font-medium text-sm"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground p-3.5 pl-10 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm shadow-xs"
  />
  </div>
  </div>
  </div>
 
  <div>
- <label className="block font-black text-muted-foreground uppercase tracking-widest text-xs mb-2">Personal Portfolio URL</label>
+ <label className="block font-black text-foreground font-bold uppercase tracking-wider text-xs mb-2">Personal Portfolio URL</label>
  <div className="relative">
- <span className="absolute left-3.5 top-3.5 text-slate-600"><Globe size={16} /></span>
+ <span className="absolute left-3.5 top-3.5 text-muted-foreground"><Globe size={16} /></span>
  <input 
  placeholder="https://yourportfolio.com"
  value={form.portfolio}
  onChange={e => setForm({ ...form, portfolio: e.target.value })}
- className="w-full bg-(--surface-2) border border-(--border) text-white placeholder-slate-600 p-3.5 pl-10 rounded-xl focus:ring-2 focus:ring-[#1FA971]/50 outline-none transition-all font-medium text-sm"
+ className="w-full bg-surface border border-border text-foreground placeholder:text-muted-foreground p-3.5 pl-10 rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all font-medium text-sm shadow-xs"
  />
  </div>
  </div>
@@ -744,12 +632,12 @@ export default function OnboardingPage() {
  </div>
 
  {/* Action buttons */}
- <div className="flex items-center justify-between border-t border-white/5 pt-5 mt-6 gap-4">
+ <div className="flex items-center justify-between border-t border-border pt-5 mt-6 gap-4">
  {step > 1 ? (
  <button
  type="button"
  onClick={() => setStep(prev => prev - 1)}
- className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl border border-white/10 hover:bg-white/5 transition-all font-bold text-sm text-slate-400 hover:text-white"
+ className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl border border-border hover:bg-surface-2 transition-all font-bold text-sm text-muted-foreground hover:text-foreground"
  >
  <ArrowLeft size={16} /> Back
  </button>
@@ -762,7 +650,7 @@ export default function OnboardingPage() {
  type="button"
  onClick={() => setStep(prev => prev + 1)}
  disabled={step === 1 && (!form.city.trim() || !form.state.trim()) || step === 2 && (!form.name.trim() || !form.college.trim()) || step === 3 && selectedSkills.length < 3}
- className="inline-flex items-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm transition-all"
+ className="inline-flex items-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-primary-foreground rounded-xl font-bold text-sm transition-all shadow-xs"
  >
  Continue <ArrowRight size={16} />
  </button>
@@ -771,7 +659,7 @@ export default function OnboardingPage() {
  type="button"
  onClick={handleComplete}
  disabled={submitting}
- className="inline-flex items-center gap-2 px-6 py-3.5 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-slate-900 rounded-xl font-black text-sm transition-all"
+ className="inline-flex items-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground rounded-xl font-black text-sm transition-all shadow-xs"
  >
  {submitting ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
  {submitting ?"Saving Brand..." :"Launch Dashboard"}
